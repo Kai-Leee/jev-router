@@ -1,3 +1,7 @@
+# D031 최신 — 2026-10-09
+
+중복 제거/의존 선별 v3 및 판단기 선택 실행 경로 구현. 오프라인 기존 request 재생만 수행, 새 유료0. 390/390 회귀 통과. [구현](../orchestration/D031_IMPLEMENTATION.md), [역할 연구](../orchestration/D031_ROLE_RESEARCH.md). 기본 forced는 온라인 선택 아님; claude/jev는 명시 임계값 필요. worker Opus medium. source 미커밋, 실제 새 E2E 품질/토큰/캐시 성능 미검증. 다음은 matched-plan 비교·전체 시도 실패/보류 집계. 아래는 과거 상태.
+
 # D029 최신 — 2026-10-09
 
 문서·모델 확장 및 실제 단일/분할 비교 완료. 초기 source commit887d360. 원본 채점 각각30/30, 단계 합계22.829% 감소/비용 추정64.112% 증가(단일 분모). Jev p=.66, 운영 threshold null 유지. 강제 대조 n=1이며 자동라우팅 효과/확률 보정/재귀분할 미검증. 추가 유료 재실행하지 않음. [결과](../orchestration/D029_RESULTS.md), [정본 진입점](../orchestration/README.md), [구조화 기록](../decisions/D029.md). 아래 항목은 역사적 체크포인트로, no commits/pending 문구는 현재 상태가 아니다.

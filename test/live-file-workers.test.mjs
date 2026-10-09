@@ -16,3 +16,12 @@ test('failed stage drains in-flight worker and prevents dependent dispatch',asyn
 test('dependent worker receives completed files; single receives all ownership',async()=>{const dir=mkdtempSync(join(tmpdir(),'jev-dep-'));const p=plan();p.tasks[1].dependsOn=['a'];try{await runFileArm({plan:p,brief:[],mode:'split',outputDir:join(dir,'split'),call:async req=>{if(req.task.id==='b')assert.equal(req.completedFiles[0].path,'a.py');return {response:{summary:'ok',artifacts:req.task.paths,observed_checks:[],blockers:[],uncertainty:[],files:req.task.paths.map(path=>({path,content:''}))}};}});let n=0;await runFileArm({plan:p,brief:[],mode:'single',outputDir:join(dir,'single'),call:async req=>{n++;assert.equal(req.task.paths.length,2);return {response:{summary:'ok',artifacts:req.task.paths,observed_checks:[],blockers:[],uncertainty:[],files:req.task.paths.map(path=>({path,content:''}))}};}});assert.equal(n,1);}finally{rmSync(dir,{recursive:true,force:true});}});
 
 test('no-tools output rejects invented checks and mismatched artifact receipts',()=>{const good={summary:'ok',files:[{path:'a',content:'x'}],artifacts:['a'],observed_checks:[],blockers:[],uncertainty:['unexecuted']};assert.equal(validateFiles(good,['a']).length,1);assert.throws(()=>validateFiles({...good,observed_checks:[{passed:true}]},['a']));assert.throws(()=>validateFiles({...good,artifacts:['b']},['a']));});
+
+test('projected live arm filters unrelated files and supports serial split',async()=>{
+ const dir=mkdtempSync(join(tmpdir(),'jev-v3-'));const p=plan();p.tasks.push({id:'c',description:'C',paths:['c.py'],dependsOn:['a']});let active=0,max=0;const events=[];
+ try{const r=await runFileArm({plan:p,brief:['retain all constraints'],mode:'split',inputMode:'projected',maxConcurrency:1,outputDir:join(dir,'out'),record:async e=>events.push(e),call:async req=>{
+  active++;max=Math.max(max,active);assert.equal(req.inputVersion,'worker-input-v3');assert.equal(req.plan,undefined);
+  if(req.task.id==='c')assert.deepEqual(req.completedFiles.map(f=>f.path),['a.py']);
+  active--;return {response:{summary:'ok',artifacts:req.task.paths,observed_checks:[],blockers:[],uncertainty:[],files:req.task.paths.map(path=>({path,content:'generated'}))}};
+ }});assert.equal(r.status,'completed');assert.equal(max,1);assert.ok(events.filter(e=>e.event==='worker_input_prepared').every(e=>Number.isFinite(e.input_preparation_ms)));}finally{rmSync(dir,{recursive:true,force:true});}
+});

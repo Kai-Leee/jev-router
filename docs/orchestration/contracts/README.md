@@ -31,3 +31,7 @@ node --test test/document-contracts.test.mjs test/document-router.test.mjs
 - 현재 E2E pilot: `scripts/tree-e2e-pilot.mjs`. 처음에는 Opus5.5 medium으로 양쪽 작업 모델을 고정해 분할 효과만 비교한다. 다른 모델은 목록에 있지만 이 실험에서 전부 호출하지 않는다.
 
 [조사 출처](../D029_MODEL_HOST_RESEARCH.md) · [사전 실험 조건](../D029_EXPERIMENT_PLAN.md)
+
+## D031 현재 worker
+
+새 pilot은 `worker-task.v3.json`과 projected 입력을 기본 사용한다. `--input-mode legacy`만 v2를 사용한다. questions.v1/models.v2는 유지. `node bin/show-routing-contracts.mjs`는 현재 v3를 보여준다. 전체 명세는 한 번 보존하고 의존 evidence만 선별한다. 실제 토큰/비용 효과는 미측정. [구현 및 옵션](../D031_IMPLEMENTATION.md).

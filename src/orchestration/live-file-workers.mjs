@@ -1,6 +1,7 @@
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {dirname,join} from 'node:path';
 import {performance} from 'node:perf_hooks';
+import {buildWorkerInput} from './worker-inputs.mjs';
 
 const fail=code=>{throw new Error(code);};
 export function safeArtifactPath(path){
@@ -35,9 +36,9 @@ export function splitPolicies(answer){
   return [.5,.65,.8].map(threshold=>({threshold,probability:p,evidence:e,action:e==='insufficient'?'collect_evidence':p>=threshold?'split':'single'}));
 }
 // No generated command is executed. Caller owns a new private directory.
-export async function runFileArm({plan,brief,mode,outputDir,call,record=async()=>{},maxConcurrency=2,profile={model:'fixture-model',effort:'medium'}}){
+export async function runFileArm({plan,brief,mode,outputDir,call,record=async()=>{},maxConcurrency=2,profile={model:'fixture-model',effort:'medium'},inputMode='legacy'}){
   plan=validatePlan(plan);
-  if(!['single','split'].includes(mode)||maxConcurrency!==2)fail('INVALID_ARM');
+  if(!['single','split'].includes(mode)||![1,2].includes(maxConcurrency)||!['legacy','deduplicated','projected'].includes(inputMode))fail('INVALID_ARM');
   mkdirSync(outputDir,{mode:0o700});
   const started=performance.now(),completed=new Set(),files=[],receipts=[];
   const tasks=mode==='single'?[{id:'single',description:'Implement every task in the frozen plan.',paths:plan.tasks.flatMap(t=>t.paths),dependsOn:[]}]:plan.tasks;
@@ -48,7 +49,11 @@ export async function runFileArm({plan,brief,mode,outputDir,call,record=async()=
     // Stage barrier: deterministic completed context; never dispatch more after failure.
     const context=structuredClone(files);
     const settled=await Promise.allSettled(ready.map(async task=>{
-      const response=await call({brief,plan,task,taskId:task.id,goal:brief,requirements:brief,model:profile.model,effort:profile.effort,writeScopes:task.paths,dependencies:task.dependsOn,acceptanceCriteria:{originalBrief:brief,assignedContract:task.description,integrationInstructions:plan.integrationInstructions},evidence:context,completedFiles:context,outputContract:{files:[{path:'owned relative path',content:'complete file contents'}],artifacts:task.paths,observed_checks:[],blockers:[],uncertainty:['No tools available; checks are unexecuted.'],summary:'Generated files; no checks executed.'}},`${mode}-${task.id}`);
+      const preparationStarted=performance.now();
+      const legacyRequest={brief,plan,task,taskId:task.id,goal:brief,requirements:brief,model:profile.model,effort:profile.effort,writeScopes:task.paths,dependencies:task.dependsOn,acceptanceCriteria:{originalBrief:brief,assignedContract:task.description,integrationInstructions:plan.integrationInstructions},evidence:context,completedFiles:context,outputContract:{files:[{path:'owned relative path',content:'complete file contents'}],artifacts:task.paths,observed_checks:[],blockers:[],uncertainty:['No tools available; checks are unexecuted.'],summary:'Generated files; no checks executed.'}};
+      const prepared=inputMode==='legacy'?{request:legacyRequest,manifest:{mode:'legacy'}}:buildWorkerInput({plan,task,brief,completedFiles:context,profile,mode:inputMode,executionMode:mode});
+      await record({event:'worker_input_prepared',arm:mode,taskId:task.id,manifest:prepared.manifest,input_preparation_ms:performance.now()-preparationStarted});
+      const response=await call(prepared.request,`${mode}-${task.id}`);
       const artifacts=validateFiles(response.response,task.paths);
       for(const f of artifacts){const p=join(outputDir,f.path);mkdirSync(dirname(p),{recursive:true,mode:0o700});writeFileSync(p,f.content,{flag:'wx',mode:0o600});}
       const receipt={taskId:task.id,...response};await record({event:'worker_completed',arm:mode,...receipt});return {receipt,artifacts};

@@ -359,3 +359,15 @@ skills/jev-decision-records생성/검증후~/.codex/skills/jev-decision-records�
 ## 2026-10-09 D029 — 모델/문서 연결과 실제 분할 E2E
 
 Opus5.5/Fable5.1/Sonnet5.5/Haiku5.5와 effort 5단계 정본, worker v2, CLAUDE.md→AGENTS.md 연결 추가. 소스 최초 커밋887d360 후 Opus medium 단일/분할 각1회와 Jev1회 실행. 양쪽 원본30/30. 측정 단계 합계303.980→234.584초(단일 분모22.829% 감소), 워크플로 비용 추정USD0.905536→1.4860908(64.112% 증가). 문맥 중복 원인 기록. p=.66에 .5/.65는 split, .8은 single; 강제 대조이며 자동라우팅 효능/확률 calibration 미검증. 상세 [D029 결과](orchestration/D029_RESULTS.md), [구조화 기록](decisions/D029.md). 추가 유료 재실행 없음, 원격 push/PersonalOS 변경 없음.
+
+## D030 — 2026-10-09 입력 필드 감사
+
+[조사](orchestration/D030_INPUT_AUDIT.md), [기록](decisions/D030.md). 기존 request 동일값 중복 제거 복사본은 split bytes 52.071% 감소(원본285625분모, system제외). 토큰/비용 감소 아님. Jev 판단 대체와 코드의 projection을 분리 제안. 런타임/계약 변경·새 유료호출 없음.
+
+## D031 — 2026-10-09 입력 개선·판단기 비교 구현
+
+[구현](orchestration/D031_IMPLEMENTATION.md), [역할 조사](orchestration/D031_ROLE_RESEARCH.md), [기록](decisions/D031.md). 중복 제거+직접/전이 의존 선별, v3, Claude/Jev/script/forced 분리, 고정계획 재사용·지표 비교 추가. offline split bytes71.378%감소(원본분모), 토큰/품질 미측정. 전체390/390 통과. telemetry역할/single ID충돌 수정. 작업자Opus medium 유지. 미커밋,paid0,push없음.
+
+## 2026-10-09 D030/D031 공개 반영
+
+사용자 요청에 따라 입력개선·판단기 비교 코드와 조사 문서의 커밋/push를 진행한다. 최종코드 무과금 재생 d031-push-verification.json에서 기존 집계와 동일함 확인. D031_SAVINGS_STATUS.md에 작업자별 bytes와 과거 D029 유료측정의 시간감소/비용증가 및 미검증 절감 분리. 원시 private 로그/키는 제외한다. 실제 토큰/비용 재측정 없음.

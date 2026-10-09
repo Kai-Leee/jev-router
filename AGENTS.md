@@ -51,3 +51,7 @@ Claude는 CLAUDE.md의 @AGENTS.md import, Codex는 이 파일을 진입점으로
 격리 worker에는 자동 발견을 가정하지 말고 controller가 내용과 경로/해시를 명시 전달한다.
 `node bin/show-routing-contracts.mjs`로 현재 문서·모델·effort·질문을 무과금 열람할 수 있다.
 문서상 지원, 계정에서의 실제 호출, 실측 성능을 별개로 기록한다.
+
+## D031 입력 투영·판단기 비교
+
+새 pilot 기본 입력은 projected/v3 (`docs/orchestration/contracts/worker-task.v3.json`). 질문 v1/모델 v2는 유지한다. legacy 옵션은 D029 재현용. `docs/orchestration/D031_IMPLEMENTATION.md`에서 옵션·실험 경계를 읽는다. 기본 forced는 평가용이며 온라인 Jev 선택을 의미하지 않는다. Claude/Jev 모드는 명시 임계값 필요. 작업자 모델 Opus medium 고정. 의미 매핑 없는 요구사항 삭제 금지; 원문은 한 번 유지. 문서·모의·실제 측정 구별.

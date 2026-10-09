@@ -1,0 +1,24 @@
+{
+  "version": "worker-task-v3",
+  "instructions": "Execute the assigned task using the original brief, task description, integration instructions and materialized dependency files. The original brief contains global requirements and acceptance conditions; preserve it without inventing requirement IDs. Your writable ownership is task.paths and your declared dependencies are task.dependsOn. Integration instructions are in plan.integrationInstructions when plan is present, otherwise integrationInstructions. A synthetic single task owns every plan task: implement all plan descriptions. Treat supplied completedFiles as evidence of file contents, not as proof of passing tests. Do not broaden ownership or overwrite other workers. Use only available tools; when no tools are available, generate the requested files and report checks as unexecuted with observed_checks empty. When tools are available, inspect relevant source and tests before changing behavior and record actual checks, commands, exit codes and evidence. Never fabricate execution or weaken requirements to pass. If a missing dependency, conflicting contract or insufficient input prevents implementation, report a specific blocker and the smallest necessary next action. Preserve the selected model and effort, and report observed mismatches. Return only artifacts actually produced, observed checks, blockers, uncertainty and a concise outcome summary in the supplied outputContract format. Worker results do not establish independent grading or global completion. Do not create further agents or paid calls without explicit task authority. Keep credentials out of outputs. Provide concise evidence, not private chain-of-thought. Before context loss, record a handoff with goal, ownership, source versions, actual checks, unresolved conditions and next action.",
+  "requiredTaskInputs": ["inputVersion", "brief", "task", "model", "effort", "completedFiles", "outputContract"],
+  "conditionalInputs": {
+    "deduplicated": "plan contains all task descriptions and integrationInstructions",
+    "projectedSplit": "integrationInstructions plus canonical task; completedFiles contains all declared transitive dependency files only",
+    "projectedSingle": "plan retained to preserve every assigned task description"
+  },
+  "requiredOutput": ["artifacts", "observed_checks", "blockers", "uncertainty"],
+  "outputDescriptions": {
+    "artifacts": "Paths actually produced, matching the supplied outputContract. The file-generation harness requires a string path array exactly matching task.paths.",
+    "observed_checks": "Actual executed checks with commands, working directory, exit status and evidence. For the no-tools file-generation harness this must be an empty array; unexecuted checks belong in uncertainty.",
+    "blockers": "Specific missing information, conflicting ownership, unmet dependency or observed failure with the smallest needed next action.",
+    "uncertainty": "Unexecuted checks, semantic dependency uncertainty, unverified behavior and requested versus observed model or effort differences."
+  },
+  "applicationNotes": [
+    "Controller provenance hashes, selected/excluded paths and byte counts are recorded in a separate local manifest, not duplicated in the prompt.",
+    "The original brief is retained once because verified requirement-to-task mappings do not yet exist. Requirement slicing is not implemented.",
+    "The controller validates declared dependency materialization; this does not prove that the planner found every semantic dependency.",
+    "Same contract applies to sequential and parallel workers. No-tools CLI workers and native subagents must be labelled separately."
+  ],
+  "research": "docs/orchestration/D030_INPUT_AUDIT.md"
+}

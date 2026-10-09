@@ -417,3 +417,7 @@ See docs/research/D023_SPEED_COMPARISON.md. No newJevinference/budgetreset/produ
 ## 2026-10-09 D029
 
 실행 전 npm test 375/375 통과(benchmark-runs/d029-full-tests.log). 고정 계획 단일/분할 원본 Docker grade 각각30/30, 두 verifier 제거. scripts/analyze-tree-e2e.mjs로 d029-analysis-v2.json 재계산; 수동 대기를 제외한 단계 합계임을 명시. 실행 중 산출물 패치 없음. 실패 arm exit0와 필수 worker 출력 검증 누락은 live 전 수정. 명령·경계는 [결과](docs/orchestration/D029_RESULTS.md).
+
+## 2026-10-09 D031
+
+`node scripts/replay-worker-projection.mjs ...` → benchmark-runs/d031-projection-replay.json: 원문 보존/전이 의존 선별 기존 요청 재생. 단위·통합 부정 검사 포함. 최초 npm test는 localhost EPERM(benchmark-runs/d031-tests.log); sandbox 밖 최종390/390(benchmark-runs/d031-tests-final.log). 새 유료 추론0. paired comparator는 별도 재검사1/1 통과. telemetry routing역할 거절, single task ID 충돌은 실제 실행 전 재현·수정. docs/orchestration/D031_IMPLEMENTATION.md에 한계 보존.
