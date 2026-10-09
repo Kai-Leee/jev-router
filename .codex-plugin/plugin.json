@@ -1,0 +1,17 @@
+{
+  "name": "jev-ai",
+  "version": "0.1.0",
+  "description": "Use the pinned freepik-company Jev MCP with the Jev AI compatible endpoint.",
+  "mcpServers": {
+    "jev-ai": {
+      "command": "node",
+      "args": ["/Users/lee/workspace/plugins/jev-router/bin/mcp-server.mjs"],
+      "env_vars": ["JEV_AI_API_KEY", "JEV_AI_ENV_FILE"]
+    }
+  },
+  "interface": {
+    "displayName": "Jev AI MCP",
+    "shortDescription": "Typed Jev decisions through an existing MCP server",
+    "capabilities": ["Read"]
+  }
+}

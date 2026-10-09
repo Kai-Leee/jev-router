@@ -1,0 +1,7 @@
+# Benchmark bootstrap role
+
+Date: 2026-10-08. User authorizes cloning the real E2E-SWE benchmark and proceeding with it and a Personal OS goal-only evaluation. Docker was started by the user.
+
+Own `benchmarks/e2e-swe/` and `docs/agents/benchmark-bootstrap-STATUS.md`. Read AGENTS.md and DECISIONS.md. Existing upstream checkout is `.benchmarks/E2E-SWE` (main manages clone). Inspect its rules and actual task format. Pick a small representative goal/spec-only task using declared requirements/resources, not anticipated scores. Record commit, upstream license, files supplied to agent versus evaluator. Create a reproducible configuration/adapter or scripts for known-good and no-op grading using the real upstream image/tests, preferably Harbor if main's environment makes it available. Main owns shared dependencies and container execution; coordinate before launching any Docker commands. No paid models/credentials. Do not change upstream files or read task solutions unnecessarily; report any evaluator exposure so implementation gets fresh context.
+
+The official README says Harbor 0.22.0 separate-verifier test upload may need a patch. Verify actual installed code if used, never patch blindly. Scope outcome: source-pinned ready-to-run grade checks, meaningful validation, and exact blockers. Keep artifacts under owned paths, no personal app/Vault. Before context limits write status + OS-temp handoff and stop writes.

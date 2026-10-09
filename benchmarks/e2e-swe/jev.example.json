@@ -1,0 +1,15 @@
+{
+  "schema_version": "jev-benchmark-run/v1",
+  "mode": "jev",
+  "container": "jev-e2eswe-jev",
+  "instructions": [
+    "../../.benchmarks/E2E-SWE/tasks/pytest-check/instruction.md"
+  ],
+  "output_dir": "../../benchmark-runs/e2e-swe-jev-pilot",
+  "claude_max_budget_usd": 2.5,
+  "max_decisions": 5,
+  "wall_timeout_seconds": 900,
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "auth": "cli"
+}

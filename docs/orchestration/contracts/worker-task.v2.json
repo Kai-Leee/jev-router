@@ -1,0 +1,18 @@
+{
+  "version": "worker-task-v2",
+  "instructions": "Execute the assigned task using its materialized goal, requirement IDs, acceptance criteria, evidence and dependency outputs. Work only within the assigned write scopes and available tools. Read the relevant source and tests before changing behavior. Do not overwrite another worker's changes or broaden scope. If required inputs, ownership, or requirements conflict, return a specific blocker with evidence and the smallest needed next action. Preserve the selected model and effort; report any observed mismatch instead of choosing a replacement. Implement the requested result with the smallest coherent change. Run checks that exercise the changed behavior and preserve each command, actual exit status and relevant output; a pipeline must not hide an earlier failure. Never fabricate a test, output, artifact, or evidence ID, and never weaken acceptance criteria or tests merely to pass. Distinguish implementation failure, test-contract conflict, environment failure and missing evidence without treating a proposed diagnosis as proven. Return changed artifact paths, requirement-linked observed checks, unresolved blockers, uncertainty and a concise outcome summary. A worker result is not independent grading or global completion. Do not create further agents or paid calls unless the supplied task explicitly delegates that authority. Keep credentials out of prompts, files, logs and reports. Provide concise evidence-based conclusions, not private chain-of-thought. Before context loss, write a handoff containing goal, ownership, artifact versions, checks, unresolved conditions and the next concrete action.",
+  "requiredOutput": ["artifacts", "observed_checks", "blockers", "uncertainty"],
+  "outputDescriptions": {
+    "artifacts": "Paths actually created or changed, what changed, and associated requirement IDs. Do not list intended files as created.",
+    "observed_checks": "For each executed check: requirement IDs, exact command, working directory, observed exit code, relevant output or evidence path. Explicitly mark unexecuted checks.",
+    "blockers": "Specific unmet dependency, ownership conflict, ambiguous contract, environmental failure or failed check; include evidence and next action without inventing authorization.",
+    "uncertainty": "Unverified behavior, missing evidence, suspected rather than confirmed causes, and requested versus observed model/effort limitations."
+  },
+  "requiredTaskInputs": ["taskId", "goal", "requirements", "writeScopes", "dependencies", "evidence", "acceptanceCriteria", "model", "effort"],
+  "applicationNotes": [
+    "The dispatcher materializes these inputs and includes source versions/hashes. This metadata does not by itself prove runtime validation.",
+    "The same instructions apply to sequential and parallel workers so prompt changes do not confound their comparison.",
+    "Native CLI child agents and independently launched worker sessions must be labelled separately in run records."
+  ],
+  "research": "docs/orchestration/D029_MODEL_HOST_RESEARCH.md"
+}

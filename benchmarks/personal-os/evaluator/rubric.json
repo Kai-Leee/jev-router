@@ -1,0 +1,300 @@
+{
+  "benchmark_revision": "personal-os-v1-experimental",
+  "weights": null,
+  "criteria": [
+    {
+      "id": "artifact.present",
+      "tier": "artifact",
+      "required": true,
+      "outcome": "A nonempty application submission is available. Presence alone says nothing about correctness.",
+      "required_evidence": [
+        "Submission inventory"
+      ]
+    },
+    {
+      "id": "disk.view",
+      "tier": "deterministic",
+      "required": true,
+      "outcome": "Seoul today differs from selected date; selected-date tasks sort unfinished first; start-only planned time is zero; Backlog includes overdue and undated work; reads do not mutate records.",
+      "required_evidence": [
+        "Reviewed adapter mapping to real app",
+        "Operation trace",
+        "Independent actual Markdown parse and before/after hash inventory"
+      ]
+    },
+    {
+      "id": "disk.create",
+      "tier": "deterministic",
+      "required": true,
+      "outcome": "Task creation persists metadata and notes for an absent date; one submission intent replays once; independent same-title submissions remain distinct.",
+      "required_evidence": [
+        "Reviewed adapter mapping to real app",
+        "Operation trace",
+        "Independent actual Markdown parse and before/after hash inventory"
+      ]
+    },
+    {
+      "id": "disk.invalid-input",
+      "tier": "deterministic",
+      "required": true,
+      "outcome": "Invalid duration without start, priority, impossible date, and malformed recurrence are rejected without mutations.",
+      "required_evidence": [
+        "Reviewed adapter mapping to real app",
+        "Operation trace",
+        "Independent actual Markdown parse and before/after hash inventory"
+      ]
+    },
+    {
+      "id": "disk.states-notes",
+      "tier": "deterministic",
+      "required": true,
+      "outcome": "Legal completion/undo/cancellation/archive/restore states and title/note edits preserve stable identity, opaque metadata and unrelated notes; illegal transitions do not write.",
+      "required_evidence": [
+        "Reviewed adapter mapping to real app",
+        "Operation trace",
+        "Independent actual Markdown parse and before/after hash inventory"
+      ]
+    },
+    {
+      "id": "disk.move",
+      "tier": "deterministic",
+      "required": true,
+      "outcome": "Completed tasks move or unschedule without lost metadata; same-date moves do not write; cancelled tasks cannot move.",
+      "required_evidence": [
+        "Reviewed adapter mapping to real app",
+        "Operation trace",
+        "Independent actual Markdown parse and before/after hash inventory"
+      ]
+    },
+    {
+      "id": "disk.delete",
+      "tier": "deterministic",
+      "required": true,
+      "outcome": "Cancelled deletion writes nothing; confirmed deletion removes only the target and retains exact recoverable bytes.",
+      "required_evidence": [
+        "Reviewed adapter mapping to real app",
+        "Operation trace",
+        "Independent actual Markdown parse and before/after hash inventory"
+      ]
+    },
+    {
+      "id": "disk.quick-note",
+      "tier": "deterministic",
+      "required": true,
+      "outcome": "Blank notes create nothing; saved notes persist; rename preserves identity, filename/title/body consistency; collisions preserve both records.",
+      "required_evidence": [
+        "Reviewed adapter mapping to real app",
+        "Operation trace",
+        "Independent actual Markdown parse and before/after hash inventory"
+      ]
+    },
+    {
+      "id": "disk.review",
+      "tier": "deterministic",
+      "required": true,
+      "outcome": "Daily review and mood persist separately without changing task/quick-note records.",
+      "required_evidence": [
+        "Reviewed adapter mapping to real app",
+        "Operation trace",
+        "Independent actual Markdown parse and before/after hash inventory"
+      ]
+    },
+    {
+      "id": "disk.focus-log",
+      "tier": "deterministic",
+      "required": true,
+      "outcome": "Dismissed finish creates no log; confirmed finish appends exactly once, preserving existing bytes; changed same-ID replay is rejected.",
+      "required_evidence": [
+        "Reviewed adapter mapping to real app",
+        "Operation trace",
+        "Independent actual Markdown parse and before/after hash inventory"
+      ]
+    },
+    {
+      "id": "disk.stale",
+      "tier": "deterministic",
+      "required": true,
+      "outcome": "A stale-source update rejects without overwriting an externally changed record.",
+      "required_evidence": [
+        "Reviewed adapter mapping to real app",
+        "Operation trace",
+        "Independent actual Markdown parse and before/after hash inventory"
+      ]
+    },
+    {
+      "id": "disk.symlink",
+      "tier": "deterministic",
+      "required": true,
+      "outcome": "An unsafe symlink task path rejects without changing either the path or outside sentinel.",
+      "required_evidence": [
+        "Reviewed adapter mapping to real app",
+        "Operation trace",
+        "Independent actual Markdown parse and before/after hash inventory"
+      ]
+    },
+    {
+      "id": "disk.malformed",
+      "tier": "deterministic",
+      "required": true,
+      "outcome": "Invalid UTF-8 record input is preserved and affected mutation is rejected.",
+      "required_evidence": [
+        "Reviewed adapter mapping to real app",
+        "Operation trace",
+        "Independent actual Markdown parse and before/after hash inventory"
+      ]
+    },
+    {
+      "id": "browser.navigation",
+      "tier": "browser",
+      "required": true,
+      "outcome": "Today, Week, Calendar, Backlog and adjacent-month dates are reachable and select the intended date; browsing changes no records.",
+      "required_evidence": [
+        "Four-view interaction trace and before/after Vault snapshots"
+      ]
+    },
+    {
+      "id": "browser.entry",
+      "tier": "browser",
+      "required": true,
+      "outcome": "Range, start-only and unspecified-time entry work; invalid duration rejects; successful save permits immediate next entry; failure preserves the draft; repeated pending activation creates one task.",
+      "required_evidence": [
+        "Actual click/keyboard input, visible feedback and independently counted records"
+      ]
+    },
+    {
+      "id": "browser.states",
+      "tier": "browser",
+      "required": true,
+      "outcome": "Menus expose only legal actions; completed titles remain readable without strike-through; delete confirmation, undo, cancellation/archive/restore and task notes work from the UI.",
+      "required_evidence": [
+        "Visible state/menu evidence paired with resulting records"
+      ]
+    },
+    {
+      "id": "browser.reschedule",
+      "tier": "browser",
+      "required": true,
+      "outcome": "Single/multiple overdue moves have explicit outcomes; a partial batch failure identifies moved and remaining work without blind retry; menu date changes work.",
+      "required_evidence": [
+        "Interaction trace with controlled failure injection and individual file outcomes"
+      ]
+    },
+    {
+      "id": "browser.drag",
+      "tier": "browser",
+      "required": true,
+      "outcome": "Focus drop selects without starting; date drop moves only eligible tasks; category drop changes category; destination effects differ and date drag preserves current view/date/range.",
+      "required_evidence": [
+        "Actual pointer drag/drop trace and destination state plus Markdown evidence"
+      ]
+    },
+    {
+      "id": "browser.recurrence",
+      "tier": "browser",
+      "required": true,
+      "outcome": "Daily, weekday, weekly and monthly recurrence generates at most one next ID on completion, rejects invalid rules, and reports partial failure honestly under the predeclared absent-date policy.",
+      "required_evidence": [
+        "Real completion/replay/failure interactions and next-occurrence records; record declared policy before grading"
+      ]
+    },
+    {
+      "id": "browser.organization",
+      "tier": "browser",
+      "required": true,
+      "outcome": "Project/area creation writes selectable context records; category name/color edits and assignment remain separate from tags; filters are read-only; duplicates, invalid colors and stale edits reject.",
+      "required_evidence": [
+        "UI controls plus source records, injected stale edit and invalid inputs"
+      ]
+    },
+    {
+      "id": "browser.focus",
+      "tier": "browser",
+      "required": true,
+      "outcome": "Focus target/duration/ready/running/paused/elapsed state agree; selection does not start; pause/resume excludes paused time; finish cancel/confirm behave correctly; visible actual total includes running time separately from planned time.",
+      "required_evidence": [
+        "Controlled-clock interaction trace and independently parsed session logs"
+      ]
+    },
+    {
+      "id": "browser.notes-review",
+      "tier": "browser",
+      "required": true,
+      "outcome": "Quick note explicit save/rename/collision/blank handling works; task notes and daily mood/review persist as distinct records; external conflicts are visible.",
+      "required_evidence": [
+        "Editor and reopen UI trace paired with independent source snapshots"
+      ]
+    },
+    {
+      "id": "browser.responsive",
+      "tier": "browser",
+      "required": true,
+      "outcome": "All four views work at widths 320/390/768/1280; document horizontal overflow <=1px, deliberate weekly internal scrolling is separate; primary mobile targets >=44px; long titles preserve actions.",
+      "required_evidence": [
+        "16 viewport/view geometry measurements with screenshots and representative real actions"
+      ]
+    },
+    {
+      "id": "browser.draft-layout",
+      "tier": "browser",
+      "required": true,
+      "outcome": "Navigation, layout change and cancelled dialogs preserve unsaved entry and intended date; layout choice changes only local app state.",
+      "required_evidence": [
+        "Draft-preservation interaction trace and before/after Vault hashes"
+      ]
+    },
+    {
+      "id": "browser.failure-integrity",
+      "tier": "browser",
+      "required": true,
+      "outcome": "Concurrent app-originated writes do not silently overwrite; unavailable/unreadable/malformed input is not an empty success; source-applied/view-publication-failed states report partial success with recoverable evidence.",
+      "required_evidence": [
+        "Independent fault/concurrency injection, user-visible failure/partial states and actual file outcome"
+      ]
+    },
+    {
+      "id": "native.desktop-folders",
+      "tier": "native",
+      "required": true,
+      "outcome": "The built macOS desktop app opens an existing supported folder, rejects unsuitable folders, changes/reconnects folders, and preserves the old connection when change is cancelled or fails.",
+      "required_evidence": [
+        "Native macOS launch identity, actual folder dialogs, cancellation/failure/success interaction and file snapshots"
+      ]
+    },
+    {
+      "id": "native.reopen",
+      "tier": "native",
+      "required": true,
+      "outcome": "Normal quit/reopen restores chosen folder and layout. Interrupted Focus restores paused at the last durable checkpoint without counting the closed interval; explicit resume/finish is required and storage errors are visible.",
+      "required_evidence": [
+        "Disposable app/user-data identity, real quit/reopen and interruption lifecycle trace, controlled time interval, UI and completed-log evidence"
+      ]
+    },
+    {
+      "id": "native.menu",
+      "tier": "native",
+      "required": true,
+      "outcome": "Real macOS menu-bar Focus control shows current task/elapsed/allowed Run-Pause actions, preserves finish confirmation, and blocks stale or unavailable commands.",
+      "required_evidence": [
+        "Actual menu-bar/status-item interaction plus matching main-window state and logs"
+      ]
+    },
+    {
+      "id": "native.onboarding",
+      "tier": "native",
+      "required": true,
+      "outcome": "Choose existing or create new folder explicitly; creation previews destination/contents, cancel writes nothing, uses new subfolder without overwrite, reports partial creation without silent retry, and the new folder accepts/completes its first task.",
+      "required_evidence": [
+        "Native creation dialogs, cancellation/collision/partial-failure traces, independent fresh-folder tree and first-task lifecycle"
+      ]
+    },
+    {
+      "id": "artifact.privacy",
+      "tier": "artifact",
+      "required": true,
+      "outcome": "Application bundle/source includes only application material and synthetic examples; no personal records, credentials, private dashboards or production configuration. Evaluation cleanup affects only its own resources.",
+      "required_evidence": [
+        "Independent file inventory/content review and run-isolation record; no source-token-only success"
+      ]
+    }
+  ]
+}

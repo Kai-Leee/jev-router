@@ -1,0 +1,94 @@
+{
+  "benchmark_revision": "personal-os-v1-experimental",
+  "evaluator_revision": "personal-os-evaluator-v1-experimental",
+  "packet_relative_root": "agent",
+  "allowed_initial_agent_files": {
+    "GOAL.md": {
+      "type": "file",
+      "sha256": "3f4274644d4ad1567e8c72daddd59378daa9fdc95db5f5b8076a342c9da528fd"
+    },
+    "RECORD_FORMAT.md": {
+      "type": "file",
+      "sha256": "8ca2c74977bd1b40e1379412acfc7a2db81f7b8fa0e595cadbd4a569f2a9bf66"
+    },
+    "synthetic-vault/": {
+      "type": "directory"
+    },
+    "synthetic-vault/Areas/": {
+      "type": "directory"
+    },
+    "synthetic-vault/Areas/area-study.md": {
+      "type": "file",
+      "sha256": "d7e404b0db68467d5acd0b08ea0ebd13e0f683df13afdbad02caf12827b20949"
+    },
+    "synthetic-vault/Categories/": {
+      "type": "directory"
+    },
+    "synthetic-vault/Categories/category-deep.md": {
+      "type": "file",
+      "sha256": "e7fe9cd74fb489be9f05905c568250100aa741d28d48556f1b9bd18b187d53e4"
+    },
+    "synthetic-vault/Daily/": {
+      "type": "directory"
+    },
+    "synthetic-vault/Daily/2026-10-08.md": {
+      "type": "file",
+      "sha256": "03c851f2ce4c1cf0c20e0a72dcda528173d74b16085cbd7f0820ff955446c2b2"
+    },
+    "synthetic-vault/Notes/": {
+      "type": "directory"
+    },
+    "synthetic-vault/Notes/보존할 메모.md": {
+      "type": "file",
+      "sha256": "d1ee02ba07dc583cc805261d6f52812f24fc646e1e4ce49882ad9fb4af43b8e8"
+    },
+    "synthetic-vault/Projects/": {
+      "type": "directory"
+    },
+    "synthetic-vault/Projects/project-demo.md": {
+      "type": "file",
+      "sha256": "c6c528ca5bc524ba275e0b5079af78dd7f492903ccb29239d174902f8e0d289f"
+    },
+    "synthetic-vault/Tasks/": {
+      "type": "directory"
+    },
+    "synthetic-vault/Tasks/task-active.md": {
+      "type": "file",
+      "sha256": "ab918dd911ccab94d2f359ad6ed486f809aa24e4ce37149968f86aff05a2e4d5"
+    },
+    "synthetic-vault/Tasks/task-backlog.md": {
+      "type": "file",
+      "sha256": "d891dd0493469663a05cfbb21f9746e92588b62447ba3d0c6425bc28060c4d41"
+    },
+    "synthetic-vault/Tasks/task-cancelled.md": {
+      "type": "file",
+      "sha256": "c00c97a4a3a3b32158d279a0261162eaf3b0e2d336aadd251e7a67a3dddbd48a"
+    },
+    "synthetic-vault/Tasks/task-done.md": {
+      "type": "file",
+      "sha256": "aca76a90f758056c8fdfcc5cb950506d1ea1b527bf6d0528c4cd64b22a2291c0"
+    },
+    "synthetic-vault/Tasks/task-overdue.md": {
+      "type": "file",
+      "sha256": "c8ddbc42eb89c15b4b0af26c774b5ff4c9c5fab2b7e4f3383fc9474ef377f1e6"
+    },
+    "synthetic-vault/Tasks/task-recurring.md": {
+      "type": "file",
+      "sha256": "cf8f204e7fd3e2293cc5cd81926351b3fa66c597fbc96f059dfd398930e2f6ac"
+    },
+    "synthetic-vault/Tasks/task-start-only.md": {
+      "type": "file",
+      "sha256": "a8cc5ec3fbbcd7044d6102bf2a91fcd377fe0b41108d0679b0765f5a37b51eeb"
+    },
+    "synthetic-vault/Time Logs/": {
+      "type": "directory"
+    },
+    "synthetic-vault/Time Logs/2026-10-08.md": {
+      "type": "file",
+      "sha256": "978a6fe0e8f15c4c82304c0d66999afca2d5cc65125dda3d6dbc4439ee4fd6e1"
+    }
+  },
+  "evaluator_in_agent_workspace": false,
+  "scope": "Full product, separate deterministic/browser/native/artifact evidence",
+  "status": "offline_scaffold_only"
+}

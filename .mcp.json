@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "jev-ai": {
+      "command": "node",
+      "args": ["/Users/lee/workspace/plugins/jev-router/bin/mcp-server.mjs"]
+    }
+  }
+}

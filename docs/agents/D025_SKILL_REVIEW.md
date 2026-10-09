@@ -1,0 +1,3 @@
+# D025 independent skill application review
+
+Owner: independent documentation reviewer. Read skills/jev-decision-records/SKILL.md and its referenced contract. Use a fresh /tmp directory as a mock repository; copy only supplied raw receipts there. Create an evidence-based decision record from benchmark-runs/d024-dispatch-02/result.json and verification-correction.json. User task: report whether dispatch and output contract passed, and what is known about cost. No intended answers are supplied. Run the skill validator and report observations. No paid calls or production edits. This tests behavior, not host automatic skill selection.

@@ -1,0 +1,24 @@
+{
+  "name": "jev-router",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Server-side Jev AI connection for routing experiments",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dashboard": "node bin/dashboard.mjs",
+    "eval": "node bin/evaluate.mjs",
+    "eval:demo": "node bin/evaluate.mjs --manifest examples/evaluation/manifest.json --records examples/evaluation/records.jsonl",
+    "test": "node --test",
+    "config": "node bin/jev.mjs config",
+    "models": "node bin/jev.mjs models",
+    "demo": "node bin/jev.mjs demo",
+    "mcp": "node bin/mcp-server.mjs",
+    "mcp:config": "node bin/mcp-check.mjs config",
+    "mcp:tools": "node bin/mcp-check.mjs tools",
+    "mcp:models": "node bin/mcp-check.mjs models",
+    "mcp:demo": "node bin/mcp-check.mjs demo"
+  }
+}

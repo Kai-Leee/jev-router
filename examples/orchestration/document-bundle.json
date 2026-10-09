@@ -1,0 +1,287 @@
+{
+  "version": "d027-fixture-v1",
+  "goal": {
+    "id": "G1",
+    "text": "Exercise document-backed decomposition, model-effort routing and dependency-aware dispatch without model calls."
+  },
+  "requirements": [
+    {
+      "id": "R0",
+      "text": "Define a shared record contract before dependent implementations."
+    },
+    {
+      "id": "R1",
+      "text": "Provide separate persistence and retrieval components."
+    },
+    {
+      "id": "R2",
+      "text": "Provide a presentation component consuming the shared contract."
+    },
+    {
+      "id": "R3",
+      "text": "Integrate components and verify their interface compatibility."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "root",
+      "parentId": null,
+      "description": "Synthetic document-backed application contract; not Personal OS implementation.",
+      "requirementIds": [
+        "R0",
+        "R1",
+        "R2",
+        "R3"
+      ],
+      "dependsOn": [],
+      "writeScopes": [
+        "src",
+        "verification"
+      ],
+      "evidenceIds": [
+        "E_scope"
+      ],
+      "splitSketch": {
+        "children": [
+          {
+            "id": "contract",
+            "description": "Define shared interfaces.",
+            "dependsOn": [],
+            "writeScopes": [
+              "src/contracts"
+            ]
+          },
+          {
+            "id": "backend",
+            "description": "Implement persistence and retrieval.",
+            "dependsOn": [
+              "contract"
+            ],
+            "writeScopes": [
+              "src/backend"
+            ]
+          },
+          {
+            "id": "ui",
+            "description": "Implement presentation.",
+            "dependsOn": [
+              "contract"
+            ],
+            "writeScopes": [
+              "src/ui"
+            ]
+          },
+          {
+            "id": "integration",
+            "description": "Verify combined interfaces.",
+            "dependsOn": [
+              "backend",
+              "ui"
+            ],
+            "writeScopes": [
+              "verification"
+            ]
+          }
+        ],
+        "integration": "Run integration only after prerequisite components settle; synthetic dependency checks only.",
+        "overhead": "Worker setup, coordination, and merge cost are unmeasured; fixture provides no real durations.",
+        "dependencies": [
+          {
+            "taskId": "contract",
+            "requires": []
+          },
+          {
+            "taskId": "backend",
+            "requires": [
+              "contract"
+            ]
+          },
+          {
+            "taskId": "ui",
+            "requires": [
+              "contract"
+            ]
+          },
+          {
+            "taskId": "integration",
+            "requires": [
+              "backend",
+              "ui"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "contract",
+      "parentId": "root",
+      "description": "Define shared interfaces.",
+      "requirementIds": [
+        "R0"
+      ],
+      "dependsOn": [],
+      "writeScopes": [
+        "src/contracts"
+      ],
+      "evidenceIds": [
+        "E_scope"
+      ],
+      "splitSketch": null
+    },
+    {
+      "id": "backend",
+      "parentId": "root",
+      "description": "Implement persistence and retrieval.",
+      "requirementIds": [
+        "R1"
+      ],
+      "dependsOn": [
+        "contract"
+      ],
+      "writeScopes": [
+        "src/backend"
+      ],
+      "evidenceIds": [
+        "E_scope"
+      ],
+      "splitSketch": {
+        "children": [
+          {
+            "id": "storage",
+            "description": "Write persistence component.",
+            "dependsOn": [],
+            "writeScopes": [
+              "src/backend/storage"
+            ]
+          },
+          {
+            "id": "query",
+            "description": "Write retrieval component.",
+            "dependsOn": [],
+            "writeScopes": [
+              "src/backend/query"
+            ]
+          }
+        ],
+        "integration": "Run integration only after prerequisite components settle; synthetic dependency checks only.",
+        "overhead": "Worker setup, coordination, and merge cost are unmeasured; fixture provides no real durations.",
+        "dependencies": [
+          {
+            "taskId": "storage",
+            "requires": []
+          },
+          {
+            "taskId": "query",
+            "requires": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "storage",
+      "parentId": "backend",
+      "description": "Write persistence component.",
+      "requirementIds": [
+        "R1"
+      ],
+      "dependsOn": [],
+      "writeScopes": [
+        "src/backend/storage"
+      ],
+      "evidenceIds": [
+        "E_scope"
+      ],
+      "splitSketch": null
+    },
+    {
+      "id": "query",
+      "parentId": "backend",
+      "description": "Write retrieval component.",
+      "requirementIds": [
+        "R1"
+      ],
+      "dependsOn": [],
+      "writeScopes": [
+        "src/backend/query"
+      ],
+      "evidenceIds": [
+        "E_scope"
+      ],
+      "splitSketch": null
+    },
+    {
+      "id": "ui",
+      "parentId": "root",
+      "description": "Implement presentation.",
+      "requirementIds": [
+        "R2"
+      ],
+      "dependsOn": [
+        "contract"
+      ],
+      "writeScopes": [
+        "src/ui"
+      ],
+      "evidenceIds": [
+        "E_scope"
+      ],
+      "splitSketch": null
+    },
+    {
+      "id": "integration",
+      "parentId": "root",
+      "description": "Verify combined interfaces.",
+      "requirementIds": [
+        "R3"
+      ],
+      "dependsOn": [
+        "backend",
+        "ui"
+      ],
+      "writeScopes": [
+        "verification"
+      ],
+      "evidenceIds": [
+        "E_scope"
+      ],
+      "splitSketch": null
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E_scope",
+      "text": "Synthetic fixture: contract precedes backend and UI; backend and UI have disjoint ownership; integration depends on both. No implementation or performance evidence exists."
+    }
+  ],
+  "profiles": [
+    {
+      "id": "sim_low",
+      "model": "fixture-model",
+      "effort": "low",
+      "description": "SIMULATION ONLY: bounded fixture task worker; not a verified provider model."
+    },
+    {
+      "id": "sim_high",
+      "model": "fixture-model",
+      "effort": "high",
+      "description": "SIMULATION ONLY: integration/ambiguous fixture worker; not a verified provider model."
+    }
+  ],
+  "failureCatalog": [
+    {
+      "id": "implementation",
+      "description": "Observed behavior contradicts the stated requirement; route for diagnosis and implementation repair.",
+      "handler": "dispatch_repair"
+    },
+    {
+      "id": "test_contract",
+      "description": "Test expectations and the original requirement appear inconsistent; compare them before changing tests.",
+      "handler": "review_test_contract"
+    },
+    {
+      "id": "environment",
+      "description": "Environment or dependency prevents running the required verification.",
+      "handler": "inspect_environment"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "evidence_mode": "synthetic",
+  "splitProbability": {
+    "root": 0.72,
+    "backend": 0.6
+  },
+  "workerProfile": {
+    "integration": "sim_high",
+    "default": "sim_low"
+  },
+  "thresholds": [
+    0.5,
+    0.65,
+    0.8
+  ],
+  "productionThreshold": null,
+  "note": "Scripted probabilities test policy boundaries only. No calibrated probability, live Jev call, or model benchmark."
+}

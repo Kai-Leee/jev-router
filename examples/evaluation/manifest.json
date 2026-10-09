@@ -1,0 +1,21 @@
+{
+  "schema_version": "jev-eval/v1",
+  "dataset_id": "synthetic-routing-decisions",
+  "dataset_version": "1",
+  "provenance": "synthetic",
+  "trials": [
+    { "trial_id": "trial-success", "task_id": "task-routing", "expected_request_count": 3 },
+    { "trial_id": "trial-failure", "task_id": "task-routing", "expected_request_count": 2 },
+    { "trial_id": "trial-unknown", "task_id": "task-review", "expected_request_count": null },
+    { "trial_id": "trial-missing", "task_id": "task-review", "expected_request_count": 1 }
+  ],
+  "cases": [
+    { "case_id": "category-correct", "trial_id": "trial-success", "kind": "categorical", "labels": ["coding", "research"], "reference": { "accepted_answers": ["coding"] } },
+    { "case_id": "category-wrong", "trial_id": "trial-failure", "kind": "categorical", "labels": ["coding", "research"], "reference": { "accepted_answers": ["research"] } },
+    { "case_id": "category-multiple-accepted", "trial_id": "trial-success", "kind": "categorical", "labels": ["inspect", "test", "revise"], "reference": { "accepted_answers": ["inspect", "test"] } },
+    { "case_id": "binary-correct", "trial_id": "trial-success", "kind": "binary", "labels": null, "reference": { "accepted_answers": [true] } },
+    { "case_id": "category-abstained", "trial_id": "trial-unknown", "kind": "categorical", "labels": ["accept", "review"], "reference": null },
+    { "case_id": "binary-failed", "trial_id": "trial-failure", "kind": "binary", "labels": null, "reference": { "accepted_answers": [false] } },
+    { "case_id": "binary-missing", "trial_id": "trial-missing", "kind": "binary", "labels": null, "reference": { "accepted_answers": [true] } }
+  ]
+}

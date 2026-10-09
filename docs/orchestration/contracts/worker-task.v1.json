@@ -1,0 +1,10 @@
+{
+  "version": "worker-task-v1",
+  "instructions": "Execute only the supplied task within its documented ownership. Use the materialized requirements and evidence. Return artifacts, observed checks, blockers and uncertainty. Do not reselect the assigned model or reasoning effort. Do not claim an unexecuted check passed.",
+  "requiredOutput": [
+    "artifacts",
+    "observed_checks",
+    "blockers",
+    "uncertainty"
+  ]
+}

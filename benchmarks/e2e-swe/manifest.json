@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "adapter": "jev-router-standalone-docker-v1",
+  "upstream_url": "https://github.com/facebookresearch/E2E-SWE.git",
+  "upstream_commit": "b11ac067b1dfe8ce8b6db245d88756f426007797",
+  "upstream_license": "CC-BY-NC-4.0",
+  "task_id": "pytest-check",
+  "image_tag": "ghcr.io/facebookresearch/e2e-swe:pytest-check",
+  "image_digest": "ghcr.io/facebookresearch/e2e-swe@sha256:9fecce0ca4de6423bbb469149f3a70058e74ae3a912a4c213ef12026aefc5756",
+  "language": "Python",
+  "resources": {"cpus": 6, "memory_mb": 8192, "storage_mb_declared_not_enforced": 51200},
+  "agent_timeout_sec": 14400,
+  "verifier_timeout_sec": 900,
+  "test_case_count": 30,
+  "network_mode": "none",
+  "artifact_path": "/app",
+  "oracle_repository": "https://github.com/okken/pytest-check.git",
+  "oracle_commit": "c356b52493e6d65f4b5adc68fb7b675f14a707d8",
+  "upstream_sha256": {
+    "README.md": "cc5031f964216b8f6c2e0591cfba7b23fa9198c2bc6c3f573298673c0ca905c3",
+    "LICENSE": "41003d4a74749c0220e33dd415042164b5a1093ed401f36277234f772d22d3d0",
+    "tasks/pytest-check/task.toml": "c1b5e87df3572ded23e05682fa5fce88e3cff858b1c86b0c0d9100dad97bff53",
+    "tasks/pytest-check/instruction.md": "712095a7fe9bfb56d2a8c40a168f1df80c72f11bdf89374a5229a3b339442b7f",
+    "tasks/pytest-check/environment/Dockerfile": "d94c1ad759ac6f7a7d75c14a6085f7a885590fbc19194908692879ee7a12cf0b",
+    "tasks/pytest-check/tests/test.sh": "17bb6eec8f5b904327dfdc06ec01786ed86771be779a1a5de3e361ed2e236bfe",
+    "tasks/pytest-check/tests/test_pytest_check.py": "96aaf5780e8b660a78b0fa0068b67a8f3fbdb877aecd6b998ee860c3beb621e2",
+    "tasks/pytest-check/solution/solve.sh": "ecf7859f9a9dbdca1fb1631326724372c791ff6fc66e6eb17d10da7019c813ac"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/freepik-company/jev-mcp",
+  "release": "v0.3.1",
+  "license": "Apache-2.0",
+  "platform": "darwin-arm64",
+  "archiveURL": "https://github.com/freepik-company/jev-mcp/releases/download/v0.3.1/jev-mcp_darwin_arm64.tar.gz",
+  "archiveSha256": "2b0320b79809b92106196b06255049a23ce271c17ba8f5b2580827e5ff6eb6b5",
+  "binarySha256": "955384ed3d1d3c9f8131fb4f3deed6c87d0400113c610367af2b44a899dd8bbc",
+  "checkedAt": "2026-10-08"
+}

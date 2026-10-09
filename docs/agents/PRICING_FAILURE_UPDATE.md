@@ -1,0 +1,7 @@
+# Pricing and failure update — 2026-10-09
+
+User requests official-rate prices beside tokens, reflecting current Jev monthly subscription, and recorded failure analysis. Preserve shared USD1 conservative budget and all original run evidence. No new paid inference or automatic replay.
+
+- dashboard_metrics: own src/dashboard/pricing.mjs, pricing integration in src/dashboard/metrics.mjs and test/dashboard-pricing.test.mjs. Official Claude Opus5.5 per million: input4, output20, 5m cache write5, 1h write8, cache read0.20 USD (platform.claude.com/docs/en/about-claude/pricing). Jev current Creator monthly29 USD/60M input allowance; allocation estimate, not marginal invoice. Preserve unknowns and cache TTL; thinking is already included in output. Return token-category estimated prices and source metadata; coordinate field names with main. Write status docs/agents/pricing-STATUS.md.
+- benchmark_runner_review: read-only investigate e2eswe-d020-04 completion gate failure and prior01–03. Own docs/research/D020_FAILURE_ANALYSIS.md only. Inspect actual tool traces, gate and runner code. Identify evidence vs hypothesis, no paid calls, no runtime changes, no fixes to shared code. Report actionable cause and completion boundaries.
+- main: verify official pricing/current plan, UI beside-token prices, integration tests and live UI, shared records, optional independent artifact grading. Do not modify existing Personal OS.

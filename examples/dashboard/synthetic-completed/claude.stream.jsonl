@@ -1,0 +1,4 @@
+{"type":"assistant","message":{"id":"msg-one","model":"claude-opus-5-5","usage":{"input_tokens":20,"output_tokens":999,"cache_read_input_tokens":50,"cache_creation_input_tokens":100}}}
+{"type":"assistant","message":{"id":"msg-one","model":"claude-opus-5-5","usage":{"input_tokens":20,"output_tokens":999,"cache_read_input_tokens":50,"cache_creation_input_tokens":100}}}
+{"type":"assistant","message":{"id":"msg-two","model":"claude-opus-5-5","usage":{"input_tokens":20,"output_tokens":999,"cache_read_input_tokens":50,"cache_creation_input_tokens":100}}}
+{"type":"result","subtype":"success","is_error":false,"total_cost_usd":0.1234,"modelUsage":{"claude-opus-5-5":{"inputTokens":40,"outputTokens":80,"cacheReadInputTokens":100,"cacheCreationInputTokens":200,"costUSD":0.1234}},"usage":{"input_tokens":99999,"output_tokens":99999}}

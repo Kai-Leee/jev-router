@@ -1,0 +1,33 @@
+{
+  "version": "profiles-v1",
+  "profiles": [
+    {
+      "id": "sim_low",
+      "model": "fixture-model",
+      "effort": "low",
+      "description": "SIMULATION ONLY: bounded fixture task worker; not a verified provider model.",
+      "adapter": "simulation",
+      "enabled": true,
+      "verification": "fixture-only"
+    },
+    {
+      "id": "sim_high",
+      "model": "fixture-model",
+      "effort": "high",
+      "description": "SIMULATION ONLY: integration/ambiguous fixture worker; not a verified provider model.",
+      "adapter": "simulation",
+      "enabled": true,
+      "verification": "fixture-only"
+    },
+    {
+      "id": "claude_opus55_medium",
+      "description": "Historical D025 implementation profile; not yet enabled in document dispatcher.",
+      "model": "claude-opus-5-5",
+      "effort": "medium",
+      "adapter": "claude-cli",
+      "enabled": false,
+      "verification": "historical-run-only",
+      "evidence": "docs/research/D025_REMEASUREMENT.md"
+    }
+  ]
+}

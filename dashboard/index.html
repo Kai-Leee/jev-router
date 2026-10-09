@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f6f7f3">
+  <title>Jev Router · 실행 대시보드</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#run-content">실행 정보로 건너뛰기</a>
+  <header class="masthead">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">j<span>·</span></span><div><span class="brand-name">Jev Router</span><span class="brand-caption">실행 관측 대시보드</span></div></div>
+    <div class="masthead-actions"><span class="read-only"><span class="status-dot" aria-hidden="true"></span>로컬 · 읽기 전용</span><button id="refresh-button" class="button button-light" type="button"><span aria-hidden="true">↻</span> 새로고침</button></div>
+  </header>
+  <main class="layout">
+    <aside class="run-sidebar" aria-labelledby="runs-heading">
+      <div class="sidebar-heading"><h1 id="runs-heading">실행 기록</h1><span id="run-count" class="count-pill">0</span></div>
+      <p class="sidebar-description">같은 실행의 호출, 토큰과 비용을<br>근거별로 확인합니다.</p>
+      <label class="field-label" for="run-search">실행 찾기</label>
+      <input id="run-search" type="search" class="search-field" placeholder="실행 이름 검색" autocomplete="off">
+      <label class="field-label filter-label" for="kind-filter">기록 종류</label>
+      <select id="kind-filter"><option value="all">모든 기록</option><option value="live">실제 모델 실행</option><option value="synthetic">합성 테스트</option><option value="control">대조 검증</option><option value="unknown">종류 미확인</option></select>
+      <div id="run-list" class="run-list" aria-label="실행 선택"></div>
+      <div class="sidebar-note"><span class="note-icon" aria-hidden="true">i</span><p>기록 종류가 다른 실행을 합산하지 않습니다. 새로고침은 모델을 호출하지 않습니다.</p></div>
+    </aside>
+    <section id="run-content" class="content" aria-label="선택한 실행 정보" tabindex="-1">
+      <div class="content-eyebrow"><span>OBSERVABILITY</span><span id="connection-status" class="connection-status">기록을 불러오는 중</span></div>
+      <div id="api-error" class="notice notice-error" role="alert" hidden></div>
+      <div id="transport-notice" class="notice notice-control" role="status" hidden></div>
+      <div id="snapshot-warnings" hidden></div>
+      <div id="empty-state" class="empty-state">
+        <div class="empty-icon" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="eyebrow">실행 기록 대기</p>
+        <h2 id="empty-title">기록을 불러오고 있습니다</h2>
+        <p id="empty-description">저장된 실행 데이터를 확인합니다.</p>
+        <div class="empty-legend"><span><b>호출</b> 실제 관측한 전송·응답</span><span><b>토큰</b> 공급자가 반환한 사용량</span><span><b>비용</b> 추정과 청구액 분리</span></div>
+      </div>
+      <div id="selected-run" hidden>
+        <div class="run-heading"><div><div id="run-badges" class="badges"></div><h2 id="run-title"></h2><p id="run-subtitle" class="run-subtitle"></p></div><div class="run-state"><span id="run-status" class="badge"></span><span id="run-started" class="meta-text"></span></div></div>
+        <div id="evidence-banner" class="notice" hidden></div>
+        <div id="run-warnings" hidden></div>
+        <section id="execution-panel" class="panel execution-panel" aria-labelledby="execution-heading" hidden>
+          <div class="panel-heading"><div><p class="eyebrow">EXECUTION HEALTH</p><h3 id="execution-heading">현재 단계와 확인할 문제</h3></div><span class="panel-caption">화면 연결과 실행기 기록은 별도 관측</span></div>
+          <div id="execution-status" class="execution-status"></div>
+          <div id="incident-list" class="incident-list"></div>
+        </section>
+        <section id="paired-panel" class="panel paired-panel" aria-labelledby="paired-heading" hidden>
+          <div class="panel-heading"><div><p class="eyebrow">PAIRED DEVELOPMENT</p><h3 id="paired-heading">같은 개발 그룹</h3></div><span id="paired-group" class="panel-caption"></span></div>
+          <div id="paired-runs" class="paired-runs"></div>
+          <p class="panel-footer">구현과 모니터는 별도 실행입니다. 모델·역할은 기록에 근거하며 사용량은 합산하지 않습니다.</p>
+        </section>
+        <section id="monitor-panel" class="panel monitor-panel" aria-labelledby="monitor-heading" hidden>
+          <div class="panel-heading"><div><p class="eyebrow">MONITOR ASSESSMENT</p><h3 id="monitor-heading">모니터의 해석</h3></div><span id="monitor-assessment" class="badge"></span></div>
+          <div id="monitor-report" class="monitor-report"></div>
+          <p class="panel-footer">별도 모델이 기록을 해석한 보고서입니다. 실행기 상태·독립 테스트 통과의 확정 근거와 구별합니다.</p>
+        </section>
+        <div id="headline-metrics" class="headline-metrics" aria-label="주요 지표"></div>
+        <section class="panel calls-panel" aria-labelledby="calls-heading">
+          <div class="panel-heading"><div><p class="eyebrow">REQUESTS</p><h3 id="calls-heading">호출 관측</h3></div><span class="panel-caption">전송 시도와 응답 단계는 다른 단위입니다</span></div>
+          <div class="table-scroll"><table class="call-table"><caption class="sr-only">공급자별 호출 지표</caption><thead><tr><th scope="col">공급자</th><th scope="col">전송 시도</th><th scope="col">완료</th><th scope="col">실패</th><th scope="col">결과 불확실</th><th scope="col">관측 응답 단계</th></tr></thead><tbody id="calls-body"></tbody></table></div>
+          <div id="call-notes" class="panel-footnotes"></div>
+        </section>
+        <div class="detail-grid">
+          <section class="panel tokens-panel" aria-labelledby="tokens-heading">
+            <div class="panel-heading"><div><p class="eyebrow">TOKEN USAGE</p><h3 id="tokens-heading">토큰 사용량</h3></div><span class="panel-caption">확정 사용량 기준</span></div>
+            <div id="token-providers" class="token-providers"></div>
+            <p class="panel-footer">실행 중 미완성 응답의 출력 토큰은 확정 사용량으로 합산하지 않습니다. 캐시 토큰은 별도로 표시합니다.</p>
+          </section>
+          <section class="panel costs-panel" aria-labelledby="costs-heading">
+            <div class="panel-heading"><div><p class="eyebrow">COST &amp; BILLING</p><h3 id="costs-heading">비용과 청구</h3></div><span class="panel-caption">통화·크레딧 분리</span></div>
+            <div id="cost-providers" class="cost-providers"></div>
+            <p class="panel-footer">API 환산 추정 비용은 구독 계정에 추가 청구된 금액이 아닙니다. 청구 근거가 없으면 실제 청구액은 미확인입니다.</p>
+          </section>
+        </div>
+        <section class="panel evaluation-panel" aria-labelledby="evaluation-heading"><div><p class="eyebrow">OUTCOME</p><h3 id="evaluation-heading">구현 평가</h3></div><div id="evaluation-detail" class="evaluation-detail"></div></section>
+        <section class="panel activity-panel" aria-labelledby="activity-heading">
+          <div class="panel-heading"><div><p class="eyebrow">ACTIVITY</p><h3 id="activity-heading">이벤트 기록</h3></div><span id="activity-count" class="panel-caption"></span></div>
+          <div id="activity-list" class="activity-list"></div>
+          <button id="activity-toggle" class="button button-text" type="button" hidden>이벤트 모두 보기</button>
+        </section>
+        <p id="limits-note" class="limits-note"></p>
+      </div>
+      <footer class="page-footer"><span>미확인 ≠ 0 · 부분 관측은 부분합으로 표시</span><span id="last-updated">실시간 상태 연결 대기</span></footer>
+    </section>
+  </main>
+  <div id="refresh-announcement" class="sr-only" role="status" aria-live="polite"></div>
+</body>
+</html>

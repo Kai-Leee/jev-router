@@ -1,0 +1,14 @@
+{
+  "model": "jev-latest",
+  "state": "The checkout button shows a blank screen when clicked.",
+  "questions": {
+    "work_type": {
+      "type": "choice",
+      "instructions": "Which kind of work does this request need?",
+      "criteria": {
+        "coding": "Inspect or fix software behavior.",
+        "research": "Find and summarize external information."
+      }
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jev Decision Records"
+  short_description: "Track Jev decisions, evidence, costs, and handoffs"
+  default_prompt: "Use $jev-decision-records to record this Claude/Jev decision with evidence, cost boundaries, and the next verification trigger."

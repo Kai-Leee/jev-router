@@ -1,0 +1,7 @@
+# Personal OS benchmark author role
+
+Date: 2026-10-08. User authorizes evaluating Personal OS reconstruction alongside E2E-SWE. Only goals/specification go to the implementation agent, no human task decomposition.
+
+Own `benchmarks/personal-os/` and `docs/agents/personal-os-benchmark-STATUS.md`. Read AGENTS.md, DECISIONS.md and `personal-os-spec-STATUS.md`. Create an agent-facing English product goal/specification from the sanitized brief, separate evaluator acceptance contract/rubric and synthetic input format. Preserve all established product outcomes including native macOS behavior, with separate Linux/browser and native evidence layers. Do not silently reduce the app to a toy to fit the harness. No implementation source, task list, private path, old app code or data in the agent-facing packet. Resolve low-risk fixture-format choices explicitly as experimental assumptions; preserve ambiguous product choices without hidden penalties.
+
+Create a runnable deterministic evaluator scaffold for objectively checkable product artifacts/data behavior where the contract can be fixed now, and machine-readable evidence statuses for UI/native checks still requiring execution. Avoid tests that only check claim strings or source tokens. An empty submission must not pass. Do not implement the app/reference solution yourself. Main integrates runner/dependencies and launches tests. No paid calls, real Vault reads/writes, service/app operations, or installs. Record commands/results and limitations. Before context limits save status and OS-temp handoff and stop writes.

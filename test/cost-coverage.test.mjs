@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {jevCostCoverage} from '../src/benchmark/cost-coverage.mjs';
+const events=()=>[{event:'budget_reserved',request_id:'r1'},{event:'inference_started',request_id:'r1'},{event:'inference_finished',request_id:'r1',status:'completed',billing:{mode:'tokens',creditsCharged:'0',paidInputTokensUsed:'100'}},{event:'budget_settled',request_id:'r1'}];
+test('zero applies only to observed empty trace; complete receipt computes allocation',()=>{assert.equal(jevCostCoverage([]).charged_input_tokens,0);assert.equal(jevCostCoverage(events()).charged_input_tokens,100);});
+test('started without terminal, pending settlement, or unmatched ID remain unknown',()=>{for(const a of [events().slice(0,2),events().slice(0,3),events().map(x=>x.event==='budget_settled'?{...x,request_id:'other'}:x)])assert.equal(jevCostCoverage(a).charged_input_tokens,null);});
+test('null or empty credit data and duplicate receipts cannot prove zero credit usage',()=>{for(const v of [null,'',undefined]){const a=events();a[2].billing.creditsCharged=v;assert.equal(jevCostCoverage(a).coverage_complete,false);}const a=events();a.push(a[2]);assert.equal(jevCostCoverage(a).coverage_complete,false);});

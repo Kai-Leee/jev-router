@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+node_modules/
+coverage/
+*.log
+receipts/
+.benchmarks/
+.venv-benchmark/
+benchmark-runs/
+.cache-benchmark/
+__pycache__/
+*.pyc
+output/playwright/
+
+# Local pinned runtime binary; provenance remains trackable.
+vendor/jev-mcp/*/

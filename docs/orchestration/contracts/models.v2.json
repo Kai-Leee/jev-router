@@ -1,0 +1,75 @@
+{
+  "version": "models-v2",
+  "checkedAt": "2026-10-09",
+  "selectionPolicy": "Choose an explicit model and effort pair from this catalog. Catalog support is not account availability. Require a run-specific allowed profile list, record requested and observed model separately, and never silently substitute a fallback.",
+  "sources": {
+    "cli": "https://code.claude.com/docs/en/model-config",
+    "api": "https://platform.claude.com/docs/en/build-with-claude/effort",
+    "subagents": "https://code.claude.com/docs/en/sub-agents"
+  },
+  "families": [
+    {
+      "id": "opus55",
+      "name": "Claude Opus 5.5",
+      "model": "claude-opus-5-5",
+      "efforts": ["low", "medium", "high", "xhigh", "max"],
+      "adapter": "claude-cli",
+      "availability": "unverified",
+      "cliDefaultEffort": "medium",
+      "apiDefaultEffort": "medium",
+      "minimumCliVersion": "2.1.280",
+      "description": "Candidate for demanding implementation and integration; historical D025 medium run exists, current account availability still requires run evidence.",
+      "historicalEvidence": "docs/research/D025_REMEASUREMENT.md"
+    },
+    {
+      "id": "fable51",
+      "name": "Claude Fable 5.1",
+      "model": "claude-fable-5-1",
+      "efforts": ["low", "medium", "high", "xhigh", "max"],
+      "adapter": "claude-cli",
+      "availability": "unverified",
+      "cliDefaultEffort": "high",
+      "apiDefaultEffort": "high",
+      "minimumCliVersion": "2.1.257",
+      "description": "Candidate for difficult long-running investigations; benefit over cheaper profiles must be measured.",
+      "billingNote": "Noninteractive Fable calls can consume usage credits without an interactive consent prompt; catalog inclusion does not authorize an unbounded run."
+    },
+    {
+      "id": "sonnet55",
+      "name": "Claude Sonnet 5.5",
+      "model": "claude-sonnet-5-5",
+      "efforts": ["low", "medium", "high", "xhigh", "max"],
+      "adapter": "claude-cli",
+      "availability": "unverified",
+      "cliDefaultEffort": "medium",
+      "apiDefaultEffort": "high",
+      "minimumCliVersion": "2.1.284",
+      "description": "Candidate for scoped implementation; CLI and API defaults differ, so always pass effort explicitly."
+    },
+    {
+      "id": "haiku55",
+      "name": "Claude Haiku 5.5",
+      "model": "claude-haiku-5-5",
+      "efforts": ["low", "medium", "high", "xhigh", "max"],
+      "adapter": "claude-cli",
+      "availability": "unverified",
+      "cliDefaultEffort": "medium",
+      "apiDefaultEffort": "medium",
+      "minimumCliVersion": "2.1.293",
+      "description": "Candidate for bounded tasks; test quality and instruction adherence before routing larger work to it."
+    }
+  ],
+  "effortDescriptions": {
+    "low": "Latency-sensitive bounded work; validate output instead of assuming equal quality.",
+    "medium": "Initial comparison level for scoped agent tasks.",
+    "high": "Compare on complex or verification-heavy tasks.",
+    "xhigh": "Additional reasoning budget; retain only when measured quality justifies cost.",
+    "max": "Highest exposed level; diminishing returns must be tested. Pass via session CLI flag, not persisted effortLevel."
+  },
+  "verificationNotes": [
+    "Descriptions are routing hypotheses, not benchmark rankings.",
+    "ultracode is a workflow setting, not an effort level, and is excluded to avoid adding another orchestrator to the experiment.",
+    "CLI organization caps and environment overrides can change applied effort; requested effort is not proof of effective effort.",
+    "No paid model availability probe was made while authoring this catalog."
+  ]
+}

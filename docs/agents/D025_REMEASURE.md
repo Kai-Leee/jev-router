@@ -1,0 +1,11 @@
+# D-025 remeasurement and decision documentation roles
+
+User authorizes remeasurement/cost analysis, and asks subagents to create/apply a documentation skill for ongoing decisions. Preserve goal: replace repetitive Claude judgment, not append Jev reviews. Existing USD1 ledger shared; only main spends. Existing Personal OS untouched.
+
+## Ownership
+- documentation-skill: owns skills/jev-decision-records/** and docs/decisions/D025.md. Read skill-creator. Create compact skill plus meaningful evidence validator if useful, apply to this run's evolving decision record. Skill distinguishes proposal/decision/measurement/correction, source IDs, cost basis, caller role and next trigger. No actual spend or global install. Main handles installation and AGENTS discovery after review. Preserve prior records, no memory edits.
+- checkpoint-gate: owns src/benchmark/checkpoint-gate.mjs, test/checkpoint-gate.test.mjs, docs/agents/d025-gate-STATUS.md. Implement new alternative gate, leave historical createDecisionGate unchanged. API compatible status fields with recordState; tools route/act/finish/status. route takes goal-relative candidate roles/descriptions WITHOUT commands, selects before generation; act executes ONE command within selected role without new Jev call; finish uses full trusted brief plus recorded outcomes and caller evidence. Same modes baseline/jev, original budgeted decide injected. Require route first, nonzero outcome clears route for reconsideration, reject duplicate finish on same action version. Completion claim never grade. Fail closed journal/unknown execution; serialized calls. No live calls.
+- main: CLI/MCP/runner integration and tests, paired new baseline/checkpoint Jev execution + Opus monitor, original artifact grades, cost calculation, install/apply skill, final records.
+
+## Measurement precommitment
+Compare fresh checkpoint baseline and Jev using identical task/brief/image/model/effort/completion evidence contract and route-before-command scaffold. Each condition one pilot; no significance/general quality claim. Keep historical runs as context, label scaffolding changed. Time runner includes startup/preflight; grader and monitor costs separate. No recursive agent generation or global tool expansion. Conditions run sequentially. Failures retained, no paid uncertain retry.
