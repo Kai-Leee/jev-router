@@ -355,3 +355,7 @@ skills/jev-decision-records생성/검증후~/.codex/skills/jev-decision-records�
 ## 2026-10-09 D028 — 질문 정본·프로필·생성 인자 연결
 
 사용자가 질문 규칙/type/답을 문서에서 바로 붙이고 위치를 명시하도록 지시. contracts/questions.v1.json, profiles.v1.json, worker-task.v1.json 정본과 고정경로 로더·request 준비·worker 생성 인자 factory 추가. AGENTS에 진입점 명시. 문서 원문/placeholder/동적 후보/disabled 모델 거절과 직접 spawn_worker 인자 전달 22/22 검증. benchmark-runs/d028-document-link.json 모의 응답 영수증. 실제 모델·native worker·새 계획 생성은 미연결. 기존 D027 코드/원본 해시 보존. 추가 공급자호출/컨테이너/전역설치/commit/push 없음.
+
+## 2026-10-09 D029 — 모델/문서 연결과 실제 분할 E2E
+
+Opus5.5/Fable5.1/Sonnet5.5/Haiku5.5와 effort 5단계 정본, worker v2, CLAUDE.md→AGENTS.md 연결 추가. 소스 최초 커밋887d360 후 Opus medium 단일/분할 각1회와 Jev1회 실행. 양쪽 원본30/30. 측정 단계 합계303.980→234.584초(단일 분모22.829% 감소), 워크플로 비용 추정USD0.905536→1.4860908(64.112% 증가). 문맥 중복 원인 기록. p=.66에 .5/.65는 split, .8은 single; 강제 대조이며 자동라우팅 효능/확률 calibration 미검증. 상세 [D029 결과](orchestration/D029_RESULTS.md), [구조화 기록](decisions/D029.md). 추가 유료 재실행 없음, 원격 push/PersonalOS 변경 없음.

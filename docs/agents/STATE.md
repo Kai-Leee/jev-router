@@ -1,3 +1,7 @@
+# D029 최신 — 2026-10-09
+
+문서·모델 확장 및 실제 단일/분할 비교 완료. 초기 source commit887d360. 원본 채점 각각30/30, 단계 합계22.829% 감소/비용 추정64.112% 증가(단일 분모). Jev p=.66, 운영 threshold null 유지. 강제 대조 n=1이며 자동라우팅 효과/확률 보정/재귀분할 미검증. 추가 유료 재실행하지 않음. [결과](../orchestration/D029_RESULTS.md), [정본 진입점](../orchestration/README.md), [구조화 기록](../decisions/D029.md). 아래 항목은 역사적 체크포인트로, no commits/pending 문구는 현재 상태가 아니다.
+
 # D-027 최신 — 2026-10-09
 
 문서 기반 task tree/직접 함수 dispatch의 오프라인 하네스 완료. 여러 임계값 비교 후 결정은 사용자 확정, 운영 threshold null. 신규18/18·전체361/361(초기 sandbox EPERM 별도 기록). 합성 p/worker이므로 실제 Jev/Claude 개선 미검증. docs/decisions/D027.md와 docs/orchestration/D027_EXPERIMENT.md 참조. 실제 생성·worker adapter·가용 profile 검증·E2E는 남음. 기존 runner/대시보드/PersonalOS/장부 미변경, 추가 유료추론0.

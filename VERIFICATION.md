@@ -413,3 +413,7 @@ See docs/research/D023_SPEED_COMPARISON.md. No newJevinference/budgetreset/produ
 ## 2026-10-09 D027 문서 기반 오프라인 실행 실험
 
 새 contract test18/18. npm test 최초361중349pass/12 localhost EPERM; 제한밖 동일회귀361/361pass. benchmark-runs/d027-offline-02에 threshold .5/.65/.8 합성 질문/답/함수결과 보존. docs/orchestration/D027_EXPERIMENT.md 참조. 실제 모델·native worker·E2E 품질/속도 미검증.
+
+## 2026-10-09 D029
+
+실행 전 npm test 375/375 통과(benchmark-runs/d029-full-tests.log). 고정 계획 단일/분할 원본 Docker grade 각각30/30, 두 verifier 제거. scripts/analyze-tree-e2e.mjs로 d029-analysis-v2.json 재계산; 수동 대기를 제외한 단계 합계임을 명시. 실행 중 산출물 패치 없음. 실패 arm exit0와 필수 worker 출력 검증 누락은 live 전 수정. 명령·경계는 [결과](docs/orchestration/D029_RESULTS.md).
