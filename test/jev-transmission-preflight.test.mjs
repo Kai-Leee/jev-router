@@ -72,7 +72,7 @@ test('v10 requires its opt-in binding and preserves explicit legacy v9 loading',
   assert.equal(loadAdaptiveRunManifest(join(root,'benchmarks/e2e-swe/manifests/d073-inferred-v2.json'),root).schema_version,'adaptive-dag-comparison/v9');
 });
 
-test('v11 binds policy v2, the v4 ledger and validated runtime speed options',t=>{
+test('v11 binds the newest frozen transmission policy, the v4 ledger and validated runtime speed options',t=>{
   const directory=temporary(t), path=join(directory,'manifest.json');
   const value=read(join(root,'benchmarks/e2e-swe/manifests/d076-preserved-repair.json'));
   assert.deepEqual(value.transmission_preflight,binding());

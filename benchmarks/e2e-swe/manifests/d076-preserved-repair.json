@@ -41,6 +41,11 @@
     "public_check_concurrency": 2,
     "readiness_batch": true
   },
+  "repair_budget": {
+    "policy": "repair-budget-v1",
+    "contract": "docs/orchestration/contracts/adaptive-repair-budget.v1.json",
+    "sha256": "eb5ce820eccad114f8cbacfc71d9d63d2cd6ee06d641bc220cf7d7843a0b7765"
+  },
   "jev_budget": {
     "schema_version": "jev-token-budget/v4",
     "ledger_path": "benchmark-runs/jev-usd1-budget.json",
@@ -128,8 +133,8 @@
   },
   "transmission_preflight": {
     "mode": "required",
-    "contract": "docs/orchestration/contracts/jev-transmission-preflight.v2.json",
-    "sha256": "9bb1e2917347421713a699f9fa75dca001f28298ea4bc2bf11f07811bbb26c8c"
+    "contract": "docs/orchestration/contracts/jev-transmission-preflight.v3.json",
+    "sha256": "cf1ab511cacb7af76eeb2c8a05eb406e3d49a66026e15e477297b3d3ef209650"
   },
   "failure_recovery": {
     "mode": "required",

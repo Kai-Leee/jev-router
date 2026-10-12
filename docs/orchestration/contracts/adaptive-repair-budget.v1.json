@@ -1,0 +1,44 @@
+{
+  "schema_version": "adaptive-repair-budget-contract/v1",
+  "policy": "repair-budget-v1",
+  "decision_id": "D076",
+  "stage": "repair_owners",
+  "owner_schema": "adaptive-inferred-owner-input/v2",
+  "limit": {
+    "state_plus_longest_question_tokens": 32000,
+    "source": "Jev 1.13 model guide: request 64k, state plus longest question 32k (docs/orchestration/D072_INPUT_VALIDATION.md:29). Provider rejections carry no token counts."
+  },
+  "target_fraction": 0.9,
+  "bytes_per_token": 2.25,
+  "bytes_per_token_basis": "Lowest observed wire bytes per provider input token among accepted large owner and repair-choice requests was 2.338 (D073 focused-new-02 owner); 2.25 adds margin. This is not an exact tokenizer and does not guarantee provider acceptance.",
+  "reserved_question_bytes": 3000,
+  "reserved_question_bytes_basis": "Question-side additions after packing, such as D077 owner criteria labels (about 2.3 KB per question for 22 artifacts).",
+  "steps": [
+    {
+      "id": "history_delta",
+      "keep_fields": ["round_index", "status", "selected_candidate_id", "selected_artifact_ids", "changed_artifact_ids", "selected_but_unchanged_artifact_ids", "changed_files", "persistent_failure_keys", "resolved_failure_keys", "unobserved_failure_keys", "new_failure_keys"],
+      "description": "Repair history keeps which artifacts were selected and changed and which failure keys persisted, resolved or appeared. Full before/after failure observations, revision hashes and source references stay controller-only; current failures are inline elsewhere."
+    },
+    {
+      "id": "drop_passed_observations",
+      "description": "Passed public cases with diagnostics are removed. Every failed case and the complete public gate summary stay inline."
+    },
+    {
+      "id": "dedupe_evidence_relations",
+      "description": "Static relations repeated across recovery source evidence rows are listed once in state.repair_budget.recovery_relations as [producer_artifact_id, consumer_artifact_id, basis, symbols]. None of them is runtime fault proof."
+    },
+    {
+      "id": "compact_unfocused_interfaces",
+      "max_chars": 160,
+      "description": "Interfaces stay complete for units owning the failing requirements, artifacts selected or changed in repair history, and the direct input artifacts of those tasks. Other unit interfaces keep only their first sentence."
+    },
+    {
+      "id": "compact_unfocused_quotes",
+      "max_chars": 60,
+      "description": "Evidence quotes linked to focused artifacts or units stay complete. Other quotes are shortened."
+    }
+  ],
+  "state_note": "This request was shortened to fit the model input limit. state.repair_budget.applied_steps lists what was summarized; summarized values remain in the controller proof and are not retrievable by the model. All failed cases, the public gate summary, artifact contracts, task dependencies and the interfaces of focused units are complete. Return unknown when a summarized value would be needed.",
+  "over_budget_code": "ADAPTIVE_REPAIR_BUDGET_EXCEEDED",
+  "boundary": "Opt-in via manifest repair_budget. Applied in the execution's owner decide wrapper after the canonical v2 owner and evidence-v1 projections, so prompt policy v2 sources stay unchanged. Lossy: the controller report keeps every removed value with its pointer and SHA-256."
+}

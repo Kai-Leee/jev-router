@@ -1,0 +1,129 @@
+{
+  "schema_version": "jev-transmission-preflight-policy/v3",
+  "policy_id": "d076-required-pre-send-v3",
+  "supersedes": {
+    "path": "docs/orchestration/contracts/jev-transmission-preflight.v2.json",
+    "reason": "D076 repair budget wiring and D077 v12 runner hook (commit 5294a90, reviewed) changed src/benchmark/adaptive-dag-runner.mjs; the gate module now accepts any frozen jev-transmission-preflight.vN.json. Pins re-frozen with user approval on 2026-10-12. v1 and v2 are unchanged."
+  },
+  "enforcement": "required",
+  "input_policy": "v4",
+  "prompt_policy": {
+    "version": "v2",
+    "contract": "docs/orchestration/contracts/jev-prompt-policy.v2.json",
+    "sha256": "c491d1b9d8fa2838a1ec0a3fcca68fe5da5f38eddb2d40a76d861c7d3bc3f37d"
+  },
+  "stages": [
+    "split",
+    "relations",
+    "repair",
+    "profiles",
+    "repair_owners"
+  ],
+  "stage_validation": {
+    "split": "adapter_v4_source_request_policy_binding",
+    "relations": "adapter_v4_source_request_policy_binding",
+    "repair": "adapter_v4_source_request_policy_binding",
+    "profiles": "adapter_v4_source_request_policy_binding",
+    "repair_owners": "adapter_v4_and_projected_inferred_v2_fixed_structure"
+  },
+  "phases": [
+    "initial",
+    "before_reservation",
+    "before_post"
+  ],
+  "connection": {
+    "base_url": "https://jev-ai.pro/api",
+    "decision_url": "https://jev-ai.pro/api/v1/systemone",
+    "models_url": "https://jev-ai.pro/api/v1/models",
+    "authorization_scheme": "Bearer",
+    "automatic_retries": 0,
+    "redirect": "error",
+    "implementation": "repository_fetch_adapter_not_typesafe_sdk",
+    "sdk_note": "TypeSafe publishes @typesafe-ai/sdk. Its hosted Jev integration requires explicit baseURL and retry.maxRetries=0. This repository check exercises the existing fetch client, not an SDK or deployment."
+  },
+  "local_caps": {
+    "request_tokens": null,
+    "state_plus_longest_question_tokens": null,
+    "repair_wire_bytes": null
+  },
+  "official_body_utf8_bytes": 256000,
+  "exact_context_fit": "unknown",
+  "semantic_correctness": "not_checked",
+  "reservation_rule": "A block before reservation means reserve0/POST0. A block after reservation means POST0 and the actual reservation remains pending; this is not an unknown transmission.",
+  "source_pins": [
+    {
+      "path": "src/orchestration/jev-transmission-preflight.mjs",
+      "sha256": "9492ad0b9a03a5bc407b614582954e9c401b9e4b88aa68dac2f0d916d79f61c4"
+    },
+    {
+      "path": "src/benchmark/adaptive-dag-runner.mjs",
+      "sha256": "8267dd4f75749ffd75564ebcde5bd93ebf924517ef879e6e1369d6d866e5d02e"
+    },
+    {
+      "path": "src/benchmark/telemetry.mjs",
+      "sha256": "dcfcfa8c0aa57f6bb4a17ef86a0f24a129ab52f7133f82551eac382e5eb9a3da"
+    },
+    {
+      "path": "src/orchestration/jev-prompt-preflight.mjs",
+      "sha256": "e9a6f58117ef1e25678bc4bddca11a5b5bce68cbb8a53460c701330e7f800ca6"
+    },
+    {
+      "path": "docs/orchestration/contracts/jev-prompt-policy.v2.json",
+      "sha256": "c491d1b9d8fa2838a1ec0a3fcca68fe5da5f38eddb2d40a76d861c7d3bc3f37d"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-inferred-repair.v2.json",
+      "sha256": "aadeff073c3977c0c922202b1b4aef1dc71914f49178b102781e9bd87df7ff9f"
+    },
+    {
+      "path": "src/orchestration/adaptive-inferred-repair.mjs",
+      "sha256": "f55f5e4420fe59edefaa25bcafb6951f032b1f96a2848747d63c032c1c0e4063"
+    },
+    {
+      "path": "src/orchestration/adaptive-inferred-repair-projection.mjs",
+      "sha256": "31faf56d6ca1b43b867c197efa30e7a811df3660fa7e5755f2c6163fbd6396af"
+    },
+    {
+      "path": "src/client.mjs",
+      "sha256": "b35c8f5757a208dffb2937fc8ea4b959eff9e59b235107b57827d77846b3bd47"
+    },
+    {
+      "path": "src/config.mjs",
+      "sha256": "a8b63d4d6bfcea1a9036a11156152ddc82ac3bc30ebb9e914bb3eb00a62ddb59"
+    },
+    {
+      "path": "scripts/validate-jev-input.mjs",
+      "sha256": "0c6eae6159305dfbb1a89719ecb02a4f808231e7025471238b1976acdbbdf8df"
+    },
+    {
+      "path": "src/orchestration/jev-token-admission-v4.mjs",
+      "sha256": "125b05957a7c8c6ef85c1f55551dbb701135fa8520222fdae6727b4abf00551d"
+    },
+    {
+      "path": "docs/orchestration/contracts/jev-token-admission.v4.json",
+      "sha256": "bb268037a56b183732c41d10098bb5b449d7c34e03fd95f7262c2f4198e428f9"
+    },
+    {
+      "path": "src/orchestration/adaptive-repair-input.mjs",
+      "sha256": "debcd26006e3283a930f3b09c65e88181403758b49dda601eb1f73d33301cb1f"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-repair-input.v1.json",
+      "sha256": "451549d4310ec9a540f24be1319b1eafeba5ea757c76fae3d18a076eb082d07b"
+    },
+    {
+      "path": "src/orchestration/adaptive-dag-planner.mjs",
+      "sha256": "3c27beec3008b24dd881cc82c4a3b53e6fde837f1ad23741c5390d2331416680"
+    }
+  ],
+  "source_drift_action": "Block. Review and explicitly freeze a new opt-in policy file; never rewrite an earlier jev-transmission-preflight.vN.json.",
+  "repair_input": {
+    "policy": "evidence-v1",
+    "contract": "docs/orchestration/contracts/adaptive-repair-input.v1.json",
+    "wire_validator": "validateRepairInputState",
+    "module": "src/orchestration/adaptive-repair-input.mjs",
+    "supported_relevance_policy": "resolved-unrelated-v1",
+    "scope": "Validate fixed wire rules and inline references. Relevance summaries are explicitly lossy; controller proof owns restoration and source coverage.",
+    "semantic_equality_without_controller_proof": "unverified"
+  }
+}

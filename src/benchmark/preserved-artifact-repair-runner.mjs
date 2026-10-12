@@ -10,7 +10,7 @@ import {buildCausalRepairDecisionContext} from '../orchestration/adaptive-causal
 import {applyAdaptiveProfileSelections} from '../orchestration/adaptive-profile-selection.mjs';
 import {chooseAdaptiveRepair, validateAdaptiveCatalog} from '../orchestration/adaptive-dag-planner.mjs';
 import {adaptiveOutcomeUncertain, adaptiveTerminalCause} from '../orchestration/adaptive-failure.mjs';
-import {adaptiveRuntimeSpeed, adaptiveSpeedSessionOptions, adaptiveUsageSummary, assertAdaptiveCohortCapacity, buildAdaptiveChecks,
+import {adaptiveRepairBudgetOption, adaptiveRuntimeSpeed, adaptiveSpeedSessionOptions, adaptiveUsageSummary, assertAdaptiveCohortCapacity, buildAdaptiveChecks,
   createAdaptiveProviderSession, createAdaptiveRunContext, createAdaptiveWorkerAndChecks, loadAdaptivePublicInput, loadAdaptiveRunManifest,
   loadAdaptiveTestRequirements, preflightAdaptiveRun, withAdaptiveSettledBudget} from './adaptive-dag-runner.mjs';
 
@@ -462,7 +462,7 @@ export function preservedRepairTerminalState(execution, remaining) {
 export async function executePreservedArtifactRepair({source, run_id, runDirectory, checkerRoot, checkerFiles,
   environment, probeEnvironment, checkTask, executeRepairTask, decideRepair, assertionContract,
   decideRepairOwners, prepareRoundPlan, maxRepairRounds = 2, testRequirements = {},
-  failureRecoveryPolicy, recoverFailure, repairInputPolicy, batchChecks, publicCheckConcurrency,
+  failureRecoveryPolicy, recoverFailure, repairInputPolicy, batchChecks, publicCheckConcurrency, repairBudget,
   repairScopePolicy = 'minimal-public-v1', artifactRepairPolicy = 'artifact-v2', record = async () => {}}) {
   if (![executeRepairTask, decideRepair, checkTask, probeEnvironment].every(value => typeof value === 'function')) fail('PRESERVED_CALLBACKS_REQUIRED');
   if (!Number.isSafeInteger(maxRepairRounds) || maxRepairRounds < 1 || maxRepairRounds > 2) fail('PRESERVED_REPAIR_LIMIT');
@@ -524,6 +524,7 @@ export async function executePreservedArtifactRepair({source, run_id, runDirecto
     repairScopePolicy, artifactRepairPolicy, record: forward,
     ...(batchChecks !== undefined ? {batchChecks} : {}),
     ...(publicCheckConcurrency !== undefined ? {publicCheckConcurrency} : {}),
+    ...(repairBudget !== undefined ? {repairBudget} : {}),
     ...(recovering ? {failureRecoveryPolicy, repairInputPolicy,
       historicalRepairHistory: source.historical_repair_history ?? null,
       recoverFailure: async (request, context) => {
@@ -603,8 +604,8 @@ export async function runPreservedArtifactRepair({rootDir = ROOT,
       || manifest.repair_policy?.owner_inference_contract !== `docs/orchestration/contracts/adaptive-inferred-repair.${inferredVersion}.json`))) fail('PRESERVED_V2_OR_CAUSAL_MANIFEST_REQUIRED');
   if (recovering) {
     const gate = manifest.transmission_preflight, recovery = manifest.failure_recovery;
-    if (gate?.mode !== 'required'
-      || gate.contract !== `docs/orchestration/contracts/jev-transmission-preflight.${speedManifest(manifest) ? 'v2' : 'v1'}.json`
+    const gateVersion = Number(/^docs\/orchestration\/contracts\/jev-transmission-preflight\.v(\d+)\.json$/.exec(gate?.contract ?? '')?.[1]);
+    if (gate?.mode !== 'required' || (speedManifest(manifest) ? !(gateVersion >= 2) : gateVersion !== 1)
       || recovery?.mode !== 'required' || recovery.policy !== 'evidence-loop-v1'
       || recovery.contract !== 'docs/orchestration/contracts/adaptive-failure-recovery.v1.json'
       || [gate, recovery].some(policy => !/^[a-f0-9]{64}$/.test(policy.sha256 ?? '')
@@ -677,6 +678,7 @@ export async function runPreservedArtifactRepair({rootDir = ROOT,
       probeEnvironment: callbacks.probeEnvironment, checkTask: callbacks.checkTask, executeRepairTask: callbacks.executeTask,
       assertionContract, maxRepairRounds: manifest.max_repair_rounds, testRequirements, record: context.record,
       batchChecks: callbacks.batchChecks, publicCheckConcurrency: runtimeSpeed.public_check_concurrency,
+      ...adaptiveRepairBudgetOption(manifest),
       ...(recovering ? {failureRecoveryPolicy: manifest.failure_recovery.policy, repairInputPolicy: 'evidence-v1', recoverFailure} : {}),
       ...(inferred ? {repairScopePolicy: `public-inferred-owner-${inferredVersion}`, artifactRepairPolicy: `inferred-${inferredVersion}`, prepareRoundPlan,
         decideRepairOwners: (body, decisionContext) => session.decide('jev', body, decisionContext)}

@@ -15,6 +15,7 @@ import {buildAdaptiveCausalRepairScope, buildCausalRepairHistory,
   buildCausalRepairWorkerContext} from './adaptive-causal-repair.mjs';
 import {inferAdaptiveRepairOwners, applyInferredRepairOwners,
   buildInferredRepairWorkerContext} from './adaptive-inferred-repair.mjs';
+import {packRepairOwnerRequest, ADAPTIVE_REPAIR_BUDGET_EXCEEDED} from './adaptive-repair-budget.mjs';
 import {assessAdaptiveFailureRecovery, acceptAdaptiveRecoveryEvidence, adaptiveWorkerRecoveryIdentity,
   validateAdaptiveRecoveryRequest, loadAdaptiveFailureRecoveryPolicy, recoveryDigest} from './adaptive-failure-recovery.mjs';
 
@@ -287,7 +288,9 @@ export async function runAdaptiveDagExecution(options) {
       (options.recoverFailure !== undefined && typeof options.recoverFailure !== 'function') ||
       (options.record !== undefined && typeof options.record !== 'function') || options.planning?.dispatch_allowed === false ||
       (options.publicCheckConcurrency !== undefined && (!Number.isSafeInteger(options.publicCheckConcurrency) || options.publicCheckConcurrency < 1)) ||
-      (options.batchChecks !== undefined && typeof options.batchChecks !== 'function')) {
+      (options.batchChecks !== undefined && typeof options.batchChecks !== 'function') ||
+      (options.repairBudget !== undefined && (!['inferred-v1', 'inferred-v2'].includes(options.artifactRepairPolicy)
+        || options.repairBudget?.policy !== 'repair-budget-v1' || Object.keys(options.repairBudget).length !== 1))) {
     fail('ADAPTIVE_EXECUTION_INVALID_CONFIG');
   }
   const bindings = clone(options.artifactBindings), planning = clone(options.planning ?? {plan: options.plan, artifactBindings: bindings});
@@ -867,7 +870,16 @@ export async function runAdaptiveDagExecution(options) {
               ...(requestOverride ? {requestOverride} : {}),
               decide: async (body, metadata) => {
                 failedRequest = clone(body);
-                return options.decideRepairOwners(body, {...metadata, ...(requestOverride ? {recovery: clone(requestOverride.recovery)} : {})});
+                let sent = body;
+                // Opt-in D076 budget: lossy owner packing after the canonical projections; over budget stops before any POST.
+                // A recovery override is bound to its exact request hash, so it is never repacked.
+                if (options.repairBudget && !requestOverride) {
+                  const packed = packRepairOwnerRequest(body, {policy: options.repairBudget.policy});
+                  await record({event: 'adaptive_repair_budget_applied', round_index: roundIndex, stage: 'repair_owners', report: packed.report});
+                  if (!packed.report.within_budget) fail(ADAPTIVE_REPAIR_BUDGET_EXCEEDED, {estimated_tokens: packed.report.after.estimated_tokens});
+                  sent = packed.request;
+                }
+                return options.decideRepairOwners(sent, {...metadata, ...(requestOverride ? {recovery: clone(requestOverride.recovery)} : {})});
               }, record});
             round.owner_inference = clone(inference);
             await record({event: 'adaptive_repair_owner_inference_committed', round_index: roundIndex, inference});

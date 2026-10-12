@@ -47,6 +47,9 @@ export const adaptiveSpeedSessionOptions = manifest => {
   const speed = adaptiveRuntimeSpeed(manifest);
   return {modelLookup: speed.model_lookup, budgetLock: speed.budget_lock};
 };
+const REPAIR_BUDGET_CONTRACT = 'docs/orchestration/contracts/adaptive-repair-budget.v1.json';
+/** D076 opt-in owner-request budget (v11/v12 manifests with repair_budget only). */
+export const adaptiveRepairBudgetOption = manifest => manifest.repair_budget ? {repairBudget: {policy: manifest.repair_budget.policy}} : {};
 const focusedOwnerManifest = manifest => transmissionManifest(manifest) || isQuestionFormManifest(manifest) || manifest.schema_version === 'adaptive-dag-comparison/v9';
 const inferredManifest = manifest => focusedOwnerManifest(manifest) || manifest.schema_version === 'adaptive-dag-comparison/v8';
 const inferredPolicy = manifest => focusedOwnerManifest(manifest) ? 'inferred-v2' : 'inferred-v1';
@@ -125,9 +128,17 @@ export function loadAdaptiveRunManifest(path = join(ROOT, 'benchmarks/e2e-swe/ma
       || !['max_file_bytes', 'max_total_bytes'].every(key => Number.isSafeInteger(limits[key]) && limits[key] > 0)) fail('ADAPTIVE_MANIFEST_INVALID');
   validateBudgetConfig(value.jev_budget, rootDir);
   if (v12) validateQuestionFormManifest(value, rootDir);
+  if (value.repair_budget !== undefined) {
+    const budget = value.repair_budget;
+    if (!(v11 || v12) || !object(budget) || !equal(Object.keys(budget).sort(), ['contract', 'policy', 'sha256'])
+      || budget.policy !== 'repair-budget-v1' || budget.contract !== REPAIR_BUDGET_CONTRACT
+      || sha(readFileSync(join(rootDir, budget.contract))) !== budget.sha256) fail('ADAPTIVE_REPAIR_BUDGET_BINDING');
+  }
   if (v10) {
     const gate = validateJevTransmissionBinding(value.transmission_preflight);
-    if (gate.contract !== `docs/orchestration/contracts/jev-transmission-preflight.${v11 ? 'v2' : 'v1'}.json`) fail('JEV_TRANSMISSION_BINDING_INVALID');
+    // v10 keeps policy v1; v11 binds a later frozen policy (v2+).
+    const gateVersion = Number(/\.v(\d+)\.json$/.exec(gate.contract)?.[1]);
+    if (v11 ? !(gateVersion >= 2) : gateVersion !== 1) fail('JEV_TRANSMISSION_BINDING_INVALID');
     const speed = value.runtime_speed;
     if (v11 ? (!object(speed) || !equal(Object.keys(speed).sort(), RUNTIME_SPEED_KEYS)
         // The v4 ledger requires per-operation locking (reservations carry leases).
@@ -980,7 +991,7 @@ export async function runAdaptiveArm({rootDir = ROOT, manifest = loadAdaptiveRun
       checkerFiles: [join(rootDir, 'src/benchmark/adaptive-dag-runner.mjs'), join(rootDir, 'src/orchestration/adaptive-dag-execution.mjs'),
         ...filesUnder(join(rootDir, manifest.public_checker_root))], environment: {id: manifest.public_environment_ref},
       ...callbacks, testRequirements, maxRepairRounds: manifest.max_repair_rounds, record: context.record,
-      publicCheckConcurrency: adaptiveRuntimeSpeed(manifest).public_check_concurrency,
+      publicCheckConcurrency: adaptiveRuntimeSpeed(manifest).public_check_concurrency, ...adaptiveRepairBudgetOption(manifest),
       ...(arm === 'jev_profile' ? {prepareRoundPlan: selectProfiles} : {}),
       ...(inferredManifest(manifest) ? {decideRepairOwners: forms?.decideRepairOwners ?? ((request, metadata) => session.decide('jev', request, metadata))} : {}),
       ...(repairManifest(manifest) ? {repairScopePolicy: focusedOwnerManifest(manifest) ? 'public-inferred-owner-v2' : inferredManifest(manifest) ? 'public-inferred-owner-v1' : causalManifest(manifest) ? 'public-causal-v1' : 'minimal-public-v1', projectRepairFailure: repairProjection.projectAdaptiveRepairFailure} : {}),

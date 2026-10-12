@@ -213,3 +213,49 @@ test('v2 owner input stays bound through the pre-spend gate, typed repair, selec
   }
 });
 
+function inflateInterface(state, artifactId) {
+  const check = state.options.checkTask;
+  state.options.checkTask = async (item, ctx) => {
+    const report = await check(item, ctx);
+    if (item.id !== 'public-description') report.evidence = {error: null};
+    return report;
+  };
+  const unit = state.options.planning.catalog.units.find(row => row.artifact_ids.includes(artifactId));
+  unit.interface = `Original complete ${artifactId} interface. ${'Detailed behavior. '.repeat(4800)}`;
+  state.options.planning.catalog_sha256 = hash(JSON.stringify(state.options.planning.catalog));
+}
+
+test('D076 repair budget packs an oversized owner request before the owner callback and keeps the owner answer binding', async t => {
+  const state = await fixture(t);
+  state.options.repairScopePolicy = 'public-inferred-owner-v2'; state.options.artifactRepairPolicy = 'inferred-v2';
+  state.options.repairBudget = {policy: 'repair-budget-v1'};
+  inflateInterface(state, 'artifact-unrelated');
+  const owner = state.options.decideRepairOwners, seen = [];
+  state.options.decideRepairOwners = async request => { seen.push(structuredClone(request)); return owner(request); };
+  const result = await runAdaptiveDagExecution(state.options);
+  assert.equal(result.status, 'completed', JSON.stringify(result.terminal_cause));
+  assert.equal(seen.length, 1);
+  assert.deepEqual(seen[0].state.repair_budget.applied_steps, ['compact_unfocused_interfaces']);
+  assert.ok(Buffer.byteLength(JSON.stringify(seen[0])) < 20000);
+  const applied = state.events.filter(event => event.event === 'adaptive_repair_budget_applied');
+  assert.equal(applied.length, 1); assert.equal(applied[0].report.within_budget, true);
+  assert.equal(applied[0].report.before.within_budget, false);
+  // The model sees the packed body; inference stays bound to the canonical unpacked request.
+  assert.equal(result.rounds[0].owner_inference.request_sha256, result.rounds[0].owner_inference.owner_input_projection.output_request_sha256);
+});
+
+test('D076 repair budget stops an irreducible owner request before any owner callback, as a known failure', async t => {
+  const state = await fixture(t);
+  state.options.repairScopePolicy = 'public-inferred-owner-v2'; state.options.artifactRepairPolicy = 'inferred-v2';
+  state.options.repairBudget = {policy: 'repair-budget-v1'};
+  inflateInterface(state, 'artifact-ui');
+  let ownerCalls = 0; state.options.decideRepairOwners = async () => { ownerCalls++; };
+  const result = await runAdaptiveDagExecution(state.options);
+  assert.equal(ownerCalls, 0);
+  const inference = result.rounds[0].owner_inference;
+  assert.equal(inference.status, 'stopped'); assert.equal(inference.reason, 'ADAPTIVE_REPAIR_BUDGET_EXCEEDED');
+  assert.equal(inference.outcome_uncertain, false);
+  state.options.repairBudget = {policy: 'other'};
+  await assert.rejects(runAdaptiveDagExecution(state.options), {code: 'ADAPTIVE_EXECUTION_INVALID_CONFIG'});
+});
+

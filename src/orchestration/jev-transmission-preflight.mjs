@@ -10,12 +10,14 @@ import {validateJevPrompt, jevPromptPolicy} from './jev-prompt-preflight.mjs';
 import {validateRepairInputState} from './adaptive-repair-input.mjs';
 
 const ROOT = resolve(import.meta.dirname, '../..');
-// v1 keeps the D075 source pins for history (reproduce it at commit 5f78c6c); v2 is the active policy.
-// Each policy is still verified by its own file hash and source pins.
-export const JEV_TRANSMISSION_POLICY_PATHS = Object.freeze({
-  'docs/orchestration/contracts/jev-transmission-preflight.v1.json': 'jev-transmission-preflight-policy/v1',
-  'docs/orchestration/contracts/jev-transmission-preflight.v2.json': 'jev-transmission-preflight-policy/v2'});
-export const JEV_TRANSMISSION_POLICY_PATH = 'docs/orchestration/contracts/jev-transmission-preflight.v2.json';
+// Policies are frozen as new files (vN never rewritten); each is verified by its own file hash and source pins.
+// v1 holds the D075 pins (reproduce at 5f78c6c), v2 the first D076 pins; the default is the newest frozen policy.
+const POLICY_FILE = /^docs\/orchestration\/contracts\/jev-transmission-preflight\.v([1-9]\d*)\.json$/;
+export const jevTransmissionPolicySchema = path => {
+  const match = typeof path === 'string' ? POLICY_FILE.exec(path) : null;
+  return match ? `jev-transmission-preflight-policy/v${match[1]}` : null;
+};
+export const JEV_TRANSMISSION_POLICY_PATH = 'docs/orchestration/contracts/jev-transmission-preflight.v3.json';
 export const JEV_TRANSMISSION_SOURCE_PATHS = Object.freeze([
   'src/orchestration/jev-transmission-preflight.mjs', 'src/benchmark/adaptive-dag-runner.mjs',
   'src/benchmark/telemetry.mjs', 'src/orchestration/jev-prompt-preflight.mjs',
@@ -32,7 +34,7 @@ const hashValue = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(va
 const cachedPolicies = new Map();
 const fail = code => {throw Object.assign(new Error(code), {code, outcome_uncertain:false, outcomeUncertain:false});};
 const loadPolicy = (path = JEV_TRANSMISSION_POLICY_PATH) => {
-  if (!Object.hasOwn(JEV_TRANSMISSION_POLICY_PATHS, path)) fail('JEV_TRANSMISSION_BINDING_INVALID');
+  if (!jevTransmissionPolicySchema(path)) fail('JEV_TRANSMISSION_BINDING_INVALID');
   if (!cachedPolicies.has(path)) {
     const bytes = readFileSync(join(ROOT, path));
     cachedPolicies.set(path, {policy:JSON.parse(bytes), policyHash:sha(bytes)});
@@ -47,14 +49,14 @@ export function jevTransmissionPolicy(path = JEV_TRANSMISSION_POLICY_PATH) {
 
 export function validateJevTransmissionBinding(binding) {
   if (!binding || !same(Object.keys(binding).sort(), ['contract','mode','sha256']) || binding.mode !== 'required'
-    || !Object.hasOwn(JEV_TRANSMISSION_POLICY_PATHS, binding.contract) || !hashValue(binding.sha256)) fail('JEV_TRANSMISSION_BINDING_INVALID');
+    || !jevTransmissionPolicySchema(binding.contract) || !hashValue(binding.sha256)) fail('JEV_TRANSMISSION_BINDING_INVALID');
   if (binding.sha256 !== loadPolicy(binding.contract).policyHash) fail('JEV_TRANSMISSION_POLICY_CHANGED');
   return {contract:binding.contract, sha256:binding.sha256, mode:binding.mode};
 }
 
 function sourceIntegrity(rootDir, path) {
   const {policy, policyHash} = loadPolicy(path);
-  const valid = policy.schema_version === JEV_TRANSMISSION_POLICY_PATHS[path] && policy.enforcement === 'required'
+  const valid = policy.schema_version === jevTransmissionPolicySchema(path) && policy.enforcement === 'required'
     && policy.input_policy === 'v4' && policy.prompt_policy?.version === 'v2'
     && policy.prompt_policy.contract === 'docs/orchestration/contracts/jev-prompt-policy.v2.json'
     && same(policy.stages, STAGES) && same(policy.source_pins?.map(row => row.path), JEV_TRANSMISSION_SOURCE_PATHS)
