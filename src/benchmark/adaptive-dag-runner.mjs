@@ -581,12 +581,33 @@ try:
 except Exception as exc: error={'code':type(exc).__name__,'message':str(exc)}
 print(json.dumps({'status':'passed' if error is None else 'failed','executed':True,'exit_code':0 if error is None else 1,'assertions':assertions,'skipped':0,'outcome_uncertain':False,'error':error}))
 sys.exit(0 if error is None else 1)`;
+const READINESS_CODE = `exec(${JSON.stringify(READINESS)})`;
+// Opt-in batch: run the exact `python3 -c READINESS_CODE <paths>` program once per
+// check inside one interpreter, capturing each program's own report and exit code.
+const READINESS_BATCH = `import contextlib,io,json,sys
+code=sys.argv[1]
+results=[]
+for check_id,arg in json.loads(sys.argv[2]):
+ out=io.StringIO()
+ sys.argv=['-c',arg]
+ exit_code=None
+ try:
+  with contextlib.redirect_stdout(out): exec(code,{'__name__':'__main__'})
+ except SystemExit as exc: exit_code=exc.code
+ results.append({'check_id':check_id,'exit_code':exit_code,'report':json.loads(out.getvalue())})
+print(json.dumps({'status':'completed','outcome_uncertain':False,'results':results}))`;
+const readinessArgument = check => check.phase === 'contract' && check.cwd === 'candidate' && check.argv?.length === 4
+  && check.argv[0] === 'python3' && check.argv[1] === '-c' && check.argv[2] === READINESS_CODE ? check.argv[3] : null;
+const localReportInvalid = (raw, report) => uncertain(report) || raw.outcome_uncertain !== false || report.outcome_uncertain !== false
+  || report.executed !== true || report.exit_code !== raw.exit_code || !['passed', 'failed'].includes(report.status)
+  || !Number.isSafeInteger(report.assertions) || report.assertions < 0 || report.skipped !== 0
+  || (report.status === 'passed' ? raw.exit_code !== 0 || report.assertions < 1 || report.error !== null : raw.exit_code !== 1 || !object(report.error));
 
 export function buildAdaptiveChecks({catalog, registry, manifest, source_ref}) {
   const ids = catalog.artifacts.map(artifact => artifact.id);
   const local = catalog.artifacts.map((artifact, index) => ({id: `adaptive.readiness.${index + 1}`, version: '1', phase: 'contract',
     artifact_ids: [artifact.id], requirement_ids: catalog.units.filter(unit => unit.artifact_ids.includes(artifact.id)).flatMap(unit => unit.requirement_ids),
-    runner_ref: 'src/benchmark/adaptive-dag-runner.mjs', argv: ['python3', '-c', `exec(${JSON.stringify(READINESS)})`, JSON.stringify(artifact.paths)],
+    runner_ref: 'src/benchmark/adaptive-dag-runner.mjs', argv: ['python3', '-c', READINESS_CODE, JSON.stringify(artifact.paths)],
     cwd: 'candidate', environment_ref: manifest.public_environment_ref, source_ref: source_ref.path}));
   const integration = registry.map(check => {
     const suite = check.argv[check.argv.indexOf('--suite') + 1];
@@ -705,7 +726,7 @@ export function loadAdaptiveTestRequirements(rootDir, manifest) {
 }
 
 function createWorkerAndChecks({rootDir, manifest, context, session, input, catalog, registry, preflight, adapters,
-  arm = 'jev_all', profileSelections = new Map()}) {
+  arm = 'jev_all', profileSelections = new Map(), readinessBatch = false}) {
   const runCommand = adapters.runCommand ?? processResult, image = read(join(rootDir, manifest.image_lock));
   const executeTask = async (task, worker) => {
     context.remaining();
@@ -756,18 +777,44 @@ function createWorkerAndChecks({rootDir, manifest, context, session, input, cata
       pinnedDirectory: checkContext.pinnedDirectory, bindingDirectory, runCommand, remaining: context.remaining, record: context.record,
       attemptId: checkContext.attempt_id, abortSignal: context.signal, saveProcess: async raw => context.save(processRef, raw)});
     if (check.phase === 'integration') validateAdaptivePublicReport({check, registeredCheck: registry.find(item => item.id === check.id), raw, report});
-    else if (uncertain(report) || raw.outcome_uncertain !== false || report.outcome_uncertain !== false || report.executed !== true
-      || report.exit_code !== raw.exit_code || !['passed', 'failed'].includes(report.status)
-      || !Number.isSafeInteger(report.assertions) || report.assertions < 0 || report.skipped !== 0
-      || (report.status === 'passed' ? raw.exit_code !== 0 || report.assertions < 1 || report.error !== null : raw.exit_code !== 1 || !object(report.error))) {
-      fail('ADAPTIVE_LOCAL_EVIDENCE_INVALID', {outcome_uncertain: uncertain(raw) || uncertain(report)});
-    }
+    else if (localReportInvalid(raw, report)) fail('ADAPTIVE_LOCAL_EVIDENCE_INVALID', {outcome_uncertain: uncertain(raw) || uncertain(report)});
     const envelope = {check_id: check.id, check_version: check.version, environment_ref: check.environment_ref,
       status: report.status, executed: report.executed, exit_code: raw.exit_code, assertions: report.assertions, skipped: report.skipped,
       outcome_uncertain: false, evidence: {...report, report_ref: reportRef, process_ref: processRef, container_removed}};
     context.save(reportRef, {attempt_id: checkContext.attempt_id, round_index: checkContext.round_index,
       artifact_revisions: checkContext.artifact_revisions, envelope});
     return envelope;
+  };
+  // One container for every readiness check in the request; other checks are
+  // omitted so the controller runs them singly. Any invalid row fails the batch.
+  const batchChecks = async (checks, batchContext) => {
+    context.remaining();
+    const groups = checks.map(check => [check, readinessArgument(check)]).filter(([, argument]) => argument !== null);
+    if (!groups.length) return {results: {}};
+    const id = `check-${randomUUID()}`, bindingDirectory = join(context.directory, 'check-bindings', id);
+    mkdirSync(bindingDirectory, {mode: 0o700});
+    const processRef = `calls/${id}.process.json`, reportRef = `receipts/${id}.json`;
+    const check = {id: 'adaptive.readiness.batch', version: '1', environment_ref: groups[0][0].environment_ref,
+      argv: ['python3', '-c', `exec(${JSON.stringify(READINESS_BATCH)})`, READINESS_CODE,
+        JSON.stringify(groups.map(([item, argument]) => [item.id, argument]))]};
+    const {raw, report, container_removed} = await runDagDockerCheck({image, check, candidateDirectory: batchContext.candidateDirectory,
+      pinnedDirectory: batchContext.pinnedDirectory, bindingDirectory, runCommand, remaining: context.remaining, record: context.record,
+      attemptId: batchContext.batch_id, abortSignal: context.signal, saveProcess: async raw => context.save(processRef, raw)});
+    if (raw.exit_code !== 0 || report.status !== 'completed' || report.results?.length !== groups.length) fail('ADAPTIVE_READINESS_BATCH_INVALID');
+    const results = {};
+    for (const [index, [item]] of groups.entries()) {
+      const row = report.results[index];
+      if (row?.check_id !== item.id || !Number.isSafeInteger(row.exit_code) || !object(row.report)
+        || localReportInvalid({exit_code: row.exit_code, outcome_uncertain: raw.outcome_uncertain}, row.report)) fail('ADAPTIVE_READINESS_BATCH_INVALID');
+      results[item.id] = {check_id: item.id, check_version: item.version, environment_ref: item.environment_ref,
+        status: row.report.status, executed: row.report.executed, exit_code: row.exit_code, assertions: row.report.assertions,
+        skipped: row.report.skipped, outcome_uncertain: false, evidence: {...row.report, report_ref: reportRef, process_ref: processRef,
+          container_removed, batch: {id: batchContext.batch_id, mode: batchContext.mode, size: groups.length,
+            artifact_revisions: Object.fromEntries(item.artifact_ids.map(artifact => [artifact, batchContext.artifact_revisions[artifact]]))}}};
+    }
+    context.save(reportRef, {batch_id: batchContext.batch_id, mode: batchContext.mode, round_index: batchContext.round_index,
+      artifact_revisions: batchContext.artifact_revisions, envelopes: results});
+    return {results};
   };
   const probeEnvironment = async () => {
     const raw = await runCommand('docker', ['image', 'inspect', image.image_id], {timeoutMs: Math.min(context.remaining(), 15000),
@@ -777,7 +824,7 @@ function createWorkerAndChecks({rootDir, manifest, context, session, input, cata
     await context.record({event: 'adaptive_environment_identity_checked', image_id: image.image_id});
     return {...preflight.environment, image_id: image.image_id, dependency_versions_basis: 'preflight_probe_of_identical_immutable_image'};
   };
-  return {executeTask, checkTask, probeEnvironment};
+  return {executeTask, checkTask, probeEnvironment, ...(readinessBatch ? {batchChecks} : {})};
 }
 
 /** Shared profile decision/commit path for fresh development and preserved-candidate repair. */

@@ -119,6 +119,13 @@ async function seedSnapshot(snapshot, stageDirectory) {
   }
 }
 
+// Same read-only, world-traversable directory modes as runtime stages, so a
+// checker container user other than the host owner can read the batch inputs.
+async function readonlyDirectories(path) {
+  for (const entry of await readdir(path, {withFileTypes: true})) if (entry.isDirectory()) await readonlyDirectories(join(path, entry.name));
+  await chmod(path, 0o555);
+}
+
 async function causalReadSources(workerContext, snapshots, plan, bindings) {
   const required = workerContext.required_read_artifacts;
   if (!Array.isArray(required) || !isDeepStrictEqual(required.map(item => item.artifact_id), workerContext.required_read_artifact_ids)) {
@@ -195,6 +202,23 @@ function checkedEnvelope(check, result) {
   return value;
 }
 
+// Bounded fan-out in list order. After the first throw or uncertain value no new
+// item starts, and every started callback settles before this returns. A slot may
+// hold both a value and a later error (for example a failed completion record).
+async function settleBounded(items, limit, run) {
+  const slots = [];
+  let next = 0, halted = false;
+  const lane = async () => {
+    while (!halted && next < items.length) {
+      const slot = slots[next] = {}, item = items[next++];
+      try { await run(item, slot); } catch (error) { slot.error = error; }
+      halted ||= 'error' in slot || uncertain(slot.value);
+    }
+  };
+  await Promise.all(Array.from({length: Math.min(limit, items.length)}, lane));
+  return slots;
+}
+
 function closure(plan, taskIds) {
   const selected = new Set(taskIds), producer = new Map(plan.artifacts.map(artifact => [artifact.id, artifact.producer_task_id]));
   let changed = true;
@@ -261,7 +285,9 @@ export async function runAdaptiveDagExecution(options) {
       (options.projectRepairFailure !== undefined && typeof options.projectRepairFailure !== 'function') ||
       (options.failureRecoveryPolicy !== undefined && options.failureRecoveryPolicy !== 'evidence-loop-v1') ||
       (options.recoverFailure !== undefined && typeof options.recoverFailure !== 'function') ||
-      (options.record !== undefined && typeof options.record !== 'function') || options.planning?.dispatch_allowed === false) {
+      (options.record !== undefined && typeof options.record !== 'function') || options.planning?.dispatch_allowed === false ||
+      (options.publicCheckConcurrency !== undefined && (!Number.isSafeInteger(options.publicCheckConcurrency) || options.publicCheckConcurrency < 1)) ||
+      (options.batchChecks !== undefined && typeof options.batchChecks !== 'function')) {
     fail('ADAPTIVE_EXECUTION_INVALID_CONFIG');
   }
   const bindings = clone(options.artifactBindings), planning = clone(options.planning ?? {plan: options.plan, artifactBindings: bindings});
@@ -400,6 +426,66 @@ export async function runAdaptiveDagExecution(options) {
       const roundDirectory = join(directory, `round-${roundIndex}`), roundRunId = `${run_id}:round-${roundIndex}`;
       const captured = new Map(), cachedChecks = new Map(), publicEvidence = [], localEvidence = [], roundOperations = [];
       const previousSnapshots = new Map(snapshots);
+      // Opt-in batchChecks: one invocation covers several non-integration checks
+      // whose artifact bytes are already fixed. Each check still passes through
+      // runtime.runCheck and reuses only its own result for identical revisions.
+      const batchedChecks = new Map();
+      let roundStartBatch = null, batchSequence = 0;
+      const launchCheckBatch = (mode, checks, context, {prepare, verify} = {}) => {
+        const batch_id = `${roundRunId}:check-batch-${++batchSequence}`, check_ids = checks.map(check => check.id);
+        const revisions = Object.fromEntries(checks.flatMap(check => check.artifact_ids).map(id => [id, context.artifact_revisions[id]]));
+        const promise = (async () => {
+          const start = performance.now();
+          await record({event: 'adaptive_check_batch_started', phase: 'started', round_index: roundIndex, batch_id, mode,
+            check_ids, artifact_revisions: revisions});
+          let results;
+          try {
+            await prepare?.();
+            const response = await options.batchChecks(clone(checks), {...clone(context), round_index: roundIndex, batch_id, mode});
+            if (!response?.results || typeof response.results !== 'object' ||
+                Object.keys(response.results).some(id => !check_ids.includes(id))) fail('ADAPTIVE_CHECK_BATCH_INVALID');
+            results = Object.fromEntries(checks.filter(check => Object.hasOwn(response.results, check.id))
+              .map(check => [check.id, checkedEnvelope(check, response.results[check.id])]));
+            await verify?.();
+          } catch (error) {
+            // Known batch failure: every covered check runs singly. Unknown outcome
+            // is never replaced by a fresh run; each covered check stays uncertain.
+            const outcome_uncertain = adaptiveOutcomeUncertain(error);
+            await record({event: 'adaptive_check_batch_completed', phase: outcome_uncertain ? 'uncertain' : 'failed',
+              round_index: roundIndex, batch_id, mode, code: error?.code ?? 'ADAPTIVE_CHECK_BATCH_FAILED', outcome_uncertain,
+              duration_ms: performance.now() - start});
+            return outcome_uncertain ? {uncertain: error?.code ?? 'ADAPTIVE_CHECK_BATCH_UNCERTAIN'} : {};
+          }
+          await record({event: 'adaptive_check_batch_completed', phase: 'completed', round_index: roundIndex, batch_id, mode,
+            statuses: Object.fromEntries(Object.entries(results).map(([id, value]) => [id, value.status])),
+            duration_ms: performance.now() - start});
+          return {results};
+        })();
+        promise.catch(() => {}); // Only a journal failure rejects; consumers still observe it.
+        for (const check of checks) batchedChecks.set(check.id, {batch_id, promise,
+          revisions: Object.fromEntries(check.artifact_ids.map(id => [id, revisions[id]]))});
+        return promise;
+      };
+      const batchedCheck = async (check, context) => {
+        const current = item => item.artifact_ids.every(id => batchedChecks.get(item.id)?.revisions[id] === context.artifact_revisions[id]);
+        if (!current(check)) {
+          // Missing or stale: batch this task's remaining checks on its own stage.
+          const peers = context.task.check_ids.map(id => plan.checks.find(item => item.id === id))
+            .filter(item => item.phase !== 'integration' && !current(item));
+          if (peers.length > 1) launchCheckBatch('task', peers, context);
+        }
+        const entry = batchedChecks.get(check.id);
+        if (!entry) return null;
+        const fallback = async reason => { await record({event: 'adaptive_check_batch_fallback', round_index: roundIndex,
+          batch_id: entry.batch_id, check_id: check.id, attempt_id: context.attempt_id, reason}); return null; };
+        if (check.artifact_ids.some(id => entry.revisions[id] !== context.artifact_revisions[id])) return fallback('ARTIFACT_REVISION_CHANGED');
+        const outcome = await entry.promise;
+        if (outcome.uncertain) return {status: 'uncertain', outcome_uncertain: true, code: outcome.uncertain};
+        if (!outcome.results?.[check.id]) return fallback('BATCH_RESULT_UNAVAILABLE');
+        await record({event: 'adaptive_check_batch_result_used', round_index: roundIndex, batch_id: entry.batch_id,
+          check_id: check.id, attempt_id: context.attempt_id, artifact_revisions: entry.revisions});
+        return clone(outcome.results[check.id]);
+      };
       let runtime, initialization, workflow, exported, runtimeJournal, fatal = null;
       let profilePreparationStarted = false, profilePreparationCompleted = false;
       let repairContext = {selected_action: clone(selectedAction), failed_public_reports: clone(previousFailure?.public_evidence ?? []),
@@ -545,24 +631,32 @@ export async function runAdaptiveDagExecution(options) {
           },
           checkTask: async (check, context) => {
             if (check.id !== aggregate.id) {
-              return checkedEnvelope(check, await checkTask(clone(check), {...clone(context), round_index: roundIndex}));
+              const batched = options.batchChecks && check.phase !== 'integration' ? await batchedCheck(check, context) : null;
+              return checkedEnvelope(check, batched ?? await checkTask(clone(check), {...clone(context), round_index: roundIndex}));
             }
-            for (const child of publicChecks) {
+            // Default 1 is the historical serial loop. Evidence is collected in
+            // registry order whatever the completion order of concurrent checks.
+            const slots = await settleBounded(publicChecks, options.publicCheckConcurrency ?? 1, async (child, slot) => {
               const start = performance.now();
               await record({event: 'adaptive_public_check_started', phase: 'started', round_index: roundIndex,
                 task_id: context.task.id, attempt_id: context.attempt_id, check_id: child.id,
                 check_version: child.version, artifact_revisions: context.artifact_revisions});
               // Nested runtime checks retain a durable begin, independent pin
               // and full revision audits around every real checker invocation.
-              const evidence = await runtime.runCheck(clone(child), {task: clone(context.task), attempt_id: context.attempt_id,
+              const evidence = slot.value = await runtime.runCheck(clone(child), {task: clone(context.task), attempt_id: context.attempt_id,
                 artifact_revisions: clone(context.artifact_revisions)});
-              publicEvidence.push(clone(evidence));
-              cachedChecks.set(child.id, clone(evidence));
               await record({event: 'adaptive_public_check_completed', phase: uncertain(evidence) ? 'uncertain' : 'completed',
                 round_index: roundIndex, task_id: context.task.id, attempt_id: context.attempt_id, check_id: child.id,
                 status: evidence.status, outcome_uncertain: uncertain(evidence), duration_ms: performance.now() - start,
                 evidence});
-              if (uncertain(evidence)) return {check_id: aggregate.id, check_version: aggregate.version,
+            });
+            for (const [index, slot] of slots.entries()) {
+              if ('value' in slot) {
+                publicEvidence.push(clone(slot.value));
+                cachedChecks.set(publicChecks[index].id, clone(slot.value));
+              }
+              if ('error' in slot) throw slot.error;
+              if (uncertain(slot.value)) return {check_id: aggregate.id, check_version: aggregate.version,
                 environment_ref: aggregate.environment_ref, status: 'uncertain', outcome_uncertain: true};
             }
             const passed = publicEvidence.every(evidence => evidence.status === 'passed');
@@ -573,6 +667,31 @@ export async function runAdaptiveDagExecution(options) {
               evidence: {kind: 'adaptive-public-collection/v1', checks: clone(publicEvidence)}};
           }});
         initialization = await runtime.initialize();
+        if (options.batchChecks) {
+          // Verified prior bytes are fixed at round start: carried artifacts keep
+          // them, and a repaired artifact simply misses its revision and reruns.
+          // One invocation covers them while repair workers dispatch concurrently.
+          const prior = plan.tasks.filter(task => task.kind === 'implementation' && snapshots.get(task.id)?.verified);
+          const sources = prior.map(task => snapshots.get(task.id));
+          const known = Object.fromEntries(sources.flatMap(source => Object.entries(source.artifacts)
+            .map(([id, artifact]) => [id, artifact.revision])));
+          const checks = prior.flatMap(task => task.check_ids).map(id => plan.checks.find(check => check.id === id))
+            .filter(check => check.phase !== 'integration' && check.artifact_ids.every(id => Object.hasOwn(known, id)));
+          const candidateDirectory = join(roundDirectory, 'round-start-check-batch');
+          if (checks.length > 1) roundStartBatch = launchCheckBatch('round_start', checks, {candidateDirectory,
+            pinnedDirectory: initialization.pinnedDirectory, environment: initialization.environment,
+            binding_digest: initialization.binding_digest, artifact_revisions: known}, {
+            prepare: async () => {
+              await mkdir(candidateDirectory, {mode: 0o700});
+              for (const source of sources) await seedSnapshot(source, candidateDirectory);
+              await readonlyDirectories(candidateDirectory);
+            },
+            verify: async () => {
+              for (const artifact of sources.flatMap(source => Object.values(source.artifacts))) {
+                if (digest(await scopedManifest(candidateDirectory, artifact.paths)) !== artifact.revision) fail('ADAPTIVE_CHECK_BATCH_INPUT_DRIFT');
+              }
+            }});
+        }
         workflow = await runArtifactWorkflow({plan, run_id: roundRunId, execute: runtime.execute, getRevision: runtime.getRevision,
           record: runtime.record, runCheck: async (check, context) => {
             if (cachedChecks.has(check.id)) {
@@ -617,6 +736,11 @@ export async function runAdaptiveDagExecution(options) {
           terminal_cause: adaptiveTerminalCause(error, {stage: 'execution', fallbackCode: 'ADAPTIVE_EXECUTION_CALLBACK_FAILED'})};
         if (runtime) runtimeJournal = await runtime.journalState().catch(() => ({status: 'invalid'}));
       } finally {
+        // An unconsumed batch (early workflow stop) still settles inside its round,
+        // and its unknown outcome is never hidden behind a known workflow failure.
+        const batch = roundStartBatch && await roundStartBatch.catch(error => ({uncertain: error?.code ?? 'ADAPTIVE_CHECK_BATCH_RECORD_FAILED'}));
+        if (batch?.uncertain) fatal ??= {code: batch.uncertain, outcome_uncertain: true,
+          terminal_cause: adaptiveTerminalCause({code: batch.uncertain, outcome_uncertain: true}, {stage: 'execution'})};
         if (runtime) await runtime.close();
       }
       const outcomeUncertain = uncertain(fatal) || ['uncertain', 'invalid'].includes(runtimeJournal?.status) ||
