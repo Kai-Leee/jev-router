@@ -43,22 +43,14 @@ test('D071 v7 binds three conditions and 93 public checks while reusing the exac
   const probe=JSON.parse(probeBytes);assert.equal(probe.receipts.length,4);
   assert.equal(new Set(probe.receipts.map(row=>row.requested_model)).size,4);
   assert.ok(probe.receipts.every(row=>row.status==='completed'&&row.model_identity_verified===true));
-  const reused=loadAdaptiveSharedPreparation({rootDir:root,manifest:config,
-    preparationDirectory:join(root,config.catalog_reuse.preparation_directory),input});
-  assert.equal(reused.compatibility.generation_request_exact_match,true);
-  assert.equal(reused.compatibility.generation_prompt_schema_exact_match,true);
-  assert.equal(reused.compatibility.new_catalog_inference_calls,0);
-  assert.deepEqual(reused.compatibility.public_gate_upgrade,{previous_registry:'benchmarks/e2e-swe/public-checks/registry.json',
-    current_registry:config.public_registry,original_test_count:85,current_test_count:93,generation_input_unchanged:true});
+  // D076 changed src/benchmark/telemetry.mjs, which the D066 catalog pins outside the v7 allowlist, so historical
+  // reuse now fails closed. The same reuse path runs under the v11 allowlist in test/d076-runtime-speed.test.mjs;
+  // the original v7 behavior reproduces at commit 5f78c6c.
+  assert.throws(()=>loadAdaptiveSharedPreparation({rootDir:root,manifest:config,
+    preparationDirectory:join(root,config.catalog_reuse.preparation_directory),input}),{code:'ADAPTIVE_PREPARATION_REUSE_INVALID'});
   const {registry}=loadPublicAuditInputs(root,{registryPath:config.public_registry,runnerPath:config.public_runner});
   const mapping=loadAdaptiveTestRequirements(root,config);
   assert.equal(Object.keys(mapping).length,93);assert.equal(new Set(registry.flatMap(check=>check.test_ids)).size,93);
-  const checks=buildAdaptiveChecks({catalog:reused.catalog,registry,manifest:config,source_ref:input.source_ref});
-  const integration=checks.filter(check=>check.phase==='integration');assert.equal(integration.length,registry.length);
-  assert.ok(integration.every(check=>check.argv[1]===`/checker/${config.public_runner}`));
-  assert.throws(()=>loadAdaptiveSharedPreparation({rootDir:root,manifest:config,
-    preparationDirectory:reused.directory,input:{...input,requirement_descriptions:input.requirement_descriptions.map((entry,index)=>
-      index?entry:{...entry,text:entry.text+' Altered source requirement.'})}}),{code:'ADAPTIVE_PREPARATION_REUSE_INPUT_DRIFT'});
   const directory=fixtureDirectory(t), badPath=join(directory,'bad-manifest.json');
   writeFileSync(badPath,JSON.stringify({...read(manifestPath),profile_policy:{...config.profile_policy,account_probe_sha256:'0'.repeat(64)}}));
   assert.throws(()=>loadAdaptiveRunManifest(badPath,root),{code:'ADAPTIVE_PROFILE_ACCOUNT_BINDING'});

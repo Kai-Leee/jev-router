@@ -59,14 +59,42 @@ function fixture(t, {sourceRoot=root, mutate=()=>{}, failProvider=null, manifest
 }
 
 test('v10 requires its opt-in binding and preserves explicit legacy v9 loading',t=>{
-  const directory=temporary(t), path=join(directory,'manifest.json'), value=config();
+  const v1='docs/orchestration/contracts/jev-transmission-preflight.v1.json';
+  const directory=temporary(t), path=join(directory,'manifest.json');
+  const value={...config(), transmission_preflight:{mode:'required', contract:v1, sha256:jevTransmissionPolicy(v1).source.sha256}};
   writeFileSync(path,JSON.stringify(value));assert.equal(loadAdaptiveRunManifest(path,root).schema_version,'adaptive-dag-comparison/v10');
   for(const change of [v=>{delete v.transmission_preflight;},v=>{v.transmission_preflight.mode='optional';},
-    v=>{v.transmission_preflight.sha256='0'.repeat(64);},v=>{delete v.failure_recovery;},v=>{delete v.preserved_source;}]) {
+    v=>{v.transmission_preflight.sha256='0'.repeat(64);},v=>{delete v.failure_recovery;},v=>{delete v.preserved_source;},
+    v=>{v.transmission_preflight=binding();},v=>{v.runtime_speed={model_lookup:'per_session',budget_lock:'ledger_op',public_check_concurrency:2,readiness_batch:true};}]) {
     const changed=structuredClone(value);change(changed);writeFileSync(path,JSON.stringify(changed));
     assert.throws(()=>loadAdaptiveRunManifest(path,root));
   }
   assert.equal(loadAdaptiveRunManifest(join(root,'benchmarks/e2e-swe/manifests/d073-inferred-v2.json'),root).schema_version,'adaptive-dag-comparison/v9');
+});
+
+test('v11 binds policy v2, the v4 ledger and validated runtime speed options',t=>{
+  const directory=temporary(t), path=join(directory,'manifest.json');
+  const value=read(join(root,'benchmarks/e2e-swe/manifests/d076-preserved-repair.json'));
+  assert.deepEqual(value.transmission_preflight,binding());
+  writeFileSync(path,JSON.stringify(value));assert.equal(loadAdaptiveRunManifest(path,root).schema_version,'adaptive-dag-comparison/v11');
+  const v1='docs/orchestration/contracts/jev-transmission-preflight.v1.json';
+  for(const change of [v=>{v.transmission_preflight={mode:'required',contract:v1,sha256:jevTransmissionPolicy(v1).source.sha256};},
+    v=>{v.jev_budget.schema_version='jev-token-budget/v3';},v=>{delete v.runtime_speed;},v=>{v.runtime_speed.budget_lock='call';},
+    v=>{v.runtime_speed.public_check_concurrency=0;},v=>{v.runtime_speed.public_check_concurrency=9;},
+    v=>{v.runtime_speed.readiness_batch='yes';},v=>{v.runtime_speed.extra=true;}]) {
+    const changed=structuredClone(value);change(changed);writeFileSync(path,JSON.stringify(changed));
+    assert.throws(()=>loadAdaptiveRunManifest(path,root));
+  }
+});
+
+test('historical policy v1 stays loadable but its D075 pins now report source drift',()=>{
+  const v1='docs/orchestration/contracts/jev-transmission-preflight.v1.json', request=ordinary();
+  const report=assessJevTransmission(request,{stage:'split',expectedRequestSha256:requestHash(request),
+    expectedPolicySha256:jevTransmissionPolicy(v1).source.sha256,policyPath:v1});
+  assert.equal(report.passed,false);assert.ok(report.reason_codes.includes('JEV_TRANSMISSION_SOURCE_DRIFT'));
+  assert.equal(report.policy_source.path,v1);
+  const current=assessJevTransmission(request,options(request,'split'));
+  assert.equal(current.passed,true);assert.equal(current.policy_source.path,JEV_TRANSMISSION_POLICY_PATH);
 });
 
 test('the gate distinguishes fixed owner checks from generic stages and binds model/request/policy/official limits',()=>{

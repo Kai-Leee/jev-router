@@ -35,7 +35,16 @@ const equal = (left, right) => JSON.stringify(left) === JSON.stringify(right);
 const uncertain = value => value?.outcome_uncertain === true || value?.outcomeUncertain === true || value?.uncertain === true || ['unknown', 'uncertain'].includes(value?.status);
 const codeOf = error => /^[A-Z0-9_]{1,100}$/.test(error?.code ?? error?.message ?? '') ? error.code ?? error.message : 'ADAPTIVE_RUN_FAILED';
 const relativePath = value => typeof value === 'string' && /^[A-Za-z0-9_.-]+(?:\/[A-Za-z0-9_.-]+)*$/.test(value) && !value.split('/').some(part => ['.', '..'].includes(part));
-const transmissionManifest = manifest => manifest.schema_version === 'adaptive-dag-comparison/v10';
+const speedManifest = manifest => manifest.schema_version === 'adaptive-dag-comparison/v11';
+const transmissionManifest = manifest => speedManifest(manifest) || manifest.schema_version === 'adaptive-dag-comparison/v10';
+const RUNTIME_SPEED_KEYS = ['budget_lock', 'model_lookup', 'public_check_concurrency', 'readiness_batch'];
+/** v11 runtime speed options; every other manifest keeps the historical serial/per-call behavior. */
+export const adaptiveRuntimeSpeed = manifest => speedManifest(manifest) ? {...manifest.runtime_speed}
+  : {model_lookup: 'per_call', budget_lock: 'call', public_check_concurrency: 1, readiness_batch: false};
+export const adaptiveSpeedSessionOptions = manifest => {
+  const speed = adaptiveRuntimeSpeed(manifest);
+  return {modelLookup: speed.model_lookup, budgetLock: speed.budget_lock};
+};
 const focusedOwnerManifest = manifest => transmissionManifest(manifest) || manifest.schema_version === 'adaptive-dag-comparison/v9';
 const inferredManifest = manifest => focusedOwnerManifest(manifest) || manifest.schema_version === 'adaptive-dag-comparison/v8';
 const inferredPolicy = manifest => focusedOwnerManifest(manifest) ? 'inferred-v2' : 'inferred-v1';
@@ -57,7 +66,10 @@ const ARTIFACT_REUSE_MUTABLE_SOURCES = Object.freeze([...REPAIR_REUSE_MUTABLE_SO
   'benchmarks/e2e-swe/public-checks/extensions/cli_config.py']);
 const CAUSAL_REUSE_MUTABLE_SOURCES = Object.freeze([...ARTIFACT_REUSE_MUTABLE_SOURCES,
   'src/orchestration/artifact-transport.mjs', 'src/orchestration/adaptive-failure.mjs']);
-const reuseMutableSources = manifest => causalManifest(manifest) ? CAUSAL_REUSE_MUTABLE_SOURCES : artifactRepairManifest(manifest) ? ARTIFACT_REUSE_MUTABLE_SOURCES
+// v11 also changed telemetry.mjs (session model cache, async ledger operations); earlier manifests keep their lists.
+const SPEED_REUSE_MUTABLE_SOURCES = Object.freeze([...CAUSAL_REUSE_MUTABLE_SOURCES, 'src/benchmark/telemetry.mjs']);
+const reuseMutableSources = manifest => speedManifest(manifest) ? SPEED_REUSE_MUTABLE_SOURCES
+  : causalManifest(manifest) ? CAUSAL_REUSE_MUTABLE_SOURCES : artifactRepairManifest(manifest) ? ARTIFACT_REUSE_MUTABLE_SOURCES
   : repairManifest(manifest) ? REPAIR_REUSE_MUTABLE_SOURCES : CATALOG_REUSE_MUTABLE_SOURCES;
 const REPAIR_SOURCE_PATHS = Object.freeze(['src/orchestration/adaptive-repair-projection.mjs',
   'src/orchestration/adaptive-repair-scope.mjs', 'docs/orchestration/contracts/adaptive-repair-projection.v1.json']);
@@ -68,17 +80,17 @@ export const ADAPTIVE_ARMS = Object.freeze({claude_all: {split: 'claude', relati
 
 export function loadAdaptiveRunManifest(path = join(ROOT, 'benchmarks/e2e-swe/manifests/d066-adaptive.json'), rootDir = ROOT) {
   const value = read(path), limits = value.limits;
-  const v8 = inferredManifest(value), v9 = focusedOwnerManifest(value), v10 = transmissionManifest(value);
+  const v8 = inferredManifest(value), v9 = focusedOwnerManifest(value), v10 = transmissionManifest(value), v11 = speedManifest(value);
   const fixed = {max_units: 30, max_artifacts: 60, max_files: 60, max_leaves: 30, max_depth: 3, max_nodes: 59,
     max_relation_pairs: 435, max_decisions: 128, relation_batch_size: 32, max_request_bytes: v8 ? 256000 : 240000,
     max_concurrency: 2, maximum_workers: 30, minimum_workers: 2, wall_timeout_seconds: 14400};
   const v2 = parallelManifest(value), v3 = repairManifest(value), v4 = artifactRepairManifest(value), v5 = compactRepairManifest(value), v6 = balancedManifest(value), v7 = causalManifest(value), reuse = value.catalog_reuse;
-  if (!['adaptive-dag-comparison/v1', 'adaptive-dag-comparison/v2', 'adaptive-dag-comparison/v3', 'adaptive-dag-comparison/v4', 'adaptive-dag-comparison/v5', 'adaptive-dag-comparison/v6', 'adaptive-dag-comparison/v7', 'adaptive-dag-comparison/v8', 'adaptive-dag-comparison/v9', 'adaptive-dag-comparison/v10'].includes(value.schema_version)
+  if (!['adaptive-dag-comparison/v1', 'adaptive-dag-comparison/v2', 'adaptive-dag-comparison/v3', 'adaptive-dag-comparison/v4', 'adaptive-dag-comparison/v5', 'adaptive-dag-comparison/v6', 'adaptive-dag-comparison/v7', 'adaptive-dag-comparison/v8', 'adaptive-dag-comparison/v9', 'adaptive-dag-comparison/v10', 'adaptive-dag-comparison/v11'].includes(value.schema_version)
       || !equal(value.arms, v8 ? ['jev_profile'] : v7 ? ['claude_all', 'jev_all', 'jev_profile'] : v3 ? ['jev_all'] : Object.keys(ADAPTIVE_ARMS).filter(arm => arm !== 'jev_profile'))
       || value.worker_profile?.model !== 'claude-opus-5-5' || value.worker_profile?.effort !== 'medium'
       || Object.entries(fixed).some(([key, expected]) => limits?.[key] !== expected)
       || limits?.planning_input_tokens !== (v2 ? null : 700000)
-      || (v2 && (value.cohort_concurrency !== (v8 ? 1 : v7 ? 3 : v3 ? 1 : 4) || value.jev_budget?.schema_version !== 'jev-token-budget/v3'
+      || (v2 && (value.cohort_concurrency !== (v8 ? 1 : v7 ? 3 : v3 ? 1 : 4) || value.jev_budget?.schema_version !== (v11 ? 'jev-token-budget/v4' : 'jev-token-budget/v3')
         || value.jev_budget.max_input_tokens !== null || reuse?.schema_version !== (v7 ? 'adaptive-catalog-reuse/v4' : v4 ? 'adaptive-catalog-reuse/v3' : v3 ? 'adaptive-catalog-reuse/v2' : 'adaptive-catalog-reuse/v1')
         || !relativePath(reuse.preparation_directory) || !relativePath(reuse.original_manifest)
         || !['result_sha256', 'catalog_file_sha256', 'source_pins_sha256', 'prepared_request_sha256', 'provider_request_sha256', 'original_manifest_sha256']
@@ -110,7 +122,14 @@ export function loadAdaptiveRunManifest(path = join(ROOT, 'benchmarks/e2e-swe/ma
       || !['max_file_bytes', 'max_total_bytes'].every(key => Number.isSafeInteger(limits[key]) && limits[key] > 0)) fail('ADAPTIVE_MANIFEST_INVALID');
   validateBudgetConfig(value.jev_budget, rootDir);
   if (v10) {
-    validateJevTransmissionBinding(value.transmission_preflight);
+    const gate = validateJevTransmissionBinding(value.transmission_preflight);
+    if (gate.contract !== `docs/orchestration/contracts/jev-transmission-preflight.${v11 ? 'v2' : 'v1'}.json`) fail('JEV_TRANSMISSION_BINDING_INVALID');
+    const speed = value.runtime_speed;
+    if (v11 ? (!object(speed) || !equal(Object.keys(speed).sort(), RUNTIME_SPEED_KEYS)
+        // The v4 ledger requires per-operation locking (reservations carry leases).
+        || !['per_call', 'per_session'].includes(speed.model_lookup) || speed.budget_lock !== 'ledger_op'
+        || !Number.isSafeInteger(speed.public_check_concurrency) || speed.public_check_concurrency < 1 || speed.public_check_concurrency > 8
+        || typeof speed.readiness_batch !== 'boolean') : speed !== undefined) fail('ADAPTIVE_RUNTIME_SPEED_INVALID');
     const recovery = value.failure_recovery, preserved = value.preserved_source;
     if (!equal(recovery, {mode:'required', policy:'evidence-loop-v1',
       contract:'docs/orchestration/contracts/adaptive-failure-recovery.v1.json', sha256:recovery?.sha256})
@@ -342,7 +361,8 @@ export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirect
         checks:structuredClone(transmissionChecks), recovery:recoveryProof} : null;
       const checkTransmission = (phase, body = prepared.body) => {
         const check = {...assessJevTransmission(body, {stage:context.stage, observedModel:observedJevModel,
-          expectedRequestSha256:sha(prepared.serialized), expectedPolicySha256:transmission.sha256, rootDir}),
+          expectedRequestSha256:sha(prepared.serialized), expectedPolicySha256:transmission.sha256, rootDir,
+          policyPath:transmission.contract}),
           phase, reservation_created:reservationCreated, provider_decide_called:providerDecideCalled,
           checked_at:new Date().toISOString(), no_post_at_check:!providerDecideCalled};
         const reportPath = `calls/${id}.transmission-preflight.${phase}.json`;
@@ -542,7 +562,9 @@ export function assertAdaptiveCohortCapacity({manifest, rootDir = ROOT, armIndex
   const remainingArms = manifest.arms.slice(armIndex).filter(arm => Object.values(ADAPTIVE_ARMS[arm]).includes('jev')).length;
   if (parallelManifest(manifest)) {
     if (manifest.limits.planning_input_tokens !== null || manifest.jev_budget.max_input_tokens !== null
-        || state.schema_version !== 'jev-token-budget-snapshot/v3' || state.unlimited !== true
+        || !['jev-token-budget-snapshot/v3', 'jev-token-budget-snapshot/v4'].includes(state.schema_version)
+        || state.schema_version !== manifest.jev_budget.schema_version.replace('jev-token-budget/', 'jev-token-budget-snapshot/')
+        || state.unlimited !== true
         || state.token_limit !== null || state.remaining_input_tokens !== null || state.blocked_code || state.reservations_pending) {
       fail('ADAPTIVE_COHORT_BUDGET_INSUFFICIENT');
     }
@@ -651,7 +673,7 @@ export async function prepareAdaptiveSharedCatalog({rootDir = ROOT, manifest = l
     const prepared = planner.prepareAdaptiveCatalog({...input, limits: manifest.limits});
     context.save('catalog-preparation.json', prepared);
     session = createAdaptiveProviderSession({rootDir, run_id: context.run_id, runDirectory: context.directory, manifest,
-      remaining: context.remaining, record: context.record, abortSignal: context.signal, adapters});
+      remaining: context.remaining, record: context.record, abortSignal: context.signal, adapters, ...adaptiveSpeedSessionOptions(manifest)});
     const response = await session.claude({purpose: 'catalog', prompt: prepared.prompt, schema: prepared.schema, system: CATALOG_SYSTEM});
     try { catalog = response.completion.structured_output ?? JSON.parse(response.completion.result); }
     catch { fail('ADAPTIVE_CATALOG_JSON_INVALID'); }
@@ -910,7 +932,7 @@ export async function runAdaptiveArm({rootDir = ROOT, manifest = loadAdaptiveRun
     const registry = loadPublicAuditInputs(rootDir, {registryPath: manifest.public_registry, runnerPath: manifest.public_runner}).registry;
     const checks = buildAdaptiveChecks({catalog: prepared.catalog, registry, manifest, source_ref: input.source_ref});
     session = createAdaptiveProviderSession({rootDir, manifest, run_id: context.run_id, runDirectory: context.directory,
-      remaining: context.remaining, record: context.record, abortSignal: context.signal, adapters});
+      remaining: context.remaining, record: context.record, abortSignal: context.signal, adapters, ...adaptiveSpeedSessionOptions(manifest)});
     const decide = (request, decisionContext) => session.decide(ADAPTIVE_ARMS[arm][decisionContext.stage], request, decisionContext);
     const planningStarted = context.elapsed();
     planning = await planner.planAdaptiveDag({...input, catalog: prepared.catalog, checks, profile_id: manifest.worker_profile.id,
@@ -934,7 +956,7 @@ export async function runAdaptiveArm({rootDir = ROOT, manifest = loadAdaptiveRun
     await context.record({event: 'adaptive_planning_completed', started_at_ms: planningStarted, finished_at_ms: context.elapsed(),
       planning_stats: planning.stats ?? null, provider_decisions: session.decision_count()});
     const callbacks = createWorkerAndChecks({rootDir, manifest, context, session, input, catalog: prepared.catalog, registry, preflight, adapters,
-      arm, profileSelections});
+      arm, profileSelections, readinessBatch: adaptiveRuntimeSpeed(manifest).readiness_batch});
     const {runAdaptiveDagExecution} = await import('../orchestration/adaptive-dag-execution.mjs');
     const repairProjection = repairManifest(manifest) ? await import('../orchestration/adaptive-repair-projection.mjs') : null;
     const artifactRepair = inferredManifest(manifest) ? await import('../orchestration/adaptive-inferred-repair.mjs')
@@ -949,6 +971,7 @@ export async function runAdaptiveArm({rootDir = ROOT, manifest = loadAdaptiveRun
       checkerFiles: [join(rootDir, 'src/benchmark/adaptive-dag-runner.mjs'), join(rootDir, 'src/orchestration/adaptive-dag-execution.mjs'),
         ...filesUnder(join(rootDir, manifest.public_checker_root))], environment: {id: manifest.public_environment_ref},
       ...callbacks, testRequirements, maxRepairRounds: manifest.max_repair_rounds, record: context.record,
+      publicCheckConcurrency: adaptiveRuntimeSpeed(manifest).public_check_concurrency,
       ...(arm === 'jev_profile' ? {prepareRoundPlan: selectProfiles} : {}),
       ...(inferredManifest(manifest) ? {decideRepairOwners: (request, metadata) => session.decide('jev', request, metadata)} : {}),
       ...(repairManifest(manifest) ? {repairScopePolicy: focusedOwnerManifest(manifest) ? 'public-inferred-owner-v2' : inferredManifest(manifest) ? 'public-inferred-owner-v1' : causalManifest(manifest) ? 'public-causal-v1' : 'minimal-public-v1', projectRepairFailure: repairProjection.projectAdaptiveRepairFailure} : {}),

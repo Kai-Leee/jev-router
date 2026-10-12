@@ -10,7 +10,12 @@ import {validateJevPrompt, jevPromptPolicy} from './jev-prompt-preflight.mjs';
 import {validateRepairInputState} from './adaptive-repair-input.mjs';
 
 const ROOT = resolve(import.meta.dirname, '../..');
-export const JEV_TRANSMISSION_POLICY_PATH = 'docs/orchestration/contracts/jev-transmission-preflight.v1.json';
+// v1 keeps the D075 source pins for history (reproduce it at commit 5f78c6c); v2 is the active policy.
+// Each policy is still verified by its own file hash and source pins.
+export const JEV_TRANSMISSION_POLICY_PATHS = Object.freeze({
+  'docs/orchestration/contracts/jev-transmission-preflight.v1.json': 'jev-transmission-preflight-policy/v1',
+  'docs/orchestration/contracts/jev-transmission-preflight.v2.json': 'jev-transmission-preflight-policy/v2'});
+export const JEV_TRANSMISSION_POLICY_PATH = 'docs/orchestration/contracts/jev-transmission-preflight.v2.json';
 export const JEV_TRANSMISSION_SOURCE_PATHS = Object.freeze([
   'src/orchestration/jev-transmission-preflight.mjs', 'src/benchmark/adaptive-dag-runner.mjs',
   'src/benchmark/telemetry.mjs', 'src/orchestration/jev-prompt-preflight.mjs',
@@ -24,32 +29,32 @@ export const JEV_TRANSMISSION_SOURCE_PATHS = Object.freeze([
 const STAGES = ['split', 'relations', 'repair', 'profiles', 'repair_owners'];
 const sha = value => createHash('sha256').update(value).digest('hex');
 const hashValue = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
-let cachedPolicy;
-const loadPolicy = () => {
-  if (!cachedPolicy) {
-    const bytes = readFileSync(join(ROOT, JEV_TRANSMISSION_POLICY_PATH));
-    cachedPolicy = {policy:JSON.parse(bytes), policyHash:sha(bytes)};
-  }
-  return cachedPolicy;
-};
+const cachedPolicies = new Map();
 const fail = code => {throw Object.assign(new Error(code), {code, outcome_uncertain:false, outcomeUncertain:false});};
+const loadPolicy = (path = JEV_TRANSMISSION_POLICY_PATH) => {
+  if (!Object.hasOwn(JEV_TRANSMISSION_POLICY_PATHS, path)) fail('JEV_TRANSMISSION_BINDING_INVALID');
+  if (!cachedPolicies.has(path)) {
+    const bytes = readFileSync(join(ROOT, path));
+    cachedPolicies.set(path, {policy:JSON.parse(bytes), policyHash:sha(bytes)});
+  }
+  return cachedPolicies.get(path);
+};
 
-export function jevTransmissionPolicy() {
-  const {policy, policyHash} = loadPolicy();
-  return {...structuredClone(policy), source:{path:JEV_TRANSMISSION_POLICY_PATH, sha256:policyHash}};
+export function jevTransmissionPolicy(path = JEV_TRANSMISSION_POLICY_PATH) {
+  const {policy, policyHash} = loadPolicy(path);
+  return {...structuredClone(policy), source:{path, sha256:policyHash}};
 }
 
 export function validateJevTransmissionBinding(binding) {
-  const {policyHash} = loadPolicy();
   if (!binding || !same(Object.keys(binding).sort(), ['contract','mode','sha256']) || binding.mode !== 'required'
-    || binding.contract !== JEV_TRANSMISSION_POLICY_PATH || !hashValue(binding.sha256)) fail('JEV_TRANSMISSION_BINDING_INVALID');
-  if (binding.sha256 !== policyHash) fail('JEV_TRANSMISSION_POLICY_CHANGED');
+    || !Object.hasOwn(JEV_TRANSMISSION_POLICY_PATHS, binding.contract) || !hashValue(binding.sha256)) fail('JEV_TRANSMISSION_BINDING_INVALID');
+  if (binding.sha256 !== loadPolicy(binding.contract).policyHash) fail('JEV_TRANSMISSION_POLICY_CHANGED');
   return {contract:binding.contract, sha256:binding.sha256, mode:binding.mode};
 }
 
-function sourceIntegrity(rootDir) {
-  const {policy, policyHash} = loadPolicy();
-  const valid = policy.schema_version === 'jev-transmission-preflight-policy/v1' && policy.enforcement === 'required'
+function sourceIntegrity(rootDir, path) {
+  const {policy, policyHash} = loadPolicy(path);
+  const valid = policy.schema_version === JEV_TRANSMISSION_POLICY_PATHS[path] && policy.enforcement === 'required'
     && policy.input_policy === 'v4' && policy.prompt_policy?.version === 'v2'
     && policy.prompt_policy.contract === 'docs/orchestration/contracts/jev-prompt-policy.v2.json'
     && same(policy.stages, STAGES) && same(policy.source_pins?.map(row => row.path), JEV_TRANSMISSION_SOURCE_PATHS)
@@ -62,7 +67,7 @@ function sourceIntegrity(rootDir) {
     let current = null; try {current = sha(readFileSync(join(rootDir, row.path)));} catch { /* Fixed public source paths only. */ }
     return {...row, current_sha256:current, unchanged:hashValue(row.sha256) && current === row.sha256};
   });
-  let currentPolicy = null; try {currentPolicy = sha(readFileSync(join(rootDir, JEV_TRANSMISSION_POLICY_PATH)));} catch {}
+  let currentPolicy = null; try {currentPolicy = sha(readFileSync(join(rootDir, path)));} catch {}
   const passed = sources.every(row => row.unchanged) && currentPolicy === policyHash;
   return {passed, reason_code:passed ? null : 'JEV_TRANSMISSION_SOURCE_DRIFT', sources,
     policy_file_unchanged:currentPolicy === policyHash};
@@ -70,9 +75,9 @@ function sourceIntegrity(rootDir) {
 
 /** Pure local gate. No key lookup, model request, reservation, handler or retry. */
 export function assessJevTransmission(request, {stage=null, observedModel=null, expectedRequestSha256=null,
-  expectedPolicySha256=null, rootDir=ROOT} = {}) {
-  const {policy, policyHash} = loadPolicy();
-  const integrity = sourceIntegrity(rootDir), reasons = [];
+  expectedPolicySha256=null, rootDir=ROOT, policyPath=JEV_TRANSMISSION_POLICY_PATH} = {}) {
+  const {policy, policyHash} = loadPolicy(policyPath);
+  const integrity = sourceIntegrity(rootDir, policyPath), reasons = [];
   if (!integrity.passed) reasons.push(integrity.reason_code);
   if (!hashValue(expectedPolicySha256) || expectedPolicySha256 !== policyHash) reasons.push('JEV_TRANSMISSION_POLICY_CHANGED');
   if (!hashValue(expectedRequestSha256)) reasons.push('JEV_TRANSMISSION_REQUEST_UNBOUND');
@@ -102,7 +107,7 @@ export function assessJevTransmission(request, {stage=null, observedModel=null, 
   }
   return {schema_version:'jev-transmission-preflight/v1', mode:'offline_pre_send', stage,
     passed:reasons.length === 0, reason_codes:[...new Set(reasons)],
-    request_sha256:input.canonical_request_sha256, policy_source:{path:JEV_TRANSMISSION_POLICY_PATH, sha256:policyHash},
+    request_sha256:input.canonical_request_sha256, policy_source:{path:policyPath, sha256:policyHash},
     source_integrity:integrity, validation_scope:{adapter:'current_subset', admission_policy:'v4',
       fixed_prompt:fixed ? 'projected_inferred_v2_only' : 'unsupported_for_stage',
       fixed_prompt_checked:prompt !== null, fixed_prompt_passed:prompt?.passed ?? null,

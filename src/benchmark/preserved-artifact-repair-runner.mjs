@@ -10,16 +10,17 @@ import {buildCausalRepairDecisionContext} from '../orchestration/adaptive-causal
 import {applyAdaptiveProfileSelections} from '../orchestration/adaptive-profile-selection.mjs';
 import {chooseAdaptiveRepair, validateAdaptiveCatalog} from '../orchestration/adaptive-dag-planner.mjs';
 import {adaptiveOutcomeUncertain, adaptiveTerminalCause} from '../orchestration/adaptive-failure.mjs';
-import {adaptiveUsageSummary, assertAdaptiveCohortCapacity, buildAdaptiveChecks, createAdaptiveProviderSession,
-  createAdaptiveRunContext, createAdaptiveWorkerAndChecks, loadAdaptivePublicInput, loadAdaptiveRunManifest,
+import {adaptiveRuntimeSpeed, adaptiveSpeedSessionOptions, adaptiveUsageSummary, assertAdaptiveCohortCapacity, buildAdaptiveChecks,
+  createAdaptiveProviderSession, createAdaptiveRunContext, createAdaptiveWorkerAndChecks, loadAdaptivePublicInput, loadAdaptiveRunManifest,
   loadAdaptiveTestRequirements, preflightAdaptiveRun, withAdaptiveSettledBudget} from './adaptive-dag-runner.mjs';
 
 const ROOT = resolve(import.meta.dirname, '../..');
-const DEFAULT_MANIFEST = 'benchmarks/e2e-swe/manifests/d075-preserved-repair.json';
-const recoveryManifest = manifest => manifest.schema_version === 'adaptive-dag-comparison/v10';
+const DEFAULT_MANIFEST = 'benchmarks/e2e-swe/manifests/d076-preserved-repair.json';
+const speedManifest = manifest => manifest.schema_version === 'adaptive-dag-comparison/v11';
+const recoveryManifest = manifest => speedManifest(manifest) || manifest.schema_version === 'adaptive-dag-comparison/v10';
 const causalManifest = manifest => manifest.schema_version === 'adaptive-dag-comparison/v7';
-const compactInferredManifest = manifest => ['adaptive-dag-comparison/v9', 'adaptive-dag-comparison/v10'].includes(manifest.schema_version);
-const inferredManifest = manifest => ['adaptive-dag-comparison/v8', 'adaptive-dag-comparison/v9', 'adaptive-dag-comparison/v10'].includes(manifest.schema_version);
+const compactInferredManifest = manifest => recoveryManifest(manifest) || manifest.schema_version === 'adaptive-dag-comparison/v9';
+const inferredManifest = manifest => compactInferredManifest(manifest) || manifest.schema_version === 'adaptive-dag-comparison/v8';
 const DESCRIPTION_PROTOCOL = 'benchmarks/e2e-swe/public-checks/description-provenance.v1.json';
 const clone = value => structuredClone(value);
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -461,7 +462,7 @@ export function preservedRepairTerminalState(execution, remaining) {
 export async function executePreservedArtifactRepair({source, run_id, runDirectory, checkerRoot, checkerFiles,
   environment, probeEnvironment, checkTask, executeRepairTask, decideRepair, assertionContract,
   decideRepairOwners, prepareRoundPlan, maxRepairRounds = 2, testRequirements = {},
-  failureRecoveryPolicy, recoverFailure, repairInputPolicy,
+  failureRecoveryPolicy, recoverFailure, repairInputPolicy, batchChecks, publicCheckConcurrency,
   repairScopePolicy = 'minimal-public-v1', artifactRepairPolicy = 'artifact-v2', record = async () => {}}) {
   if (![executeRepairTask, decideRepair, checkTask, probeEnvironment].every(value => typeof value === 'function')) fail('PRESERVED_CALLBACKS_REQUIRED');
   if (!Number.isSafeInteger(maxRepairRounds) || maxRepairRounds < 1 || maxRepairRounds > 2) fail('PRESERVED_REPAIR_LIMIT');
@@ -521,6 +522,8 @@ export async function executePreservedArtifactRepair({source, run_id, runDirecto
     artifactBindings: source.planning.artifactBindings, run_id, runDirectory, checkerRoot, checkerFiles, environment,
     probeEnvironment, checkTask, assertionContract, testRequirements, maxRepairRounds,
     repairScopePolicy, artifactRepairPolicy, record: forward,
+    ...(batchChecks !== undefined ? {batchChecks} : {}),
+    ...(publicCheckConcurrency !== undefined ? {publicCheckConcurrency} : {}),
     ...(recovering ? {failureRecoveryPolicy, repairInputPolicy,
       historicalRepairHistory: source.historical_repair_history ?? null,
       recoverFailure: async (request, context) => {
@@ -600,15 +603,17 @@ export async function runPreservedArtifactRepair({rootDir = ROOT,
       || manifest.repair_policy?.owner_inference_contract !== `docs/orchestration/contracts/adaptive-inferred-repair.${inferredVersion}.json`))) fail('PRESERVED_V2_OR_CAUSAL_MANIFEST_REQUIRED');
   if (recovering) {
     const gate = manifest.transmission_preflight, recovery = manifest.failure_recovery;
-    if (gate?.mode !== 'required' || gate.contract !== 'docs/orchestration/contracts/jev-transmission-preflight.v1.json'
+    if (gate?.mode !== 'required'
+      || gate.contract !== `docs/orchestration/contracts/jev-transmission-preflight.${speedManifest(manifest) ? 'v2' : 'v1'}.json`
       || recovery?.mode !== 'required' || recovery.policy !== 'evidence-loop-v1'
       || recovery.contract !== 'docs/orchestration/contracts/adaptive-failure-recovery.v1.json'
       || [gate, recovery].some(policy => !/^[a-f0-9]{64}$/.test(policy.sha256 ?? '')
         || hash(readFileSync(join(rootDir, policy.contract))) !== policy.sha256)) fail('PRESERVED_RECOVERY_MANIFEST_REQUIRED');
   }
   const target = typeof runDir === 'string' ? resolve(runDir) : '';
-  if (dirname(target) !== join(resolve(rootDir), 'benchmark-runs') || !(recovering ? /^d075-[A-Za-z0-9_.-]+$/ : inferred ? /^d073-[A-Za-z0-9_.-]+$/ : causal ? /^d071-[A-Za-z0-9_.-]+$/ : /^d070-[A-Za-z0-9_.-]+$/).test(basename(target))) {
-    fail(recovering ? 'PRESERVED_FRESH_D075_RUN_REQUIRED' : inferred ? 'PRESERVED_FRESH_D073_RUN_REQUIRED' : causal ? 'PRESERVED_FRESH_D071_RUN_REQUIRED' : 'PRESERVED_FRESH_D070_RUN_REQUIRED');
+  const speed = speedManifest(manifest);
+  if (dirname(target) !== join(resolve(rootDir), 'benchmark-runs') || !(speed ? /^d076-[A-Za-z0-9_.-]+$/ : recovering ? /^d075-[A-Za-z0-9_.-]+$/ : inferred ? /^d073-[A-Za-z0-9_.-]+$/ : causal ? /^d071-[A-Za-z0-9_.-]+$/ : /^d070-[A-Za-z0-9_.-]+$/).test(basename(target))) {
+    fail(speed ? 'PRESERVED_FRESH_D076_RUN_REQUIRED' : recovering ? 'PRESERVED_FRESH_D075_RUN_REQUIRED' : inferred ? 'PRESERVED_FRESH_D073_RUN_REQUIRED' : causal ? 'PRESERVED_FRESH_D071_RUN_REQUIRED' : 'PRESERVED_FRESH_D070_RUN_REQUIRED');
   }
   if (typeof sourceRunDirectory !== 'string' || inside(resolve(sourceRunDirectory), target)) fail('PRESERVED_SOURCE_DESTINATION_OVERLAP');
   const context = createAdaptiveRunContext({rootDir, manifest, runDir: target, abortSignal: adapters.abortSignal});
@@ -650,10 +655,11 @@ export async function runPreservedArtifactRepair({rootDir = ROOT,
     context.save('preflight.json', preflight);
     if (!preflight.live_ready) fail('ADAPTIVE_PREFLIGHT_BLOCKED');
     session = createAdaptiveProviderSession({rootDir, manifest, run_id: context.run_id, runDirectory: context.directory,
-      remaining: context.remaining, record: context.record, abortSignal: context.signal, adapters});
-    const profileSelections = new Map();
+      remaining: context.remaining, record: context.record, abortSignal: context.signal, adapters, ...adaptiveSpeedSessionOptions(manifest)});
+    const profileSelections = new Map(), runtimeSpeed = adaptiveRuntimeSpeed(manifest);
     const callbacks = createAdaptiveWorkerAndChecks({rootDir, manifest, context, session, input: source.input,
-      catalog: source.planning.catalog, registry: source.registry, preflight, adapters, arm, profileSelections});
+      catalog: source.planning.catalog, registry: source.registry, preflight, adapters, arm, profileSelections,
+      readinessBatch: runtimeSpeed.readiness_batch});
     const inferredRepair = inferred ? await import('../orchestration/adaptive-inferred-repair.mjs') : null;
     const recoverFailure = recovering ? (await import('../orchestration/adaptive-repair-input.mjs')).createRepairInputRecovery() : null;
     const buildInferredState = inferred ? (compactInferredManifest(manifest)
@@ -670,6 +676,7 @@ export async function runPreservedArtifactRepair({rootDir = ROOT,
         ...filesUnder(join(rootDir, manifest.public_checker_root))], environment: {id: manifest.public_environment_ref},
       probeEnvironment: callbacks.probeEnvironment, checkTask: callbacks.checkTask, executeRepairTask: callbacks.executeTask,
       assertionContract, maxRepairRounds: manifest.max_repair_rounds, testRequirements, record: context.record,
+      batchChecks: callbacks.batchChecks, publicCheckConcurrency: runtimeSpeed.public_check_concurrency,
       ...(recovering ? {failureRecoveryPolicy: manifest.failure_recovery.policy, repairInputPolicy: 'evidence-v1', recoverFailure} : {}),
       ...(inferred ? {repairScopePolicy: `public-inferred-owner-${inferredVersion}`, artifactRepairPolicy: `inferred-${inferredVersion}`, prepareRoundPlan,
         decideRepairOwners: (body, decisionContext) => session.decide('jev', body, decisionContext)}

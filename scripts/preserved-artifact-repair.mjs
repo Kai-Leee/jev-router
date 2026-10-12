@@ -6,7 +6,7 @@ import {inspectPreservedRepairSource, runPreservedArtifactRepair} from '../src/b
 const rootDir = resolve(import.meta.dirname, '..');
 try {
   const args = process.argv.slice(2); let spend = false, runDir = null, sourceRunDirectory = null;
-  let manifestPath = 'benchmarks/e2e-swe/manifests/d075-preserved-repair.json';
+  let manifestPath = 'benchmarks/e2e-swe/manifests/d076-preserved-repair.json';
   const seen = new Set();
   for (let index = 0; index < args.length; index++) {
     const arg = args[index];

@@ -138,8 +138,9 @@ export async function preflightDagRun({rootDir = ROOT, manifest, probe = false, 
   const config = loadConfig(), blockers = [];
   if (audit.missing_test_count || audit.missing_requirement_ids.length) blockers.push('PUBLIC_CHECK_MAPPING_INCOMPLETE');
   if (budget.blocked_code || budget.reservations_pending) blockers.push(budget.blocked_code ?? 'BUDGET_OUTSTANDING');
-  const unlimited = manifest.jev_budget.schema_version === 'jev-token-budget/v3' && manifest.jev_budget.max_input_tokens === null
-    && budget.schema_version === 'jev-token-budget-snapshot/v3' && budget.unlimited === true
+  const budgetVersion = manifest.jev_budget.schema_version.split('/')[1];
+  const unlimited = ['v3', 'v4'].includes(budgetVersion) && manifest.jev_budget.max_input_tokens === null
+    && budget.schema_version === `jev-token-budget-snapshot/${budgetVersion}` && budget.unlimited === true
     && budget.token_limit === null && budget.remaining_input_tokens === null;
   if (!unlimited && (budget.remaining_input_tokens === null || budget.remaining_input_tokens < manifest.jev_budget.reserve_input_tokens)) blockers.push('BUDGET_EXHAUSTED');
   if (!config.apiKey) blockers.push('MISSING_KEY');

@@ -22,10 +22,9 @@ test('D073 focused owner v9 requires its matching contract while preserving sour
   const config=loadAdaptiveRunManifest(path,root);
   assert.equal(config.repair_policy.scope_contract,'public-inferred-owner-v2');
   assert.equal(config.repair_policy.owner_inference_contract,'docs/orchestration/contracts/adaptive-inferred-repair.v2.json');
-  const prepared=loadAdaptiveSharedPreparation({rootDir:root,manifest:config,input:loadAdaptivePublicInput(root,config),
-    preparationDirectory:join(root,config.catalog_reuse.preparation_directory)});
-  assert.equal(prepared.compatibility.generation_request_exact_match,true);
-  assert.equal(prepared.compatibility.new_catalog_inference_calls,0);
+  // D076 telemetry.mjs drift is outside the v9 catalog-reuse allowlist; reuse fails closed (v9 reproduces at 5f78c6c).
+  assert.throws(()=>loadAdaptiveSharedPreparation({rootDir:root,manifest:config,input:loadAdaptivePublicInput(root,config),
+    preparationDirectory:join(root,config.catalog_reuse.preparation_directory)}),{code:'ADAPTIVE_PREPARATION_REUSE_INVALID'});
   const invalid=read(path);invalid.repair_policy.owner_inference_contract='docs/orchestration/contracts/adaptive-inferred-repair.v1.json';
   const changed=join(directory(t),'invalid.json');writeFileSync(changed,JSON.stringify(invalid));
   assert.throws(()=>loadAdaptiveRunManifest(changed,root),{code:'ADAPTIVE_MANIFEST_INVALID'});
@@ -33,17 +32,13 @@ test('D073 focused owner v9 requires its matching contract while preserving sour
 
 test('D073 changes input policy without changing source catalog generation or historical D071 defaults',()=>{
   const config=manifest(),input=loadAdaptivePublicInput(root,config);
-  const prepared=loadAdaptiveSharedPreparation({rootDir:root,manifest:config,input,
-    preparationDirectory:join(root,config.catalog_reuse.preparation_directory)});
+  // D076 telemetry.mjs drift is outside the v8 catalog-reuse allowlist; reuse fails closed (v8 reproduces at 5f78c6c).
+  assert.throws(()=>loadAdaptiveSharedPreparation({rootDir:root,manifest:config,input,
+    preparationDirectory:join(root,config.catalog_reuse.preparation_directory)}),{code:'ADAPTIVE_PREPARATION_REUSE_INVALID'});
   assert.deepEqual(config.arms,['jev_profile']);assert.equal(config.cohort_concurrency,1);
   assert.equal(config.limits.planning_input_tokens,null);assert.equal(config.jev_budget.max_input_tokens,null);
   assert.equal(config.limits.max_request_bytes,256000);
   assert.equal(config.repair_policy.scope_contract,'public-inferred-owner-v1');
-  assert.equal(prepared.compatibility.generation_request_exact_match,true);
-  assert.equal(prepared.compatibility.generation_prompt_schema_exact_match,true);
-  assert.equal(prepared.compatibility.new_catalog_inference_calls,0);
-  assert.deepEqual(prepared.compatibility.local_request_limit_change,
-    {previous_bytes:240000,current_bytes:256000,catalog_generation_content_unchanged:true});
   const old=loadAdaptiveRunManifest(join(root,'benchmarks/e2e-swe/manifests/d071-adaptive.json'),root);
   assert.deepEqual(old.arms,['claude_all','jev_all','jev_profile']);
   assert.equal(old.limits.max_request_bytes,240000);
