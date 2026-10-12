@@ -71,7 +71,7 @@ D077 비용 분해: 작업자 9회 $7.757(Sonnet high 6, Haiku medium 1, Sonnet 
 
 **owner 거절 원인:** 1회차 owner(state 67,961B, state+최장 질문 70,921B)는 수락, 2회차(state 88,931B, 91,891B)는 거절. 후보 설명이 없었어도 state+최장 질문 89,610B로, D075에서 거절된 state 89,455B와 같은 범위다. 설명 추가가 아니라 수리 이력·관측 누적으로 커진 owner state가 원인으로 보이며, 정확한 tokenizer 한도는 미측정이다.
 
-**보류 원장:** 실패 POST의 예약 `…:r978`(65,536)이 `BUDGET_OUTSTANDING`으로 남았다. HTTP 400 알려진 실패이지만 정산은 공급자 기록 확인 후 별도로 한다. 자동 재전송·재개는 하지 않는다.
+**원장 정산:** 실패 POST의 예약 `…:r978`(65,536)은 `BUDGET_OUTSTANDING`으로 남았다가, 사용자 로그인 후 공급자 사용 기록(Oct 12 09:44 PM, 질문 9, failed, `Refunded · no charge`), 저장된 HTTP 400 본문("No charge was made"), 새 credits GET(`paidInputTokensRemaining` 41,975,342 = D075 refund-02 42,639,923 − D077 알려진 입력 664,581, `tokensReserved` 0)으로 `reconcileConfirmedRefund` 정산했다. 청구 +0, 원장 입력 18,024,357·정산 978·pending 0. 근거: [d077-refund-01](../../benchmark-runs/d077-refund-01/evidence.json). 자동 재전송·재개는 하지 않았다.
 
 ## 남은 일
 
