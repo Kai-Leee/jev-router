@@ -57,7 +57,7 @@ request 기록은 계약 오류이며 예상보다 적거나 예상 수가 `null
 
 `classification`과 `probability`는 단일 gold 사례만 사용하는 지표와 제외 수를 함께 제공한다.
 실제 선택 답의 정확도와 확률 argmax 기반 reliability는 별개다. 자세한 산식·동률 정책·예외는
-보고서 `conventions`와 [계약](EVALUATION_CONTRACT.md), [평가 조사](EVALUATION_RESEARCH.md)를 함께 본다.
+보고서 `conventions`와 [계약](EVALUATION_CONTRACT.md), [평가 조사](https://github.com/Kai-Leee/jev-router/blob/research/docs/EVALUATION_RESEARCH.md)를 함께 본다.
 CLI는 계산기가 반환한 보고서를 그대로 직렬화하며 임계값·품질 합격 여부·절감 효과를 추가 판정하지 않는다.
 
 ## 오류와 종료코드
@@ -74,4 +74,4 @@ CLI는 계산기가 반환한 보고서를 그대로 직렬화하며 임계값·
 | 4 | 출력 충돌·쓰기 실패 | `OUTPUT_EXISTS`, `OUTPUT_WRITE_FAILED` |
 
 입력과 출력 전체를 메모리에서 처리하는 첫 오프라인 구현이다. 대규모 스트리밍 평가·실제 요청 수집·
-모델 비교·네트워크 연결·자동 라우팅은 수행하지 않는다. 직접 검증 범위는 [CLI 상태 기록](agents/cli-STATUS.md)에 있다.
+모델 비교·네트워크 연결·자동 라우팅은 수행하지 않는다. 직접 검증 범위는 [CLI 상태 기록](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/cli-STATUS.md)에 있다.

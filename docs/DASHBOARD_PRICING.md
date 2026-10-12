@@ -24,4 +24,4 @@ Actual attempt04 cross-check: input52, output52563, cache-read1488059,1h cache-w
 
 ## Failure and test boundaries
 
-[Failure analysis](research/D020_FAILURE_ANALYSIS.md) preserves the original outcome and separately labels any diagnostic installation intervention. No new paid inference is needed to calculate prices or independently grade a frozen artifact.
+[Failure analysis](https://github.com/Kai-Leee/jev-router/blob/research/docs/research/D020_FAILURE_ANALYSIS.md) preserves the original outcome and separately labels any diagnostic installation intervention. No new paid inference is needed to calculate prices or independently grade a frozen artifact.

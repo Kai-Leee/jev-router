@@ -70,7 +70,7 @@ has four independent attempts: two tasks × B/C. No automatic suite loop spends 
 After authentication and limits are settled, adding `--spend` to the runner command starts that one attempt.
 
 The local `claude` command now links to Desktop-managed CLI 2.1.293. The old npm-global CLI was removed
-at the user's request. Subscription OAuth returned `loggedIn:true`; see [CLI evidence](../docs/CLAUDE_CLI_DISCOVERY.md).
+at the user's request. Subscription OAuth returned `loggedIn:true`; see [CLI evidence](https://github.com/Kai-Leee/jev-router/blob/research/docs/CLAUDE_CLI_DISCOVERY.md).
 The versioned app path may need relinking after an app update. For future authentication use
 `claude auth login --claudeai` in the user's terminal. `auth=cli` uses restricted
 mode, disabled skills, an isolated session cwd and explicit tools. Actual runtime/context isolation in this
@@ -118,7 +118,7 @@ Run all commands from the repository root:
 The reports above are ignored local artifacts, not committed dependencies. Regenerate them with the
 documented scripts in a fresh checkout. Independent review found and fixed process-tree deadline,
 role/resource admission, terminal cleanup and unbounded verifier-output defects; see
-[review evidence](../docs/agents/benchmark-runner-review-STATUS.md).
+[review evidence](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/benchmark-runner-review-STATUS.md).
 
 ## Remaining boundaries
 

@@ -7,7 +7,8 @@ Jev Router helps a main coding agent with model selection and in-task decisions 
 Jev client, an offline evaluation CLI, isolated benchmark runners and a local usage dashboard.
 It is a research project. Live results are few, and each one is recorded with its evidence.
 
-> Detailed documents under `docs/` are written in Korean.
+> Korean documents have English versions (`*.en.md`). Research and analysis records live on the
+> [`research` branch](https://github.com/Kai-Leee/jev-router/tree/research) and are in Korean.
 
 [Status](#status) · [Why](#why) · [Quick start](#quick-start) · [Limitations](#limitations) ·
 [Documentation](#documentation) · [Security](#security) · [License](#license)
@@ -16,13 +17,13 @@ It is a research project. Live results are few, and each one is recorded with it
 
 | Area | State | Evidence |
 |---|---|---|
-| Jev connection (`GET /v1/models`, `POST /v1/systemone`) | Implemented. Key setup and authenticated model listing confirmed on 2026-10-08 | [docs/USAGE.md](docs/USAGE.md#로컬-키-설정) |
-| Offline evaluation CLI | Implemented. Bundled examples are synthetic | [docs/EVALUATION_USAGE.md](docs/EVALUATION_USAGE.md) |
-| Live single vs. split E2E run (D029) | One run per arm. Both 30/30 on independent grading. Split: stage-time sum 22.829% lower, estimated cost 64.112% higher | [D029 results](docs/orchestration/D029_RESULTS.md) |
-| Input projection v3 (D031) | Offline replay only, no new paid calls, 390/390 regression tests | [D031 implementation](docs/orchestration/D031_IMPLEMENTATION.md) |
-| Automatic routing benefit, product completeness | Not verified | [STATE](docs/agents/STATE.md) |
+| Jev connection (`GET /v1/models`, `POST /v1/systemone`) | Implemented. Key setup and authenticated model listing confirmed on 2026-10-08 | [usage guide](docs/USAGE.en.md#local-key-setup) |
+| Offline evaluation CLI | Implemented. Bundled examples are synthetic | [evaluation CLI](docs/EVALUATION_USAGE.en.md) |
+| Live single vs. split E2E run (D029) | One run per arm. Both 30/30 on independent grading. Split: stage-time sum 22.829% lower, estimated cost 64.112% higher | [D029 results](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/D029_RESULTS.md) |
+| Input projection v3 (D031) | Offline replay only, no new paid calls, 390/390 regression tests | [D031 implementation](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/D031_IMPLEMENTATION.md) |
+| Automatic routing benefit, product completeness | Not verified | [STATE](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md) |
 
-The latest checkpoint is always [docs/agents/STATE.md](docs/agents/STATE.md). This table can lag behind it.
+The latest checkpoint is always [STATE on the research branch](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md). This table can lag behind it.
 
 ## Why
 
@@ -42,7 +43,7 @@ decision point in the main task
 
 The main session keeps the goal and acts. A Jev answer is not permission to act and not proof that
 tests pass. Accuracy, speed, token and cost gains are hypotheses until measured. A Jev probability
-is not a task success rate. Details: [technical spec](docs/TECHNICAL_SPEC.md).
+is not a task success rate. Details: [technical spec](docs/TECHNICAL_SPEC.en.md).
 
 ## Quick start
 
@@ -60,7 +61,7 @@ The binary is not committed. Get it from the archive URL in
 [vendor/jev-mcp/SOURCE.json](vendor/jev-mcp/SOURCE.json) and check its SHA-256.
 Without it, a fresh clone passes 387 of 390 tests.
 
-Connecting to Jev needs a Jev AI key ([key setup](docs/USAGE.md#로컬-키-설정)):
+Connecting to Jev needs a Jev AI key ([key setup](docs/USAGE.en.md#local-key-setup)):
 
 ```sh
 npm run config           # prints settings and whether a key exists; no network
@@ -68,8 +69,8 @@ npm run models           # one authenticated GET
 npm run demo -- --spend  # one paid POST; uses your Jev balance
 ```
 
-More: [all usage, failure handling and deployment](docs/USAGE.md) ·
-[MCP launcher](MCP.md) · [dashboard](docs/DASHBOARD.md) (`npm run dashboard`) ·
+More: [all usage, failure handling and deployment](docs/USAGE.en.md) ·
+[MCP launcher](MCP.md) · [dashboard](docs/DASHBOARD.en.md) (`npm run dashboard`) ·
 [benchmarks](benchmarks/README.md).
 
 ## Limitations
@@ -78,7 +79,7 @@ Do not use Jev Router if you need any of these:
 
 - **A production router.** No deployment has been done. There is no distributed rate limiter.
 - **Automatic recovery.** Calls are never retried automatically. A paid POST with an uncertain
-  result is not resent; check usage first ([failure handling](docs/USAGE.md#실패-처리와-제한)).
+  result is not resent; check usage first ([failure handling](docs/USAGE.en.md#failure-handling-and-limits)).
 - **Strong evidence.** The only live split comparison (D029) has one run per arm. Thresholds are
   uncalibrated, and the operating threshold is `null`.
 - **Host integration.** Automatic plugin loading in hosts, Claude/Codex executor selection and load
@@ -87,20 +88,24 @@ Do not use Jev Router if you need any of these:
 
 ## Documentation
 
-- **Start here:** [technical spec](docs/TECHNICAL_SPEC.md) ·
-  [contracts and document index](docs/orchestration/README.md) · [current state](docs/agents/STATE.md)
-- **Usage:** [usage guide](docs/USAGE.md) · [evaluation CLI](docs/EVALUATION_USAGE.md) and
-  [input contract](docs/EVALUATION_CONTRACT.md) · [dashboard](docs/DASHBOARD.md) ·
+`main` holds code, run contracts and usage documents. Experiments, decisions and logs live on the
+[`research` branch](https://github.com/Kai-Leee/jev-router/tree/research).
+
+- **Start here:** [technical spec](docs/TECHNICAL_SPEC.en.md) ·
+  [run contracts](docs/orchestration/contracts/README.en.md)
+- **Usage:** [usage guide](docs/USAGE.en.md) · [evaluation CLI](docs/EVALUATION_USAGE.en.md) and
+  [input contract](docs/EVALUATION_CONTRACT.en.md) · [dashboard](docs/DASHBOARD.en.md) ·
   [paired run and separate Opus monitor](docs/PAIRED_RUN.md) · [benchmarks](benchmarks/README.md) ·
   [MCP](MCP.md)
-- **Evidence:** [decisions](docs/DECISIONS.md) · [work log](docs/WORK_LOG.md) ·
-  [verification](VERIFICATION.md)
-- **Research:** [evaluation methods](docs/EVALUATION_RESEARCH.md) ·
-  [live experiment feasibility](docs/LIVE_EXPERIMENT_FEASIBILITY.md) ·
-  [real-time failure reporting](docs/REALTIME_FAILURE_RESEARCH.md)
+- **Research branch (Korean):** [current state](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md) ·
+  [document index](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/README.md) · [decisions](https://github.com/Kai-Leee/jev-router/blob/research/docs/DECISIONS.md) ·
+  [work log](https://github.com/Kai-Leee/jev-router/blob/research/docs/WORK_LOG.md) · [verification](https://github.com/Kai-Leee/jev-router/blob/research/VERIFICATION.md) ·
+  [evaluation methods](https://github.com/Kai-Leee/jev-router/blob/research/docs/EVALUATION_RESEARCH.md) ·
+  [live experiment feasibility](https://github.com/Kai-Leee/jev-router/blob/research/docs/LIVE_EXPERIMENT_FEASIBILITY.md) ·
+  [real-time failure reporting](https://github.com/Kai-Leee/jev-router/blob/research/docs/REALTIME_FAILURE_RESEARCH.md)
 - **Contributors and agents:** [AGENTS.md](AGENTS.md) (Codex entry) ·
   [CLAUDE.md](CLAUDE.md) (Claude entry, imports AGENTS.md) ·
-  [agent roles and handoff](docs/agents/README.md)
+  [agent roles and handoff](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/README.md)
 
 ## Security
 
@@ -113,7 +118,11 @@ Do not use Jev Router if you need any of these:
 
 ## License
 
-Not decided yet. There is no `LICENSE` file.
+[Apache License 2.0](LICENSE).
+
+The license covers the code in this repository only. It grants no rights to the Jev AI service.
+Live Jev features need your own Jev AI account and key, and you must accept the Jev AI
+[Terms of Use](https://jev-ai.pro/terms) and [Privacy Policy](https://jev-ai.pro/privacy).
 
 The reused `jev-mcp` v0.3.1 binary is Apache-2.0 and is not committed. Its source and checksums
 are in [vendor/jev-mcp/SOURCE.json](vendor/jev-mcp/SOURCE.json).

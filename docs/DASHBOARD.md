@@ -75,8 +75,8 @@ node scripts/check-dashboard-browser.mjs http://127.0.0.1:8788
 명령은 자체 새 브라우저 프로필을 만들며 실제 모델을 호출하지 않는다.
 `output/playwright/browser-check.json`, desktop/mobile PNG, 접근성 snapshot을 남긴다.
 샘플의 2회/205·420토큰/$0.1234 등은 합성 값이며 실제 사용 결과가 아니다.
-최종 측정·실패 이력은 [검증 기록](../VERIFICATION.md), 공식 의미는
-[조사](DASHBOARD_RESEARCH.md), 필드 계약은 [계약](DASHBOARD_CONTRACT.md)을 참조한다.
+최종 측정·실패 이력은 [검증 기록](https://github.com/Kai-Leee/jev-router/blob/research/VERIFICATION.md), 공식 의미는
+[조사](https://github.com/Kai-Leee/jev-router/blob/research/docs/DASHBOARD_RESEARCH.md), 필드 계약은 [계약](DASHBOARD_CONTRACT.md)을 참조한다.
 
 현재 모델 호출·토큰이 이 계측에 실제로 들어오는지와 공급자 청구 일치는 다음 실험에서 확인한다.
 실제 모델 간 비교, Codex 계측, 장기 저장 DB, 사용자 인증이 있는 원격 배포는 이번 구현 범위에 없다.

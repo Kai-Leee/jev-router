@@ -17,4 +17,4 @@ Each request is assembled BEFORE its response is consumed. `requests-responses.j
 
 Current limits: no Claude generation of task cards/questions, no live Jev decisions or native agents, no durable recovery/idempotent live dispatcher, no profile capability discovery, no automatic handling of >254 catalog entries via hierarchical selection, no performance gain or calibration evidence. Protocol format/size guards do not prove instruction-injection resistance or semantic correctness.
 
-Read the [contract](../../docs/orchestration/D027_CONTRACT.md) for the target architecture and [experiment report](../../docs/orchestration/D027_EXPERIMENT.md) for verified scope, defects found, and remaining work.
+Read the [contract](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/D027_CONTRACT.md) for the target architecture and [experiment report](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/D027_EXPERIMENT.md) for verified scope, defects found, and remaining work.
