@@ -27,6 +27,19 @@ coverage, 상태별 지연, 운영/평가 비용, 분류·확률 지표를 계�
 URL은 [src/config.mjs](../src/config.mjs)에 고정돼 있습니다. 다른 서비스로의 자동 전환과
 HTTP 리다이렉트를 허용하지 않습니다. 진단 출력에는 키나 Authorization 헤더가 없습니다.
 
+## 로그인
+
+`npm run login`은 Jev AI 키를 대화형으로 설정합니다. iTerm 같은 터미널이나 Claude 터미널 탭에서 실행합니다.
+
+1. Jev AI [이용약관](https://jev-ai.pro/terms)과 [개인정보 처리방침](https://jev-ai.pro/privacy) 동의를 묻습니다. 동의하지 않으면 아무것도 저장하지 않습니다.
+2. 브라우저로 [키 페이지](https://jev-ai.pro/jev-api)를 엽니다. 사용자가 여기서 로그인하고 키를 만듭니다. `--no-browser`를 주면 브라우저를 열지 않습니다.
+3. 키를 숨김 입력으로 받습니다. 화면, 명령행 인수, 셸 기록에 키가 남지 않습니다.
+4. 추론 없는 모델 목록 GET 1회로 키를 확인합니다. 확인에 성공한 경우에만 키 파일(`JEV_AI_ENV_FILE` 또는 `~/workspace/.env`)의 `JEV_AI_API_KEY` 줄만 바꾸고 권한 `0600`으로 저장합니다. 다른 줄은 유지합니다.
+
+파이프 같은 비대화형 입력에서는 실행을 거부합니다. 저장 후 Claude Code를 다시 시작하거나 jev-ai MCP 서버를 다시 연결합니다.
+
+Claude Code에서 이 저장소를 열면 SessionStart 훅([.claude/settings.json](../.claude/settings.json))이 `node bin/jev.mjs login-check`로 키 유무만 확인합니다. 네트워크는 쓰지 않습니다. 키가 있으면 아무것도 출력하지 않습니다. 키가 없으면 Claude에게 브라우저 패널로 키 페이지를, 터미널 탭으로 `npm run login -- --no-browser`를 띄우도록 안내합니다. 키는 채팅으로 받지 않습니다.
+
 ## 로컬 키 설정
 
 기본 읽기 경로는 **`~/workspace/.env`**입니다. 최초 작업에서는 빈 키 항목을 담은 파일을

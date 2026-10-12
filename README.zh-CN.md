@@ -58,9 +58,10 @@ npm run eval:demo   # 对合成记录进行离线评估
 该二进制文件未提交到仓库。请从 [vendor/jev-mcp/SOURCE.json](vendor/jev-mcp/SOURCE.json)
 中的归档 URL 下载并核对 SHA-256。缺少该文件时，新克隆的仓库 390 个测试中通过 387 个。
 
-连接 Jev 需要 Jev AI 密钥（[密钥配置](docs/USAGE.en.md#local-key-setup)）：
+连接 Jev 需要 Jev AI 账户和密钥，并须同意 Jev AI 使用条款（[登录](docs/USAGE.en.md#sign-in)）：
 
 ```sh
+npm run login            # 同意条款，在密钥页面登录，隐藏输入密钥
 npm run config           # 仅输出配置和密钥是否存在；不访问网络
 npm run models           # 1 次已认证的 GET
 npm run demo -- --spend  # 1 次付费 POST；消耗 Jev 余额

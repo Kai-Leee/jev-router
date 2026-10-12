@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/bin/jev.mjs\" login-check" }
+        ]
+      }
+    ]
+  }
+}

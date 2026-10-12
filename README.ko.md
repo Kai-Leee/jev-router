@@ -59,9 +59,10 @@ MCP 테스트 3개는 `vendor/jev-mcp/0.3.1/`의 고정 `jev-mcp` 바이너리(m
 바이너리는 커밋하지 않았습니다. [vendor/jev-mcp/SOURCE.json](vendor/jev-mcp/SOURCE.json)의
 아카이브 URL에서 받고 SHA-256을 확인합니다. 바이너리가 없으면 새 클론에서 390개 중 387개가 통과합니다.
 
-Jev 연결에는 Jev AI 키가 필요합니다 ([키 설정](docs/USAGE.md#로컬-키-설정)).
+Jev 연결에는 Jev AI 계정과 키, Jev AI 이용약관 동의가 필요합니다 ([로그인](docs/USAGE.md#로그인)).
 
 ```sh
+npm run login            # 약관 동의, 키 페이지에서 로그인, 키 숨김 입력
 npm run config           # 설정과 키 존재 여부만 출력. 네트워크 없음
 npm run models           # 인증 GET 1회
 npm run demo -- --spend  # 유료 POST 1회. Jev 잔액 사용

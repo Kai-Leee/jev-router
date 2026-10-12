@@ -30,6 +30,19 @@ Collecting real model responses, running per-model comparisons, and rankings/Ora
 The URL is fixed in [src/config.mjs](../src/config.mjs). Automatic switching to another service and
 HTTP redirects are not allowed. Diagnostic output contains no key or Authorization header.
 
+## Sign-in
+
+`npm run login` sets up the Jev AI key interactively. Run it in a terminal such as iTerm or in a Claude terminal tab.
+
+1. It asks you to accept the Jev AI [Terms of Use](https://jev-ai.pro/terms) and [Privacy Policy](https://jev-ai.pro/privacy). If you do not accept, nothing is saved.
+2. It opens the [key page](https://jev-ai.pro/jev-api) in the browser. Sign in there and create a key. `--no-browser` skips opening the browser.
+3. It reads the key with hidden input. The key does not appear on screen, in command-line arguments or in shell history.
+4. It checks the key with one model-list GET, which runs no inference. Only if the check succeeds does it replace the `JEV_AI_API_KEY` line in the key file (`JEV_AI_ENV_FILE` or `~/workspace/.env`) and save the file with permission `0600`. Other lines are kept.
+
+It refuses to run with non-interactive input such as a pipe. After saving, restart Claude Code or reconnect the jev-ai MCP server.
+
+When this repository is opened in Claude Code, a SessionStart hook ([.claude/settings.json](../.claude/settings.json)) runs `node bin/jev.mjs login-check` to check only whether a key exists. It uses no network. If a key exists, it prints nothing. If no key exists, it tells Claude to open the key page in the browser pane and `npm run login -- --no-browser` in a terminal tab. The key is never taken through chat.
+
 ## Local key setup
 
 The default read path is **`~/workspace/.env`**. The first task created a file with an empty key entry,

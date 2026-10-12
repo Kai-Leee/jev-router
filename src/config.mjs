@@ -8,6 +8,9 @@ export const DEFAULT_MODEL = 'jev-latest';
 export const MODELS_URL = `${BASE_URL}/v1/models`;
 export const CREDITS_URL = `${BASE_URL}/v1/credits`;
 export const DECISION_URL = `${BASE_URL}/v1/systemone`;
+export const KEY_PAGE_URL = 'https://jev-ai.pro/jev-api';
+export const TERMS_URL = 'https://jev-ai.pro/terms';
+export const PRIVACY_URL = 'https://jev-ai.pro/privacy';
 export const DEFAULT_ENV_FILE = join(homedir(), 'workspace', '.env');
 
 // Parse data, never source a shell script. Only import the Jev key from the file.

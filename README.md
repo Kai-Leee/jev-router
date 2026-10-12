@@ -61,9 +61,11 @@ The binary is not committed. Get it from the archive URL in
 [vendor/jev-mcp/SOURCE.json](vendor/jev-mcp/SOURCE.json) and check its SHA-256.
 Without it, a fresh clone passes 387 of 390 tests.
 
-Connecting to Jev needs a Jev AI key ([key setup](docs/USAGE.en.md#local-key-setup)):
+Connecting to Jev needs a Jev AI account and key, and acceptance of the Jev AI Terms of Use
+([sign-in](docs/USAGE.en.md#sign-in)):
 
 ```sh
+npm run login            # accept terms, sign in on the key page, paste the key (hidden)
 npm run config           # prints settings and whether a key exists; no network
 npm run models           # one authenticated GET
 npm run demo -- --spend  # one paid POST; uses your Jev balance

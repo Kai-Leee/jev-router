@@ -9,6 +9,6 @@ try {
   child.on('exit', code => { process.exitCode = code ?? 1; });
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => child.kill(signal));
 } catch {
-  process.stderr.write('Jev MCP configuration is unavailable. Run npm run mcp:config and configure the server-side key.\n');
+  process.stderr.write('Jev MCP configuration is unavailable. Run npm run login to sign in, or npm run mcp:config to check settings.\n');
   process.exitCode = 1;
 }
