@@ -2,13 +2,23 @@
 
 이 지침은 `jev-router/`에만 적용한다. 상위 EDA 프로젝트와 목적·결정 기록을 섞지 않는다.
 
+## 브랜치
+
+- `main`은 배포용 브랜치다. 배포할 코드, 실행 계약, 사용 문서만 둔다.
+- `research`는 실험 브랜치다. 실험 코드 개발과 결과 분석·결정·작업·검증 기록을 같은 브랜치에서 진행한다.
+- 배포할 변경만 골라 `main`으로 PR을 보낸다. `research` 전체를 `main`에 머지하지 않는다.
+- 버전 태그 `vX.Y.Z`는 `main`에만 붙인다. 절차는 [CHANGELOG.md](CHANGELOG.md)의 Releasing을 따른다.
+- `main`으로 가는 PR은 CI(macOS Node 22·Docker Node 24/26 테스트, 링크 검사) 통과가 머지 조건이다. `research`에는 CI를 돌리지 않는다.
+- 아래 경로 중 `main`에 없는 문서는 `git show research:<경로>`로 읽는다. 링크는 `research` 브랜치를 가리킨다.
+- 사용자 문서는 한국어 원본과 영어 `*.en.md`를 함께 둔다. 원본을 고치면 영어본도 같은 커밋에서 갱신한다.
+
 ## 진입점
 
 1. [기술 명세](docs/TECHNICAL_SPEC.md)를 읽는다.
-2. [결정 기록](docs/DECISIONS.md)에서 확정 사항과 제안·가설·미결정을 확인한다.
-3. [작업 기록](docs/WORK_LOG.md)과 [검증 기록](VERIFICATION.md)에서 실제 구현·검증 수준을 확인한다.
-4. 평가 조사·지표 구현이면 [평가 방법 조사](docs/EVALUATION_RESEARCH.md)의 출처·산식·제외 조건을 확인한다.
-5. 분업 개발/문맥 인계는 [개발 에이전트 운영](docs/agents/README.md), 본인 역할, [현재 상태](docs/agents/STATE.md)를 읽는다.
+2. [결정 기록](https://github.com/Kai-Leee/jev-router/blob/research/docs/DECISIONS.md)에서 확정 사항과 제안·가설·미결정을 확인한다.
+3. [작업 기록](https://github.com/Kai-Leee/jev-router/blob/research/docs/WORK_LOG.md)과 [검증 기록](https://github.com/Kai-Leee/jev-router/blob/research/VERIFICATION.md)에서 실제 구현·검증 수준을 확인한다.
+4. 평가 조사·지표 구현이면 [평가 방법 조사](https://github.com/Kai-Leee/jev-router/blob/research/docs/EVALUATION_RESEARCH.md)의 출처·산식·제외 조건을 확인한다.
+5. 분업 개발/문맥 인계는 [개발 에이전트 운영](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/README.md), 본인 역할, [현재 상태](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md)를 읽는다.
 
 ## 유지할 경계
 

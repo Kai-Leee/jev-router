@@ -8,9 +8,9 @@ Checked: 2026-10-08, Asia/Seoul.
 
 ## Configure the key
 
-Create a Jev AI key at https://jev-ai.pro/jev-api. Edit `/Users/lee/workspace/.env` locally and set `JEV_AI_API_KEY`. This file is parsed as data; it is never sourced as shell code. Only the Jev key is read. The server process environment takes precedence; `JEV_AI_ENV_FILE` can select another private environment file.
+Create a Jev AI key at https://jev-ai.pro/jev-api. Run `npm run login`, or edit `~/workspace/.env` locally and set `JEV_AI_API_KEY`. This file is parsed as data; it is never sourced as shell code. Only the Jev key is read. The server process environment takes precedence; `JEV_AI_ENV_FILE` can select another private environment file.
 
-For deployment, set `JEV_AI_API_KEY` in the server runtime's secret store and restart the MCP process. This installed binary is macOS ARM64 only; Linux/Windows deployment requires its matching pinned upstream binary and checksum, plus adjusting the launch path. No deployment has been performed.
+For deployment, set `JEV_AI_API_KEY` in the server runtime's secret store and restart the MCP process. Pinned binaries cover macOS ARM64, Linux x64 and Linux arm64 (`vendor/jev-mcp/SOURCE.json`). `npm run mcp:fetch` installs the one for this machine after checking the archive and binary SHA-256. Other platforms need a new pin. No deployment has been performed.
 
 The launcher maps the key to the upstream MCP's `API_KEY` environment variable. It explicitly sets:
 
@@ -25,7 +25,6 @@ JEV_MODEL=jev-latest
 ## Verify and make a small decision
 
 ```sh
-cd /Users/lee/workspace/plugins/jev-router
 npm run mcp:config
 npm run mcp:tools
 npm run mcp:models
@@ -41,21 +40,21 @@ Do not infer authentication success from `mcp:tools`. Only a successful authenti
 
 ## Connect a host without global configuration changes
 
-The local `.mcp.json` contains a secret-free Claude MCP entry. To select it explicitly:
+The repository `.mcp.json` contains one secret-free entry shared by Claude Code and the Codex plugin. It has no absolute path: Claude Code sets `CLAUDE_PROJECT_DIR` for the server process, and Codex starts it with `cwd` set to the plugin root, which the launch command uses when that variable is empty. Run commands from the repository root. To select it explicitly:
 
 ```sh
-claude --mcp-config /Users/lee/workspace/plugins/jev-router/.mcp.json
+claude --mcp-config .mcp.json
 ```
 
 For Codex, use per-launch overrides:
 
 ```sh
-codex -C /Users/lee/workspace/plugins \
+codex -C "$PWD" \
   -c 'mcp_servers.jev_ai.command="node"' \
-  -c 'mcp_servers.jev_ai.args=["/Users/lee/workspace/plugins/jev-router/bin/mcp-server.mjs"]'
+  -c "mcp_servers.jev_ai.args=[\"$PWD/bin/mcp-server.mjs\"]"
 ```
 
-A local `.codex-plugin/plugin.json` is also provided for packaging; no global marketplace or user MCP configuration is changed by this work. The current chat's tool list does not automatically gain a newly installed MCP. Native host discovery/trust must occur in a new host session. The CLI helper already exercises the same binary over stdio.
+`.codex-plugin/plugin.json` points at the same `./.mcp.json` for packaging; no global marketplace or user MCP configuration is changed by this work. The current chat's tool list does not automatically gain a newly installed MCP. Native host discovery/trust must occur in a new host session. The CLI helper already exercises the same binary over stdio.
 
 Available upstream tools: `decide`, `classify`, `verify`, `rerank`, `list_models`. The first four make paid inference calls. Jev judgments are not tests or approvals. No automatic paid retries are made.
 
@@ -69,8 +68,7 @@ Known upstream limitation: provider errors expose their status but not `Retry-Af
 
 ## Verification
 
-Release archive SHA-256: `2b0320b79809b92106196b06255049a23ce271c17ba8f5b2580827e5ff6eb6b5`.
-Installed binary SHA-256: `955384ed3d1d3c9f8131fb4f3deed6c87d0400113c610367af2b44a899dd8bbc`.
+Archive and binary SHA-256 values for each platform are pinned in `vendor/jev-mcp/SOURCE.json`.
 The launcher checks the installed binary digest before starting it.
 
 `npm test` runs the existing client tests plus a real MCP binary against a localhost mock API using a fake credential. The integration test observes actual requests: initialization/tool listing sends no provider request; model discovery sends GET `/v1/models`; `decide` sends POST `/v1/systemone` with the expected Bearer header and JSON; 429 and 504 each produce one request, without retry; a credential echoed in an error body does not reach the caller. This is protocol/transport evidence, not real Jev inference.
@@ -83,4 +81,4 @@ At initial integration, authenticated model discovery and inference were pending
 During the 2026-10-08 status check in this chat, configuration reported `keyConfigured=true` and both
 `npm run models` and `npm run mcp:models` completed authenticated model discovery. `npm test` passed
 22/22 checks. No live decision POST, deployment, or native-host E2E was performed by those checks.
-See [verification history](VERIFICATION.md) for the distinction between initial and current evidence.
+See [verification history](https://github.com/Kai-Leee/jev-router/blob/research/VERIFICATION.md) for the distinction between initial and current evidence.

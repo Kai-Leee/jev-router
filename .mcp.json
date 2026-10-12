@@ -1,8 +1,10 @@
 {
   "mcpServers": {
     "jev-ai": {
-      "command": "node",
-      "args": ["/Users/lee/workspace/plugins/jev-router/bin/mcp-server.mjs"]
+      "command": "sh",
+      "args": ["-c", "d=\"$CLAUDE_PROJECT_DIR\"; [ -n \"$d\" ] || d=.; exec node \"$d/bin/mcp-server.mjs\""],
+      "cwd": ".",
+      "env_vars": ["PATH", "HOME", "JEV_AI_API_KEY", "JEV_AI_ENV_FILE"]
     }
   }
 }

@@ -1,6 +1,6 @@
 # Jev + Claude development with an independent Opus monitor
 
-2026-10-09, D-019. Current execution evidence is in [STATE](agents/STATE.md) and [VERIFICATION](../VERIFICATION.md).
+2026-10-09, D-019. Current execution evidence is in [STATE](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md) and [VERIFICATION](https://github.com/Kai-Leee/jev-router/blob/research/VERIFICATION.md).
 
 The implementation agent is Claude Opus 5.5. It receives the goal/specification and supplies English questions,
 alternative actions and evidence. Jev selects an action, the controller executes it in the isolated container,
@@ -59,7 +59,7 @@ and balance GETs do not count as inference. The dashboard shows estimated spend/
 This is a conservative prepaid-token valuation, **not a provider-enforced dollar billing guarantee**.
 Actual provider USD stays null. The policy depends on documented model context/billing behavior; the
 service does not expose a documented per-request USD quote or tokens-only control. See the
-[feasibility review](research/JEV_BUDGET_FEASIBILITY.md). No auto top-up/purchase is performed.
+[feasibility review](https://github.com/Kai-Leee/jev-router/blob/research/docs/research/JEV_BUDGET_FEASIBILITY.md). No auto top-up/purchase is performed.
 
 The first live check returned the dated identifier, initially rejected by our narrower example-based
 allowlist. Its successful response and 348-token debit were preserved. After verifying the official version

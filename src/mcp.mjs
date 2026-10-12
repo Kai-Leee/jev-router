@@ -5,20 +5,24 @@ import { createInterface } from 'node:readline';
 import { fileURLToPath } from 'node:url';
 import { BASE_URL, DEFAULT_MODEL, describeConfig, loadConfig } from './config.mjs';
 
-export const MCP_BINARY = fileURLToPath(new URL('../vendor/jev-mcp/0.3.1/darwin-arm64/jev-mcp', import.meta.url));
-export const MCP_BINARY_SHA256 = '955384ed3d1d3c9f8131fb4f3deed6c87d0400113c610367af2b44a899dd8bbc';
+// Pinned upstream release: one binary and checksum per supported platform.
+export const MCP_SOURCE = JSON.parse(readFileSync(new URL('../vendor/jev-mcp/SOURCE.json', import.meta.url), 'utf8'));
+export const MCP_PLATFORM = `${process.platform}-${process.arch}`;
+export const MCP_PIN = MCP_SOURCE.platforms[MCP_PLATFORM] ?? null;
+const VERSION = MCP_SOURCE.release.replace(/^v/, '');
+export const MCP_BINARY = fileURLToPath(new URL(`../vendor/jev-mcp/${VERSION}/${MCP_PLATFORM}/jev-mcp`, import.meta.url));
 
 export function mcpConfig(config = loadConfig()) {
-  return { ...describeConfig(config), transport: 'freepik-company/jev-mcp stdio', upstreamVersion: '0.3.1', binary: MCP_BINARY };
+  return { ...describeConfig(config), transport: 'freepik-company/jev-mcp stdio', upstreamVersion: VERSION, binary: MCP_BINARY };
 }
 
 export function mcpLaunch(config = loadConfig()) {
   if (!config.apiKey || /\s/.test(config.apiKey)) throw new Error('Set JEV_AI_API_KEY in the server environment or ~/workspace/.env.');
-  if (process.platform !== 'darwin' || process.arch !== 'arm64') throw new Error('This local MCP binary is for macOS ARM64. Install the matching upstream release on another platform.');
+  if (!MCP_PIN) throw new Error(`No pinned Jev MCP binary for ${MCP_PLATFORM}. Pinned: ${Object.keys(MCP_SOURCE.platforms).join(', ')}.`);
   let digest;
   try { digest = createHash('sha256').update(readFileSync(MCP_BINARY)).digest('hex'); }
-  catch { throw new Error('Pinned Jev MCP binary is missing or unreadable.'); }
-  if (digest !== MCP_BINARY_SHA256) throw new Error('Pinned Jev MCP binary checksum mismatch.');
+  catch { throw new Error('Pinned Jev MCP binary is missing or unreadable. Run npm run mcp:fetch.'); }
+  if (digest !== MCP_PIN.binarySha256) throw new Error('Pinned Jev MCP binary checksum mismatch.');
   // Pass only the Jev AI credential. No inherited provider key or URL can change the destination.
   return {
     command: MCP_BINARY,

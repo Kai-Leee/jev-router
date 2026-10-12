@@ -15,3 +15,7 @@ output/playwright/
 
 # Local pinned runtime binary; provenance remains trackable.
 vendor/jev-mcp/*/
+
+# Claude Code: share project settings only; keep local settings and worktrees out of Git.
+.claude/*
+!.claude/settings.json

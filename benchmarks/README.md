@@ -70,7 +70,7 @@ has four independent attempts: two tasks × B/C. No automatic suite loop spends 
 After authentication and limits are settled, adding `--spend` to the runner command starts that one attempt.
 
 The local `claude` command now links to Desktop-managed CLI 2.1.293. The old npm-global CLI was removed
-at the user's request. Subscription OAuth returned `loggedIn:true`; see [CLI evidence](../docs/CLAUDE_CLI_DISCOVERY.md).
+at the user's request. Subscription OAuth returned `loggedIn:true`; see [CLI evidence](https://github.com/Kai-Leee/jev-router/blob/research/docs/CLAUDE_CLI_DISCOVERY.md).
 The versioned app path may need relinking after an app update. For future authentication use
 `claude auth login --claudeai` in the user's terminal. `auth=cli` uses restricted
 mode, disabled skills, an isolated session cwd and explicit tools. Actual runtime/context isolation in this
@@ -104,21 +104,21 @@ Run all commands from the repository root:
 - `python3 -B benchmarks/personal-os/evaluator/selftest.py`: **10/10 passed**. These test the grader,
   not a reconstructed application.
 - Final real E2E oracle and no-op receipts:
-  [oracle](../benchmark-runs/grade-oracle-v2/result.json), [no-op](../benchmark-runs/grade-noop-v2/result.json).
+  oracle (`benchmark-runs/grade-oracle-v2/result.json`, local only), no-op (`benchmark-runs/grade-noop-v2/result.json`, local only).
   Both used fresh offline verifiers with fixed digest, and both reported container removal.
   The no-op collected zero tests due to missing `pytest_check`; it is not thirty failed assertions.
 - Real MCP protocol → chosen command → Docker → journal smoke, with no models:
-  [E2E environment](../benchmark-runs/mcp-smoke-xA5b78/result.json),
-  [Personal OS environment](../benchmark-runs/mcp-smoke-6vJik1/result.json).
+  E2E environment (`benchmark-runs/mcp-smoke-xA5b78/result.json`, local only),
+  Personal OS environment (`benchmark-runs/mcp-smoke-6vJik1/result.json`, local only).
   Selected marker present, unselected action absent, hidden tests absent.
 - Personal OS negative control CLI reports:
-  [empty](../benchmark-runs/personal-os-controls/empty.json), [no-op](../benchmark-runs/personal-os-controls/noop.json).
+  empty (`benchmark-runs/personal-os-controls/empty.json`, local only), no-op (`benchmark-runs/personal-os-controls/noop.json`, local only).
   Both exit 1 and `full_product_verified:false`. A missing adapter is incomplete, even if process exit is 0.
 
 The reports above are ignored local artifacts, not committed dependencies. Regenerate them with the
 documented scripts in a fresh checkout. Independent review found and fixed process-tree deadline,
 role/resource admission, terminal cleanup and unbounded verifier-output defects; see
-[review evidence](../docs/agents/benchmark-runner-review-STATUS.md).
+[review evidence](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/benchmark-runner-review-STATUS.md).
 
 ## Remaining boundaries
 

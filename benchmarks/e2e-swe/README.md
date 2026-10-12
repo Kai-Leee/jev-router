@@ -117,7 +117,7 @@ Offline adapter checks:
 python3.14 -m unittest discover -s benchmarks/e2e-swe -p 'test_*.py' -v
 ```
 
-Current execution evidence is in [the role status](../../docs/agents/benchmark-bootstrap-STATUS.md).
+Current execution evidence is in [the role status](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/benchmark-bootstrap-STATUS.md).
 
 ## Observed control checks, 2026-10-08
 
@@ -138,7 +138,7 @@ These are harness control checks and do not evaluate Opus, Jev, or their combine
 Validated image digest:
 `ghcr.io/facebookresearch/e2e-swe@sha256:9fecce0ca4de6423bbb469149f3a70058e74ae3a912a4c213ef12026aefc5756`;
 platform `linux/amd64`, local image size 229168503 bytes. Local evidence:
-[image lock](../../benchmark-runs/image-lock-pytest-check.json),
-[empty control](../../benchmark-runs/grade-noop/result.json),
-[reference control](../../benchmark-runs/grade-oracle/result.json).
+image lock (`benchmark-runs/image-lock-pytest-check.json`, local only),
+empty control (`benchmark-runs/grade-noop/result.json`, local only),
+reference control (`benchmark-runs/grade-oracle/result.json`, local only).
 These ignored run artifacts must be retained with any future published experiment bundle.

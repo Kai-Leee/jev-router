@@ -4,10 +4,13 @@ import { createServer } from 'node:http';
 import { once } from 'node:events';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { connectMcp, MCP_BINARY, mcpConfig, mcpLaunch } from '../src/mcp.mjs';
+import { connectMcp, MCP_BINARY, MCP_PIN, MCP_PLATFORM, mcpConfig, mcpLaunch } from '../src/mcp.mjs';
 import { prepareDecision } from '../src/client.mjs';
 
-test('native launcher exposes the upstream tools and demo refuses spending without flag', async () => {
+// Runs wherever a binary is pinned (npm run mcp:fetch installs it); skips only unpinned platforms.
+const binary = { skip: MCP_PIN ? false : `no pinned jev-mcp binary for ${MCP_PLATFORM}` };
+
+test('native launcher exposes the upstream tools and demo refuses spending without flag', binary, async () => {
   const launcher = fileURLToPath(new URL('../bin/mcp-server.mjs', import.meta.url));
   const client = await connectMcp({ command: process.execPath, args: [launcher], env: { PATH: process.env.PATH, JEV_AI_API_KEY: 'offline-protocol-check' } });
   try { assert.equal((await client.request('tools/list')).tools.length, 5); }
@@ -18,7 +21,7 @@ test('native launcher exposes the upstream tools and demo refuses spending witho
   assert.match(JSON.parse(attempt.stderr).error, /uses your balance/);
 });
 
-test('launch pins Jev AI and passes no inherited provider credentials', () => {
+test('launch pins Jev AI and passes no inherited provider credentials', binary, () => {
   const launch = mcpLaunch({ apiKey: 'fake-fixture-key' });
   assert.equal(launch.env.BASE_URL, 'https://jev-ai.pro/api');
   assert.equal(launch.env.JEV_MODEL, 'jev-latest');
@@ -28,7 +31,7 @@ test('launch pins Jev AI and passes no inherited provider credentials', () => {
   assert.equal(JSON.stringify(mcpConfig({ apiKey: 'fake-fixture-key' })).includes('fake-fixture-key'), false);
 });
 
-test('actual pinned MCP binary discovers tools, sends GET and one POST, and never retries errors', async () => {
+test('actual pinned MCP binary discovers tools, sends GET and one POST, and never retries errors', binary, async () => {
   const received = [];
   let status = 200;
   const server = createServer(async (req, res) => {
