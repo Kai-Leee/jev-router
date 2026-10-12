@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync,mkdirSync,readFileSync,writeFileSync,readdirSync,rmSync,realpathSync} from 'node:fs';
-import {join,resolve} from 'node:path';
+import {join,relative,resolve} from 'node:path';
 import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
 import {prepareDecision} from '../src/client.mjs';
@@ -10,6 +10,7 @@ import {ADAPTIVE_ARMS,loadAdaptiveRunManifest,loadAdaptivePublicInput,loadAdapti
   createAdaptiveWorkerAndChecks,runAdaptiveComparison} from '../src/benchmark/adaptive-dag-runner.mjs';
 import {resolveAdaptiveProfile} from '../src/orchestration/adaptive-profile-selection.mjs';
 import {loadPublicAuditInputs} from '../scripts/audit-dag-public-checks.mjs';
+import {createTokenBudget} from '../src/benchmark/budget.mjs';
 
 const root=resolve(import.meta.dirname,'..');
 const manifestPath=join(root,'benchmarks/e2e-swe/manifests/d071-adaptive.json');
@@ -57,7 +58,11 @@ test('D071 v7 binds three conditions and 93 public checks while reusing the exac
 });
 
 test('D071 cohort dispatch starts all three isolated arms and preserves zero new catalog calls',async t=>{
-  const directory=fixtureDirectory(t,{inRepo:true}), config=manifest(), starts=[];
+  const directory=fixtureDirectory(t,{inRepo:true}), starts=[];
+  // Isolated v3 ledger: the shared benchmark-runs ledger is v4 since D076 and is never opened by tests.
+  const jevBudget={...manifest().jev_budget,ledger_path:relative(root,join(directory,'ledger.json'))};
+  createTokenBudget(jevBudget).close();
+  const config={...manifest(),jev_budget:jevBudget};
   let release,preflights=0;const barrier=new Promise(resolve=>{release=resolve;});
   const result=await runAdaptiveComparison({rootDir:root,manifest:config,runDir:join(directory,'comparison'),
     preparationDirectory:join(root,config.catalog_reuse.preparation_directory),spend:true,adapters:{
