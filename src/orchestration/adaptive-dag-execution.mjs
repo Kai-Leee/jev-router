@@ -626,17 +626,11 @@ export async function runAdaptiveDagExecution(options) {
                 allowed_write_paths: workerTask.write_scope, inherited_artifact_ids: inherited, report: artifactRepair.report});
             }
             attempted.add(task.id);
-            let extraReads = [];
+            let extraReads = [], candidateReads = [];
             try {
               if (causalPolicy && artifactRepair) extraReads = await causalReadSources(artifactRepair.context, previousSnapshots, plan, bindings);
-              if (options.repairFeedback?.read_scope && artifactRepair) {
-                const added = await candidateReadSources(previousSnapshots, plan,
-                  [...workerTask.read_scope, ...workerTask.write_scope, ...extraReads.map(source => source.path)]);
-                extraReads = [...extraReads, ...added];
-                await record({event: 'adaptive_repair_read_scope_expanded', round_index: roundIndex, task_id: task.id,
-                  attempt_id: context.attempt_id, policy: options.repairFeedback.read_scope,
-                  sources: added.map(({path, sha256}) => ({path, sha256})), writable: false});
-              }
+              if (options.repairFeedback?.read_scope && artifactRepair) candidateReads = await candidateReadSources(previousSnapshots, plan,
+                [...workerTask.read_scope, ...workerTask.write_scope, ...extraReads.map(source => source.path)]);
             } catch (error) {
               fatal = {code: error.code ?? 'ADAPTIVE_CAUSAL_READ_FAILED', outcome_uncertain: false};
               await record({event: 'adaptive_causal_read_sources_rejected', round_index: roundIndex,
@@ -646,6 +640,12 @@ export async function runAdaptiveDagExecution(options) {
             if (causalPolicy && artifactRepair) await record({event: 'adaptive_causal_read_sources_verified', round_index: roundIndex,
               task_id: task.id, attempt_id: context.attempt_id, read_artifacts: artifactRepair.context.required_read_artifacts,
               sources: extraReads.map(({path, sha256}) => ({path, sha256})), basis: 'immutable_failed_round_snapshot_not_new_DAG_edge'});
+            if (options.repairFeedback?.read_scope && artifactRepair) {
+              extraReads = [...extraReads, ...candidateReads];
+              await record({event: 'adaptive_repair_read_scope_expanded', round_index: roundIndex, task_id: task.id,
+                attempt_id: context.attempt_id, policy: options.repairFeedback.read_scope,
+                sources: candidateReads.map(({path, sha256}) => ({path, sha256})), writable: false});
+            }
             if (recoveryEnabled && previousFailure?.recovery_evidence?.length) {
               workerRepairContext = {...clone(workerRepairContext), recovery_evidence: clone(previousFailure.recovery_evidence)};
             }

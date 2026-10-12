@@ -295,6 +295,10 @@ test('D076 repair feedback: the failed candidate is readable but not writable an
   assert.deepEqual(entry.mentioned_artifact_ids, ['artifact-core', 'artifact-unrelated']);
   assert.equal(result.rounds[1].worker_reports.length, 1);
   assert.equal(state.events.filter(event => event.event === 'adaptive_repair_read_scope_expanded').length, 2);
+  // D076-03 regression: the causal record lists only causal sources; the expansion has its own record.
+  for (const event of state.events.filter(event => event.event === 'adaptive_causal_read_sources_verified')) {
+    assert.deepEqual(event.sources.map(source => source.path).sort(), ['generator.py', 'template.jinja']);
+  }
   for (const value of [{read_scope: 'all'}, {}, {worker_diagnostics: 'report-v1', extra: 1}]) {
     await assert.rejects(runAdaptiveDagExecution({...state.options, runDirectory: join(state.root, `bad-${JSON.stringify(value).length}`),
       repairFeedback: value}), {code: 'ADAPTIVE_EXECUTION_INVALID_CONFIG'});
