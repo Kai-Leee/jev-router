@@ -8,7 +8,7 @@ Checked: 2026-10-08, Asia/Seoul.
 
 ## Configure the key
 
-Create a Jev AI key at https://jev-ai.pro/jev-api. Edit `/Users/lee/workspace/.env` locally and set `JEV_AI_API_KEY`. This file is parsed as data; it is never sourced as shell code. Only the Jev key is read. The server process environment takes precedence; `JEV_AI_ENV_FILE` can select another private environment file.
+Create a Jev AI key at https://jev-ai.pro/jev-api. Run `npm run login`, or edit `~/workspace/.env` locally and set `JEV_AI_API_KEY`. This file is parsed as data; it is never sourced as shell code. Only the Jev key is read. The server process environment takes precedence; `JEV_AI_ENV_FILE` can select another private environment file.
 
 For deployment, set `JEV_AI_API_KEY` in the server runtime's secret store and restart the MCP process. This installed binary is macOS ARM64 only; Linux/Windows deployment requires its matching pinned upstream binary and checksum, plus adjusting the launch path. No deployment has been performed.
 
@@ -25,7 +25,6 @@ JEV_MODEL=jev-latest
 ## Verify and make a small decision
 
 ```sh
-cd /Users/lee/workspace/plugins/jev-router
 npm run mcp:config
 npm run mcp:tools
 npm run mcp:models
@@ -41,21 +40,21 @@ Do not infer authentication success from `mcp:tools`. Only a successful authenti
 
 ## Connect a host without global configuration changes
 
-The local `.mcp.json` contains a secret-free Claude MCP entry. To select it explicitly:
+The repository `.mcp.json` contains one secret-free entry shared by Claude Code and the Codex plugin. It has no absolute path: Claude Code sets `CLAUDE_PROJECT_DIR` for the server process, and Codex starts it with `cwd` set to the plugin root, which the launch command uses when that variable is empty. Run commands from the repository root. To select it explicitly:
 
 ```sh
-claude --mcp-config /Users/lee/workspace/plugins/jev-router/.mcp.json
+claude --mcp-config .mcp.json
 ```
 
 For Codex, use per-launch overrides:
 
 ```sh
-codex -C /Users/lee/workspace/plugins \
+codex -C "$PWD" \
   -c 'mcp_servers.jev_ai.command="node"' \
-  -c 'mcp_servers.jev_ai.args=["/Users/lee/workspace/plugins/jev-router/bin/mcp-server.mjs"]'
+  -c "mcp_servers.jev_ai.args=[\"$PWD/bin/mcp-server.mjs\"]"
 ```
 
-A local `.codex-plugin/plugin.json` is also provided for packaging; no global marketplace or user MCP configuration is changed by this work. The current chat's tool list does not automatically gain a newly installed MCP. Native host discovery/trust must occur in a new host session. The CLI helper already exercises the same binary over stdio.
+`.codex-plugin/plugin.json` points at the same `./.mcp.json` for packaging; no global marketplace or user MCP configuration is changed by this work. The current chat's tool list does not automatically gain a newly installed MCP. Native host discovery/trust must occur in a new host session. The CLI helper already exercises the same binary over stdio.
 
 Available upstream tools: `decide`, `classify`, `verify`, `rerank`, `list_models`. The first four make paid inference calls. Jev judgments are not tests or approvals. No automatic paid retries are made.
 
