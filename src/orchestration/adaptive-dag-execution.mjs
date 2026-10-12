@@ -485,9 +485,13 @@ export async function runAdaptiveDagExecution(options) {
         const outcome = await entry.promise;
         if (outcome.uncertain) return {status: 'uncertain', outcome_uncertain: true, code: outcome.uncertain};
         if (!outcome.results?.[check.id]) return fallback('BATCH_RESULT_UNAVAILABLE');
+        const result = clone(outcome.results[check.id]), batch = result.evidence?.batch;
         await record({event: 'adaptive_check_batch_result_used', round_index: roundIndex, batch_id: entry.batch_id,
-          check_id: check.id, attempt_id: context.attempt_id, artifact_revisions: entry.revisions});
-        return clone(outcome.results[check.id]);
+          check_id: check.id, attempt_id: context.attempt_id, artifact_revisions: entry.revisions, ...(batch ? {batch} : {})});
+        // Downstream evidence keeps the single-run shape (the owner projection admits only known evidence
+        // fields); batch identity stays in this event and in the batch report.
+        if (batch) delete result.evidence.batch;
+        return result;
       };
       let runtime, initialization, workflow, exported, runtimeJournal, fatal = null;
       let profilePreparationStarted = false, profilePreparationCompleted = false;

@@ -259,6 +259,27 @@ function batchFake(state, behavior) {
   return batches;
 }
 
+test('batched results reach downstream evidence in the single-run shape; batch identity stays in the event (D076 regression)', async t => {
+  // A real readiness batch adds evidence.batch; leaving it in local evidence made the owner v2 projection fall back to raw.
+  const state = await fixture(t, {split: true});
+  batchFake(state, async (checks, context) => {
+    const results = {};
+    for (const check of checks) {
+      const report = envelope(await verdict(check.id, context.candidateDirectory, context.environment.id));
+      report.evidence = {...report.evidence, batch: {id: context.batch_id, mode: context.mode, size: checks.length}};
+      results[check.id] = report;
+    }
+    return {results};
+  });
+  const result = await runAdaptiveDagExecution(state.options);
+  assert.equal(result.status, 'completed');
+  const local = result.rounds[0].local_evidence.filter(evidence => ['check-core', 'check-meta'].includes(evidence.check_id));
+  assert.equal(local.length, 2);
+  assert.ok(local.every(evidence => !JSON.stringify(evidence).includes('"batch"')), JSON.stringify(local));
+  const used = state.events.filter(event => event.event === 'adaptive_check_batch_result_used');
+  assert.deepEqual(used.map(event => event.batch?.mode), ['task', 'task']);
+});
+
 test('task batch covers all checks of a multi-artifact leaf in one call and each check reuses only its own result', async t => {
   const state = await fixture(t, {split: true}), batches = batchFake(state);
   const result = await runAdaptiveDagExecution(state.options);
