@@ -1,0 +1,9 @@
+{
+  "schema_version": "adaptive-inferred-scope/v1",
+  "version": "D077.4",
+  "replaces": "adaptive.inferred_repair.v2 scope choice question",
+  "rule": "Select candidate repair-inferred-owners: the exact union of artifacts that the owner answers named. Stop when no owner answer named an artifact.",
+  "basis": "Owner questions already allow every existing artifact, including upstream producers, representations and renderers. Re-asking Jev to choose among overlapping union, single-owner and causal-path scopes split probability (observed confidence 0.25-0.31) and re-judged the same evidence in a second large request.",
+  "unchanged": ["owner inference", "applyInferredRepairOwners candidate construction", "write authority", "all public checks rerun"],
+  "provider_calls": 0
+}

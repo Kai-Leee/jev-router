@@ -1,0 +1,18 @@
+{
+  "schema_version": "jev-confidence-deferral/v1",
+  "version": "D077.6",
+  "status": "provisional thresholds; recalibrate from recorded deferrals and outcomes",
+  "certainty": {
+    "choice": "answer.confidence",
+    "score": "answer.confidence",
+    "noul": "abs(2 * noul - 1)",
+    "missing": "treated as below threshold"
+  },
+  "threshold": 0.5,
+  "threshold_basis": "TypeSafe confidence guidance routes answers below a 0.5 floor away from automatic action. Not calibrated on this router's outcomes.",
+  "action": "Questions below the threshold are held. One fresh Claude decision session receives the same model/state with only the held questions and returns the same typed answer fields. Jev answers at or above the threshold are used unchanged.",
+  "claude_session": "Existing adaptive provider Claude decision path: claude --print --no-session-persistence with the typed JSON schema and the manifest worker profile.",
+  "failure": "A failed or uncertain Claude deferral stops the decision like any provider failure. The low-confidence Jev answer is never used as a silent fallback.",
+  "recorded": ["question id", "Jev answer with probabilities and confidence", "certainty", "threshold", "Claude answer", "Claude call id"],
+  "automatic_retries": 0
+}

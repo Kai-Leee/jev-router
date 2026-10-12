@@ -1,0 +1,10 @@
+{
+  "schema_version": "adaptive-owner-criteria/v1",
+  "version": "D077.2",
+  "applies_to": "projected inferred-v2 repair_owners requests (state.artifact_contracts)",
+  "artifact_description_template": "{paths}: {description}",
+  "missing_description": "{paths}",
+  "unchanged": ["question ids", "criteria keys (existing artifact IDs and unknown)", "unknown description", "state", "instructions"],
+  "basis": "Manufacturer guidance: null option descriptions only when option names are self-explanatory. A01..A22 are opaque; the inline artifact path and description separate the options without changing answer keys or handler bindings.",
+  "size_note": "Adds about 2.3 KB per question for 22 artifacts. It lengthens the longest question by that amount only; the model state is unchanged."
+}

@@ -1,3 +1,9 @@
+# D077 — 역할별 Jev 질문 유형 재설계·보류·통합 1회, 제품 미완료
+
+[설계·probe·통합](../orchestration/D077_QUESTION_FORMS.md) · [결정](../decisions/D077.md) · manifest v12 `benchmarks/e2e-swe/manifests/d077-question-forms.json`. membership·split_count → 단위 쌍 noul+코드 묶음, profile → 모델 choice+노력도 score, owner 후보 경로·설명, 수리 범위 코드 규칙, certainty<0.5 보류 → 새 Claude 결정. 과거 계약·v1–v11 동작 불변, runner는 v12 hook만 추가. v12는 D075 transmission gate 미사용.
+
+probe 실제 Jev19POST·입력363,781(정산), 첫 cohesion 문장 실패(0/210) 후 수정. 통합1회: 공개81→84/93·독립63/63, 실행기47분49초, Jev13POST(실패1)·알려진입력300,800, Claude17(작업자9·보류8), API환산$10.07. 2회차 owner HTTP400 model_input_limit(state88,931B)로 중단, 예약`…:r978` BUDGET_OUTSTANDING 미정산. 직렬4단 의존 경로로 D073(16분45초)보다 느리다. 전체 테스트1302/1310, 실패8은 transmission policy v2 runner 해시 drift(D076 세션 재고정 대기). 아래는 과거 기록이다.
+
 # D075 — 강제 전송 검사·실패 복구 구현과 실측 종료, 제품 미완료
 
 최신 사용자 요청의 병렬 구현·두 실제 수리·공개/독립 채점·별도 Opus 숫자 검토를 마쳤다. [결과](../orchestration/D075_RESULTS.md) · [결정](../decisions/D075.md) · [현행 구조](../orchestration/D075_FORCED_PREFLIGHT_AND_RECOVERY.md) · [병렬 소유권](D075_PARALLEL.md). 새 v10 경로를 보존 수리 CLI 기본으로 연결했으며 과거 manifest 명시 실행은 재현용으로 남긴다. D073 원본과 이전 결과는 수정하지 않았다.
