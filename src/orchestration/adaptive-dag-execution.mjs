@@ -149,6 +149,42 @@ async function causalReadSources(workerContext, snapshots, plan, bindings) {
   return sources;
 }
 
+const pathsOverlap = (left, right) => left === right || left.startsWith(`${right}/`) || right.startsWith(`${left}/`);
+
+// D076 read_scope candidate-v1: every verified file of the failed candidate becomes
+// a read-only overlay unless it is already readable or writable in the stage.
+async function candidateReadSources(snapshots, plan, taken) {
+  const sources = [], claimed = [...taken];
+  for (const artifact of plan.artifacts) {
+    const snapshot = snapshots.get(artifact.producer_task_id), entry = snapshot?.artifacts[artifact.id];
+    if (!snapshot?.verified || !entry) continue;
+    const observed = await scopedManifest(snapshot.directory, entry.paths);
+    if (!isDeepStrictEqual(observed, entry.manifest) || digest(observed) !== entry.revision) fail('ADAPTIVE_REPAIR_READ_SCOPE_REVISION');
+    for (const file of observed.files) if (!claimed.some(path => pathsOverlap(path, file.path))) {
+      claimed.push(file.path); sources.push({path: file.path, root: snapshot.directory, sha256: file.sha256});
+    }
+  }
+  return sources;
+}
+
+const validWorkerReport = report => report && typeof report === 'object' && typeof report.final_response === 'string'
+  && Array.isArray(report.denied_read_paths) && report.denied_read_paths.every(path => typeof path === 'string');
+
+// D076 worker_diagnostics report-v1: what this round's repair workers said, mapped to
+// artifact ids by exact file path. The statements are unverified and only inform the owner.
+function workerDiagnostics(reports, snapshots) {
+  const owners = new Map();
+  for (const snapshot of snapshots.values()) for (const [id, artifact] of Object.entries(snapshot.artifacts)) {
+    for (const file of artifact.manifest.files) owners.set(file.path, id);
+  }
+  const ids = paths => [...new Set(paths.map(path => owners.get(path)).filter(Boolean))].sort();
+  return {schema_version: 'adaptive-worker-diagnostics/v1', basis: 'unverified_statements_of_this_round_repair_workers',
+    entries: reports.map(report => ({task_id: report.task_id, repaired_artifact_ids: clone(report.repaired_artifact_ids),
+      denied_read_paths: clone(report.denied_read_paths), denied_read_artifact_ids: ids(report.denied_read_paths),
+      mentioned_artifact_ids: ids([...owners.keys()].filter(path => report.final_response.includes(path))),
+      final_response_excerpt: report.final_response.slice(0, 1000)}))};
+}
+
 function repairFileChanges(before, after, plan) {
   const changes = [];
   for (const artifact of plan.artifacts) {
@@ -290,7 +326,10 @@ export async function runAdaptiveDagExecution(options) {
       (options.publicCheckConcurrency !== undefined && (!Number.isSafeInteger(options.publicCheckConcurrency) || options.publicCheckConcurrency < 1)) ||
       (options.batchChecks !== undefined && typeof options.batchChecks !== 'function') ||
       (options.repairBudget !== undefined && (!['inferred-v1', 'inferred-v2'].includes(options.artifactRepairPolicy)
-        || options.repairBudget?.policy !== 'repair-budget-v1' || Object.keys(options.repairBudget).length !== 1))) {
+        || options.repairBudget?.policy !== 'repair-budget-v1' || Object.keys(options.repairBudget).length !== 1)) ||
+      (options.repairFeedback !== undefined && (!['inferred-v1', 'inferred-v2'].includes(options.artifactRepairPolicy)
+        || !options.repairFeedback || typeof options.repairFeedback !== 'object' || !Object.keys(options.repairFeedback).length
+        || Object.entries(options.repairFeedback).some(([key, value]) => ({read_scope: 'candidate-v1', worker_diagnostics: 'report-v1'})[key] !== value)))) {
     fail('ADAPTIVE_EXECUTION_INVALID_CONFIG');
   }
   const bindings = clone(options.artifactBindings), planning = clone(options.planning ?? {plan: options.plan, artifactBindings: bindings});
@@ -427,7 +466,7 @@ export async function runAdaptiveDagExecution(options) {
       let plan = clone(profilePlan);
       plan.graph_revision = `${original.graph_revision}:adaptive-round-${roundIndex}`;
       const roundDirectory = join(directory, `round-${roundIndex}`), roundRunId = `${run_id}:round-${roundIndex}`;
-      const captured = new Map(), cachedChecks = new Map(), publicEvidence = [], localEvidence = [], roundOperations = [];
+      const captured = new Map(), cachedChecks = new Map(), publicEvidence = [], localEvidence = [], roundOperations = [], workerReports = [];
       const previousSnapshots = new Map(snapshots);
       // Opt-in batchChecks: one invocation covers several non-integration checks
       // whose artifact bytes are already fixed. Each check still passes through
@@ -590,6 +629,14 @@ export async function runAdaptiveDagExecution(options) {
             let extraReads = [];
             try {
               if (causalPolicy && artifactRepair) extraReads = await causalReadSources(artifactRepair.context, previousSnapshots, plan, bindings);
+              if (options.repairFeedback?.read_scope && artifactRepair) {
+                const added = await candidateReadSources(previousSnapshots, plan,
+                  [...workerTask.read_scope, ...workerTask.write_scope, ...extraReads.map(source => source.path)]);
+                extraReads = [...extraReads, ...added];
+                await record({event: 'adaptive_repair_read_scope_expanded', round_index: roundIndex, task_id: task.id,
+                  attempt_id: context.attempt_id, policy: options.repairFeedback.read_scope,
+                  sources: added.map(({path, sha256}) => ({path, sha256})), writable: false});
+              }
             } catch (error) {
               fatal = {code: error.code ?? 'ADAPTIVE_CAUSAL_READ_FAILED', outcome_uncertain: false};
               await record({event: 'adaptive_causal_read_sources_rejected', round_index: roundIndex,
@@ -609,6 +656,18 @@ export async function runAdaptiveDagExecution(options) {
             }
             const outcome = await executeTask(clone(workerTask), {...clone(context), operation, round_index: roundIndex,
               original_task_id: task.id, repair_context: clone(workerRepairContext), ...(causalPolicy ? {additional_read_sources: extraReads} : {})});
+            if (outcome && Object.hasOwn(outcome, 'worker_report')) {
+              const {worker_report: report} = outcome;
+              delete outcome.worker_report;
+              if (options.repairFeedback?.worker_diagnostics && artifactRepair) {
+                const accepted = validWorkerReport(report);
+                if (accepted) workerReports.push({task_id: task.id, attempt_id: context.attempt_id,
+                  repaired_artifact_ids: clone(workerTask.output_artifact_ids), denied_read_paths: [...new Set(report.denied_read_paths)].sort(),
+                  final_response: report.final_response});
+                await record({event: 'adaptive_worker_report_recorded', round_index: roundIndex, task_id: task.id,
+                  attempt_id: context.attempt_id, accepted, ...(accepted ? {report: clone(workerReports.at(-1))} : {})});
+              }
+            }
             if (artifactRepair) {
               const inherited = task.output_artifact_ids.filter(id => !workerTask.output_artifact_ids.includes(id));
               const verified = [];
@@ -759,6 +818,7 @@ export async function runAdaptiveDagExecution(options) {
         initialization: initialization ?? null, workflow: workflow ?? null, exported: exported ?? null,
         public_evidence: publicEvidence, local_evidence: localEvidence, operations: roundOperations,
         journal: runtimeJournal ?? null, fatal, ...(fatal?.terminal_cause ? {terminal_cause: clone(fatal.terminal_cause)} : {}),
+        ...(workerReports.length ? {worker_reports: clone(workerReports)} : {}),
         ...(profilePreparationFailed ? {preparation_failure: {stage: 'profiles', runtime_started: false, worker_started: false},
           prior_public_failure: clone(previousFailure)} : {})};
       rounds.push(round);
@@ -875,10 +935,15 @@ export async function runAdaptiveDagExecution(options) {
               decide: async (body, metadata) => {
                 failedRequest = clone(body);
                 let sent = body;
+                // A recovery override is bound to its exact request hash, so it never gains diagnostics or repacking.
+                if (options.repairFeedback?.worker_diagnostics && workerReports.length && !requestOverride) {
+                  const diagnostics = workerDiagnostics(workerReports, snapshots);
+                  sent = {...sent, state: {...sent.state, worker_diagnostics: diagnostics}};
+                  await record({event: 'adaptive_worker_diagnostics_attached', round_index: roundIndex, stage: 'repair_owners', diagnostics});
+                }
                 // Opt-in D076 budget: lossy owner packing after the canonical projections; over budget stops before any POST.
-                // A recovery override is bound to its exact request hash, so it is never repacked.
                 if (options.repairBudget && !requestOverride) {
-                  const packed = packRepairOwnerRequest(body, {policy: options.repairBudget.policy});
+                  const packed = packRepairOwnerRequest(sent, {policy: options.repairBudget.policy});
                   await record({event: 'adaptive_repair_budget_applied', round_index: roundIndex, stage: 'repair_owners', report: packed.report});
                   if (!packed.report.within_budget) fail(ADAPTIVE_REPAIR_BUDGET_EXCEEDED, {estimated_tokens: packed.report.after.estimated_tokens});
                   sent = packed.request;

@@ -259,3 +259,44 @@ test('D076 repair budget stops an irreducible owner request before any owner cal
   await assert.rejects(runAdaptiveDagExecution(state.options), {code: 'ADAPTIVE_EXECUTION_INVALID_CONFIG'});
 });
 
+
+test('D076 repair feedback: the failed candidate is readable but not writable and worker reports reach the next owner request', async t => {
+  const state = await fixture(t, {repeat: true});
+  state.options.repairScopePolicy = 'public-inferred-owner-v2'; state.options.artifactRepairPolicy = 'inferred-v2';
+  state.options.repairFeedback = {read_scope: 'candidate-v1', worker_diagnostics: 'report-v1'};
+  const execute = state.options.executeTask, readable = [];
+  state.options.executeTask = async (task, context) => {
+    if (context.operation !== 'repair') return execute(task, context);
+    const overlays = new Set(context.additional_read_sources.map(source => source.path));
+    readable.push({round: context.round_index, overlays: [...overlays].sort()});
+    assert(!task.write_scope.some(path => overlays.has(path)));
+    const transport = createArtifactSession({root: context.stageDirectory, allowedPaths: task.write_scope,
+      readablePaths: task.read_scope.filter(path => !overlays.has(path)), readSources: context.additional_read_sources,
+      journalPath: join(state.root, `feedback-${context.round_index}.jsonl`)});
+    try {
+      assert.equal(transport.readFile({path: 'unrelated.py'}).content, 'value = "unchanged"\n');
+      assert.throws(() => transport.writeFile({path: 'unrelated.py', content: 'forbidden'}), /NOT_ALLOWED/);
+      transport.writeFile({path: 'producer.py', content: context.round_index === 1 ? 'description = "STILL_WRONG"\n' : 'description = "REQUEST"\n'});
+    } finally { transport.close(); }
+    return {status: 'completed', outcome_uncertain: false, worker_report: {denied_read_paths: ['secret.py'],
+      final_response: 'Changed producer.py. The remaining cause is probably in `unrelated.py` (not writable here).'}};
+  };
+  const owner = state.options.decideRepairOwners, seen = [];
+  state.options.decideRepairOwners = async request => { seen.push(structuredClone(request)); return owner(request); };
+  const result = await runAdaptiveDagExecution(state.options);
+  assert.equal(result.status, 'completed', JSON.stringify(result.terminal_cause));
+  for (const row of readable) for (const path of ['generator.py', 'template.jinja', 'unrelated.py']) assert(row.overlays.includes(path), path);
+  assert.equal(seen.length, 2);
+  assert(!Object.hasOwn(seen[0].state, 'worker_diagnostics'));
+  const [entry] = seen[1].state.worker_diagnostics.entries;
+  assert.equal(seen[1].state.worker_diagnostics.basis, 'unverified_statements_of_this_round_repair_workers');
+  assert.deepEqual(entry.repaired_artifact_ids, ['artifact-core']);
+  assert.deepEqual(entry.denied_read_paths, ['secret.py']); assert.deepEqual(entry.denied_read_artifact_ids, []);
+  assert.deepEqual(entry.mentioned_artifact_ids, ['artifact-core', 'artifact-unrelated']);
+  assert.equal(result.rounds[1].worker_reports.length, 1);
+  assert.equal(state.events.filter(event => event.event === 'adaptive_repair_read_scope_expanded').length, 2);
+  for (const value of [{read_scope: 'all'}, {}, {worker_diagnostics: 'report-v1', extra: 1}]) {
+    await assert.rejects(runAdaptiveDagExecution({...state.options, runDirectory: join(state.root, `bad-${JSON.stringify(value).length}`),
+      repairFeedback: value}), {code: 'ADAPTIVE_EXECUTION_INVALID_CONFIG'});
+  }
+});

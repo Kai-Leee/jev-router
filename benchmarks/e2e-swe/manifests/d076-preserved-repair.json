@@ -46,6 +46,10 @@
     "contract": "docs/orchestration/contracts/adaptive-repair-budget.v1.json",
     "sha256": "eb5ce820eccad114f8cbacfc71d9d63d2cd6ee06d641bc220cf7d7843a0b7765"
   },
+  "repair_feedback": {
+    "read_scope": "candidate-v1",
+    "worker_diagnostics": "report-v1"
+  },
   "jev_budget": {
     "schema_version": "jev-token-budget/v4",
     "ledger_path": "benchmark-runs/jev-usd1-budget.json",
@@ -85,7 +89,7 @@
   },
   "preparation_accounting": "Reuse the exact completed D066 source-only catalog with pinned result, source snapshots and identical generation prompt/schema. There are no new catalog calls or preparation charges in this cohort. Current-run arm wall time and usage are primary; historical full-preparation inclusive references are recorded separately and never added to current-cohort physical spend.",
   "deadline_basis": "Retain the existing 14400-second total deadline and no separate 10-minute worker cap. Cumulative and per-arm token spending caps are null. v4 input estimates are observational. Official request-body and structural limits, source and policy SHA bindings, fixed-template evidence validation, and outcome and settlement checks may block v11 preflight.",
-  "session_semantics": "D076 runtime speed condition. Same preserved D073 profile start (79/93 public) and the same D075 v10 repair, recovery and transmission semantics, plus opt-in runtime_speed: one Jev model lookup per provider session, the ledger lock held only per ledger operation (v4 ledger with leased reservations; an unsettled reservation still blocks new reservations), public checks with bounded concurrency 2, and batched readiness checks. Credits are still fetched before every reservation. The preserved-repair CLI defaults to v11; v10 and earlier manifests remain explicit historical inputs, and v10 is reproducible at commit 5f78c6c.",
+  "session_semantics": "D076 runtime speed condition. Same preserved D073 profile start (79/93 public) and the same D075 v10 repair, recovery and transmission semantics, plus opt-in runtime_speed: one Jev model lookup per provider session, the ledger lock held only per ledger operation (v4 ledger with leased reservations; an unsettled reservation still blocks new reservations), public checks with bounded concurrency 2, and batched readiness checks. Credits are still fetched before every reservation. The preserved-repair CLI defaults to v11; v10 and earlier manifests remain explicit historical inputs, and v10 is reproducible at commit 5f78c6c. Opt-in repair_feedback: repair workers read every verified file of the failed candidate as an immutable read-only overlay (write scope unchanged), and the next owner request carries the repair workers’ unverified statements and denied reads as state.worker_diagnostics.",
   "independent_grade": "Root-owned after candidate freeze; hidden tests and hidden failure details never enter planning, implementation or public repair. Successful completion time remains null until independently successful.",
   "repair_policy": {
     "artifact_contract": "docs/orchestration/contracts/adaptive-causal-repair.v1.json",
@@ -133,8 +137,8 @@
   },
   "transmission_preflight": {
     "mode": "required",
-    "contract": "docs/orchestration/contracts/jev-transmission-preflight.v3.json",
-    "sha256": "cf1ab511cacb7af76eeb2c8a05eb406e3d49a66026e15e477297b3d3ef209650"
+    "contract": "docs/orchestration/contracts/jev-transmission-preflight.v4.json",
+    "sha256": "b4aa7a819579c551ef1810924de6c9fbb0107b2e322bb9f2008b310eb396c836"
   },
   "failure_recovery": {
     "mode": "required",

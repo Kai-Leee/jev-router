@@ -50,6 +50,26 @@ export const adaptiveSpeedSessionOptions = manifest => {
 const REPAIR_BUDGET_CONTRACT = 'docs/orchestration/contracts/adaptive-repair-budget.v1.json';
 /** D076 opt-in owner-request budget (v11/v12 manifests with repair_budget only). */
 export const adaptiveRepairBudgetOption = manifest => manifest.repair_budget ? {repairBudget: {policy: manifest.repair_budget.policy}} : {};
+const REPAIR_FEEDBACK_VALUES = {read_scope: 'candidate-v1', worker_diagnostics: 'report-v1'};
+/** D076 opt-in repair feedback (v11 manifests with repair_feedback only). */
+export const adaptiveRepairFeedbackOption = manifest => manifest.repair_feedback ? {repairFeedback: {...manifest.repair_feedback}} : {};
+
+/** Denied artifact reads and the final text of one worker stream; the text is the worker's unverified statement. */
+export function adaptiveWorkerReport(streamText, completion) {
+  const reads = new Map(), denied = new Set();
+  for (const line of streamText.split('\n')) {
+    let event;
+    try { event = JSON.parse(line); } catch { continue; }
+    const content = Array.isArray(event?.message?.content) ? event.message.content : [];
+    for (const item of content) {
+      if (item?.type === 'tool_use' && item.name === 'mcp__artifact_worker__read_file' && typeof item.input?.path === 'string') reads.set(item.id, item.input.path);
+      if (item?.type === 'tool_result' && item.is_error && reads.has(item.tool_use_id)
+        && JSON.stringify(item.content ?? '').includes('ARTIFACT_READ_NOT_ALLOWED')) denied.add(reads.get(item.tool_use_id));
+    }
+  }
+  const text = typeof completion?.result === 'string' ? completion.result : '';
+  return {denied_read_paths: [...denied].sort(), final_response: text.slice(0, 4000)};
+}
 const focusedOwnerManifest = manifest => transmissionManifest(manifest) || isQuestionFormManifest(manifest) || manifest.schema_version === 'adaptive-dag-comparison/v9';
 const inferredManifest = manifest => focusedOwnerManifest(manifest) || manifest.schema_version === 'adaptive-dag-comparison/v8';
 const inferredPolicy = manifest => focusedOwnerManifest(manifest) ? 'inferred-v2' : 'inferred-v1';
@@ -134,6 +154,8 @@ export function loadAdaptiveRunManifest(path = join(ROOT, 'benchmarks/e2e-swe/ma
       || budget.policy !== 'repair-budget-v1' || budget.contract !== REPAIR_BUDGET_CONTRACT
       || sha(readFileSync(join(rootDir, budget.contract))) !== budget.sha256) fail('ADAPTIVE_REPAIR_BUDGET_BINDING');
   }
+  if (value.repair_feedback !== undefined && (!v11 || !object(value.repair_feedback) || !Object.keys(value.repair_feedback).length
+    || Object.entries(value.repair_feedback).some(([key, item]) => REPAIR_FEEDBACK_VALUES[key] !== item))) fail('ADAPTIVE_REPAIR_FEEDBACK_BINDING');
   if (v10) {
     const gate = validateJevTransmissionBinding(value.transmission_preflight);
     // v10 keeps policy v1; v11 binds a later frozen policy (v2+).
@@ -806,14 +828,16 @@ function createWorkerAndChecks({rootDir, manifest, context, session, input, cata
       execution_slots: 2, session_scope: 'fresh_per_leaf_attempt', conversation_reuse: false};
     const prompt = artifactRepair ? {source_ref: input.source_ref, task, artifact_repair: artifactRepair,
       input_artifact_revisions: worker.input_artifact_revisions, operation: worker.operation, round_index: worker.round_index,
-      original_task_id: worker.original_task_id, execution_model}
+      original_task_id: worker.original_task_id, execution_model,
+      ...(manifest.repair_feedback?.read_scope ? {read_only_reference_paths: [...overlayPaths].sort()} : {})}
       : {public_source: input.source, source_ref: input.source_ref, task,
       requirements: input.requirement_descriptions.filter(requirement => task.requirement_ids.includes(requirement.id)),
       shared_catalog: catalog, input_artifact_revisions: worker.input_artifact_revisions,
       operation: worker.operation, round_index: worker.round_index, original_task_id: worker.original_task_id,
       repair_context: worker.repair_context, execution_model};
+    let call;
     try {
-      await session.claude({purpose: 'worker', prompt, system, mcp, profile, attempt_id: worker.attempt_id, task_id: task.id,
+      call = await session.claude({purpose: 'worker', prompt, system, mcp, profile, attempt_id: worker.attempt_id, task_id: task.id,
         context: {operation: worker.operation, round_index: worker.round_index, original_task_id: worker.original_task_id,
           ...(selected ? {profile_selection: {decision_id: selected.decision_id, choice_id: selected.choice_id, profile_id: selected.profile_id}} : {}),
           transport_ref: relative(context.directory, transportPath)}});
@@ -821,7 +845,11 @@ function createWorkerAndChecks({rootDir, manifest, context, session, input, cata
       if (uncertain(error)) throw error;
       return {status: 'failed', code: codeOf(error), outcome_uncertain: false};
     }
-    return {status: 'completed', outcome_uncertain: false};
+    if (!artifactRepair || !manifest.repair_feedback?.worker_diagnostics) return {status: 'completed', outcome_uncertain: false};
+    // A missing stream only drops the optional diagnostic; it never changes the completed worker outcome.
+    let streamText = '';
+    try { streamText = readFileSync(join(context.directory, 'calls', `${call.id}.stream.jsonl`), 'utf8'); } catch { /* optional */ }
+    return {status: 'completed', outcome_uncertain: false, worker_report: adaptiveWorkerReport(streamText, call.completion)};
   };
   const checkTask = async (check, checkContext) => {
     context.remaining();
@@ -991,7 +1019,7 @@ export async function runAdaptiveArm({rootDir = ROOT, manifest = loadAdaptiveRun
       checkerFiles: [join(rootDir, 'src/benchmark/adaptive-dag-runner.mjs'), join(rootDir, 'src/orchestration/adaptive-dag-execution.mjs'),
         ...filesUnder(join(rootDir, manifest.public_checker_root))], environment: {id: manifest.public_environment_ref},
       ...callbacks, testRequirements, maxRepairRounds: manifest.max_repair_rounds, record: context.record,
-      publicCheckConcurrency: adaptiveRuntimeSpeed(manifest).public_check_concurrency, ...adaptiveRepairBudgetOption(manifest),
+      publicCheckConcurrency: adaptiveRuntimeSpeed(manifest).public_check_concurrency, ...adaptiveRepairBudgetOption(manifest), ...adaptiveRepairFeedbackOption(manifest),
       ...(arm === 'jev_profile' ? {prepareRoundPlan: selectProfiles} : {}),
       ...(inferredManifest(manifest) ? {decideRepairOwners: forms?.decideRepairOwners ?? ((request, metadata) => session.decide('jev', request, metadata))} : {}),
       ...(repairManifest(manifest) ? {repairScopePolicy: focusedOwnerManifest(manifest) ? 'public-inferred-owner-v2' : inferredManifest(manifest) ? 'public-inferred-owner-v1' : causalManifest(manifest) ? 'public-causal-v1' : 'minimal-public-v1', projectRepairFailure: repairProjection.projectAdaptiveRepairFailure} : {}),

@@ -10,7 +10,7 @@ import {buildCausalRepairDecisionContext} from '../orchestration/adaptive-causal
 import {applyAdaptiveProfileSelections} from '../orchestration/adaptive-profile-selection.mjs';
 import {chooseAdaptiveRepair, validateAdaptiveCatalog} from '../orchestration/adaptive-dag-planner.mjs';
 import {adaptiveOutcomeUncertain, adaptiveTerminalCause} from '../orchestration/adaptive-failure.mjs';
-import {adaptiveRepairBudgetOption, adaptiveRuntimeSpeed, adaptiveSpeedSessionOptions, adaptiveUsageSummary, assertAdaptiveCohortCapacity, buildAdaptiveChecks,
+import {adaptiveRepairBudgetOption, adaptiveRepairFeedbackOption, adaptiveRuntimeSpeed, adaptiveSpeedSessionOptions, adaptiveUsageSummary, assertAdaptiveCohortCapacity, buildAdaptiveChecks,
   createAdaptiveProviderSession, createAdaptiveRunContext, createAdaptiveWorkerAndChecks, loadAdaptivePublicInput, loadAdaptiveRunManifest,
   loadAdaptiveTestRequirements, preflightAdaptiveRun, withAdaptiveSettledBudget} from './adaptive-dag-runner.mjs';
 
@@ -462,7 +462,7 @@ export function preservedRepairTerminalState(execution, remaining) {
 export async function executePreservedArtifactRepair({source, run_id, runDirectory, checkerRoot, checkerFiles,
   environment, probeEnvironment, checkTask, executeRepairTask, decideRepair, assertionContract,
   decideRepairOwners, prepareRoundPlan, maxRepairRounds = 2, testRequirements = {},
-  failureRecoveryPolicy, recoverFailure, repairInputPolicy, batchChecks, publicCheckConcurrency, repairBudget,
+  failureRecoveryPolicy, recoverFailure, repairInputPolicy, batchChecks, publicCheckConcurrency, repairBudget, repairFeedback,
   repairScopePolicy = 'minimal-public-v1', artifactRepairPolicy = 'artifact-v2', record = async () => {}}) {
   if (![executeRepairTask, decideRepair, checkTask, probeEnvironment].every(value => typeof value === 'function')) fail('PRESERVED_CALLBACKS_REQUIRED');
   if (!Number.isSafeInteger(maxRepairRounds) || maxRepairRounds < 1 || maxRepairRounds > 2) fail('PRESERVED_REPAIR_LIMIT');
@@ -525,6 +525,7 @@ export async function executePreservedArtifactRepair({source, run_id, runDirecto
     ...(batchChecks !== undefined ? {batchChecks} : {}),
     ...(publicCheckConcurrency !== undefined ? {publicCheckConcurrency} : {}),
     ...(repairBudget !== undefined ? {repairBudget} : {}),
+    ...(repairFeedback !== undefined ? {repairFeedback} : {}),
     ...(recovering ? {failureRecoveryPolicy, repairInputPolicy,
       historicalRepairHistory: source.historical_repair_history ?? null,
       recoverFailure: async (request, context) => {
@@ -678,7 +679,7 @@ export async function runPreservedArtifactRepair({rootDir = ROOT,
       probeEnvironment: callbacks.probeEnvironment, checkTask: callbacks.checkTask, executeRepairTask: callbacks.executeTask,
       assertionContract, maxRepairRounds: manifest.max_repair_rounds, testRequirements, record: context.record,
       batchChecks: callbacks.batchChecks, publicCheckConcurrency: runtimeSpeed.public_check_concurrency,
-      ...adaptiveRepairBudgetOption(manifest),
+      ...adaptiveRepairBudgetOption(manifest), ...adaptiveRepairFeedbackOption(manifest),
       ...(recovering ? {failureRecoveryPolicy: manifest.failure_recovery.policy, repairInputPolicy: 'evidence-v1', recoverFailure} : {}),
       ...(inferred ? {repairScopePolicy: `public-inferred-owner-${inferredVersion}`, artifactRepairPolicy: `inferred-${inferredVersion}`, prepareRoundPlan,
         decideRepairOwners: (body, decisionContext) => session.decide('jev', body, decisionContext)}
