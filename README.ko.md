@@ -101,6 +101,7 @@ npm run demo -- --spend  # 유료 POST 1회. Jev 잔액 사용
   [평가 방법](https://github.com/Kai-Leee/jev-router/blob/research/docs/EVALUATION_RESEARCH.md) ·
   [실제 구현 평가 가능성](https://github.com/Kai-Leee/jev-router/blob/research/docs/LIVE_EXPERIMENT_FEASIBILITY.md) ·
   [실시간 실패 표시](https://github.com/Kai-Leee/jev-router/blob/research/docs/REALTIME_FAILURE_RESEARCH.md)
+- **릴리스:** [변경 기록](CHANGELOG.md)
 - **기여자·에이전트:** [AGENTS.md](AGENTS.md) (Codex 진입점) ·
   [CLAUDE.md](CLAUDE.md) (Claude 진입점, AGENTS.md import) ·
   [개발 에이전트 역할·인계](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/README.md)

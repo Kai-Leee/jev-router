@@ -98,6 +98,7 @@ npm run demo -- --spend  # 1 次付费 POST；消耗 Jev 余额
   [评估方法](https://github.com/Kai-Leee/jev-router/blob/research/docs/EVALUATION_RESEARCH.md) ·
   [实际实验可行性](https://github.com/Kai-Leee/jev-router/blob/research/docs/LIVE_EXPERIMENT_FEASIBILITY.md) ·
   [实时失败报告](https://github.com/Kai-Leee/jev-router/blob/research/docs/REALTIME_FAILURE_RESEARCH.md)
+- **发布：** [变更日志](CHANGELOG.md)
 - **贡献者与智能体：** [AGENTS.md](AGENTS.md)（Codex 入口）·
   [CLAUDE.md](CLAUDE.md)（Claude 入口，导入 AGENTS.md）·
   [开发智能体角色与交接](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/README.md)

@@ -105,6 +105,7 @@ Do not use Jev Router if you need any of these:
   [evaluation methods](https://github.com/Kai-Leee/jev-router/blob/research/docs/EVALUATION_RESEARCH.md) ·
   [live experiment feasibility](https://github.com/Kai-Leee/jev-router/blob/research/docs/LIVE_EXPERIMENT_FEASIBILITY.md) ·
   [real-time failure reporting](https://github.com/Kai-Leee/jev-router/blob/research/docs/REALTIME_FAILURE_RESEARCH.md)
+- **Releases:** [changelog](CHANGELOG.md)
 - **Contributors and agents:** [AGENTS.md](AGENTS.md) (Codex entry) ·
   [CLAUDE.md](CLAUDE.md) (Claude entry, imports AGENTS.md) ·
   [agent roles and handoff](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/README.md)
