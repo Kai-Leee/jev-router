@@ -1,0 +1,3 @@
+# D062 independent monitor
+
+You are the requested separate Claude Opus5.5medium monitor. Read measured planning aggregates only. No tools, no further calls, no code execution. Distinguish13successfulAPIrequests fromfailedallocation and0workers/tests. Count2selectedfrom2..30,notforced30. Review cardinality failure and limits of natural-language globalconstraints acrossbinarychoices. No inventedmodelrationale. USD is token-packequivalent,notinvoice. Your latency/cost are separate. Return JSON {"assessment":"ok|attention|failed|uncertain","evidence":["supportedfinding"],"next_action":"oneconcretenextstep","limitations":["boundary"]}.

@@ -1,0 +1,1092 @@
+{
+  "generated_at": "2026-10-11T14:21:24.304Z",
+  "source_pins": [
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/planning.json",
+      "sha256": "544bad709559a11b7e88046b06a10662ab5f41f458cf20204dc2af346dfd0bd7"
+    },
+    {
+      "path": "benchmark-runs/d070-analysis-01/analysis.json",
+      "sha256": "7ff4b9ccb2fe731ca065bc3dd00bc03a9c3d5e40487155928e7eb63684ec3b1c"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/events.jsonl",
+      "sha256": "e13c9d3335e9c24cb2ea5a57ef49860903f4fd1f62702b6bf81d16fa25bc3b4e"
+    },
+    {
+      "path": "benchmarks/e2e-swe/manifests/d070-adaptive.json",
+      "sha256": "e614a7b7835124dccf58b3dfe17d02038c7651208c94a76b7146c757427cf7fb"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-decomposition.v2.json",
+      "sha256": "a590394246b975700316859d5d89a8d495edf4f01d66fdcba0c4d65783f38d76"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-dag.v1.json",
+      "sha256": "f404bb421cd93f6160be5e99cc075b2ce0a04761086332afb6cc6f89cab3f16b"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-artifact-repair.v2.json",
+      "sha256": "fd715ffcd942c5abf2ecb09f5736f4af6b2bd67a663a91b028e527c7c863f337"
+    },
+    {
+      "path": "benchmark-runs/d070-preflight/launch-gate.json",
+      "sha256": "35f518fbd843120e2ca66e845218da1be0d640c09411f33b6308fea9e77dc59f"
+    },
+    {
+      "path": "src/orchestration/adaptive-dag-planner.mjs",
+      "sha256": "4c94d347cd545693c0a239e481266970b74faef6ef09122f767f9d2be3f6abac"
+    },
+    {
+      "path": "src/orchestration/adaptive-decomposition-balancing.mjs",
+      "sha256": "928292f782f8021472c089bdfaf79a0d59ec5471ecd700626cbe48923b112a93"
+    },
+    {
+      "path": "src/orchestration/artifact-dag.mjs",
+      "sha256": "f6ffff79a182bbf4233e1ae9d377f026aaf410d32d0820c1ead73af80e38e7ae"
+    },
+    {
+      "path": "src/orchestration/dag-scheduler.mjs",
+      "sha256": "e1119a3305bc6d5d6bf2279fbdec03ba73ceeb8f4109f6e0d1ae4a5999b72916"
+    },
+    {
+      "path": "src/orchestration/adaptive-dag-execution.mjs",
+      "sha256": "32287936cb8c927dcae19bdb00f9e85d716811137077f1f89bccca87e7dff7f2"
+    },
+    {
+      "path": "src/orchestration/adaptive-artifact-repair-v2.mjs",
+      "sha256": "3e4114e19dab56766b2daf15a2e54feadccf1d4646992cbf6613b4eaf3716b6c"
+    },
+    {
+      "path": "src/orchestration/adaptive-artifact-repair.mjs",
+      "sha256": "5e24a7fd76f3acebde1fc3c7be9e0adcfef13530e14a902422e1279bf1f522e9"
+    },
+    {
+      "path": "src/benchmark/adaptive-dag-runner.mjs",
+      "sha256": "812bf4b616c7e580c735f15993d4dd20475d2f4054c9d6e8334ce255c150acb6"
+    },
+    {
+      "path": "src/client.mjs",
+      "sha256": "b35c8f5757a208dffb2937fc8ea4b959eff9e59b235107b57827d77846b3bd47"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-08ada9ab-23d2-40fa-ba60-6cbbbd8816e1.json",
+      "sha256": "39ae762aa0a3d4e75577b4a46377d26cb40659bb672d402c5baf9e0022e748b4"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-0a7fd4dd-2d5b-4e24-99eb-357bfca01800.json",
+      "sha256": "a2ddd2a266c21a26e71899135a96cfcbae2c8efa7f4b4f02fb88055d1132e416"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-0de91680-ec7b-4bf9-a88a-e44c6f94b6cf.json",
+      "sha256": "94b5f07b59d78e5061a40e90d7ff7deb866f1b57a96fa433f38b3991a86f936b"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-10e7c810-2f08-4bf1-938e-60ad45ad4e8d.json",
+      "sha256": "1b28e4cb17d4a2547213d9f54b96f3a0d9c936a5ca89a16b3a27015731d9fe1d"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-14a069af-9fc1-4ad5-9479-4da9e6c70fb3.json",
+      "sha256": "760258d473a6732fc512f52351b0bda6147fd20d44037fa37957bcf59bfbded6"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-1681057b-3933-453c-8c9a-029fd371edcb.json",
+      "sha256": "51963e1ff9d06f6d9199d214240761916466af8100b9b7dd651bc25c84b4a38b"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-17f36c49-9901-4f2f-88e0-d1225a64d581.json",
+      "sha256": "0ecc1de4497227668b584d079ecc70e7dd6eee7ed79942c1f19b6b7e2bb0e85e"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-187dc914-cb7d-4ab7-8a6c-85192fff2a19.json",
+      "sha256": "34fc9d6bbf953aa3d780320a7c3c2df01af51bcd4f2523c677befdc60cf567a2"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-195726a8-8b9c-426e-9cae-21deb85217dd.json",
+      "sha256": "f1f8c260777ee31c497a15d7b8cf10c87d8f569feeb3d298b78cb6543f953a15"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-21c1031e-5c48-43a8-ad2a-d3e33561f6b7.json",
+      "sha256": "448f32f0681e90b53b29121a7274caf16ef44a18dbcd09c558b6ab5675e0383b"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-25e82d0b-c2a0-483f-9807-68c295e72300.json",
+      "sha256": "bc2e5aae7aa1679ce4789cc49f4ed1413305b939f5fe156972487914a0ac4303"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-2d0ccb52-3bfa-4510-adc1-eef7b2fac847.json",
+      "sha256": "cc12ed2743cb13a09cce36ea8c0cf1a5e45c62559b35af98f08dbec96586eb3a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-2eb74f60-bb08-4077-b086-5e539efa44d8.json",
+      "sha256": "6183660f666654467e1712176ea00ffceec81d5af94b89308a6b979272467e88"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-30e906ad-adac-4038-a18e-c9fa702ea18d.json",
+      "sha256": "f067f75225e0d07ef95bc887a3a6365e443de384314186efec4f153a83510c25"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-345eb51e-fd7b-4e26-9b50-2841cf90b635.json",
+      "sha256": "46add673b62d63bbe0e24fab2ccb1d4580ae1d0537d4238c781f146dbae90002"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-3783496b-05af-42e2-9bc9-bafdac509fef.json",
+      "sha256": "98b960fe265c2f88d91bf688aed5ca087924471ce144978de919b4d327372adb"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-3c35d772-63e2-4c9b-b439-7e57219f6933.json",
+      "sha256": "6521b5648504d0684eb7c97c7bbfe0f25c74e322780fe062bcebf52152f1a114"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-3cd2554f-0c86-4fee-9ff9-e1c6431b3cc0.json",
+      "sha256": "5fd1a429bdd3c29bc6e494c5bf0f6a65d1d9aebccc0f887a4302468f712c661b"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-3f487da8-8dc9-40f5-8efa-543ed6144844.json",
+      "sha256": "dfa8a0f2e7ab5817649ce70a9d9f6e625f9fdefb730d99944de1c2fffb2bc6c6"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-43f5477a-3447-44cc-9aa7-afb41659155b.json",
+      "sha256": "f3978f301cb7ae7ff52d30e14587389d01fbb966df119e58b1ca9f9996e60b57"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-45362ec3-10c8-4dda-9c15-073c6a63b173.json",
+      "sha256": "eef2bb9918fb623db51ea20f4e89ba16a9162707e0ac0084a39cc42b0006d1fc"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-4998448b-afa7-4ffe-8b3f-7acbe9ada522.json",
+      "sha256": "ac2cdf3d4ac9ca477fdd3ad593774df78feaba84030d73d9ae26fe7a837a1ac5"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-4b03d640-e16e-4626-ac99-f29a89ebb2ac.json",
+      "sha256": "fa97a6dbeb0d854f12a762cc69be35017087776613ebd5473712ee5579f89cfb"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-4b6e2665-59ce-435e-a4ae-e426d865c351.json",
+      "sha256": "1bc4583eccaa0cb05a43e86f460bcf60387a6047868cf3553db502cab90829b8"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-4cfee536-7294-4201-a950-a3b1b37e35d3.json",
+      "sha256": "2a53fa4a603c6446b4d61bd9677acadd9b1a8e6c2675780befa36660ae5bbb86"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-4d169377-b802-487a-8464-f0921ce548d2.json",
+      "sha256": "17b20cbcf52b33f7ae0e2aebbd780ac0c559ab0f47c2ffdb624d237422843f76"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-4ea4dd68-e086-457c-966f-070d16e3275e.json",
+      "sha256": "63952058098910fb8dba66c2df399671d7e7109d7d0b2c966cc0f84ba2ee65d4"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-4f22beae-554a-4c65-a5cb-e2f28f9f2477.json",
+      "sha256": "e7ce064e39ccf5de83fbd8f506e321c45a006486aefc7990144bcc97a069a4be"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-51872e0d-f58e-4db0-9907-0b04a95d32d9.json",
+      "sha256": "a9adc06eade845552403f5428452026cb6b64303ac5c6832ba82c1cce8ca5acc"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-52f86830-6044-4c8e-9ccb-3b5037cedff9.json",
+      "sha256": "f21df970e01a22817f7f649690bc1094bb3fe15bd06af6ffc22a33d2b1b642ae"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-56ba7e32-1b19-4714-98d8-35bd78a7b7e0.json",
+      "sha256": "8d1d660c86db17413ed796665bfe698f93d23cc8c409c388d3ebfb5c270b8213"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-5d6a16b1-dd37-473a-8098-8aa945a2533c.json",
+      "sha256": "80b4a8488f5fab4ae964efbdbf570eb4bb8394e2f4814301b231af7179f56b00"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-5e7b50a8-60ea-4ee3-a42c-ab689fda31a7.json",
+      "sha256": "1d187aba5344111ab8b2218ed6b1fedd2eae316aba254b6543c9b9de086b5254"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-5f58176f-0c59-4989-a408-ca60a71ac588.json",
+      "sha256": "81d797f96a5a2897a226aea03242c6bc40c457fc735de6dd8d3d519f802e9f0b"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-62e7f516-52e4-4d35-a8cd-10b6e1d09121.json",
+      "sha256": "cc590e4277e5c1a5178feacf9931df7864b2fc715f28c977b685dc8cce40769a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-67048c54-8eec-428f-943d-e52159eeaa8a.json",
+      "sha256": "1015a84edbd450aa2972b8027d40e2395cf03232cdb7b186dea2a97f10b6dee5"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-6a2354a2-3f85-4fac-b580-57d7a5cfdbb0.json",
+      "sha256": "d22888e86fc3e6b27ac364fc923928a506bb60fcd492984d1aec4e6d6b8446d0"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-717d8607-a697-4256-a753-7b2a4f35afb2.json",
+      "sha256": "1eabf6b84f1a3260a4d79a2bc2aeeb68639dd759bb23a111de2935a6f32aef26"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-71a49956-15ad-4f1b-96cc-44ea0c1028f6.json",
+      "sha256": "8bcbb684f12c9a579e9bd26754a23a8d0d8c2e32d086e14f43f9bee7453acee4"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-765102ee-ee4a-48fd-b554-89ddad7c9cd0.json",
+      "sha256": "8e26c3c91012a60624de4bcd6562724d265ede285e0f2dbf6695d8f25cbff35f"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-76876869-2a6f-44b5-b2df-ebf8ca62250a.json",
+      "sha256": "1acc0fd491d6a0cca07c0af45f3a5c485bcb7f2fa47fffaeb0265b8542f44f98"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-7aa3164e-ec94-4a45-908a-31fc423e5641.json",
+      "sha256": "7bc18aecada226241b175b7e37a645668d8408159eee0f09d328cc4a1b22b943"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-82729d67-0763-46c3-be45-ca14c7afd8d1.json",
+      "sha256": "b59eed1cb67e8e3b2ecd3ee22965d7d13ed01e39745ad60255150875d9b0dda9"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-87da14f5-6fb6-44ca-8292-a1a086c91467.json",
+      "sha256": "ba330b49a40ef20b79b69f43f04d96cc11418bced64f98e3b5fd0d0d818bec0c"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-894741e8-e44e-4e01-94c5-4ebd160d0c63.json",
+      "sha256": "ae652fc0ec47a3350d9068c1545d0601425ae14f87307de43282bb77631ee669"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-8c8afc10-6619-4d04-81e9-a1cfc11da298.json",
+      "sha256": "25bd9dc9d3c934f63d14471f940a0a8fc8dd716f6ddc7c04918682567fd91421"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-8ca9907a-6620-4055-b91c-129940e9f5b3.json",
+      "sha256": "0627279410af7668da2554af486c38a6eae787a297a632617f2a8ea77c99eba8"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-8d0853e4-40c3-4f3d-9e12-affee1533145.json",
+      "sha256": "9bd3cb41bf866000b10e0913ab754e54743bd7525830d7d3ec177d717c64adea"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-8e78ca82-4115-4c88-b8de-45a698bbfd80.json",
+      "sha256": "0a758a397ce7deb2bc93c3df67269786e852a78ad2db272ba6a00ebcc7979c1c"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-903f14e2-653c-4c45-8303-9104115ef0a8.json",
+      "sha256": "33e0ba467cbe287e75d4b48bc1895e6e38ca6c1589899cbecaa0ca0b511299ad"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-95e3fe88-4278-4652-83c8-7fd6ef36580d.json",
+      "sha256": "7e1328eb9f7742b2a8d69817c794b87cfc2555dbb3cf99686ff64642151e605b"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-9979f8a0-66e1-482b-a3d5-cb96a3ef6ca2.json",
+      "sha256": "e0f288bee86e9e9502995836005683dcd95a89691d6e15e082b8c54324ba485e"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-9cf462de-758a-4827-bd98-ea543bd2f8e0.json",
+      "sha256": "3bfea09e729f349cdf368a4b8a5d3d718e33604e54008488f4e9921c271cd0b7"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-9e07bed5-ac12-4f02-8f9a-78da7d0d6c2a.json",
+      "sha256": "ea6c30a589c63d6bf2621ac07d0277f1d50a83ecda3b1eeac5aafbb1ddfe62c1"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-a169df8a-05c2-417a-92fe-6c6db0399092.json",
+      "sha256": "4600a5d7234797b53641963ad36a627206ce231270472c203cdc0357ca9d440c"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-a4a3fe1a-c549-4b5d-b789-072090689c35.json",
+      "sha256": "4f45e60762bc06f6b9932ec18e6c31128443c8499535d2f214ec35f5e3e4db3c"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-a731af04-53c3-4a9f-bed7-bdf68bd07706.json",
+      "sha256": "6ec38eb4a01acb68970820207f218283993cf910ebcf64c33259af135958e8f2"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-a9bdbdc2-c5b1-4380-b85f-d0c22bec04b5.json",
+      "sha256": "79d5dd6e12f1c427856bbf664181724d5017b00e6055de6433575fde87e98b7e"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-aa0c7ea1-822b-4027-92d4-23573a7bad4a.json",
+      "sha256": "7ade2a0d9e6149a01d08f585b8c4d221c37d751a2a3b9a8fd3eba9c8e9fec9f5"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-ab337552-a676-4de6-be31-3b0bceb6a4d8.json",
+      "sha256": "dcbffe2ea0559011ad8c1082e27ac2baad347072553a1b84e5a4712818826261"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-abc7376c-1cb8-4d5f-a894-05d170e42845.json",
+      "sha256": "087a0947e2e083f241ae3ffe5a886b103a2f69792a4b2c3757d810c204069ad4"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-aef88d1c-b9d0-4996-ad7f-8e514f54245c.json",
+      "sha256": "32a1515b40d00019373f298e8aa42fcd7c457d587f745e5040283283187acdab"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-b92e0aa5-7422-40f1-8f28-4afa92d1f2ea.json",
+      "sha256": "f3d005821b62558b4fa573b2941136d0db099345e13cb6346343c2e81faf1b62"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-b99d9a50-81e3-4007-8d2d-4add962bb399.json",
+      "sha256": "b37b72bc7aa30f1cf010fa27d10e38446c24444d68a87da889a310fb9dcfdc73"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-bb31068f-c241-45fd-a541-3a12a1cd431b.json",
+      "sha256": "ef26ba7733f4d4a41b175774f1b31413e403981d81ac0f18840c29f0b2e9e3e3"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-be96c69c-fd65-4f77-8bb1-af6260ac23f2.json",
+      "sha256": "d5d32408677baa4ebeb137c1b3d9049077399f5ad24a14c48a4350ca63f6f098"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-c1926e16-5ea4-47e3-9119-91247ea5af94.json",
+      "sha256": "3b5295087de8824d4ddfa2aaf37fa20d8371947c7f2cf28695c8b9994338c544"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-c23aa0ea-5d70-47fc-acbc-a0e8ad6aa591.json",
+      "sha256": "2974b08d3f9ac5b4bbde0cfc79aec321c45b324566314581bd79e9cb744280d3"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-c5e89f85-ab0f-40cd-b252-b693e2cb1adb.json",
+      "sha256": "301540cc367ffd3fdfd1cb02b4330e7d19373e371addc11fa3ebff138e481f67"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-c74fc55a-9f05-4edc-b530-d6dc66a081fe.json",
+      "sha256": "45b0d500448a57f25ea15266d381163f0cab49c4d48fa728435b63d4351acc1c"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-cfd7cd6c-7c09-48ce-a025-7443e8e36a67.json",
+      "sha256": "e3b6511004217ada9d161d312440f5435e217dde883f2c705365d7d49171654a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-d2003660-b543-426b-870c-1fb5e297f334.json",
+      "sha256": "8a263d6624e5ba9979f860f3ba6ec7342da5c8fb5a8ba2640070ddca53110a10"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-d61311a9-7c27-4985-a83a-30e7fa931114.json",
+      "sha256": "6abd633ac1223e9c2403a7cdf5b160851b9b55f89a8704ebae5249ee646fc362"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-daa91fd2-4d61-4152-85f0-9ef2ae25cb2f.json",
+      "sha256": "0386707c13b6c5fdeed07e4cfe3422d1f54c542b61cdf0e0d6b99f223812ad0c"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-db8be495-f24a-4e0c-9e64-3a9ab65d35eb.json",
+      "sha256": "24832696a08fd7f2c89b473751fe2a668f2b1ba273aef8882a81ec95b92eca78"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-dcad7c30-d29e-4162-948d-a692407212fd.json",
+      "sha256": "4ed575ceae7d2151a9c48892aaa1d54347a1de6bda3f2b0313d6f9b78270a049"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-e2d0d1fa-3290-46a0-8d2d-495bac6c043c.json",
+      "sha256": "f720350988126b5a377cc27845be2d9f9337b781c01e6406da447cdf8a58df5c"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-e5dd2295-9fa6-4885-b2ee-54e72b71ee3b.json",
+      "sha256": "c025cb6eecb95d09cfd5269271af275f363b052786219cd6a24049d4921ecb51"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-ea9f09fa-ebcb-401c-96e7-54bd40670463.json",
+      "sha256": "20e1b59986c125826ed46bfbf2dacc72c2b5a17f0e9ef8fd306b477236cce46e"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-eaee7c1f-8205-43eb-8fff-84b478c357a6.json",
+      "sha256": "3a85cb3b68856b48e04b4834d06201700e81a7f8ba8aab593dc88df9e3d86a5c"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-ebba38de-1eb1-4b5d-ba32-d997e6612010.json",
+      "sha256": "c54bccb0baf58192c519526f0c6a9013da0fcb9b80e90cbaa01c96789a459507"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-ee8439b8-6266-4a11-974d-19e21c1e362c.json",
+      "sha256": "c08fcd9f55988726e4dbc846d0339cd16bce3c4a211ce19dcfb5d2e28d1588df"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-f466fc05-1aa5-433e-bf1e-102634793b79.json",
+      "sha256": "05de91920318542387abb8bd2f0c1014ab8b6375d090b799bd93e09aa80fc83a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-f7ca0908-ac64-4cd5-898c-665e21c7e0ec.json",
+      "sha256": "ac8955ed5c52b55192ccab06d90545e831e0aeff20033319babea90927f5c4f7"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-f82ebaae-ee5e-4cbf-bac3-3c1b10b2ff77.json",
+      "sha256": "104f80af87365b0632f6a69314d76ff92e5f48938460819c9200f4c4545c6ffc"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-f97da8b2-7c3d-405a-8b6d-762b3d78d6d2.json",
+      "sha256": "753cbc2fa91f7c82015ea87a1ceef90d4d9c21d6ef35562cd5b98868d5ad656f"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/check-fc2e749a-beb5-412e-bbfa-2b0dc8218f6d.json",
+      "sha256": "8e89b44c3efbe54e390b3a6c8ea6e33d53ffe30d146b8ee4d47a36df4fcc7960"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/claude-0049.json",
+      "sha256": "56d8aa13a0eb58bc363b8eeea7f5dc9cc9ab589ef464d99ceab5244502ca1ef5"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/claude-0050.json",
+      "sha256": "0ec88a9b8441567ccefa8d6a68491e5d48e66f682c07d67d69a306bd0fb4de5d"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/claude-0051.json",
+      "sha256": "380f024e7822e9920ee66577a483603d39ea8402bae94485fb9a2a3968dea7da"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/claude-0052.json",
+      "sha256": "f0013b5bd0e28b2a346c400116d2c99933eda34bfe1420bd58e41a46b0301a9d"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/claude-0053.json",
+      "sha256": "f2483f25beffdad478863bbef3ba6e1433b72c7ca610f42536a89c55a3367d69"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/claude-0054.json",
+      "sha256": "4b119c7b8e152b268785657e49a008d00e4bb63973d9fea30852db6394f91848"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/claude-0055.json",
+      "sha256": "4abde419b863304a7845492d301fdd749d0516f3c67c3b41bd03c61011c3c32b"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/claude-0056.json",
+      "sha256": "2cc46680be1a61a41673cc376cb1de144ec38fc70bc035e617cea02093c0c010"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/claude-0057.json",
+      "sha256": "4bffc56ba5efacaa2c233128c953c21dec93a93b911e07ff8416e26c1d802879"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/claude-0058.json",
+      "sha256": "a6543698c19cb7473dfb0d22e3ae87d9496e2a8c9110a9cbec6c7210fa73f1a6"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/claude-0060.json",
+      "sha256": "80234873aabc2cf8a64439a8a0a2830acd11df8f42b1be3822c26f656b9f5400"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/claude-0062.json",
+      "sha256": "922fa84e3dca9e68565d551b63eba7f7f771d79cc35a6a97ebb81d4b6045c18a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0001.json",
+      "sha256": "74cda82165a339116edf24439b0828a781c3bbacea01f25acd29a99b0cc90dff"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0002.json",
+      "sha256": "383423dff1380fc4d9464eac15f5b7b91f05b0b66780f57929c8da999054a677"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0003.json",
+      "sha256": "d2df47dfc731b5d1e4ec65842440cecc270d712c7f5a8e9633fadd5b4017aee6"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0004.json",
+      "sha256": "5cb6104cf6b436fdb2a881abba2aaa6d560022fd1d2b48c9039708c883bd07db"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0005.json",
+      "sha256": "5c53a05b5f6bfc4e5290c9997172bbabef8479185b36abb4bfacd6367887ba8a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0006.json",
+      "sha256": "9797fcddf410a3b2e03734a6f89d6d64c4d2c9ae829e78bc689a3a269578c336"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0007.json",
+      "sha256": "5b332f248621d8451030fc4ddb03a035b0c67c9976dc2bda357844752b1f8b4f"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0008.json",
+      "sha256": "6476e74857399d530f0a72e28991c04ed78f0ac599d3df1f409c1d0e0122a07c"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0009.json",
+      "sha256": "43625936e0cd11fccf7e35b9709590a22f63ffd1ebe52e3ffc12dc21ffe112b5"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0010.json",
+      "sha256": "e769c533cb09fbf1b1ed9f084636030aa4638191e3e738b62be054cf83d9f70e"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0011.json",
+      "sha256": "9862e841a92e5352386cb10ff24b3065a803351182a8508a737817ba8ec65ba4"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0012.json",
+      "sha256": "1be89beb9dce71c36e1c95a7e85449e361ec1216d099ca744362618e746aec0c"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0013.json",
+      "sha256": "8268815991db13b8efebb1c0b2ee3e124c6f8c375022ae036217b7fe2b63c60f"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0014.json",
+      "sha256": "eef3c40e9adf90fbc758953690a9aebf5251c46fb586718cb02d7a4de7b796ee"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0015.json",
+      "sha256": "7e5b15cf58f6f14c804594594d47689bc45864ae316fd12131def0e39a8be219"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0016.json",
+      "sha256": "f4c9ab14c9845f97138c59a71e68ebd31807a7eaf5bbd8c4e669261402149daf"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0017.json",
+      "sha256": "85b4d46efa41b5d01dc3ac718023d3a96fd161cb2543d85c131ff30ae99e6be6"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0018.json",
+      "sha256": "889e19d6348bce993b30eee07c783812c9b3d519d72411e01935c297373d1843"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0019.json",
+      "sha256": "15493fed41f223de66f3df98308b7faf9d8b37f34889197ede847e14bf89af1b"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0020.json",
+      "sha256": "d2c48cdb73c7eca3249f9a0cc3fa35a9d315a53a60c5255b213f66844b73c2a7"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0021.json",
+      "sha256": "a3576986fb94ec5679ce87864a7af9ea51175ec1e90cd918f4718c31ed073d69"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0022.json",
+      "sha256": "83cbe5014aeddc429869b66b67a4a0d3cbfe4179e5a331ca04ae5229b5712cc9"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0023.json",
+      "sha256": "f9a97593a176b4443f35610df994c79517f5ea8ee71a5afe8c50180b6c42d768"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0024.json",
+      "sha256": "06c228b8f33cdb122c679755aedf60c15719ba852c615a5779df10fe8a35d728"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0025.json",
+      "sha256": "a3d9fe2a15ecd6f9affba501b2f81aa7a79850b7d614cfb0ac520d16d0f67f4f"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0026.json",
+      "sha256": "572f3cfb2cb7b5dae99a106fabecd4b743392deba86666bcd1c55b40cdf22bd6"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0027.json",
+      "sha256": "ac6ed830aa0abdc5c95fbe4b0fafdf36815ebebb9715d4a5515b92e750696abf"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0028.json",
+      "sha256": "f3da9c5e8aabb5bbf4f9efa0ddda39b19c33cd10b9778bbf2f33e111666d17f1"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0029.json",
+      "sha256": "7a4de64df8fd1d12080134c86bd13df4790dc9860ad1fdf940ee83bd99349e41"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0030.json",
+      "sha256": "ef143465c6c7da3d59cf4479e1e5ab722757cc6d9da7694050a5a4c430f103eb"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0031.json",
+      "sha256": "fb61f312d08eda86197746d1257d5dd77c2c69841fe6d7c683349db9bd3a71ce"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0032.json",
+      "sha256": "94bc14b9e8c3089cdad1b6fabe16821de4ac26598d02672df8b69d56428c3344"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0033.json",
+      "sha256": "a34797ac5a5949a89d1543ec0aadaff1f096c086b5b96d694fe6642dab7fc2ae"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0034.json",
+      "sha256": "fc6b0cec0eb6275e30e11b9531491c44d123080682be7383ccd93ddfc91da660"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0035.json",
+      "sha256": "076a8374d64cea7aa144f6da78029eda1fc2cb0de63e7fce1536009517378b1a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0036.json",
+      "sha256": "c86ff5806b03b1a55c6667c25c0adcffb576c1c76c7a5e4434581bcabb997ce7"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0037.json",
+      "sha256": "f3df911d803f20c4f29706c72a25d9a222bb2635b1e4260d06b144c43b908b47"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0038.json",
+      "sha256": "6202ef6ec2695d353dd76a61959feba4ac1925a8a760e47bcd35e8d6bb90ef67"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0039.json",
+      "sha256": "e19a9d833c213dfd8f9ae4a387f01aed1947d26d5358a4434f3138be9a62b030"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0040.json",
+      "sha256": "14c06c33606459f933f5e8ab3d13dfe620a14cd2b96bc430fbfca4f99509b55f"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0041.json",
+      "sha256": "9436801aaf4c89ae2539252ae87c7d1fef0dfb817962fc1e2a279a8402a3c5ae"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0042.json",
+      "sha256": "5883547ca7253d76a1e620e55974d5188b07bce5175dff30355c8a9c6bb88ff0"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0043.json",
+      "sha256": "87eb1fc34465a6ede18eba257079ed30ffd3ea38315c54e8ac10993e7b8b2999"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0044.json",
+      "sha256": "a13791fa64b7c8445746be8f47c5a6ae09a6aa9b8abdda7b1431bde991aa1f87"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0045.json",
+      "sha256": "dd692ae1d68ffee6636f2b62c067ebc8199ffd24396fb08381049e6429858f43"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0046.json",
+      "sha256": "ad4d1bccd1ed44fdeddfbe46e74e210880b6525ffbbafacd1553ac809feb1f0f"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0047.json",
+      "sha256": "8a7b956f819168b3451d6498275a467c04fec441ac9223aa318cb2cb72ef5943"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0048.json",
+      "sha256": "d6a89d542b87cfd34907815fd53175b017aac2692b965927f046b48c888e71e3"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0059.json",
+      "sha256": "4c96f3a612b0cdd264637298d38e6e830bc534098743f744029af704b9ea0fc2"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/receipts/jev-0061.json",
+      "sha256": "6783fe8d334e89f1b9c7fcf1b4b98a8f1b9eaeaadeab1c68d49cc78b3a2ea85d"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0001.request.json",
+      "sha256": "b87136c8a43f473c565a844be79122641c80242c56c39794be2d8a0102841d0a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0001.response.json",
+      "sha256": "6003c70c44e4d281c3aa1764b901bea2a144b8a57ae59dfa9bdf88da6508f7bf"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0002.request.json",
+      "sha256": "79dc8e6723c12fc84392511c2eda1a247da940aa3ef5400d8e07c47f1fbc0962"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0002.response.json",
+      "sha256": "da169926e5079f373513d0d55df3c215dc61f300b10d6e37325a1c728a333c3f"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0003.request.json",
+      "sha256": "2cc471abf7f3cd8b679595894bc56411d3ece7c820dba094f4c6411af7d86163"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0003.response.json",
+      "sha256": "c5aae45d1ccd81273867d87231b2ff7f611a2ac459810cb6e3a51e75e50b21c0"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0004.request.json",
+      "sha256": "e4d2b108c6e451bcdd055d8c245e0e3cbaf544c7f652595bed3543950ef55b85"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0004.response.json",
+      "sha256": "e816d9c7ba2c5b6aaac23f0193bd68a11c90a61b408bce51ce6fcab1453d9dca"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0005.request.json",
+      "sha256": "0bbd3cc14f9ecd16dbd0dd0ccd7aeb187d386a5ce53eae6cc2aa8f9b39760e11"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0005.response.json",
+      "sha256": "bfa88efcf88c0ff44827d67ca6d63638ba92f6ec48268b9c6e2f593edf7eaed0"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0006.request.json",
+      "sha256": "29aa02ca61ce23913e70a3392283b43abe6c7e477b80c4499a67bacc58b9685f"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0006.response.json",
+      "sha256": "ae78a889787548cdc646c3a437b9ae49537e34b83042bbd9263948e1f8f03f58"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0007.request.json",
+      "sha256": "beb54e74860658cf8dc40f43fceca58b207313e38d1ff1759f85ed76e0d220a5"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0007.response.json",
+      "sha256": "b6cc5ecdb88dc2cd0f2e075910a03db6780b1a69d7e2c74851fb8c3d13ef3aae"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0008.request.json",
+      "sha256": "6005d5b3891cd6775cddaa924e66912cef299d541259033f5a1753099e12abca"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0008.response.json",
+      "sha256": "3cc834283a813e2a63c8b76e6b206c6166fc804538a9050a9ee4957fe8e6a2eb"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0009.request.json",
+      "sha256": "f08c68f253ceb08963ca79c393a17acc715cf00a43c1b6af049b44e680b798ca"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0009.response.json",
+      "sha256": "5a0a0838f6fbe160af58a95dbeb89111fd60a0804317904fc1864bcd529536cd"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0010.request.json",
+      "sha256": "f878411bcda65babbb6033e3200a476b47ace2d6a8be7bda3b03c6442a2fbf41"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0010.response.json",
+      "sha256": "65839b476babf47018403e9d9c6262f9302abba3d62bd74819c84817e01121d1"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0011.request.json",
+      "sha256": "7b2651fc13d3c1435ae2415ce545a9534ac0f763a06840ba8883b87019a477b3"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0011.response.json",
+      "sha256": "7d6e6a7250ccf6f9f80f159f1ce9eac514c97b049f17ac7afd5840456992bb71"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0012.request.json",
+      "sha256": "43b8e52cb46a5c1aa847b3e349b472b0125d1fdbd9a88bf716a632478ec02629"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0012.response.json",
+      "sha256": "43565de96fe9f73588776cf6eefbb9202a5e3b667a54de1139c9d76cc3b7255d"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0013.request.json",
+      "sha256": "e318b711168782fbb7d8bd0fd3498f2d226e39de2e7ef9b0c62dea6d7518740e"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0013.response.json",
+      "sha256": "c3062b64237a066841cceaed4970e674a1f8d37900486718a4099d3db20e4178"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0014.request.json",
+      "sha256": "61973f09a223431632c5329cce6b3ff3c3e55bbd70cf36232ddba27aede36709"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0014.response.json",
+      "sha256": "dc4506aa82a5bc9efc706b3e171de9726bc638637146259bf6b0cff00c5cd820"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0015.request.json",
+      "sha256": "f0ba5d3e21f7b9e00e3af9304f4197dac149b2584f58a36c9ff4c38b57c9dcad"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0015.response.json",
+      "sha256": "e2819c24a28a06a0d1991782c315753042b11d301638187fa607f0d944230593"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0016.request.json",
+      "sha256": "fe490897f1c23ecdb3e052d2f8e3cc93f0d00e57d06f489c3f47dfeaf6af9322"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0016.response.json",
+      "sha256": "011e31d34783b76d08d246cede59dc28e2c037b2aa37d4cd65119c1afd56658a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0017.request.json",
+      "sha256": "e1ba140c9cb51e77ae8305e71cca302e95a48357d721387129f9bfbe5120d6ba"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0017.response.json",
+      "sha256": "c93eb37def0c6db7b8e7c91b7a561aa003c36daa8454653e4c0c9c2bde977708"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0018.request.json",
+      "sha256": "e7bee12b8df1038c5b953734a25c687cd499d931eb61d0c6ba2cf603e1235872"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0018.response.json",
+      "sha256": "9531906fe5a075107e32618ca8039361270dbea99613c2315fd27e74dba4ed3f"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0019.request.json",
+      "sha256": "c7f81ba9dacac380b797d50564dbf6672691df8d321db26729f4d633ac9b58f9"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0019.response.json",
+      "sha256": "d4b373270dba0c706305278d43dde16a2e43d4d1ca9999b2b95c943be40af517"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0020.request.json",
+      "sha256": "21a77751f335020aab73d6c547283b8168e83ec200c82651df667fbe3e456c9a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0020.response.json",
+      "sha256": "630c1850a381d0d1c36b62683a7abae317cba0d2506149639d039eb85095b388"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0021.request.json",
+      "sha256": "163bbbffc86325b918443758b394d81845a70883e13fa8f01ec4e81de1912ce0"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0021.response.json",
+      "sha256": "d51ffc9e6395df1e9d2b33bde83d94d6aed21e7e8ced4f1290ab42672b9f2653"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0022.request.json",
+      "sha256": "967372df34d7c58f9637e85b7f778e8dd0eee0b8624cd51a8d1dac3ee0dad680"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0022.response.json",
+      "sha256": "d05cfdaf5861e6923be1a37250ce16fb2b38d88c18d7633ef2a42b54c3261e45"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0023.request.json",
+      "sha256": "31771be9ebae2cc089d478880fd1e2d39a2f26e2ebd087aacade16fbd866da4a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0023.response.json",
+      "sha256": "80471edf9b447574ee89f25f513342cf9f8c4a52964fa6f1bf8e15220a5dd40a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0024.request.json",
+      "sha256": "a9421f312a9ab867e768935e2b229886e861dd52e4e8f74b2889a8c069f05bca"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0024.response.json",
+      "sha256": "24e6193a7ca0147150fd5d68850ed5c4a443f12ee885db1e63be683b2ec95ce9"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0025.request.json",
+      "sha256": "3d14da436ca77638a35c97f7a04809c083d16a88e36a11f25aff5609f6f895eb"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0025.response.json",
+      "sha256": "f52b5ac0ea266b91664a67a20330846befe9ec7eae4333dd93a81238ab6f1192"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0026.request.json",
+      "sha256": "9a09191aa2378b021ca463984e1eba087c8beeb440ed1bc9f5b8c14446455fc3"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0026.response.json",
+      "sha256": "c953596e166c59f52a5bc367c568d34793950c97e08bc43d0947eeb8e44273e2"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0027.request.json",
+      "sha256": "443592ef070be523fb6cc2d4d660cb959581a308173b0a7170adebeff00680ed"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0027.response.json",
+      "sha256": "167e4ffc0774e8f446abc5ea05788e2df8e4cc531843ccac2a4c30bec9bc012a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0028.request.json",
+      "sha256": "205b49effa319067216974372005a488df78278f1f4fdb4c752d974a7216f2c1"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0028.response.json",
+      "sha256": "d597437c8f294cb5621ebeb7621f50bebb072cbf4a5d340269c5b708dee8c540"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0029.request.json",
+      "sha256": "74f32f37c8025a795c0bec185ee443a24378ab890275d211e1bc3c0482ae38c8"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0029.response.json",
+      "sha256": "96bd802d84b60e816e719c7708c4a9192b1ebb44664abd5e29d3a90546bb29e1"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0030.request.json",
+      "sha256": "cd7614a60d8e46616dd0ddbbef9648b85c132722ba62f74276dc5217f0acd70a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0030.response.json",
+      "sha256": "567d8643f3db69d53f9f2552137efca448e181327041de551cd77ac8a2e63aac"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0031.request.json",
+      "sha256": "2e8c96d71f0d0685ab0f15fff35df1f88f32db403889b0b8b2f6004c1d9fc812"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0031.response.json",
+      "sha256": "3a365f225761d0313c012abbb95f3944ac43a13984de4b02ce54b99e658e6209"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0032.request.json",
+      "sha256": "d264d1afc18708d412bb5d7609b30f374918aeea4597c6c888f5f4f9ce163455"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0032.response.json",
+      "sha256": "18ec468ddc63ef77e383f0f70dad3d6e6b90c233d4ffdf2e665a36aa6c735592"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0033.request.json",
+      "sha256": "13fea5b73eced0bf67117062a6bbdc5ffd7c99d4db320373736f80643179a19c"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0033.response.json",
+      "sha256": "b0906b01ffc526fe35e053cbedc7b8de814ce60f53d973f542f7817408001947"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0034.request.json",
+      "sha256": "54b09343c58f96787200121e3beaa19bc983266b50cc073c397c07094bf9ca93"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0034.response.json",
+      "sha256": "1b89101743ac8371a8a0ed1754eb96ca49880400228be2c072761d741b1d6d9f"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0035.request.json",
+      "sha256": "a5f26eb6fd1108d80355d2fa40bf49ab1e04a4b80832d1c1b18b5205494ca412"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0035.response.json",
+      "sha256": "69fa19a14185340609f85f3fda6415dbca10ca24cb29bff10895854dd25b12c5"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0036.request.json",
+      "sha256": "932b39b957abbd5865b238abc6290abf6d2f287d8ddad17f3ccf6ba557ab854d"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0036.response.json",
+      "sha256": "5361f55c4d6401571c67cc858be0e5555301b13eade354d29704d6468f22b7dd"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0037.request.json",
+      "sha256": "1ed115a1a388d69baa360b9240541cb7a1cc2223ad838d1fd5e5450aa7d6de74"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0037.response.json",
+      "sha256": "a7a37fb3422fa2718ff693ae9eb94986779eb7ebd245302d3325ca648358dd00"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0038.request.json",
+      "sha256": "cbd3a1979a53004d0a3b58b6079ed785a3ab163dfffe1b218d3f2c327b069377"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0038.response.json",
+      "sha256": "628dd14c44aeae7a54ffe42c57e7488101d1edb031494fc75f2d1199e5b8937e"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0039.request.json",
+      "sha256": "d6a84007982e9048527e903c698bf99fc97ccad820c48ef64bad868beb17780d"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0039.response.json",
+      "sha256": "a2e89db0fe1b4a89f7c24fe0a7f7177e4d4fe001b9e000ffa31986c031e792f2"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0040.request.json",
+      "sha256": "d15944cff18f1ef53279a4c4cda43b2048d1557442d2ff98353d10a231971498"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0040.response.json",
+      "sha256": "9ac6164772a053cce04e1b383c59ecdfbea7d6acd91df8c9e7ea3eb1edabbe70"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0041.request.json",
+      "sha256": "77c6dbdab62c8338848527129a7d3944f25af71ce922ea0d95c17f305c8f30ed"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0041.response.json",
+      "sha256": "f86096ed9bf07b2b3effa9401a6c38cee28b617f98262a2f38d4eb4f6c37994d"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0042.request.json",
+      "sha256": "8b34efa2c052d427fc18f354788a4e82c03019f9f2443b8e40726527be8bac32"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0042.response.json",
+      "sha256": "bad7fc573428bb36179c983019be2f99ff0771e32bf9a3e8db5c599620108fe8"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0043.request.json",
+      "sha256": "90fe4eb49bc93481231e309787e326e823600b1ffb1a74e5664f1e0793ea2c76"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0043.response.json",
+      "sha256": "062a86174904c9cd5b594a8fb08e75f6f19201e5cf876cc399498c814d96b116"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0044.request.json",
+      "sha256": "bd9c95d170b06079b247ed1849b9f673b280d01dc52aeabf03923652a3b2409a"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0044.response.json",
+      "sha256": "c2e8be02dfe37a9983d2bf2d005f67d720837d7329d276c433a4764f688e3517"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0045.request.json",
+      "sha256": "e6e4f2f9dc8bb03166a0ef337f3129bce45b659eb688ecaeba56869df882c7cd"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0045.response.json",
+      "sha256": "e9230cf0236fa783dedaab05143740672055e47f48d917e6d61415f8111c8245"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0046.request.json",
+      "sha256": "05ae5e63158474240df92be56d2d0fd5e0f84cb88c9d98222a2b41ddd42d6121"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0046.response.json",
+      "sha256": "c37707b91a119300847d94c7be4d0da8e55118483d5bee0249bed8c19c2f9172"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0047.request.json",
+      "sha256": "75815275a4e81a810cb6dd4ee789cc65b7d4b3a39145fa7ecf8f691dc75ec241"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0047.response.json",
+      "sha256": "442d9d181e0f4ab3332a2a4f4ed48df0f6605e28b768b295225c3894f3f7c9cb"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0048.request.json",
+      "sha256": "a1ee3dd8d833e8469d8e4837ccbab50ca666184c6e7b5554e4dee629038404eb"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0048.response.json",
+      "sha256": "576110e370b85be701f7140c8e1bfecd4d9ea9c6979e796c58c2f445921c91ea"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0059.request.json",
+      "sha256": "2046932b07680c8771a1d43a077433b0b56adf753aff970b1c31cfdeb0e01c38"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0059.response.json",
+      "sha256": "1561b33db542e4a3d73e74bd97af863b4513e17ef688b507d36f2e5f3a985b47"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0061.request.json",
+      "sha256": "7c760171cdc43b1f12cb8cdaaf111e327a4841dbf3cdc9eca92c9ac7e82c0674"
+    },
+    {
+      "path": "benchmark-runs/d070-comparison-01/jev_all/calls/jev-0061.response.json",
+      "sha256": "89116e3f7336030f35141e576fb4003d5d7c3f6909241ada3248c86a85697bdc"
+    },
+    {
+      "path": "benchmark-runs/d070-review/postrun-review-01.json",
+      "sha256": "64b18eeb5e26ca193df9abb79a30fd45dc68d33590366a542754ecfb10c747f2"
+    }
+  ],
+  "build_command": "node scripts/build-dag-explorer.mjs",
+  "html_sha256": "f8c708b7b2f76b17cc0e1c7d697e3b3d9e44eef62c8b6d4044a746627b7c411c",
+  "html_bytes": 2213522,
+  "network_calls": 0,
+  "counts": {
+    "nodes": 10,
+    "verification_nodes": 1,
+    "tree_nodes": 17,
+    "selected_dependency_edges": 8,
+    "jev_posts": 50,
+    "local_decisions": 18,
+    "by_kind": {
+      "split_count": 13,
+      "membership": 33,
+      "relation": 2,
+      "repair": 2
+    }
+  },
+  "runtime_source_pins_match": true
+}

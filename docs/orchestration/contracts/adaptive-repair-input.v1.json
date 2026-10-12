@@ -1,0 +1,25 @@
+{
+  "schema_version": "adaptive-repair-input-contract/v1",
+  "policy": "evidence-v1",
+  "owner_schema": "adaptive-inferred-owner-input/v2",
+  "local_token_limit": null,
+  "automatic_retries": 0,
+  "reference_instructions": "Read all evidence references inside this state; no local path is retrievable. In a description_provenance object, same_as names one full record in repair_input_shared_evidence. Merge that record with literal overrides, which replace whole fields. A reference is used only where the original complete key set is recoverable. Every differing value remains literal. In history observations, same_as_current names the exact check/test/assertion observation in this state; literal overrides preserve every changed or extra value. These references preserve prior failures, including failures that are now resolved. They do not make a historical failure current or turn a not-reached assertion into a failure. All original requirements and all legal artifact/owner choices remain in their normal fields.",
+  "source_evidence_instructions": "Recovery source evidence contains verified excerpts from current candidate artifact snapshots. Owner routing receives actual import, public signature and export boundary lines; other inspected function bodies are not visible to that owner decision. Repair selection and implementation workers receive the complete selected source ranges. Read the inline text and line ranges, not a presumed external file. Declared dependency, literal import and symbol-use relationships are hypotheses, not fault proof. Reading adds no write authority. A selected artifact with no byte change and the same failing observation requires a new supported investigation or different legal scope; selecting the same worker or profile alone is not progress.",
+  "relevance_instructions": "Some description diagnostics are explicitly summarized as resolved_observation_summary. The controller verified the same current artifact revisions, a passed public case, a matching resolved prior failure, and known assertion requirements disjoint from current failures, causal paths and newly inspected source artifacts. The prior check/test/assertion, error and message remain inline; the detailed resolved description diagnostic is retained only in controller proof. This is a semantic relevance projection, not lossless model input. Unknown, not-reached, current or related failure facts are never summarized this way. All public case coverage and counts remain unchanged.",
+  "source_collection": {
+    "schema_version": "adaptive-repair-source-evidence/v1",
+    "seed_basis": ["previous_selected_artifact", "selected_but_unchanged_artifact", "public_error_identifier", "public_error_module_leaf"],
+    "relation_basis": ["declared_artifact_dependency", "literal_source_import", "shared_symbol_reference"],
+    "selection": "Prioritize selected-but-unchanged artifacts when available. Select files matching public error identifiers or module leaves, then one literal import edge to their producer/consumer. Inline exact imports, signatures, return boundaries, referenced-symbol lines and enclosing branch headers. Omitted function bodies remain in the immutable source, never assumed model-readable. Record every selected range and excluded file; use no numeric token or byte truncation.",
+    "runtime_fault_proof": false,
+    "candidate_patch_allowed": false,
+    "hidden_evidence_allowed": false
+  },
+  "recovery": {
+    "schema_version": "jev-transmission-recovery/v1",
+    "source_coverage_hash_basis": "SHA-256 of JSON.stringify(projection report), including its integrity_sha256",
+    "same_request_action": "needs_evidence",
+    "source_evidence_is_new_only_when": "Current verified inline facts differ from the previous recovery evidence; timestamp, path-pointer-only and model/profile changes do not count."
+  }
+}

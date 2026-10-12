@@ -1,0 +1,360 @@
+{
+  "schema_version": "adaptive-profiles/v1",
+  "version": "D071.1",
+  "verified_at": "2026-10-11",
+  "model_catalog": "docs/orchestration/contracts/models.v2.json",
+  "canonical_opus_price_source": "src/dashboard/pricing.mjs#OPUS_55_RATES",
+  "sources": {
+    "model_ids": {
+      "url": "https://platform.claude.com/docs/en/models/overview",
+      "verified_at": "2026-10-11",
+      "method": "official_document_read"
+    },
+    "cli_models_and_effort": {
+      "url": "https://code.claude.com/docs/en/model-config",
+      "verified_at": "2026-10-11",
+      "method": "official_document_read"
+    },
+    "effort": {
+      "url": "https://platform.claude.com/docs/en/build-with-claude/effort",
+      "verified_at": "2026-10-11",
+      "method": "official_document_read"
+    },
+    "pricing": {
+      "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "verified_at": "2026-10-11",
+      "method": "official_document_read"
+    }
+  },
+  "local_cli_evidence": {
+    "version": "2.1.293",
+    "distribution": "Claude Desktop bundled Claude Code",
+    "method": "readlink + --version + --help; no inference",
+    "evidence_ref": "benchmark-runs/d071-profiles-research-01/cli-evidence.json"
+  },
+  "effort_notes": {
+    "low": "Lower requested reasoning effort; verify that reduced work does not add repair.",
+    "medium": "Moderate requested reasoning effort; comparison baseline is Opus 5.5 medium.",
+    "high": "Higher requested reasoning effort; task-level benefit is unmeasured.",
+    "xhigh": "Extended requested reasoning effort; task-level benefit is unmeasured.",
+    "max": "Largest exposed requested effort; not a measured best profile."
+  },
+  "models": [
+    {
+      "id": "opus55",
+      "model": "claude-opus-5-5",
+      "adapter": "claude-cli",
+      "minimum_cli_version": "2.1.280",
+      "supported_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "documented_support": "verified",
+      "current_account_availability": "unverified",
+      "measured_task_performance": null,
+      "selection_hypothesis": "Long implementation and integration work; task benefit remains unmeasured.",
+      "price": {
+        "basis": "official_api_list",
+        "currency": "USD",
+        "unit": "per_million_tokens",
+        "source_id": "pricing",
+        "actual_billed_usd": null,
+        "prompt_tiers": [
+          {
+            "min_prompt_tokens": 0,
+            "max_prompt_tokens": null,
+            "rates": {
+              "input": 4,
+              "output": 20,
+              "cache_creation_5m": 5,
+              "cache_creation_1h": 8,
+              "cache_read": 0.2
+            }
+          }
+        ],
+        "scope": "Standard global API-equivalent rates. Prompt tokens include uncached input, cache reads and cache writes. Determine tiers per provider request; aggregate CLI tokens cannot select a tier."
+      },
+      "billing_caveat": "OAuth subscription incremental charge is unverified."
+    },
+    {
+      "id": "sonnet55",
+      "model": "claude-sonnet-5-5",
+      "adapter": "claude-cli",
+      "minimum_cli_version": "2.1.284",
+      "supported_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "documented_support": "verified",
+      "current_account_availability": "unverified",
+      "measured_task_performance": null,
+      "selection_hypothesis": "Scoped coding work; adequacy for this task must be verified.",
+      "price": {
+        "basis": "official_api_list",
+        "currency": "USD",
+        "unit": "per_million_tokens",
+        "source_id": "pricing",
+        "actual_billed_usd": null,
+        "prompt_tiers": [
+          {
+            "min_prompt_tokens": 0,
+            "max_prompt_tokens": null,
+            "rates": {
+              "input": 2,
+              "output": 10,
+              "cache_creation_5m": 2.5,
+              "cache_creation_1h": 4,
+              "cache_read": 0.1
+            }
+          }
+        ],
+        "scope": "Standard global API-equivalent rates. Prompt tokens include uncached input, cache reads and cache writes. Determine tiers per provider request; aggregate CLI tokens cannot select a tier."
+      },
+      "billing_caveat": "OAuth subscription incremental charge is unverified."
+    },
+    {
+      "id": "haiku55",
+      "model": "claude-haiku-5-5",
+      "adapter": "claude-cli",
+      "minimum_cli_version": "2.1.293",
+      "supported_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "documented_support": "verified",
+      "current_account_availability": "unverified",
+      "measured_task_performance": null,
+      "selection_hypothesis": "Bounded low-complexity work; implementation quality and repair risk remain unmeasured.",
+      "price": {
+        "basis": "official_api_list",
+        "currency": "USD",
+        "unit": "per_million_tokens",
+        "source_id": "pricing",
+        "actual_billed_usd": null,
+        "prompt_tiers": [
+          {
+            "min_prompt_tokens": 0,
+            "max_prompt_tokens": 100000,
+            "rates": {
+              "input": 0.1,
+              "output": 0.5,
+              "cache_creation_5m": 0.125,
+              "cache_creation_1h": 0.2,
+              "cache_read": 0.01
+            }
+          },
+          {
+            "min_prompt_tokens": 100001,
+            "max_prompt_tokens": null,
+            "rates": {
+              "input": 0.5,
+              "output": 2.5,
+              "cache_creation_5m": 0.625,
+              "cache_creation_1h": 1,
+              "cache_read": 0.05
+            }
+          }
+        ],
+        "scope": "Standard global API-equivalent rates. Prompt tokens include uncached input, cache reads and cache writes. Determine tiers per provider request; aggregate CLI tokens cannot select a tier."
+      },
+      "billing_caveat": "OAuth subscription incremental charge is unverified."
+    },
+    {
+      "id": "fable51",
+      "model": "claude-fable-5-1",
+      "adapter": "claude-cli",
+      "minimum_cli_version": "2.1.257",
+      "supported_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "documented_support": "verified",
+      "current_account_availability": "unverified",
+      "measured_task_performance": null,
+      "selection_hypothesis": "Ambiguous or long investigations; extra effort and price require task-specific justification.",
+      "price": {
+        "basis": "official_api_list",
+        "currency": "USD",
+        "unit": "per_million_tokens",
+        "source_id": "pricing",
+        "actual_billed_usd": null,
+        "prompt_tiers": [
+          {
+            "min_prompt_tokens": 0,
+            "max_prompt_tokens": null,
+            "rates": {
+              "input": 10,
+              "output": 50,
+              "cache_creation_5m": 12.5,
+              "cache_creation_1h": 20,
+              "cache_read": 0.25
+            }
+          }
+        ],
+        "scope": "Standard global API-equivalent rates. Prompt tokens include uncached input, cache reads and cache writes. Determine tiers per provider request; aggregate CLI tokens cannot select a tier."
+      },
+      "billing_caveat": "Noninteractive Fable can use account usage credits without an interactive prompt; account entitlement and incremental charge are unverified."
+    }
+  ],
+  "profiles": [
+    {
+      "id": "claude_opus55_low",
+      "family_id": "opus55",
+      "model": "claude-opus-5-5",
+      "effort": "low",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_opus55_medium",
+      "family_id": "opus55",
+      "model": "claude-opus-5-5",
+      "effort": "medium",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_opus55_high",
+      "family_id": "opus55",
+      "model": "claude-opus-5-5",
+      "effort": "high",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_opus55_xhigh",
+      "family_id": "opus55",
+      "model": "claude-opus-5-5",
+      "effort": "xhigh",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_opus55_max",
+      "family_id": "opus55",
+      "model": "claude-opus-5-5",
+      "effort": "max",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_sonnet55_low",
+      "family_id": "sonnet55",
+      "model": "claude-sonnet-5-5",
+      "effort": "low",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_sonnet55_medium",
+      "family_id": "sonnet55",
+      "model": "claude-sonnet-5-5",
+      "effort": "medium",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_sonnet55_high",
+      "family_id": "sonnet55",
+      "model": "claude-sonnet-5-5",
+      "effort": "high",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_sonnet55_xhigh",
+      "family_id": "sonnet55",
+      "model": "claude-sonnet-5-5",
+      "effort": "xhigh",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_sonnet55_max",
+      "family_id": "sonnet55",
+      "model": "claude-sonnet-5-5",
+      "effort": "max",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_haiku55_low",
+      "family_id": "haiku55",
+      "model": "claude-haiku-5-5",
+      "effort": "low",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_haiku55_medium",
+      "family_id": "haiku55",
+      "model": "claude-haiku-5-5",
+      "effort": "medium",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_haiku55_high",
+      "family_id": "haiku55",
+      "model": "claude-haiku-5-5",
+      "effort": "high",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_haiku55_xhigh",
+      "family_id": "haiku55",
+      "model": "claude-haiku-5-5",
+      "effort": "xhigh",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_haiku55_max",
+      "family_id": "haiku55",
+      "model": "claude-haiku-5-5",
+      "effort": "max",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_fable51_low",
+      "family_id": "fable51",
+      "model": "claude-fable-5-1",
+      "effort": "low",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_fable51_medium",
+      "family_id": "fable51",
+      "model": "claude-fable-5-1",
+      "effort": "medium",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_fable51_high",
+      "family_id": "fable51",
+      "model": "claude-fable-5-1",
+      "effort": "high",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_fable51_xhigh",
+      "family_id": "fable51",
+      "model": "claude-fable-5-1",
+      "effort": "xhigh",
+      "adapter": "claude-cli"
+    },
+    {
+      "id": "claude_fable51_max",
+      "family_id": "fable51",
+      "model": "claude-fable-5-1",
+      "effort": "max",
+      "adapter": "claude-cli"
+    }
+  ],
+  "excluded": [
+    {
+      "id": "ultracode",
+      "reason": "Workflow setting, not a model effort; would change the orchestration condition."
+    }
+  ],
+  "verification_boundary": "Documentation and local CLI support are not current-account entitlement or measured speed/quality. Use explicit run allowlists and exact observed model identity; no silent fallback."
+}

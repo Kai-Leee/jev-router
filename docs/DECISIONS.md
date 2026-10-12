@@ -1,4 +1,24 @@
+최신 [D075](decisions/D075.md)·[결과](orchestration/D075_RESULTS.md)는 v10 실제 전송 강제검사와 근거 기반 복구의 지원 경로를 구현하고 보존 후보를 두 번 실측했다. 최종 공개88/93·독립60/63으로 미완료다. 이전 동일출발 수리91/93·61/63 대비 알려진 토큰/공식환산 소계는 감소했지만 채점까지369093ms로355366ms보다 늘었다. 실제 새 근거9개를 수집한 뒤 owner HTTP400·CANONICAL_INPUT_ALREADY_APPLIED로 중단했다. 첫 profile 전달/후보보존 결함과 모니터 형식 실패를 보존하고 수정했다. 원본1380파일 변경0, source125핀 drift0, pending/잔여컨테이너0이다. 아래는 각 시점의 과거 결정이다.
+
+당시 [D074](decisions/D074.md)·[사용법과 실패 루프](orchestration/D074_PROMPTING_AND_FAILURE_LOOP.md)는 저장소 프롬프팅 스킬과 고정 무과금 검사 구현, 실패 복구 설계를 완료했다. 관련 회귀63/63·독립 입력17/17이다. 질문 ID 오탐과 잘못된 입력5개 통과를 수정하면서 원본을 보존했다. 고정 검사 범위는 projected repair_owners/inferred-v2이며 자동 전송 gate·복구·실제 성능은 미검증이었다. 아래 D073이 그 시점 직전 유료 제품 실행 결과다.
+
+최신 [D073](decisions/D073.md)·[결과](orchestration/D073_RESULTS.md)는 기존 담당 추론과 로컬 토큰 상한 해제를 구현하고 실행했다. 실제 선택2worker 수리로 공개79→91/93·독립60→61/63이나 round2 ownerHTTP400으로 미완료다. 입력v2 이후의 실제 수리와 처음 실패·미전송 시도를 모두 보존했다. 동일품질의 Claude 대비 효율개선은 미입증이다. complete는 이번 구현·실험·기록의 종료이며 제품 성공을 뜻하지 않는다.
+
+이전 입력 검증은 [D072](decisions/D072.md)·[사용법/원인](orchestration/D072_INPUT_VALIDATION.md)을 따른다. D071 저장108요청 중 형식108통과·현재추정107통과/수리1차단, 실제과거POST107목적지/200, 읽은440파일변경0, 집중9/9를 확인했다. 새추론0이며 새개발/수리는 실행하지 않았다. 고정Jev는 독립3실패, 프로필Jev는 넓은수리입력의로컬차단으로미완료다.
+
+현재 [D071](decisions/D071.md)·[최종 결과](orchestration/D071_RESULTS.md)는 병렬 수정·실제 세 조건·보존 수리·독립 채점·감사까지 종료했다. 기존 설명 누락 후보는 실제 producer1파일 수리로93/93·63/63완료다. 새 개발은 Claude만93/93·63/63, Jev 고정93/93·60/63, Jev 프로필67/93·49/63이어서 동일 품질의 효율 목표는 미달이다. 프로필 선택과 실제 모델 연결10/10은 확인했지만 effort 최적성은 미측정이다. D070 이하 기록은 당시 기준으로 보존한다.
+
 # Jev Router 결정 기록
+
+최신 [D070](decisions/D070.md)·[결과](orchestration/D070_RESULTS.md)는 분석·병렬 수정·실제 개발/보존 수리·채점·품질 진단까지 종료했다. 원래148개 검사 범위에서 Claude 대비 시간5.318%·환산비용42.364% 감소다. 그러나 [추가 진단](orchestration/D070_QUALITY_REVIEW.md)은 새A0/8·기준선각8/8이므로 동일 품질의 최종 목표는 미달이다. 실제 선택 산출물1worker 수리는 별도 성공했다. `complete`는 이번 요청의 실험과 기록 완료이며 가설 확인을 뜻하지 않는다. 아래는 당시 상태를 보존한 과거 기록이다.
+
+최신 [D069](decisions/D069.md)·[결과](orchestration/D069_RESULTS.md)는 병렬 수정과 실제 재실행·독립 채점까지 종료했다. 공개85/85·독립63/63으로완료,39분24.671초/5,809,782캐시포함토큰/환산$12.3604662다. 실제수리0회여서수리절감은미측정이다. v1추정의실제오판·v2정확요청수락·실패추론량null을구분한다. 아래D068은보존된과거기록이다.
+
+최신 수정·재실행은 [D068](decisions/D068.md), [결과](orchestration/D068_RESULTS.md)다. 사용자 요청으로 세 수정과 새 `jev_all` 조건을 수행했다. 공개84/85·독립63/63으로 제품 미완료이며 수리 입력 축소 후에도 모델 입력 한도에서 실패했다. 확정 실패 전파와 전원 수리 후보 제거는 관측했으나 실제 수리 호출 절감·완료 속도는 미측정이다. 기존 D067 결과는 보존했고 별도 후속 정산을 통해 현재 장부는12,994,396입력/666정산/pending0이다. 아래 D067은 상한 정책과 과거 비교 기록이다.
+
+최신 실행 정책은 [D067](decisions/D067.md)이다. 2026-10-11 사용자는 조건별·장부 토큰 한도를 해제하고 병렬 실행을 승인했다. 아래 D042/D066 등의 상한·추가 실행 금지는 해당 과거 실행 기록으로 보존하며 새 승인에 우선하지 않는다.
+
+실행·분석은 종료됐다. [D067 결과](orchestration/D067_RESULTS.md): 공개85+독립63 결합완료3/4, Jev수리1요청은모델입력한도실패다. 성공두조건의탐색적절감과실패/무과금/추론미상/원본상태를구분한다. 장부는12,096,997입력·618정산·pending0이며한도null이다. 변경된수리구성의새실험은이원본에이어붙이지않는다.
 
 기록일: 2026-10-08 (Asia/Seoul). 근거: 이 프로젝트의 사용자 대화.
 문서 상태 표기는 `확정`, `설계 위임`, `제안`, `가설`, `미결정`을 구분한다.
@@ -256,3 +276,130 @@ Opus5.5/Fable5.1/Sonnet5.5/Haiku5.5와 effort 5단계 정본, worker v2, CLAUDE.
 ## D031 — 2026-10-09 입력 개선·판단기 비교 구현
 
 [구현](orchestration/D031_IMPLEMENTATION.md), [역할 조사](orchestration/D031_ROLE_RESEARCH.md), [기록](decisions/D031.md). 중복 제거+직접/전이 의존 선별, v3, Claude/Jev/script/forced 분리, 고정계획 재사용·지표 비교 추가. offline split bytes71.378%감소(원본분모), 토큰/품질 미측정. 전체390/390 통과. telemetry역할/single ID충돌 수정. 작업자Opus medium 유지. 미커밋,paid0,push없음.
+
+## D033 — 2026-10-10 20회 실험 완료
+
+[결과](orchestration/D033_RESULTS.md). 기본+4후보각4회,Opusmedium,패키징3파일/나머지8고정.20/20원본30/30통과. output_dedup평균입력5.099%/비용환산4.873%/시간6.735%감소(각baseline평균분모).compact는입력감소최대이나시간3.278%증가. CLI환산총USD1.5133082,Jev0.20verifier제거,미커밋소스·private결과유지.운영채택미수행.
+
+## D035 — 2026-10-10 업그레이드 조사 (제안)
+
+[기록](decisions/D035.md), [조사](orchestration/D035_UPGRADE_RESEARCH.md). 자동 checkpoint, script bypass, exact decision cache, template 선택, 근거 수집 fallback 순서를 제안. 운영 기본값·작업자 모델·임계값 변경 확정 아님.
+
+## D036 — 자동 판단 구조 생성·검증
+
+사용자 지시에 따라 D035의 첫 plan_ready 연결을 구현했다. [D036](decisions/D036.md). 기본 auto, 명시 threshold, 고정worker, 프로세스내 exact cache와 실행 중복방지. 실제 근거수집/template planner는 후속이다. 무과금407개 회귀검증은 유료 E2E 성능 개선 증거가 아니다.
+
+## D037 — 실제 고정 계획 비교 결과
+
+[기록](decisions/D037.md),[결과](orchestration/D037_RESULTS.md). 판단지연과전체생성시간은감소했지만분할작업자의입력/cache비용증가로총환산비용은증가. 비용절감성공으로채택하지않음. n1/조건,동일concreteJev모델미확인. 임계값변경없음.
+
+## D038 — 후속 실험 조사 (제안)
+
+[기록](decisions/D038.md), [설계](orchestration/D038_NEXT_EXPERIMENTS.md). 기존 D037 조건 반복만으로 판단기 효과를 확정하지 않는다. 분할 비용 진단과 Claude 계획 생략 실험을 구분하고, Claude 계획+선택 통합 baseline을 포함한다. 운영 임계값·새 유료 실험 횟수는 확정하지 않았다.
+
+## D039 — 큰 과제 후보 (제안)
+
+[조사](orchestration/D039_LARGER_TASKS.md). 첫 후보 OpenAPI, 대조 DiskCache, 강결합 GraphQL 및 전체 Personal OS를 제안. 사용자가 후보·새 실행 규모를 확정한 것으로 해석하지 않음. native 포함 기존 제품 범위 유지.
+
+## D040 — 큰 과제 첫 실행 중단
+
+[기록](decisions/D040.md). OpenAPI evaluator 준비완료, 실제Claude단일구현timeout으로 비교중단. 생성물채점/절감효과미검증. 과금불확실상태에서 자동재시도하지 않음. 같은no-tools조건을확대했을때 드러난 한계를 문서화했고 iterative harness 채택/구현완료로 해석하지 않음.
+
+## D041 — 10분 호출 제한 제거
+
+사용자 지시에 따라 고정10분 cap 제거. 전체 phase30분은 유지. D040 Jev는 API실패가 아니라 실험정책에 따른 미실행이었다. [정책](orchestration/D041_TIMEOUT_POLICY.md). 별도 독립조건 실행과 불확실 요청 재시도를 구분한다.
+
+
+## D043 — confidence 기준 (2026-10-10)
+
+현재 pilot 기본 판단 기준은 confidence다. `split-confidence.v1.json`의 execution choice(split/single/defer)에 붙은 confidence를 명시 `--confidence-threshold`와 비교한다. 낮으면 needs_evidence, 충분하면 선택된 실행으로 직접 연결한다. `--decision-basis probability --split-threshold`는 과거 재현용이다. 정본 설명: `docs/orchestration/D043_CONFIDENCE.md`. 회귀 419/419, 유료 호출 없음. D042 산출물 JSON 실패는 아직 미수정. 임계값은 미보정이며 확정 최적값 없음.
+
+
+## D044 — 2026-10-10
+
+Choice audit and 25/25 local checks completed. split-confidence.v2.json clarifies actual artifact transport and defer blockers. Live diagnostic process was rejected by automatic approval review pending concrete payload egress approval; no new API request. See docs/orchestration/D044_CHOICE_AUDIT.md.
+
+
+### D044 live result after explicit approval — 2026-10-10
+
+One Jev POST completed: defer/confidence0.89, HTTP752ms, input11592/output40. Shared input ledger107584 of10M, pending0. No worker call or grader. All three options retained; transport repair remains pending. Supersedes earlier pending-approval status. Evidence: docs/orchestration/D044_CHOICE_AUDIT.md and benchmark-runs/d044-choice-audit-01/.
+
+
+## D045 — 1~5 작업 개수 (2026-10-10)
+
+현재 pilot 기본은 count. task-count.v1.json에서 실제 후보1..N(최대5)을 선택하고 confidence는 기록만 한다. 1은 유지, 2~5는 해당 개수로 역할·작업 묶음 실행. 동시 실행 수와 별개다. 단일 후보는 Choice API 최소2개 제한 때문에 force_jev 포함 무호출로 진행한다. 과거 confidence/probability 정책은 명시 옵션으로 유지. 문서: docs/orchestration/D045_TASK_COUNT.md. 전체424/424 검증, 유료 호출 없음. D042 출력 실패는 미수정.
+
+
+## D046 — 2026-10-10
+
+Actual numeric trial terminated failed after20min37sec: Jev selected2/confidence0.53, first8-file group hit output continuation and final JSON parse error; files0, group2 not started, grading not run. Opus monitor completed separately. Shared ledger139322/10M, pendingnull. See docs/orchestration/D046_COUNT_RUN.md. No commit/push.
+
+
+## D047 — 전체 작업 효율 우선 (2026-10-10)
+
+사용자 정정: 현재 Jev 입력량은 허용 가능하며 전체 작업 효율을 우선한다. 입력 축소를 우선 과제로 삼지 말고 충분한 판단 근거를 유지한다. 기존 예산은 유지. 현재 D046은 초기 task_count만 Jev1회 호출하며 작업 중 실패·재분할·모델/effort·요구사항 판단은 미연결이다. D044 실패 근거도 D046 state에 전달되지 않았다. 감사: docs/orchestration/D047_DECISION_COVERAGE.md. 후속 연결 순서는 제안이며 이번에는 구현·유료 호출 없음.
+
+## D048–D050 — whole-task lifecycle comparison (2026-10-10)
+
+[New lifecycle](decisions/D048.md), [verifier continuation](decisions/D049.md), [lossless payload and terminal comparison](decisions/D050.md). Real parallel execution and original grading completed, both tasks unresolved (Claude60/63,Jev0/63). Failure costs retained, unknown failed request cost not zeroed, no pure judge savings claim. Read [results](orchestration/D048_D050_LIFECYCLE_RESULTS.md) and current STATE before any continuation.
+
+## D051 — corrected matched rerun (2026-10-10)
+
+[Record](decisions/D051.md), [results](orchestration/D051_RESULTS.md). Provider-confirmed refund reconciled; new matched projection and public generated-output checks executed. Both conditions unresolved61/63 and0/63. Jev repair/stop on incomplete evidence remains a routing defect to investigate; exact internal rationale is unknown. No savings claim or additional rerun authorized by this record itself.
+
+## D052–D054 — Jev-generated allocation and terminal continuation (2026-10-10)
+
+[Initial attempt](decisions/D052.md), [anchored ownership](decisions/D053.md), [payload continuation](decisions/D054.md), [final results](orchestration/D052_D053_RESULTS.md). Jev chooses task count and file/requirement ownership; code derives declared dependency edges and assembles instructions. No prebuilt groups, but existing architecture catalog retained. Planning succeeds; execution incomplete62/63 versus0/63. HTTP400causeunknown, netrefundconfirmed, no automatic retry or efficiency claim. Final561/561tests passed; next compatibility diagnostics and accountable repair routing.
+
+## D055 — recursive task/test planning proposal (2026-10-10)
+
+[Record](decisions/D055.md), [design](orchestration/D055_RECURSIVE_TASK_TESTS.md). User direction: necessary Jev-guided splitting, separate task/test lists and a refining loop. Draft covers source-backed obligations, node-level 1..5 semantics, strict progress, retained integration tests and serialized shared-file writes. Detailed stop/limit policy remains proposed. Runtime and paid evaluation not started; D053/D054 outcomes unchanged.
+## D056 — recursive task/test planning experiment (2026-10-10)
+
+[기록](decisions/D056.md), [구현](orchestration/D056_IMPLEMENTATION.md), [결과](orchestration/D056_RESULTS.md). 원문 의무를 보존하는 재귀 분할과 별도 작업·테스트 목록을 구현했다. 표 형태 입력은 실제 API 240회에 성공했지만 계획은 `partial`이다. 개수 판단 10/10회가 분할을 선택했고 순차 배정 195회가 입력 비용 대부분을 차지했다. 유지 조건, 묶음 질문, 실제 의존 관계·수정 범위 보완은 후속 제안이다. 기존 10M 장부와 실패·환불 기록을 유지했으며 이 실험의 추가 호출은 없다.
+
+
+## D057 — 실제 개발 완료 비교 (2026-10-10)
+
+[결과](orchestration/D057_RESULTS.md), [결정](decisions/D057.md). 실제 A63/63완료29분28.518초, B62/63미완료(시도23분25.734초). Jev는 실제1회호출로1leaf/0split을 선택했다. 완료 속도 개선값은 null이며 병렬화 이득 미검증. API환산 A7.6330826/B8.4574292 USD, 실제 청구 unknown. 원본 후보/평가를 보존했고 유료 반복·커밋·푸시는 없다.
+
+
+## D058 — Jev 유지1 제외 재판단
+
+[기록](decisions/D058.md): D057 state 그대로,2~5 조건부 선택에서3채택. 실제1회/1765.3185ms/입력25015·출력46/환산USD0.015009. 작업배정·개발은 미실행. 최초 로컬 계측 역할명 검증 오류는 API 이전 실패로 보존.
+
+## D059 — 순차 멀티 선택과 프로필 라우팅 (2026-10-10)
+
+[기록](decisions/D059.md), [결과](orchestration/D059_RESULTS.md). 요청한 새구조의 실제연결 확인. 65/13/2배정은 유효하지만 파일중복으로직렬실행; 최종57/63미완료. 효율개선미입증. 일반화·자동재실행 승인으로해석하지않는다.
+
+## D060 — 독립성 배정·상한·검증 게이트
+
+[기록](decisions/D060.md), [구현](orchestration/D060_BOUNDED_VERIFICATION.md). 임시1.25균등량상한·명시재배정·실행증거게이트 구현. 모의65→27/27/26,799/799회귀. 실제85검사매핑/공유검사준비조건은 미완료이므로 제품 유료 재실행은 하지 않았다.
+
+## D061 최대 작업자30
+
+[기록](decisions/D061.md), [새v3경로](orchestration/D061_MAX_WORKERS.md). 사용자확인:2..30선택,동시성기본2. 모의80/85재배정과811회귀통과; 실제제품mapping미완료로유료미실행.
+
+## D062 — 실제 Jev 선택 실험
+
+[기록](decisions/D062.md). 실제2명선택,배정73/79/78/77로30..50범위불충족. API13/13성공이나 계획실패. 개발·속도개선 미검증.
+
+## D063 — 사이드 DAG 설계의 메인 반영 (2026-10-10)
+
+[계획](orchestration/D063_DAG_PLAN.md), [기록](decisions/D063.md), [독립 검토](agents/D063_REVIEW.md). 작업/산출물/충돌 분리와 용량 후보 제한을 후속 개발 방향으로 채택했다. P0 공개 검사·산출물 계약 후 어댑터/스케줄러/검증/관측을 분업한다. 현재 실행기에도 이벤트 해제가 있으므로 barrier 제거를 새 성과로 주장하지 않는다. 구체 파라미터·효율은 미확정/미측정이며 새 제품 실행 없음.
+
+## D064 — 로컬 DAG 기반 구현과 스킬 관리 (2026-10-10)
+
+[기록](decisions/D064.md), [구현과 다음 순서](orchestration/D064_IMPLEMENTATION.md), [스킬 유지보수](skills/MAINTENANCE.md). 사용자 요청으로 스킬 담당1명을 추가하고 문서화한 계약/공개검사/어댑터/스케줄러/검증/관측을 병렬 개발했다. opt-in 로컬 workflow, 정확한 revision 검사, 용량 가능한 owner 예약, 이벤트 HTML을 연결했다. 회귀993/993 및 실제 로컬 subprocess fixture 통과는 제품/Jev 효율 검증과 별개다. 공개 검사36/85, 나머지49개와 실제 후보 환경/revision 연결은 제품 차단 조건이다. 의미적 질문 handler는 제안 상태, durable restart/유료 어댑터 연결도 남았다. 기존 소스·장부·실험은 유지하고 새 모델 호출/전역 설치/커밋/푸시는 하지 않았다.
+
+## D065 — 실제 DAG 연결·공개 검사·중복 테스트 정리 (2026-10-11)
+
+[기록](decisions/D065.md), [실측 결과와 정정](orchestration/D065_RESULTS.md), [역할](agents/D065_PARALLEL.md). 공개 검사·runtime·handler·runner·테스트 정리·단일 스킬 담당과 독립 검토를 병렬로 진행했다. 공개85개 검사를 연결하고 실제 파일/환경/revision을 실행 증거에 묶었다. 삭제 대상4개 파일의 테스트 정의는74→58이며 고유 실패 반례를 보존했다. 전체 회귀는새모듈검증32개추가로993→1009다.
+
+단일 실제 조건은 Jev17회로 담당자2명·파일16개의 소유권을 선택하고 Claude16회로 생성했다. 19m56.51초는 실패한 시도시간이며 성공 완료시간이 아니다. 독립 채점62/63 통과·1개 실패. 생성 코드의 문법 오류와 검증기 자체의 실패 보고서 분류·설치 원본 경로 오탐을 구별하고 원본 후보/실행을 보존한 채 검사기만 정정했다. 실패 보고서 재생·공개 검사 버전 갱신과 실제 제품 성공을 혼동하지 않는다. 의미 핸들러는 연결됐지만 실제 자유 재귀 분해·관계/프로필/수리 호출과 성공 조건을 맞춘 효율 비교는 이번 범위 밖이다. 추가 유료 반복·예산 초기화·원본 Personal OS 변경·전역 설치·커밋·푸시는 하지 않는다.
+
+## D066 — 재귀 분해·관계·공개 수리 4조건 실측 (2026-10-11)
+
+[기록](decisions/D066.md), [결과](orchestration/D066_RESULTS.md), [사전 프로토콜](orchestration/D066_EXPERIMENT.md). 최신 사용자 요청으로 기존 OpenAPI client generator에서 공통 후보21단위·38파일을 새로 준비하고 Claude전체/Jev분해/Jev분해·관계/Jev전체판단의4조건을실행했다. Claude는6개잎·실제관계·공개수리1회뒤공개85/85·독립63/63을통과했다. 준비포함42분54.750초/API환산$22.148223이다.
+
+Jev세조건은각각33POST·650,271입력뒤예정예약65,536이조건당700,000을초과해분해중단됐다. 이조건당상한은실험배분이며사용자누적10M장부의고갈이아니다. 잔여415,445/pending0을보존한다. 짧은실패시간이나낮은실패지출을개발완료효율개선으로보고하지않는다. Jev관계·수리·성공완료비교는미측정으로남고,호출성공과제품성공을구분한다. 질문묶음·소속집중·단계별예산은후속수정제안이다. 전역스킬설치·원본PersonalOS변경·커밋·푸시는없다.

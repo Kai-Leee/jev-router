@@ -1,0 +1,28 @@
+{
+  "schema_version": "adaptive-causal-repair-contract/v1",
+  "packet_version": "adaptive-artifact-repair/v3",
+  "assertion_contract_version": "2",
+  "scope_policy": "public-causal-v1",
+  "candidate_reference_template": "Select {candidate_id}, as defined in state.candidates.",
+  "decision_call_instructions": "Choose one listed repair scope for the current public failure. Apply state.instructions and the exact candidate scopes in state.candidates. Select stop if no safe legal scope is supported.",
+  "roles": ["producer", "representation", "renderer"],
+  "decision_instructions": "Choose an exact legal repair scope using the current public assertion observations, the producer-to-representation-to-renderer contracts, and the observed repair history. A public output failure identifies a symptom, not necessarily its faulty owner. Compare where the required source value is introduced, represented, and rendered. Causal paths are explicit public-contract hypotheses with bound artifact owners; they are not proof that every connected file is faulty. Prefer the smallest scope that can restore the original requirement across the evidenced path. A repeated assertion after a prior change is evidence that the previous scope or change was insufficient; do not infer that repeating the same patch will work. Read-only access does not authorize writing or add a DAG dependency. Choose stop if the supplied observations and legal scopes cannot support a safe repair. All original and new public checks will be rerun; no requirement or assertion may be weakened.",
+  "worker_instructions": "Repair only the selected artifact paths. Trace the original required value through the supplied producer, representation and renderer interfaces before changing a consumer. Read current declared inputs normally and inspect additional causal artifacts only through their supplied immutable failure-baseline read sources. Do not claim that a path was inspected if its bytes were unavailable. Keep distinct source fields distinct; do not substitute a schema/model description for a request-body description. Use the observed prior changes and persistent failures to avoid repeating an insufficient patch. Do not hardcode fixture values, weaken public tests, widen writes, or edit read-only artifacts. Preserve all nonselected bytes and executable modes; a wider repair needs another legal controller decision.",
+  "candidate_reasons": {
+    "producer": "Repair only the evidenced producer artifacts that introduce the source value; inspect the connected representation and renderers read-only. Other failures remain unresolved until all checks rerun.",
+    "representation": "Repair only the evidenced representation artifacts that carry the source value; inspect the connected producers and renderers read-only. Other failures remain unresolved until all checks rerun.",
+    "renderer": "Repair only the evidenced renderer artifacts; inspect the connected producers and representation read-only. A renderer workaround is insufficient if the required source value never reaches it.",
+    "producer-representation": "Repair the evidenced producer and representation artifacts together; inspect renderers read-only and preserve unrelated artifacts.",
+    "chain": "Repair the complete explicitly evidenced producer-to-representation-to-renderer path, with exact artifact writes. This scope covers the public contract path, not every task in the project."
+  },
+  "rules": {
+    "error_text_never_grants_authority": true,
+    "unsupported_or_stale_causal_mapping": "retain explicit direct fallback and record unresolved; never invent a path",
+    "unknown_all_worker_fallback": "exclude when based only on unresolved ownership",
+    "read_basis": "extra reads use verified immutable failure-baseline snapshots; existing declared inputs retain current runtime revisions",
+    "history_basis": "controller-observed public failures, exact selected scopes and before/after artifact and file hashes",
+    "local_references_are_retrieval_tools": false,
+    "automatic_retries": 0,
+    "all_public_checks_after_repair": true
+  }
+}

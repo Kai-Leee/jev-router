@@ -1,0 +1,110 @@
+{
+  "schema_version": "recursive-task-tests/v2",
+  "status": "planning_runtime_contract",
+  "objective": "Create task and test lists by repeatedly decomposing only where smaller coherent obligations improve verified whole-task completion, including planning and integration effort.",
+  "scope": "Source-preserving planning followed by scoped Claude implementation and whole-product integration; semantic readiness is tested by execution and independent grading.",
+  "output_lists": {
+    "tasks": [
+      "id",
+      "parent_id",
+      "goal",
+      "requirement_refs",
+      "inputs",
+      "outputs",
+      "depends_on",
+      "test_ids",
+      "write_scope",
+      "planning_status"
+    ],
+    "tests": [
+      "id",
+      "requirement_refs",
+      "scenario",
+      "input",
+      "expected",
+      "scope",
+      "task_ids",
+      "runner_ref",
+      "status"
+    ]
+  },
+  "questions": {
+    "child_count": {
+      "type": "choice",
+      "instructions": "Choose how many implementation responsibilities this node should use to minimize total time to a correct complete product, including planning, worker startup, handoff, shared-file serialization, integration and repair. Choose 1 whenever one capable worker can implement this scope more efficiently than delegation. Multiple acceptance criteria or unasserted dependencies alone are NOT reasons to split: missing evidence remains explicit and the implementer/integrator must resolve it. Choose 2..5 only when smaller coherent responsibilities have a concrete parallel or complexity benefit. Account for the supplied resource budget. Do not isolate global constraints into separate implementation workers merely because they are separate source clauses. Do not maximize task count.",
+      "criteria": {
+        "1": "Keep this node as one execution leaf; do not create a duplicate child.",
+        "2": "Replace this execution obligation with two nonempty, strictly smaller children.",
+        "3": "Replace this execution obligation with three nonempty, strictly smaller children.",
+        "4": "Replace this execution obligation with four nonempty, strictly smaller children.",
+        "5": "Replace this execution obligation with five nonempty, strictly smaller children."
+      }
+    },
+    "anchor": {
+      "type": "choice",
+      "instructions": "Choose an unassigned source obligation as this child's concrete responsibility anchor. Keep earlier assignments fixed. Prefer a coherent outcome with explicit verification criteria; do not invent missing requirements or new source text.",
+      "criteria_source": "Feasible unassigned obligation IDs with verbatim source and expected behavior."
+    },
+    "assign_obligation": {
+      "type": "choice",
+      "instructions": "Assign this source obligation to the child with the most coherent concrete responsibility given the anchors, other supplied source obligations, common interfaces and verification expectations. Preserve all requirements. Shared-file edits require serialization. When several assignment questions are present, consider the mapping jointly; do not claim undeclared semantic dependencies are resolved. Do not treat a product-wide overview or constraint as a request to implement the entire product again.",
+      "criteria_source": "Feasible child IDs with their current obligations, outcomes and interfaces."
+    },
+    "test_scope": {
+      "type": "choice",
+      "instructions": "Select the smallest scope that can actually verify this source-backed expectation without changing its inputs or expected result. A multi-child expectation remains an integration check. An existing whole-product acceptance check must be preserved. If no candidate can verify it, report a preparation gap before this question rather than inventing an oracle.",
+      "criteria_source": "Relevant single-child scope IDs plus integration and whole-product scope IDs supported by the required artifacts."
+    }
+  },
+  "runtime_proposal": {
+    "unit_source": "Source-linked obligation clauses and acceptance scenarios; optional generated clarification must be separately attributed and costed.",
+    "loop": "Review a versioned leaf, choose count, choose anchors, assign remaining obligations, link tests, validate and commit a strictly progressing replacement, then review new leaves.",
+    "gap_status": "needs_spec",
+    "parent_execution_after_split": false,
+    "same_file_writes": "Serialize initially; never infer concurrent write safety from different task titles.",
+    "test_initial_status": "not_run",
+    "missing_test_runner": "test_specification_only",
+    "single_feasible_option": "Validate and record the deterministic choice without calling Choice.",
+    "repeat_identity": [
+      "node_content_hash",
+      "requirements_hash",
+      "tests_hash",
+      "interfaces_hash",
+      "question_version",
+      "resource_policy_hash"
+    ],
+    "required_manifest_limits": [
+      "max_depth",
+      "max_leaves",
+      "max_planning_decisions",
+      "max_repairs_per_node",
+      "max_planning_input_tokens",
+      "max_concurrency"
+    ],
+    "configured_limit_values": {
+      "max_depth": 3,
+      "max_leaves": 8,
+      "max_planning_decisions": 100000,
+      "max_repairs_per_node": 0,
+      "max_planning_input_tokens": 3000000,
+      "max_concurrency": 2,
+      "max_feasibility_states": 10000
+    },
+    "uncertain_request_replay": false,
+    "test_scope_selection": "Deterministic from assigned obligation participants: retain integration/e2e scope and exact source expectations. test_scope question is reserved, not called in this pilot.",
+    "limit_basis": "Execution experiment envelope: at most eight leaf workers and two concurrent workers. Depth/leaf capacity forces a recorded deterministic keep, not model adequacy. Calls have no practical count cap; shared10M input ledger and3M planning phase allowance remain. No optimality claim.",
+    "active_questions": [
+      "child_count",
+      "anchor",
+      "assign_obligation"
+    ],
+    "reserved_questions": [
+      "test_scope"
+    ],
+    "repair_policy": "Fail closed on an invalid split or response; no automatic repair loop or paid replay in this pilot. max_repairs_per_node is reserved configuration; effective repairs are zero.",
+    "assignment_batch_size": 8,
+    "respect_resource_options": true
+  },
+  "worker_instructions": "Implement the selected leaf against its task entry, linked test specifications, supplied source excerpts and shared interface contract. Preserve public requirements and expected results. Write only the assigned scope under controller ownership. Read accepted dependency artifacts where needed. Do not repartition the entire goal or modify other workers' obligations. Report missing source facts and concrete expected-versus-observed issues. Test specifications are not executed tests; report checks as not run unless an actual authorized runner supplied results. Parent and whole-product acceptance require their own integration checks.",
+  "revision": "D057 whole-workflow execution experiment"
+}

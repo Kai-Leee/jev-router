@@ -1,0 +1,12 @@
+{
+ "schema_version":"task-decomposition/v1",
+ "language":"en",
+ "objective":"Complete every public requirement correctly while minimizing whole-task time and operational cost, including planning, dependencies, verification, integration and repair. Assign work units from requirements, not predefined roles. All nonempty units must have both requirements and owned files. Use all question mappings coherently; avoid cycles. This pilot performs one decomposition level only.",
+ "questions":{
+  "count":"Choose a work-unit count from the offered integers. Consider requirement coupling, artifact responsibilities, shared interfaces, available concurrency and total completion effort. Counts are not parallelism guarantees.",
+  "requirement":"Assign this requirement to exactly one accountable integration task, which must own at least one relevant artifact and own or depend on all required artifacts. Consider all other requirements and artifact assignments jointly. Preserve its exact source and acceptance criteria. Related consumers may depend on its owner; do not duplicate ownership.",
+  "file":"Assign this existing artifact design choice to exactly one writer task consistent with requirement ownership. Every task must own at least one file. Paths are reused architecture, not a predetermined grouping. Consumers must use explicit dependency relationships.",
+  "dependency":"Select the implementation dependency direction between the pair using assigned requirements and files. Avoid cyclic dependencies. Tasks sharing an interface must have a producer/consumer contract or establish the required order; do not declare independence merely to maximize concurrency."
+ },
+ "worker_instructions":"Implement only your owned artifact paths. As accountable integration owner, fulfill the exact assigned requirement records below using your owned files and prerequisite outputs, including their source references, acceptance criteria, constraints and interfaces. Read the full shared goal and dependency artifacts for compatibility. Do not alter another task's paths. Report blockers with requirement ID, affected path, expected versus observed behavior and evidence; distinguish unrun checks from failures. Do not declare whole-project or hidden-test success."
+}

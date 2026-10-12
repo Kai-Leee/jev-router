@@ -1,0 +1,13 @@
+{
+  "schema_version": "adaptive-artifact-repair-contract/v2",
+  "packet_version": "adaptive-artifact-repair/v2",
+  "target_wire_bytes": 24000,
+  "decision_instructions": "Choose an offered repair scope or stop. Candidate artifact IDs are exact write authority. Public-interface attribution is a repair candidate, not proof of fault. Preserve all supplied original requirements and selected interfaces. Read-only and inherited artifacts cannot be modified. Declared task inputs may omit internal dependencies; unknown does not mean independent. If the offered scope is insufficient, stop. Every public check will run again. context_ref identifies controller-held provenance only: you cannot open it. Detailed dependency interfaces are omitted from this scope decision and supplied to the selected worker.",
+  "worker_instructions": "Repair only allowed_write_paths. Read the selected prior files, available task inputs and readable inherited files with the artifact tool. Preserve every supplied original requirement, selected interface and dependency interface. Unselected files retain their prior bytes. Do not edit checks, expand writes, or claim tests ran. If necessary edits fall outside this scope, report the unmet boundary. context_ref is controller-only provenance, not an accessible source. The controller verifies unchanged files and reruns all original local and public checks.",
+  "rules": {
+    "source": "Selected requirements, interfaces and source quotes remain exact. Enumerated provenance and exact duplicates are referenced; read-only dependency interfaces and their source quotes move from decision to worker. Unknown semantic fields and complete public cases/errors/not-reached states remain inline. Tables list columns, rows and untouched details; exact shared defaults are merged into each corresponding evidence item.",
+    "dependencies": "Dependency artifact IDs, owners, paths and declared consumers remain inline. Detailed read-only interfaces move to the worker; internal artifact dependencies remain unknown. Missing authority requires stop, never silent scope expansion.",
+    "execution": "Original DAG coverage and all public checks remain unchanged. Workers receive narrowed writes, readable inherited files and exact requirements/interfaces. Unselected artifact bytes must match the prior revision.",
+    "overflow": "The controller measures the complete serialized request. Over the byte target, preserve the packet and block locally; never truncate facts or automatically broaden candidates. Bytes are not model tokens and this target does not prove provider acceptance."
+  }
+}

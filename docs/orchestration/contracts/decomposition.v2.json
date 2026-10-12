@@ -1,0 +1,11 @@
+{
+ "schema_version":"task-decomposition/v2",
+ "objective":"Complete all public requirements accurately with minimum whole-task completion effort including planning and repairs. Choose artifact anchors then coherent file ownership, without predefined role groups. Code filters only mathematically impossible cyclic ownership choices. Code derives known delivery dependencies; Jev selects assignments. Required artifacts indicate final acceptance availability and do not by themselves create implementation waiting edges. This pilot is one level.",
+ "questions":{
+  "count":"Choose how many nonempty artifact-owning tasks should implement this goal. Account for coupling, planning-call overhead, integration work and available concurrency.",
+  "anchor":"Choose an unassigned artifact to establish this task's concrete responsibility. Previous anchors remain fixed. Prefer useful coherent task boundaries and preserve efficient implementation of the whole goal.",
+  "file":"Choose the task that should implement this artifact, considering concrete anchors, all current ownership, artifact purpose and known interfaces. Choices preserve feasibility of an acyclic delivery graph. Do not split tightly coupled implementation without benefit.",
+  "requirement":"Choose an accountable integration owner for this requirement from tasks owning relevant files. Other relevant file owners remain contributors. Accountable ownership is not proof of acceptance; final checks wait for the complete candidate."
+ },
+ "worker_instructions":"Implement all owned artifact purposes against the full public specification and shared interfaces, including contributions to requirements accountable to other tasks. Accountable requirements identify integration responsibility, not exclusive implementation responsibility. Do not modify other tasks' files. Use accepted dependency artifacts and the frozen interface contract. Final whole-requirement acceptance happens after all tasks; unavailable later contributions are not a confirmed local defect. Report concrete local blockers with requirement, file, expected and observed result. Distinguish unrun checks from failures. Never claim independent benchmark success."
+}

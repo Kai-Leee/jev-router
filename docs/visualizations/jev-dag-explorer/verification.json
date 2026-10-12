@@ -1,0 +1,164 @@
+{
+  "verified_at": "2026-10-11T14:24:24.023Z",
+  "scope": "D070 recorded local HTML explanation; no new inference or runtime modification",
+  "commands": [
+    "node --check scripts/build-dag-explorer.mjs",
+    "node scripts/build-dag-explorer.mjs"
+  ],
+  "static": {
+    "source_pins": {
+      "checked": 267,
+      "mismatches": []
+    },
+    "d070_launch_pins": {
+      "checked": 242,
+      "mismatches": []
+    },
+    "html_hash_matches": true,
+    "executable_script_syntax_passed": 1,
+    "external_script_count": 0,
+    "connect_src_none": true,
+    "credential_shaped_literals_present": false
+  },
+  "source_counts": {
+    "nodes": 10,
+    "verification_nodes": 1,
+    "tree_nodes": 17,
+    "selected_dependency_edges": 8,
+    "jev_posts": 50,
+    "local_decisions": 18,
+    "by_kind": {
+      "split_count": 13,
+      "membership": 33,
+      "relation": 2,
+      "repair": 2
+    }
+  },
+  "browser": {
+    "tool": "mcp__cua_repl",
+    "surface": "Codex in-app browser",
+    "url": "http://127.0.0.1:56751/",
+    "viewport": {
+      "width": 1422,
+      "height": 800
+    },
+    "page_scroll_width": 1422,
+    "observed_console_warnings_errors": [],
+    "checks": [
+      {
+        "name": "Eight flow steps and compile-to-graph navigation",
+        "passed": true
+      },
+      {
+        "name": "17-node decomposition tree and 11-node execution DAG",
+        "passed": true
+      },
+      {
+        "name": "Verification node toggle leaves 10 implementation nodes",
+        "passed": true
+      },
+      {
+        "name": "n14 tree leaf to execution node, U18/A19 ownership and paths",
+        "passed": true
+      },
+      {
+        "name": "Model replay reset/next/play/pause and clock advancement",
+        "passed": true
+      },
+      {
+        "name": "Relation example unknown blocks dispatch explanation",
+        "passed": true
+      },
+      {
+        "name": "Relation filter selects its first matching record; 2 batches of 32+13 questions",
+        "passed": true
+      },
+      {
+        "name": "Within-batch question selection and n6 to n14 action",
+        "passed": true
+      },
+      {
+        "name": "No-match search clears previous detail",
+        "passed": true
+      },
+      {
+        "name": "Repair filter shows 2 records with owner repair/stop choices",
+        "passed": true
+      },
+      {
+        "name": "Request JSON, response excerpt, field explanation",
+        "passed": true
+      },
+      {
+        "name": "18 local decisions shown separately without POST",
+        "passed": true
+      },
+      {
+        "name": "Original 148 gates and additional 0/8 diagnostic boundary",
+        "passed": true
+      },
+      {
+        "name": "Source drawer, Escape close, trigger focus restored",
+        "passed": true
+      },
+      {
+        "name": "Final rebuilt HTML loaded; n12 selected; 11 graph nodes",
+        "passed": true
+      }
+    ],
+    "untested": [
+      "Mobile viewport",
+      "Other browsers",
+      "file:// direct opening",
+      "OS clipboard copy",
+      "JSON browser download"
+    ]
+  },
+  "found_and_fixed": [
+    "Long-span relationship curves crossed unrelated intermediate node boxes; routed via dedicated lanes.",
+    "Changing a request filter left an unrelated selected detail; select a matching result or show an empty state.",
+    "Unselected node text was too faint; raised opacity."
+  ],
+  "not_performed": [
+    "Paid inference",
+    "New benchmark execution",
+    "Full runtime regression",
+    "8787 dashboard integration",
+    "Cloud deployment",
+    "Git commit/push"
+  ],
+  "side_effects": {
+    "local_preview_server": "127.0.0.1:56751; serves only this artifact directory",
+    "new_files": "Uncommitted builder/HTML/template/provenance/verification/README/screenshots",
+    "existing_docs_changed": [
+      "docs/WORK_LOG.md",
+      "docs/orchestration/README.md"
+    ]
+  },
+  "snapshot_files": [
+    {
+      "path": "scripts/build-dag-explorer.mjs",
+      "sha256": "5f3de804ab4fb9c27b822fd29cf1692da5e0a9bb56f131af4c790a0a5ccb47bb"
+    },
+    {
+      "path": "docs/visualizations/jev-dag-explorer/template.html",
+      "sha256": "e35c839de0dc09b7cde13c7eb45fa9092313bc296984b3da97460adc17556aaf"
+    },
+    {
+      "path": "docs/visualizations/jev-dag-explorer/index.html",
+      "sha256": "f8c708b7b2f76b17cc0e1c7d697e3b3d9e44eef62c8b6d4044a746627b7c411c"
+    },
+    {
+      "path": "docs/visualizations/jev-dag-explorer/provenance.json",
+      "sha256": "9dfc2057763c5521752af02f5a1fb49f70d21fbe6e79688565b4e0a077750621"
+    },
+    {
+      "path": "docs/visualizations/jev-dag-explorer/screenshots/dag-desktop.jpg",
+      "sha256": "0221792fa06a54ada8229dcf458e80047622f0e60c224fb667a6be060b06749d"
+    },
+    {
+      "path": "docs/visualizations/jev-dag-explorer/screenshots/dag-full.jpg",
+      "sha256": "e89543208d1895ee73e8783c0be9400004f0a3c8312bda02560580c14488f858"
+    }
+  ]
+}

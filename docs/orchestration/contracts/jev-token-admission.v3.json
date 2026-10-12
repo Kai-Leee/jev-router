@@ -1,0 +1,40 @@
+{
+  "schema_version": "jev-token-admission-contract/v3",
+  "policy_id": "d071-jev113-readable-causal-repair-admission-v3",
+  "checked_on": "2026-10-12",
+  "inherits": {
+    "contract_path": "docs/orchestration/contracts/jev-token-admission.v2.json",
+    "contract_sha256": "7583fe0c167d87be2b1897ad901424db2fc6db653dfb4eb84afba9a96ac47b53",
+    "module_path": "src/orchestration/jev-token-admission-v2.mjs",
+    "module_sha256": "3a412347db08ce3abbff9a0ce3e40252df0c99f6f24cd8a830da52d2447e0af4",
+    "scope": "Pin unchanged v2 and transitively unchanged v1 request validation, exact canonical byte measurements, heuristic estimates, model allowlist, unknown exact counts and request SHA binding. Preserve the inherited 24,000-byte repair ceiling as historical policy; v3 applies only the explicit engineering override below."
+  },
+  "stages": ["split", "relations", "repair", "profiles"],
+  "stage_semantics": "Stage is explicit trusted orchestration context, preserved through reservation and POST. Request state, question IDs, phases and provider responses cannot select or weaken it. Missing or unknown stage blocks. A profile choice for a repair task still uses the explicit profiles stage; the causal repair-candidate decision uses repair.",
+  "stage_limits": {
+    "split": "Unchanged inherited global request and state-plus-longest-question estimates.",
+    "relations": "Unchanged inherited global request and state-plus-longest-question estimates.",
+    "profiles": "Unchanged inherited global request and state-plus-longest-question estimates; batching does not exempt or raise either limit.",
+    "repair": "Unchanged inherited global estimates AND the explicit v3 complete serialized request ceiling of 48,000 UTF-8 bytes. The inherited v2 24,000-byte value remains documented separately. Neither engineering ceiling is an exact token or provider acceptance guarantee."
+  },
+  "repair_limit_inheritance": {
+    "source": "inherits.contract_path repair_operating_limit",
+    "expected_max_wire_bytes": 24000,
+    "unchanged": true,
+    "scope": "The inherited v2 source and value remain unchanged; the effective v3 value is the explicit override below."
+  },
+  "repair_operating_override": {
+    "stage": "repair",
+    "kind": "engineering_wire_byte_limit",
+    "max_wire_bytes": 48000,
+    "overrides_max_wire_bytes": 24000,
+    "basis": "D071 explicitly chooses readable projected JSON rather than requiring Jev to decode a dictionary representation merely to fit the v2 engineering ceiling. A measured 34,023-byte projected repair shape needs room for public failure history and provenance. Choose 48,000 bytes, not 64,000, to retain distance below the observed D069 70,510-byte false admission. This is an engineering policy change, not a provider-published limit, a calibrated acceptance cutoff or a claim that actual token usage is bounded.",
+    "known_false_admission_evidence": "benchmark-runs/d069-admission-probe-02/result.json",
+    "known_false_admission_wire_bytes": 70510,
+    "proven_token_upper_bound": false,
+    "provider_acceptance_guaranteed": false,
+    "prospective_acceptance_measured": false
+  },
+  "admission_semantics": "admit_estimated permits an attempt under inherited local assumptions only. It does not guarantee provider acceptance, actual model tokens, successful decisions, repair completion or billing. This module never posts, truncates, batches, reserves or retries. Blocked profile requests must be rebuilt with their relevant inline state and reassessed before POST; dropping questions alone may leave state-plus-longest-question over its limit.",
+  "request_binding": "Bind exact prepareDecision serialized request SHA-256, current v3 raw-policy SHA-256 and trusted runtime stage. V3 transitively pins unchanged v2 and v1 sources. Passing a v1, v2 or earlier v3 policy hash to this API blocks. Recheck all three at the reservation/POST boundary."
+}

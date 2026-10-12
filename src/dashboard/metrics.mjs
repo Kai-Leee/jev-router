@@ -66,21 +66,35 @@ const phaseOf = value => PHASES.has(value) ? value : null;
 const exitOf = value => count(value) !== null && value <= 255 ? value : null;
 const roleOf = value => ['implementation', 'monitor'].includes(value) ? value : 'unknown';
 
-// The shared ledger snapshot is a token-price estimate, never actual billed USD.
+// Ledger unit controls the limit. USD conversion is informational, never billing.
 function budgetProjection(manifest, decisions) {
-  if (manifest?.jev_budget?.schema_version !== 'jev-token-budget/v1' || manifest.jev_budget.max_usd !== 1
-      || manifest.jev_budget.usd_per_million_input_tokens !== 0.6 || manifest.jev_budget.reserve_input_tokens !== 65536) return null;
+  const config = manifest?.jev_budget;
+  const v2 = config?.schema_version === 'jev-token-budget/v2';
+  const unlimited = config?.schema_version === 'jev-token-budget/v3';
+  const tokenBudget = v2 || unlimited;
+  const configured = config?.reserve_input_tokens === 65536 && (tokenBudget
+    ? config.max_input_tokens === (unlimited ? null : 10000000) && !Object.hasOwn(config, 'max_usd')
+    : config?.schema_version === 'jev-token-budget/v1' && config.max_usd === 1 && config.usd_per_million_input_tokens === 0.6);
+  if (!configured) return null;
+  const tokenLimit = unlimited ? null : v2 ? 10000000 : 1666666;
   const latest = decisions.filter(event => ['budget_reserved', 'budget_settled', 'budget_blocked'].includes(event?.event)).at(-1);
   const data = latest?.budget;
-  const valid = object(data) && safeId(data.budget_id) && data.limit_usd === 1 && data.rate_usd_per_million === 0.6
+  const valid = object(data) && safeId(data.budget_id) && data.limit_usd === (tokenBudget ? null : 1) && data.rate_usd_per_million === 0.6
+    && (!tokenBudget || data.schema_version === `jev-token-budget-snapshot/${unlimited ? 'v3' : 'v2'}` && data.token_limit === tokenLimit && data.budget_unit === 'input_tokens')
+    && (!unlimited || data.unlimited === true && data.remaining_input_tokens === null)
     && ['charged_input_tokens', 'reserved_input_tokens'].every(key => count(data[key]) !== null)
-    && data.charged_input_tokens + data.reserved_input_tokens <= 1666666;
+    && count(data.charged_input_tokens + data.reserved_input_tokens) !== null
+    && (unlimited || data.charged_input_tokens + data.reserved_input_tokens <= tokenLimit);
   const charged = valid ? data.charged_input_tokens : null;
   const reserved = valid ? data.reserved_input_tokens : null;
-  return { limit_usd: 1, rate_usd_per_million: 0.6, budget_id: valid ? data.budget_id : null,
+  const remaining = charged === null || unlimited ? null : tokenLimit - charged - reserved;
+  return { limit_usd: tokenBudget ? null : 1, rate_usd_per_million: 0.6, budget_id: valid ? data.budget_id : null,
+    budget_unit: tokenBudget ? 'input_tokens' : 'usd_equivalent', token_limit: tokenLimit,
+    ...(unlimited ? { unlimited: true } : {}),
+    charged_input_tokens: charged, reserved_input_tokens: reserved, remaining_input_tokens: remaining,
     estimated_spent_usd: charged === null ? null : charged * 0.6 / 1e6,
     estimated_reserved_usd: reserved === null ? null : reserved * 0.6 / 1e6,
-    estimated_remaining_usd: charged === null ? null : (1666666 - charged - reserved) * 0.6 / 1e6,
+    estimated_remaining_usd: remaining === null ? null : remaining * 0.6 / 1e6,
     actual_billed_usd: null, status: latest?.event === 'budget_blocked' ? 'blocked' : valid ? 'observed' : 'not_observed',
     observed_at: iso(latest?.recorded_at), scope: 'shared_experiment' };
 }

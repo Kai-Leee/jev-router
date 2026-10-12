@@ -1,0 +1,30 @@
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/gu, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+}
+
+const text = (value) => value === null || value === undefined ? 'unknown' : escapeHtml(value);
+const milliseconds = (value) => typeof value === 'number' && Number.isFinite(value) ? `${text(value)} ms` : 'unknown';
+
+function renderTask(task) {
+  const attempts = task.attempts.map((attempt) => `<li><strong>${text(attempt.attempt_id)}</strong> · ${text(attempt.status)} · measured span ${milliseconds(attempt.duration_ms)}${attempt.ended_at_ms === null ? ` · observed so far ${milliseconds(attempt.observed_ms)}` : ''}${attempt.checks.length ? `<ul>${attempt.checks.map((check) => `<li>${text(check.check_id)} (${text(check.phase)}) · ${text(check.status)} · ${milliseconds(check.duration_ms)}</li>`).join('')}</ul>` : ''}</li>`).join('');
+  const waits = task.waits.map((wait) => `${text(wait.reason)}${wait.resource_kind ? ` (${text(wait.resource_kind)})` : ''}: ${milliseconds(wait.observed_ms)} observed${wait.resolved ? '' : ' (unresolved)'}`).join('<br>');
+  return `<tr><th scope="row">${text(task.task_id)}</th><td>${text(task.kind)}</td><td>${text(task.status)}</td><td>${task.predecessors === null ? 'unknown' : task.predecessors.length ? task.predecessors.map(text).join(', ') : 'none'}</td><td>${text(task.worker_id)}</td><td>${attempts ? `<ul>${attempts}</ul>` : 'not dispatched'}</td><td>${waits || 'none observed'}</td></tr>`;
+}
+
+function renderRun(run) {
+  const waits = Object.entries(run.wait_times).map(([reason, metric]) => `<tr><th scope="row">${text(reason)}</th><td>${milliseconds(metric.observed_ms)}</td><td>${milliseconds(metric.resolved_ms)}</td><td>${text(metric.open_intervals)}</td><td>${text(metric.censored_intervals)}</td></tr>`).join('');
+  return `<section aria-label="DAG run"><h2>${text(run.run_id)} · graph ${text(run.graph_revision)}</h2><p>Status: <strong>${text(run.status)}</strong> · ${text(run.event_count)} unique events · ${text(run.duplicate_count)} replay duplicates · peak simultaneous tasks: ${text(run.peak_concurrency)}</p>
+<dl><dt>Estimated dependency critical path</dt><dd>${milliseconds(run.estimated_critical_path_ms)}</dd><dt>Measured successful completion</dt><dd>${milliseconds(run.measured_completion_ms)}</dd><dt>Observed journal span</dt><dd>${milliseconds(run.observed_span_ms)}</dd><dt>Input / output tokens</dt><dd>${text(run.usage.input_tokens)} / ${text(run.usage.output_tokens)}</dd><dt>Cost (USD)</dt><dd>${text(run.usage.cost_usd)}</dd></dl>
+<p class="note">Completion is measured from plan analysis to the completed run event. Preparation before analysis is unobserved. Failed and blocked runs have no successful completion time. The critical path is a duration-model estimate; resource contention, retries, missing durations, and unresolved relationships can prevent it from predicting elapsed time. Dependency model complete: ${text(run.dependency_model_complete)}; estimate basis: ${text(run.critical_path_basis)}.</p>
+<p>Tasks with unknown duration: ${run.unknown_duration_ids === null ? 'unknown' : run.unknown_duration_ids.length ? run.unknown_duration_ids.map(text).join(', ') : 'none in the supplied analysis'}.</p>
+<div class="table-scroll"><table><caption>Tasks and artifact dependencies</caption><thead><tr><th>Task</th><th>Kind</th><th>Status</th><th>Predecessors</th><th>Worker</th><th>Attempts and checks</th><th>Waits</th></tr></thead><tbody>${run.tasks.map(renderTask).join('')}</tbody></table></div>
+<div class="table-scroll"><table><caption>Observed waits and verification spans</caption><thead><tr><th>Reason</th><th>Observed</th><th>Resolved / ended checks</th><th>Open intervals</th><th>Censored at stop</th></tr></thead><tbody>${waits}</tbody></table></div><p class="note">Wait totals sum task intervals and can overlap across tasks. Check spans are already inside task and run time; these columns must not be added to elapsed time. A completed event is controller telemetry, not independent proof of product correctness. No usage receipts are included in this projection.</p></section>`;
+}
+
+/** Standalone, script-free HTML. All journal-derived text is escaped at the output boundary. */
+export function renderDagView(projection) {
+  if (!projection || projection.schema_version !== 'dag-event-projection/v1' || !Array.isArray(projection.runs)) {
+    throw Object.assign(new TypeError('Expected a DAG event projection'), { code: 'DAG_VIEW_INVALID' });
+  }
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>DAG observation</title><style>body{font:15px/1.55 system-ui,sans-serif;margin:2rem auto;padding:0 1.2rem;max-width:1200px;color:#172238;background:#f7f9fc}section{background:#fff;border:1px solid #dbe2ec;border-radius:12px;margin:1.5rem 0;padding:1.5rem}h1,h2{line-height:1.2}h2{overflow-wrap:anywhere}dl{display:grid;grid-template-columns:minmax(220px,1fr) 2fr;gap:.4rem 1rem}dt{font-weight:600}dd{margin:0}.note{color:#52627b;font-size:.9rem}.table-scroll{overflow:auto;margin:1rem 0}table{border-collapse:collapse;width:100%;text-align:left}caption{text-align:left;font-weight:700;padding:.5rem 0}th,td{padding:.6rem;border-bottom:1px solid #e1e6ef;vertical-align:top;overflow-wrap:anywhere}thead{background:#eef3f9}ul{padding-left:1.1rem;margin:0}li+li{margin-top:.4rem}@media(max-width:600px){dl{grid-template-columns:1fr}dd{margin-bottom:.5rem}section{padding:1rem}}</style></head><body><main><h1>DAG observation</h1><p>Opt-in local event projection · ${text(projection.event_count)} unique events · ${text(projection.duplicate_count)} replay duplicates.</p>${projection.runs.length ? projection.runs.map(renderRun).join('') : '<p>No DAG events were observed. Completion, duration, usage, and cost are unknown.</p>'}</main></body></html>`;
+}

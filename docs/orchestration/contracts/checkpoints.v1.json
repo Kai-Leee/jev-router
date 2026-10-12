@@ -1,0 +1,18 @@
+{
+  "version": "checkpoint-v1",
+  "implementedEvents": {
+    "plan_ready": {
+      "questionSource": "docs/orchestration/contracts/questions.v1.json",
+      "questionKind": "split",
+      "policyVersion": "split-checkpoint-v1",
+      "handlers": ["execute_single", "execute_split", "collect_evidence"],
+      "deterministicRule": "Exactly one validated task uses execute_single; larger plans still require a decision. Dependency width alone is not proof of benefit."
+    }
+  },
+  "deferredEvents": ["ready_set_changed", "failure_observed", "requirement_evidence_changed"],
+  "modes": {
+    "auto": "Validated rule, then exact decision reuse, then Jev; dispatch one selected handler.",
+    "force_jev": "Bypass decision cache and deterministic rule; duplicate execution suppression still applies."
+  },
+  "persistence": "Process-local only. Do not resume side effects after restart without external reconciliation."
+}

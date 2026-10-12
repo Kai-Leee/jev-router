@@ -1,0 +1,35 @@
+{
+  "schema_version": "recursive-planning-pilot/v1",
+  "input": "benchmarks/e2e-swe/manifests/d056-obligations.json",
+  "contract": "docs/orchestration/contracts/recursive-task-tests.v2.json",
+  "model": "jev-latest",
+  "limits": {
+    "max_depth": 4,
+    "max_leaves": 32,
+    "max_planning_decisions": 240,
+    "max_repairs_per_node": 1,
+    "max_planning_input_tokens": 6000000,
+    "max_concurrency": 2,
+    "max_feasibility_states": 10000
+  },
+  "max_request_bytes": 144000,
+  "wall_timeout_seconds": 14400,
+  "jev_budget": {
+    "schema_version": "jev-token-budget/v2",
+    "ledger_path": "benchmark-runs/jev-usd1-budget.json",
+    "max_input_tokens": 10000000,
+    "reserve_input_tokens": 65536
+  },
+  "purpose": "Actual recursive planning only, identical source requirements/test expectations; changed transport state representation.",
+  "valuation": {
+    "usd_per_million_input_tokens": 0.6,
+    "basis": "informational_api_equivalent_not_monthly_invoice",
+    "source": "https://jev-ai.pro/pricing",
+    "source_checked": "2026-10-10",
+    "calculation": "USD9 / 15 million input-token pack = USD0.60 per million, not the users monthly rate."
+  },
+  "payload_guard_basis": "Local UTF-8 byte guard after lossless semantic projection; not a token count or proof of the model context limit. Actual acceptance is measured separately.",
+  "planning_cap_basis": "D056 preflight raised the provisional2M cap to6M before inference:80 obligations can require81 sequential root decisions before publishing a split. This is room within the unchanged shared10M ledger, not a usage prediction or optimality claim.",
+  "state_format": "json_text",
+  "condition": "D056B explicit compact JSON text of identical state facts, after confirmed D05601 failure/refund; not an unchanged replay."
+}

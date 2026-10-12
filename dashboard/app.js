@@ -230,13 +230,22 @@
         section.append(row);
       });
       if (provider.provider === 'jev' && budget) {
-        for (const [label, value] of [['공유 환산 예산', budget.limit_usd], ['환산 사용액', budget.estimated_spent_usd],
-          ['미확정 호출 예약액', budget.estimated_reserved_usd], ['다음 호출에 쓸 수 있는 환산 잔액', budget.estimated_remaining_usd]]) {
+        const tokenBudget = budget.budget_unit === 'input_tokens';
+        const unlimited = tokenBudget && budget.unlimited === true && budget.token_limit === null;
+        const budgetRows = tokenBudget ? [
+          ['공유 입력 토큰 한도', budget.token_limit, format, unlimited],
+          ['누적 차감 입력 토큰', budget.charged_input_tokens, format],
+          ['미확정 호출 예약 토큰', budget.reserved_input_tokens, format],
+          ['공유 장부의 잔여 토큰 한도', budget.remaining_input_tokens, format, unlimited],
+          ['누적 사용 환산액 · 참고', budget.estimated_spent_usd, money]
+        ] : [['공유 환산 예산', budget.limit_usd, money], ['환산 사용액', budget.estimated_spent_usd, money],
+          ['미확정 호출 예약액', budget.estimated_reserved_usd, money], ['다음 호출에 쓸 수 있는 환산 잔액', budget.estimated_remaining_usd, money]];
+        for (const [label, value, formatter, noLimit] of budgetRows) {
           const row = el('div', 'cost-row secondary');
-          row.append(el('span', 'cost-label', label), el('div', 'cost-value', num(value) === null ? '미확인' : money(value)));
+          row.append(el('span', 'cost-label', label), el('div', 'cost-value', noLimit ? '제한 없음' : num(value) === null ? '미확인' : formatter(value)));
           section.append(row);
         }
-        section.append(el('p', 'cost-note', `공유 실험 장부의 마지막 관측값 · 입력 100만 토큰당 $0.60으로 환산 · 실제 청구액과 다릅니다.${budget.status === 'blocked' ? ' 예산 검사로 호출 중지.' : ''}`));
+        section.append(el('p', 'cost-note', `공유 실험 장부의 마지막 관측값 · ${unlimited ? '누적 토큰 한도 없음 · 계정 잔액과 요청 검사는 유지 · ' : tokenBudget ? '입력 토큰 기준 한도 · USD 한도 없음 · ' : ''}입력 100만 토큰당 $0.60으로 환산 · 실제 청구액과 다릅니다.${budget.status === 'blocked' ? ' 예산 검사로 호출 중지.' : ''}`));
       }
       section.append(el('p', 'cost-note', text(provider.cost_note, '청구 근거가 제공되지 않은 값은 미확인입니다.')));
       fragment.append(section);
@@ -386,7 +395,8 @@
     renderEvaluation(run.evaluation);
     renderActivity(run);
     const limits = [];
-    if (run.jev_budget) limits.push('Jev 공유 환산 예산 $1');
+    if (run.jev_budget) limits.push(run.jev_budget.budget_unit === 'input_tokens'
+      ? `Jev 공유 입력 토큰 한도 ${run.jev_budget.unlimited === true && run.jev_budget.token_limit === null ? '제한 없음' : format(run.jev_budget.token_limit)}` : `Jev 공유 환산 예산 ${money(run.jev_budget.limit_usd)}`);
     if (run.limits?.jev_call_limit === 'unlimited') limits.push('Jev 호출 횟수 제한 없음');
     if (run.limits?.claude_budget_limit === 'unlimited') limits.push('Claude CLI 환산액 제한 없음');
     if (num(run.limits?.jev_max_calls) !== null) limits.push(`Jev 호출 한도 ${format(run.limits.jev_max_calls)}회`);

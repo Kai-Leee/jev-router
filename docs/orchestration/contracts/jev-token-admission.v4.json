@@ -1,0 +1,46 @@
+{
+  "schema_version": "jev-token-admission-contract/v4",
+  "policy_id": "d073-jev113-observation-only-local-sizing-v4",
+  "checked_on": "2026-10-12",
+  "inherits": {
+    "contract_path": "docs/orchestration/contracts/jev-token-admission.v3.json",
+    "contract_sha256": "d3fda24d2c5a40b9c0169b310f6e3c90a3a6361f37aa70c70c909fa3af345679",
+    "module_path": "src/orchestration/jev-token-admission-v3.mjs",
+    "module_sha256": "18bdb98a59071d20fda71301323da2b5031d8f0964855f37fd8d4c4fda6a5a86",
+    "scope": "Keep all inherited source files immutable and preserve schema, official byte validation, exact request measurements, model allowlist and request/policy binding. Inherited local estimated-token and engineering-byte thresholds become reference observations only under explicit v4 selection."
+  },
+  "stages": ["split", "relations", "repair", "profiles", "repair_owners"],
+  "stage_semantics": "The controller supplies the trusted runtime stage. Request text, questions, phase and provider responses cannot choose it. Missing or unknown stages block. repair_owners is the separate existing-owner inference stage, not permission to expand ownership or write scope.",
+  "local_caps": {
+    "request_tokens": null,
+    "state_plus_longest_question_tokens": null,
+    "repair_wire_bytes": null,
+    "profile_wire_bytes": null
+  },
+  "reference_thresholds": {
+    "request_tokens_estimate": 64000,
+    "state_plus_longest_question_tokens_estimate": 32000,
+    "repair_wire_bytes": 48000,
+    "repair_observation_stages": ["repair", "repair_owners"],
+    "enforced": false,
+    "basis": "Historical v3 local estimates and an engineering ceiling. Exceeding these is reported as warnings without blocking, retrying, compressing or truncating the request. They are not exact model token counts or calibrated acceptance boundaries."
+  },
+  "official_validation": {
+    "validator": "prepareDecision",
+    "max_body_utf8_bytes": 256000,
+    "enforced": true,
+    "scope": "Keep the existing adapter request schema and documented complete UTF-8 body limit. Provider-side context limits still apply and may reject locally valid input."
+  },
+  "stage_limits": {
+    "split": "Local token estimates are non-blocking observations; schema and official body validation remain enforced.",
+    "relations": "Local token estimates are non-blocking observations; schema and official body validation remain enforced.",
+    "repair": "Local token estimates and the historical 48,000-byte reference are non-blocking observations.",
+    "profiles": "Local token estimates and profile operating byte caps are disabled; schema and official body validation remain enforced.",
+    "repair_owners": "Local token estimates and the historical repair byte reference are non-blocking observations; only existing owner candidates may be resolved by the caller."
+  },
+  "admission_semantics": "admit_observed means the input passed schema, official body, trusted stage, model and supplied hash checks. It does not predict provider acceptance, certify semantic sufficiency, measure exact tokens or guarantee successful owner inference, repair or billing. Local caps are null by user instruction. Actual provider failures remain errors and are never automatically retried.",
+  "request_binding": "Bind the exact prepareDecision serialized SHA-256, v4 raw-policy SHA-256 and trusted stage through reservation and POST. Earlier policy hashes cannot validate a v4 assessment. A historical run may only be replayed with its own supported policy; a separate v4 reassessment is not historical acceptance.",
+  "automatic_retries": 0,
+  "proven_token_upper_bound": false,
+  "provider_acceptance_guaranteed": false
+}

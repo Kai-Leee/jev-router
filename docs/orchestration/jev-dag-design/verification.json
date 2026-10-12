@@ -1,0 +1,32 @@
+{
+  "kind": "documentation_validation_only",
+  "files_checked": [
+    "docs/orchestration/jev-dag-design/README.md",
+    "docs/orchestration/jev-dag-design/ARCHITECTURE.md",
+    "docs/orchestration/jev-dag-design/PREPARATION_AND_ROLES.md",
+    "docs/orchestration/jev-dag-design/RESEARCH.md",
+    "docs/orchestration/jev-dag-design/HANDOFF.md",
+    "docs/decisions/DAG-SIDE-20261010.md"
+  ],
+  "local_links_checked": 32,
+  "broken_local_links": 0,
+  "json_examples_parsed": 1,
+  "synthetic_arithmetic": {
+    "duration_unit": "illustrative units",
+    "earliest_finish": {
+      "A": 2,
+      "B": 8,
+      "C": 5,
+      "D": 9
+    },
+    "critical_path_length": 9,
+    "serial_sum": 12
+  },
+  "errors": [],
+  "limits": [
+    "Local target existence only; URL reachability and Markdown anchors not checked by this command.",
+    "Mermaid fenced source only; diagram rendering not tested.",
+    "No product runtime, paid call, scheduler implementation or efficiency benchmark."
+  ],
+  "reproduction_source": "docs/decisions/DAG-SIDE-20261010.md: sh code block"
+}

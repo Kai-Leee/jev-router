@@ -1,6 +1,6 @@
 import { constants, openSync, closeSync, readFileSync, writeFileSync, fsyncSync, fstatSync, lstatSync, realpathSync, renameSync, linkSync, unlinkSync } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 
 export const BUDGET_ERROR_CODES = Object.freeze([
   'INVALID_BUDGET_CONFIG', 'JEV_BUDGET_REQUIRED', 'BUDGET_REQUIRED', 'BUDGET_LOCKED', 'BUDGET_LOCK_LOST',
@@ -8,7 +8,8 @@ export const BUDGET_ERROR_CODES = Object.freeze([
   'BUDGET_OUTSTANDING', 'BUDGET_INVALID_LINKAGE', 'BUDGET_INVALID_BALANCES', 'BUDGET_ACCOUNT_BLOCKED',
   'BUDGET_PAID_BALANCE_LOW', 'BUDGET_INVALID_RESERVATION', 'BUDGET_INVALID_SETTLEMENT',
   'BUDGET_MODEL_UNSUPPORTED', 'BUDGET_PREFLIGHT_FAILED', 'BUDGET_SETTLEMENT_FAILED',
-  'BUDGET_RECONCILIATION_NOT_ALLOWED',
+  'BUDGET_RECONCILIATION_NOT_ALLOWED', 'BUDGET_MIGRATION_NOT_ALLOWED',
+  'BUDGET_REFUND_NOT_ALLOWED', 'BUDGET_REFUND_EVIDENCE_INVALID', 'BUDGET_ACCOUNTING_OVERFLOW',
 ]);
 const TOKEN_LIMIT = 1_666_666; // floor(1 USD / (3 / 5,000,000 USD per token)); comparisons stay integer.
 const RESERVATION = 65_536;
@@ -25,19 +26,29 @@ const identifier = value => typeof value === 'string' && /^[A-Za-z0-9][A-Za-z0-9
 const uuid = value => typeof value === 'string' && /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/.test(value);
 const providerId = value => typeof value === 'string' && /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$/.test(value);
 const fail = code => { throw Object.assign(new Error(code), { name: 'TokenBudgetError', code }); };
+const sha256 = value => createHash('sha256').update(value).digest('hex');
+const digest = value => typeof value === 'string' && /^[0-9a-f]{64}$/.test(value);
 const valueUSD = tokens => tokens * 3 / 5_000_000;
 const copy = value => JSON.parse(JSON.stringify(value));
 const exactKeys = (value, keys) => object(value) && Object.keys(value).length === keys.length && keys.every(key => Object.hasOwn(value, key));
 const POLICY = Object.freeze({ max_usd: 1, usd_per_million_input_tokens: 0.6, reserve_input_tokens: RESERVATION });
 
+const TOKEN_POLICY = Object.freeze({ max_input_tokens: 10_000_000, reserve_input_tokens: RESERVATION });
+const UNLIMITED_POLICY = Object.freeze({ max_input_tokens: null, reserve_input_tokens: RESERVATION });
+const policyFor = version => version.endsWith('/v3') ? UNLIMITED_POLICY : version.endsWith('/v2') ? TOKEN_POLICY : POLICY;
+const limitFor = version => version.endsWith('/v3') ? null : version.endsWith('/v2') ? TOKEN_POLICY.max_input_tokens : TOKEN_LIMIT;
+const migrationAllowed = (source, target) => (source === 'jev-token-budget/v1' && target === 'jev-token-budget/v2')
+  || (source === 'jev-token-budget/v2' && target === 'jev-token-budget/v3');
+
 export function validateBudgetConfig(value, baseDirectory = process.cwd()) {
   try {
-    if (!exactKeys(value, ['schema_version', 'ledger_path', ...Object.keys(POLICY)])
-      || value.schema_version !== 'jev-token-budget/v1'
-      || Object.entries(POLICY).some(([key, expected]) => value[key] !== expected)
+    if (!object(value) || !['jev-token-budget/v1', 'jev-token-budget/v2', 'jev-token-budget/v3'].includes(value.schema_version)) fail('INVALID_BUDGET_CONFIG');
+    const policy = policyFor(value.schema_version);
+    if (!exactKeys(value, ['schema_version', 'ledger_path', ...Object.keys(policy)])
+      || Object.entries(policy).some(([key, expected]) => value[key] !== expected)
       || typeof value.ledger_path !== 'string' || !value.ledger_path.trim() || value.ledger_path.includes('\0')
       || typeof baseDirectory !== 'string' || !baseDirectory.trim()) fail('INVALID_BUDGET_CONFIG');
-    return Object.freeze({ schema_version: value.schema_version, ledger_path: resolve(baseDirectory, value.ledger_path), ...POLICY });
+    return Object.freeze({ schema_version: value.schema_version, ledger_path: resolve(baseDirectory, value.ledger_path), ...policy });
   } catch { fail('INVALID_BUDGET_CONFIG'); }
 }
 
@@ -54,27 +65,37 @@ function validatePending(value, budgetId, sequence) {
 }
 
 function validateLedger(value) {
-  if (!exactKeys(value, ['schema_version', 'budget_id', ...Object.keys(POLICY), 'token_limit', 'charged_input_tokens',
+  if (!object(value) || !['jev-token-budget-ledger/v1', 'jev-token-budget-ledger/v2', 'jev-token-budget-ledger/v3'].includes(value.schema_version)) fail('BUDGET_LEDGER_INVALID');
+  const policy = policyFor(value.schema_version);
+  const tokenLimit = limitFor(value.schema_version);
+  if (!exactKeys(value, ['schema_version', 'budget_id', ...Object.keys(policy), 'token_limit', 'charged_input_tokens',
     'settled_requests', 'pending', 'last_settlement', 'blocked_code'])
-    || value.schema_version !== 'jev-token-budget-ledger/v1' || !uuid(value.budget_id)
-    || Object.entries(POLICY).some(([key, expected]) => value[key] !== expected) || value.token_limit !== TOKEN_LIMIT
-    || !integer(value.charged_input_tokens) || value.charged_input_tokens > TOKEN_LIMIT
+    || !uuid(value.budget_id)
+    || Object.entries(policy).some(([key, expected]) => value[key] !== expected) || value.token_limit !== tokenLimit
+    || !integer(value.charged_input_tokens) || (tokenLimit !== null && value.charged_input_tokens > tokenLimit)
     || !integer(value.settled_requests) || value.settled_requests >= Number.MAX_SAFE_INTEGER
     || (value.blocked_code !== null && !['BUDGET_INVALID_SETTLEMENT', 'BUDGET_MODEL_UNSUPPORTED', 'BUDGET_INVALID_RESERVATION'].includes(value.blocked_code))) fail('BUDGET_LEDGER_INVALID');
   if (value.pending !== null) {
     validatePending(value.pending, value.budget_id, value.settled_requests + 1);
-    if (value.charged_input_tokens + RESERVATION > TOKEN_LIMIT) fail('BUDGET_LEDGER_INVALID');
+    if (!integer(value.charged_input_tokens + RESERVATION)
+      || (tokenLimit !== null && value.charged_input_tokens + RESERVATION > tokenLimit)) fail('BUDGET_LEDGER_INVALID');
   }
   if (value.blocked_code !== null && value.pending === null) fail('BUDGET_LEDGER_INVALID');
   if (value.settled_requests === 0) {
     if (value.charged_input_tokens !== 0 || value.last_settlement !== null) fail('BUDGET_LEDGER_INVALID');
   } else {
     const last = value.last_settlement;
-    if (!exactKeys(last, ['reservation_id', 'charged_input_tokens', 'input_tokens', 'billing_run_id'])
-      || last.reservation_id !== `${value.budget_id}:r${value.settled_requests}`
-      || !integer(last.charged_input_tokens) || last.charged_input_tokens > RESERVATION
-      || last.input_tokens !== last.charged_input_tokens || last.charged_input_tokens > value.charged_input_tokens
-      || !providerId(last.billing_run_id)) fail('BUDGET_LEDGER_INVALID');
+    const refund = last?.kind === 'confirmed_refund';
+    const validRefund = refund && exactKeys(last, ['reservation_id', 'charged_input_tokens', 'input_tokens', 'billing_run_id',
+      'kind', 'actual_billed_usd', 'evidence_sha256', 'account_sha256', 'prior_ledger_sha256'])
+      && ['jev-token-budget-ledger/v2', 'jev-token-budget-ledger/v3'].includes(value.schema_version)
+      && last.charged_input_tokens === 0 && last.input_tokens === null && last.billing_run_id === null && last.actual_billed_usd === 0
+      && ['evidence_sha256', 'account_sha256', 'prior_ledger_sha256'].every(key => digest(last[key]));
+    const validInference = !refund && exactKeys(last, ['reservation_id', 'charged_input_tokens', 'input_tokens', 'billing_run_id'])
+      && integer(last.charged_input_tokens) && last.charged_input_tokens <= RESERVATION
+      && last.input_tokens === last.charged_input_tokens && last.charged_input_tokens <= value.charged_input_tokens
+      && providerId(last.billing_run_id);
+    if ((!validRefund && !validInference) || last.reservation_id !== `${value.budget_id}:r${value.settled_requests}`) fail('BUDGET_LEDGER_INVALID');
   }
   return value;
 }
@@ -127,7 +148,60 @@ function settlement(response) {
   return { charged_input_tokens: charged, input_tokens: usage.input_tokens, billing_run_id: billing.runId };
 }
 
-export function createTokenBudget(input) {
+function ledgerSnapshot(ledger, { closed = false, blockingCode = null } = {}) {
+  const reserved = ledger.pending ? RESERVATION : 0;
+  const version = ledger.schema_version.split('/')[1];
+  const tokenBudget = version !== 'v1';
+  const unlimited = version === 'v3';
+  const remaining = unlimited ? null : ledger.token_limit - ledger.charged_input_tokens - reserved;
+  return { schema_version: `jev-token-budget-snapshot/${version}`, budget_id: ledger.budget_id,
+    limit_usd: tokenBudget ? null : 1, rate_usd_per_million: 0.6, token_limit: ledger.token_limit,
+    charged_input_tokens: ledger.charged_input_tokens, reserved_input_tokens: reserved,
+    estimated_spent_usd: valueUSD(ledger.charged_input_tokens), estimated_reserved_usd: valueUSD(reserved),
+    remaining_usd: unlimited ? null : valueUSD(remaining), actual_billed_usd: null,
+    reservations_pending: ledger.pending ? 1 : 0, pending_reservation_id: ledger.pending?.reservation_id ?? null,
+    blocked_code: blockingCode ?? ledger.blocked_code ?? (ledger.pending ? 'BUDGET_OUTSTANDING' : null), closed,
+    ...(tokenBudget ? { remaining_input_tokens: remaining,
+      settled_requests: ledger.settled_requests, budget_unit: 'input_tokens' } : {}),
+    ...(unlimited ? { unlimited: true } : {}) };
+}
+
+function matchesConfig(ledger, config) {
+  if (ledger.schema_version !== config.schema_version.replace('budget/', 'budget-ledger/')) fail('BUDGET_LEDGER_INVALID');
+}
+
+// Read a single opened inode: a concurrent atomic rename may yield the previous
+// complete snapshot, never a mixture. No lock acquisition or filesystem writes.
+export function readTokenBudgetSnapshot(input) {
+  const config = validateBudgetConfig(input);
+  let fd;
+  try {
+    fd = openSync(config.ledger_path, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
+    const stat = fstatSync(fd);
+    // An atomic replacement may already have unlinked our opened inode (nlink=0).
+    if (!stat.isFile() || stat.nlink > 1 || (stat.mode & 0o077) !== 0) fail('BUDGET_LEDGER_INVALID');
+    const text = new TextDecoder('utf-8', { fatal: true }).decode(readFileSync(fd));
+    const ledger = validateLedger(JSON.parse(text));
+    matchesConfig(ledger, config);
+    return ledgerSnapshot(ledger);
+  } catch (error) {
+    if (error?.code === 'BUDGET_LEDGER_INVALID') throw error;
+    fail(error instanceof SyntaxError || error instanceof TypeError ? 'BUDGET_LEDGER_INVALID' : 'BUDGET_IO_FAILED');
+  } finally { if (fd !== undefined) closeSync(fd); }
+}
+
+export function migrateTokenBudget(input, targetInput) {
+  const source = validateBudgetConfig(input);
+  const target = validateBudgetConfig(targetInput);
+  if (!migrationAllowed(source.schema_version, target.schema_version)
+    || source.ledger_path !== target.ledger_path) fail('BUDGET_MIGRATION_NOT_ALLOWED');
+  // Never create a replacement history when the source is missing.
+  readTokenBudgetSnapshot(source);
+  const budget = createTokenBudget(source, { requireExisting: true });
+  try { return budget.migrate(target); } finally { budget.close(); }
+}
+
+export function createTokenBudget(input, { requireExisting = false } = {}) {
   const config = validateBudgetConfig(input);
   let directory;
   try { directory = realpathSync(dirname(config.ledger_path)); } catch { fail('BUDGET_IO_FAILED'); }
@@ -198,12 +272,13 @@ export function createTokenBudget(input) {
     syncDirectory(directory);
     try {
       const existing = readPrivate(path);
-      try { ledger = validateLedger(JSON.parse(existing.text)); } catch { fail('BUDGET_LEDGER_INVALID'); }
+      try { ledger = validateLedger(JSON.parse(existing.text)); matchesConfig(ledger, config); } catch { fail('BUDGET_LEDGER_INVALID'); }
       ledgerText = existing.text;
       ledgerStat = existing.stat;
     } catch (error) {
       if (error?.code !== 'ENOENT') throw error;
-      const fresh = { schema_version: 'jev-token-budget-ledger/v1', budget_id: randomUUID(), ...POLICY, token_limit: TOKEN_LIMIT,
+      if (requireExisting) fail('BUDGET_LEDGER_INVALID');
+      const fresh = { schema_version: config.schema_version.replace('budget/', 'budget-ledger/'), budget_id: randomUUID(), ...policyFor(config.schema_version), token_limit: limitFor(config.schema_version),
         charged_input_tokens: 0, settled_requests: 0, pending: null, last_settlement: null, blocked_code: null };
       persist(fresh);
     }
@@ -218,15 +293,19 @@ export function createTokenBudget(input) {
     fail(error?.code === 'BUDGET_LEDGER_CHANGED' ? error.code : 'BUDGET_IO_FAILED');
   }
 
-  function snapshot() {
-    const reserved = ledger.pending ? RESERVATION : 0;
-    return { schema_version: 'jev-token-budget-snapshot/v1', budget_id: ledger.budget_id,
-      limit_usd: 1, rate_usd_per_million: 0.6, token_limit: TOKEN_LIMIT,
-      charged_input_tokens: ledger.charged_input_tokens, reserved_input_tokens: reserved,
-      estimated_spent_usd: valueUSD(ledger.charged_input_tokens), estimated_reserved_usd: valueUSD(reserved),
-      remaining_usd: valueUSD(TOKEN_LIMIT - ledger.charged_input_tokens - reserved), actual_billed_usd: null,
-      reservations_pending: ledger.pending ? 1 : 0, pending_reservation_id: ledger.pending?.reservation_id ?? null,
-      blocked_code: lastBlockingCode ?? ledger.blocked_code ?? (ledger.pending ? 'BUDGET_OUTSTANDING' : null), closed };
+  function snapshot() { return ledgerSnapshot(ledger, { closed, blockingCode: lastBlockingCode }); }
+
+  function migrate(targetInput) {
+    assertOpen();
+    const target = validateBudgetConfig(targetInput);
+    if (!migrationAllowed(ledger.schema_version.replace('budget-ledger/', 'budget/'), target.schema_version)
+      || target.ledger_path !== config.ledger_path) fail('BUDGET_MIGRATION_NOT_ALLOWED');
+    if (ledger.blocked_code) fail(ledger.blocked_code);
+    if (ledger.pending) fail('BUDGET_OUTSTANDING');
+    const { max_usd, usd_per_million_input_tokens, max_input_tokens, ...history } = ledger;
+    persist({ ...history, schema_version: target.schema_version.replace('budget/', 'budget-ledger/'),
+      ...policyFor(target.schema_version), token_limit: limitFor(target.schema_version) });
+    return snapshot();
   }
 
   function reserve(linkage, balances) {
@@ -239,7 +318,8 @@ export function createTokenBudget(input) {
       || typeof balances.spending_frozen !== 'boolean') block('BUDGET_INVALID_BALANCES');
     if (balances.spending_frozen || balances.tokenDebt !== 0) block('BUDGET_ACCOUNT_BLOCKED');
     if (balances.paidInputTokensRemaining - balances.tokensReserved < RESERVATION) block('BUDGET_PAID_BALANCE_LOW');
-    if (ledger.charged_input_tokens + RESERVATION > TOKEN_LIMIT) block('BUDGET_EXHAUSTED');
+    if (!integer(ledger.charged_input_tokens + RESERVATION) || !integer(ledger.settled_requests + 2)) block('BUDGET_ACCOUNTING_OVERFLOW');
+    if (ledger.token_limit !== null && ledger.charged_input_tokens + RESERVATION > ledger.token_limit) block('BUDGET_EXHAUSTED');
     const pending = { reservation_id: `${ledger.budget_id}:r${ledger.settled_requests + 1}`, ...ids, reserved_input_tokens: RESERVATION };
     persist({ ...ledger, pending });
     return pending.reservation_id;
@@ -282,6 +362,49 @@ export function createTokenBudget(input) {
     return commitSettlement(reservationId, observed);
   }
 
+  // Explicit operator reconciliation, never a network request or automatic
+  // timeout recovery. Hashes bind reviewed evidence bytes and current history;
+  // they do not authenticate the operator's provider-observation assertion.
+  function reconcileConfirmedRefund(reservationId, evidenceInput) {
+    assertOpen();
+    if (!['jev-token-budget-ledger/v2', 'jev-token-budget-ledger/v3'].includes(ledger.schema_version)
+      || !ledger.pending || ledger.blocked_code !== null) fail('BUDGET_REFUND_NOT_ALLOWED');
+    if (reservationId !== ledger.pending.reservation_id) fail('BUDGET_INVALID_RESERVATION');
+    checkLedgerUnchanged();
+    let observed;
+    try {
+      if (!exactKeys(evidenceInput, ['evidence_path', 'evidence_sha256', 'account_path', 'account_sha256', 'ledger_sha256'])
+        || !['evidence_sha256', 'account_sha256', 'ledger_sha256'].every(key => digest(evidenceInput[key]))
+        || sha256(ledgerText) !== evidenceInput.ledger_sha256) throw new Error();
+      const readEvidence = (path, expected) => {
+        if (typeof path !== 'string' || !path.trim() || path.includes('\0')) throw new Error();
+        const bytes = readFileSync(path);
+        if (sha256(bytes) !== expected) throw new Error();
+        return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+      };
+      const evidence = readEvidence(evidenceInput.evidence_path, evidenceInput.evidence_sha256);
+      const account = readEvidence(evidenceInput.account_path, evidenceInput.account_sha256);
+      const nonempty = value => typeof value === 'string' && value.trim().length > 0;
+      const credits = account?.credits;
+      if (!object(evidence) || evidence.reservation_id !== reservationId || evidence.source !== 'https://jev-ai.pro/jev-api'
+        || !['method', 'matching_basis', 'observed_date'].every(key => nonempty(evidence[key]))
+        || !identifier(evidence.linked_run) || !identifier(evidence.linked_invocation)
+        || evidence.status !== 'failed' || evidence.billing !== 'Refunded · no charge'
+        || evidence.charged_input_tokens !== 0 || evidence.actual_billed_usd !== 0 || evidence.inference_input_tokens !== null
+        || !exactKeys(evidence.ledger_linkage, ['request_id', 'run_id', 'attempt_id', 'group_id'])
+        || Object.keys(evidence.ledger_linkage).some(key => evidence.ledger_linkage[key] !== ledger.pending[key])
+        || !object(credits) || !integer(credits.paidInputTokensRemaining)
+        || evidence.paid_input_tokens_remaining !== credits.paidInputTokensRemaining
+        || credits.tokensReserved !== 0 || credits.tokenDebt !== 0 || credits.spending_frozen !== false
+        || credits.receipt?.method !== 'GET' || credits.receipt?.destination !== 'https://jev-ai.pro/api/v1/credits'
+        || credits.receipt?.status !== 200 || credits.receipt?.automaticRetries !== 0
+        || typeof account.checked_at !== 'string' || !Number.isFinite(Date.parse(account.checked_at))) throw new Error();
+      observed = { charged_input_tokens: 0, input_tokens: null, billing_run_id: null, kind: 'confirmed_refund', actual_billed_usd: 0,
+        evidence_sha256: evidenceInput.evidence_sha256, account_sha256: evidenceInput.account_sha256, prior_ledger_sha256: evidenceInput.ledger_sha256 };
+    } catch { fail('BUDGET_REFUND_EVIDENCE_INVALID'); }
+    return commitSettlement(reservationId, observed);
+  }
+
   function close() {
     if (closed) return;
     if (broken) { try { closeSync(lock); } finally { closed = true; } return; }
@@ -295,5 +418,5 @@ export function createTokenBudget(input) {
     } catch { broken = true; closed = true; block('BUDGET_IO_FAILED'); }
   }
 
-  return { snapshot, reserve, settle, reconcile, close };
+  return { snapshot, reserve, settle, reconcile, reconcileConfirmedRefund, close, migrate };
 }

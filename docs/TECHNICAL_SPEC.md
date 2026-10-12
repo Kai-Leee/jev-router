@@ -1,3 +1,47 @@
+# 현재 추가 경로 — D073 (2026-10-12)
+
+[결과·제한](orchestration/D073_RESULTS.md) · [결정](decisions/D073.md). manifest v8/v9는 공개 실패마다 기존 artifact 또는 unknown을 묻고 controller가 기존 담당·쓰기경로를 파생한다. 질문 정본은 `adaptive-inferred-repair.v1.json`/`.v2.json`, 구현은 `adaptive-inferred-repair.mjs`와 `adaptive-inferred-repair-projection.mjs`다. 실패·revision·질문·답·권한 proof를 검사하고 수리 범위·모델/effort·실제 작업자를 연결한다. 담당 추론은 결함 위치의 확정 증명이 아니다.
+
+입력v4는 로컬32k/64k추정과 repair/profile proxy byte 정책을 비차단관측으로 바꾸며 공식256,000B·schema·모델제한은 유지한다.64초과질문은 명시중단하고 자동분할은 미구현이다. CLI기본v3/과거버전은 유지한다. 최신 실제수리는 공개91/93·독립61/63으로 미완료이며 round2 ownerHTTP400과 A10무변경수리가 남았다.
+
+단일입력은 `node scripts/validate-jev-input.mjs --request <json> --stage repair_owners --policy v4 --out <새파일>`로 검사한다. 사후 전체실행 감사는 knownHTTP400 분류와 실패 destination/model 기록이 누락돼 별도진단이 필요하다. 입력통과·서버수락·제품완료를 구분한다.
+
+# 이전 추가 검사 — D072 (2026-10-12)
+
+[입력 검사 CLI](../scripts/validate-jev-input.mjs) · [사용법과 근거](orchestration/D072_INPUT_VALIDATION.md). 기존 adapter/v3 전송 직전 admission을 별도 오프라인 명령으로 재사용한다. 필수 controller stage, 실제 JSON 바이트, 추정 토큰, 내부 repair48,000B, 요청/정책 해시와 과거 목적지 영수증을 분리한다. API/장부 접근 없이 검사하며, 정확토큰/의미충분성/제품완료를 보장하지 않는다. 종료코드0추정통과/2입력차단/1불완전감사, 결과파일덮어쓰기금지다. D071실제실행정책과 상한은 변경하지 않았다.
+
+# 현재 추가 경로 — D071 (2026-10-12)
+
+[구현](orchestration/D071_IMPLEMENTATION.md) · [실측](orchestration/D071_RESULTS.md) · [결정](decisions/D071.md). manifest v7의 opt-in 경로는 공개93 gate, producer→IR→renderer 수리 후보와 해시가 고정된 읽기 참조, 읽을 수 있는 수리 JSON/v3 입력 추정, Jev의 작업별 모델·effort 선택을 연결한다. 선택 ID→실제 CLI 인자→응답 identity까지 기록한다. 20개 허용 profile과 실제 실행된 Opus4/Sonnet6 medium을 구분한다.
+
+새 세 조건 중 Claude만93/93·63/63 완료이며 Jev 고정은 독립60/63, Jev 프로필은 공개67/93·독립49/63 및 수리 입력 사전 차단이다. 보존 후보의 producer1파일 수리는93/93·63/63으로 성공했다. 미지원18개 assertion의 광범위 fallback, 전체 후보 문맥 합집합, 같은 DAG에서의 effort 효율 비교는 남은 일이다. 소스 동결/원본 감사 뒤 문서만 종료 갱신했다. 아래 미구현/효율 문구는 각 과거 실험 당시의 기록이다.
+
+# 이전 추가 경로 — D070 (2026-10-11)
+
+[구현](orchestration/D070_IMPLEMENTATION.md) · [실측](orchestration/D070_RESULTS.md) · [품질 회귀](orchestration/D070_QUALITY_REVIEW.md) · [결정](decisions/D070.md). manifest v6의 opt-in balanced-v2가 부담 상한·균형 membership·과대leaf 추가 분해를 실행한다. 별도 preserved-artifact-repair runner는 원본을 보존하고 실패 재현 뒤 선택 산출물만 실제 수리한다. 기존 adaptive execution loop는 유지했다.
+
+A는기존148개검사에서시간·비용개선이나추가설명문진단0/8로동일품질목표미달, B실제1worker수리는성공이다. 원인값의producer→IR→renderer를수리후보·읽기범위에포함하는후속정책은미구현이다. 아래는과거설계와관측을보존한기록이다.
+
+# 현재 추가 경로 — D069 (2026-10-11)
+
+[구현과 구조](orchestration/D069_IMPLEMENTATION.md), [결과](orchestration/D069_RESULTS.md), [결정](decisions/D069.md)이 최신 진입점이다. assertion→산출물→현재담당 연결, 선택 write scope와 revision 상속, v2 압축 수리 입력, stage/요청SHA/24,000B repair 전송량 사전검사를 manifest v5로 연결했다. 지원 assertion은4개이며 미매핑 fallback을 유지한다. exact tokenizer가 없어 모델문맥 수락은 보장하지 않는다.
+
+새 Jev전체는공개85/85·독립63/63완료,39분24.671초/5,809,782캐시포함토큰/환산$12.3604662다. 실제수리0회이므로수리호출절감은미측정이다. 아래D067은과거설계·결과이며현재미구현상태를규정하지않는다.
+
+# 현재 추가 경로 — D067 (2026-10-11)
+
+[D067 프로토콜](orchestration/D067_EXPERIMENT.md), [역할](agents/D067_PARALLEL.md), [결정](decisions/D067.md)이 현재 진입점이다. 최신 사용자 승인으로 조건별·누적 입력 토큰 상한을 명시적 null의 v3 정책으로 해제하고 새 네 조건을 병렬 실행한다. 기존 장부 ID/이력과 D066 원본은 보존한다. 검증된 공통 catalog 재사용의 신규 지출은 0이며 과거 준비비 귀속은 별도다. 구현·검증·실제 실행 상태는 [STATE](agents/STATE.md)에서 갱신한다. 아래 D066은 이전 순차 실험의 기록이다.
+
+[D067 실측](orchestration/D067_RESULTS.md): 네 조건 종료, 결합완료3/4다. Jev 분해와 분해·관계는 동일Claude기준선보다시간28.7369%/21.8353%,환산비용53.3249%/58.5214%감소했다(각1회). 전체Jev는공개83/85뒤수리요청HTTP400입력한도실패,답변/수리작업0이다. 독립63/63만으로제품완료를선언하지않는다. 다음수정은수리상태투영과실패/사용량/정산상태분리, 미실행검사기반과도한수리범위다. 이 미완료항목은 구현된 것으로 취급하지 않는다.
+
+# 이전 추가 경로 — D066 (2026-10-11)
+
+[D066 실측 결과](orchestration/D066_RESULTS.md), [프로토콜](orchestration/D066_EXPERIMENT.md), [실행 연결](orchestration/D066_IMPLEMENTATION.md), [역할](agents/D066_PARALLEL.md)이 최신 진입점이다. 공통 후보 21단위·22산출물·38파일에서 4조건을 실제 실행했다. Claude 조건은 6개 잎·실제 관계·공개 수리 1회 뒤 공개 85/85·독립 63/63을 통과했다. Jev 3조건은 각각 입력 650,271과 다음 예약 65,536이 조건별 700,000을 넘어서 분해 중단됐다. 누적 장부에는 415,445토큰이 남으며 실제 Jev 관계·수리 효과와 완료 속도 절감은 미측정이다. 아래 D065는 보존된 과거 단일 조건이다.
+
+# 현재 구현과 개발 계획 — D065 (2026-10-11)
+
+[D065 실제 연결 구현](orchestration/D065_IMPLEMENTATION.md)과 [실측 결과·정정](orchestration/D065_RESULTS.md)이 현재 진입점이다. 공개85개 검사, 파일/환경/버전 런타임, 분할·관계·프로필·수리의 제한된 의미 핸들러와 실제 Jev/Claude 실행기를 연결했다. 단일 시도의 Jev17회·Claude16회는16개 파일을 만들었지만 공개 생성 코드 문법 오류로 제품 완료에 실패했고, 별도 독립 채점은62/63 통과다. 검증기 자체의 실패 처리와 설치 위치 검사 결함은 원본을 보존한 뒤 별도 수정·검증했다. 실제 관계 판단 호출·자유 재귀 분해·성공 조건을 맞춘 효율 비교는 미측정이다. 현재 상태는 [STATE](agents/STATE.md), 스킬은 [단일 관리 역할과 목록](skills/MAINTENANCE.md)을 따른다. 아래 D064와 초기 명세의 미연결 문구는 해당 작성 시점의 기록이다.
+
 # Jev Router 기술 명세 초안
 
 버전: 0.1-draft · 갱신일: 2026-10-09 (Asia/Seoul).
@@ -284,3 +328,42 @@ D-020에서 수행했다. 최신 실행 상태/실패 경계는 [STATE](agents/S
 run config의 workflow='checkpoint-v1'에서 route(코드 없는 역할 후보)→act(선택 역할의 단일 명령, 추가모델없음)→finish를 사용한다. baseline/jev는 같은 schema와 완료 근거 수집을 공유하고 selected_id의 제공자만 다르다. 기존 workflow 생략 시 과거 gate 그대로다. 서버가 원 brief와 실제명령/출력/evidence_id를 판단에 전달한다. nonzero 명령은 role을해제한다. 동일 action_version 완료 재질문은 거부하지만 실제 artifact hash 기반 변경검사는 아니므로 아무 새 명령이든 version을 늘릴 수 있다. 역할 설명의 의미적 명령범위를 강제하는 보안정책이 아니며 Docker 경계가 권한을 강제한다.
 
 이 pilot의 역할은 같은 Claude 세션의 작업범위이며 native subagent 생성과 동일하다고 표시하지 않는다. D024 실제 subagent 규칙 수명주기의 비용과 성능은 별도다. 측정과 판단 문서는 [D025](decisions/D025.md)와 jev-decision-records 스킬로 관리한다.
+
+
+## D047 — 전체 작업 효율 우선 (2026-10-10)
+
+사용자 정정: 현재 Jev 입력량은 허용 가능하며 전체 작업 효율을 우선한다. 입력 축소를 우선 과제로 삼지 말고 충분한 판단 근거를 유지한다. 기존 예산은 유지. 현재 D046은 초기 task_count만 Jev1회 호출하며 작업 중 실패·재분할·모델/effort·요구사항 판단은 미연결이다. D044 실패 근거도 D046 state에 전달되지 않았다. 감사: docs/orchestration/D047_DECISION_COVERAGE.md. 후속 연결 순서는 제안이며 이번에는 구현·유료 호출 없음.
+
+## D048–D050 lifecycle runtime boundary
+
+New comparison runner links initial numeric group selection, executable ready-batch selection, per-worker review and failure repair/stop. Scoped MCP writes persist artifacts independently from final text. Python/TOML preflight and continuation resume preserve confirmed provider outputs without paying to regenerate. Lossless string table preserves exact repeated decision text; byte cap remains256000 and never truncates unique evidence.
+
+Actual run was exploratory: model/effort fixed, no recursive repartition. Claude unencoded continuation vs Jev encoded continuation is a transport confound. Both independent grades unresolved. Source AST success does not certify generated-client output. Historical HTTP status loss repaired only for future calls; outstanding budget reservation remains until reconciliation. Detailed measured results: docs/orchestration/D048_D050_LIFECYCLE_RESULTS.md.
+## D056 current planning path — 2026-10-10
+
+별도 재귀 계획 실행기, 영어 질문 v2, 작업·테스트 목록과 CLI는 [D056 구현](orchestration/D056_IMPLEMENTATION.md)을 따른다. [실제 결과](orchestration/D056_RESULTS.md)는 API 240회 성공과 계획 `partial`이다. 제품 작업자·테스트는 실행하지 않았다. Jev는 미리 준비한 출처 연결 단위를 선택·배정하며, 작업·테스트 문장을 자유 생성하지 않는다.
+
+입력은 객체, JSON 문자열, 손실 없는 표 형태를 지원한다. 표 입력은 전송할 JSON을 실제로 복원해 원래 state와 비교한다. 미확정 의존 관계와 보수적인 수정 범위는 검증된 독립성을 뜻하지 않는다. 실행 이후 종료 코드와 모니터 지표 설명을 보완했으며 원래 실험 기록은 바꾸지 않았다.
+
+
+## D057 — 실제 개발 완료 비교 (2026-10-10)
+
+[결과](orchestration/D057_RESULTS.md), [결정](decisions/D057.md). 실제 A63/63완료29분28.518초, B62/63미완료(시도23분25.734초). Jev는 실제1회호출로1leaf/0split을 선택했다. 완료 속도 개선값은 null이며 병렬화 이득 미검증. API환산 A7.6330826/B8.4574292 USD, 실제 청구 unknown. 원본 후보/평가를 보존했고 유료 반복·커밋·푸시는 없다.
+
+## D059 — 순차 멀티 선택 실행 경로
+
+`src/orchestration/sequential-allocation.mjs`는2..5개수→잔여후보별include/exclude배치→마지막잔여→작업자별모델/노력도→의존DAG를구성한다. `src/benchmark/sequential-planning-runner.mjs`의손실없는codec/기존장부와 `scripts/sequential-e2e.mjs`의artifact전송/통합/공개검사/독립채점을연결했다. [실측과한계](orchestration/D059_RESULTS.md). 80/85특정fixture에서검증했으며singleton선택지edge·모니터상세근거전달은미해결이다.
+
+## D060 — opt-in bounded verified workflow
+
+[구조/계약/재현](orchestration/D060_BOUNDED_VERIFICATION.md). `runBoundedVerifiedWorkflow`는 공개검사 매핑사전검사→`allocateSequentialV2`→실행→revision-bound공개검증→후속해제를 연결한다. 기존 유료CLI자동교체 아님. 질문은contracts/sequential-allocation.v2.json, 실제85검사 구현·준비조건·유료adapter 연결 미완료.
+
+## D061 최대작업자30
+
+새v3allocator/envelope/workflow의선택상한30,동시성기본2. [진입점](orchestration/D061_MAX_WORKERS.md). 기존유료CLI는교체하지않았으며실제제품검사매핑이먼저필요하다.
+
+## D065 실제 DAG 연결 경로
+
+[현재 구현과 검증 수준](orchestration/D065_IMPLEMENTATION.md), [역할 계약](agents/D065_PARALLEL.md). 기존 DAG kernel에 실제 파일 staging/버전/환경/검사 binding을 추가하고 `dag-routing.v2.json` 선택을 보존 검사를 거친 계획 변경으로 연결한다. `src/benchmark/dag-runner.mjs`가 기존 Jev 계측·누적 예산과 제한된 Desktop Claude CLI/MCP 작업자를 연결한다. 역사적 runner 기본값은 교체하지 않는다.
+
+현재 실험 경계는 출처가 있는16개 파일, 실제 Jev의 작업자 수/소유권 선택, 고정 Opus5.5 medium, 동시2다. 초기 파일 구문 준비 검사와 최종85개 의미 검사는 별개다. 관계 핸들러는 실제 artifact binding에 맞는 읽기 범위를 함께 갱신한다. 불확실 시도 자동 재개, 무제한 자유 작업 생성, 동일 조건 효율 비교 완료는 이 연결만으로 주장하지 않는다. 실제 상태는 D065 결과와 STATE를 따른다.

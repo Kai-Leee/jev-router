@@ -1,0 +1,34 @@
+{
+  "version": "checkpoint-v3",
+  "implementedEvents": {
+    "plan_ready": {
+      "policyVersion": "split-checkpoint-v3",
+      "handlers": [
+        "execute_single",
+        "execute_split",
+        "collect_evidence"
+      ],
+      "deterministicRule": "A sole count candidate always executes mechanically without Jev, including force_jev: choice API requires at least two options. Legacy probability/confidence single-task bypass applies only in auto.",
+      "questionSources": {
+        "probability": "docs/orchestration/contracts/questions.v1.json",
+        "confidence": "docs/orchestration/contracts/split-confidence.v2.json",
+        "count": "docs/orchestration/contracts/task-count.v1.json"
+      },
+      "questionKinds": {
+        "probability": "kinds.split.questions",
+        "confidence": "questions",
+        "count": "question with validated candidate count keys"
+      }
+    }
+  },
+  "deferredEvents": [
+    "ready_set_changed",
+    "failure_observed",
+    "requirement_evidence_changed"
+  ],
+  "modes": {
+    "auto": "Validated rule, then exact decision reuse, then Jev; dispatch one selected handler.",
+    "force_jev": "Bypass decision cache and deterministic rule; duplicate execution suppression still applies."
+  },
+  "persistence": "Process-local only. Do not resume side effects after restart without external reconciliation."
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": "lifecycle-contract/v1",
+  "language": "en",
+  "objective": "Complete the requirements correctly with minimum whole-task elapsed time and total operational cost, including coordination, verification and recovery. Input size is secondary.",
+  "questions": {
+    "initial_count": {"key":"task_count","instructions":"Select the candidate task count that best completes the goal. Consider dependencies, workload, prior failures, worker capabilities and total verification/recovery overhead."},
+    "ready_selection": {"key":"next_batch","instructions":"Select which dependency-ready task batch to execute next. Consider critical dependencies, available concurrency, carried evidence and whole-task completion time. Every option is executable; preserve ownership."},
+    "post_worker_review": {"key":"review","instructions":"Review the worker result against the assigned requirements, observed checks and full carried evidence. Accept only if no known substantive gap remains. Choose repair for a concrete remaining gap. Do not claim independent benchmark success."},
+    "failure_recovery": {"key":"recovery","instructions":"Choose whether one bounded repair by the same scoped worker can address this confirmed failure using available evidence, or stop this task. Never retry an uncertain provider outcome. Prefer whole-task correctness and completion efficiency."}
+  },
+  "fixed_profile": "Worker model and effort are fixed for the paired experiment; bypass model/profile selection and record this restriction.",
+  "completion": "All selected tasks accepted and whole verification callback passes yields ready_for_independent_grade, never benchmark success.",
+  "callback_contract": {
+    "decide":"({stage,questions,state}) => {answers:{[questionKey]:{type:'choice',choice:string,confidence:number}}}; exact offered choice required",
+    "execute":"({task,plan,brief,evidence,attempt,repair,model,effort}) => result; throw {uncertain:true} or {outcome_uncertain:true} for uncertain outcomes, which are never retried",
+    "verify":"({scope:'task'|'whole',task?,plan,brief,evidence,workerResult?}) => {ok:boolean,...observations}; must mechanically check owned required files for task scope",
+    "record":"(event) => void or Promise; events have monotonic sequence and complete revisioned evidence snapshots on decision requests"
+  }
+}

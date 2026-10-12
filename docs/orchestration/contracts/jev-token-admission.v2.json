@@ -1,0 +1,41 @@
+{
+  "schema_version": "jev-token-admission-contract/v2",
+  "policy_id": "d069-jev113-repair-wire-admission-v2",
+  "checked_on": "2026-10-11",
+  "inherits": {
+    "contract_path": "docs/orchestration/contracts/jev-token-admission.v1.json",
+    "contract_sha256": "4378b09a7690276c1c08c6743c1309c89084da7b77772a516b2d9c41c91b8fdc",
+    "module_path": "src/orchestration/jev-token-admission.mjs",
+    "module_sha256": "0ffb02093b95f53000f6d2a5cb8b5ec68a380f1313a4ee5be472aaa7edde7538",
+    "scope": "Preserve v1 request validation, exact serialized byte measurements, model allowlist, null exact counts, request-hash binding and planning estimates. Inherited code and policy are pinned and remain unchanged."
+  },
+  "stages": ["split", "relations", "repair"],
+  "stage_semantics": "Caller must explicitly supply the trusted runtime stage. Missing or unknown stages block. The provider and question IDs cannot select or weaken a stage. Caller must preserve the stage association through reservation and POST.",
+  "repair_operating_limit": {
+    "stage": "repair",
+    "kind": "engineering_wire_byte_limit",
+    "max_wire_bytes": 24000,
+    "comparison": "wire_bytes <= max_wire_bytes",
+    "scope": "Exact UTF-8 bytes of the complete prepareDecision serialized body; includes state, all questions, criteria, model and JSON framing.",
+    "reason_code": "JEV_TOKEN_ADMISSION_REPAIR_WIRE_LIMIT",
+    "basis": "A v1-admitted 70,510-byte repair request was rejected with HTTP 400 model_input_limit in d069-admission-probe-02. Use a smaller 24,000-byte operating ceiling for the next scoped repair experiment. This number is an engineering choice, not inferred exact tokens, a calibrated acceptance cutoff or a provider-published limit.",
+    "proven_token_upper_bound": false,
+    "provider_acceptance_guaranteed": false,
+    "prospective_acceptance_measured": false
+  },
+  "known_v1_false_admission": {
+    "evidence": "benchmark-runs/d069-admission-probe-02/result.json",
+    "wire_bytes": 70510,
+    "estimated_request_tokens": 28716,
+    "estimated_state_plus_longest_question_tokens": 28690,
+    "http_status": 400,
+    "category": "model_input_limit",
+    "actual_model_tokens": null,
+    "provider_reported_usage": null,
+    "provider_posts": 1,
+    "automatic_retries": 0,
+    "interpretation": "One observed false admission. The former 47/47 aggregate historical usage coverage does not establish repair-context acceptance or exact per-question model tokens."
+  },
+  "admission_semantics": "admit_estimated remains permission to attempt under local assumptions only. Repair must also pass the exact wire-byte operating check. Neither check guarantees model acceptance, decision quality, completed repair or actual billing. A blocked request is not automatically retried or truncated.",
+  "request_binding": "Keep canonical request SHA-256 and v2 raw-policy SHA-256. The v2 policy includes exact inherited source hashes. Recheck request, policy and trusted stage at the reservation/POST boundary. Passing a v1 policy hash to the v2 API blocks."
+}

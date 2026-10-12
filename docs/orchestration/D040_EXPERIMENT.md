@@ -1,0 +1,17 @@
+# D040 — OpenAPI larger-workload first live comparison
+
+2026-10-10. User requested starting D039 first candidate. Scope: prepare independent OpenAPI grader, validate empty/reference controls, then bounded actual comparison. Existing decision-records skill applied; role charter docs/agents/D040_OPENAPI.md.
+
+First trial uses existing fresh no-tools file-generation scaffold unchanged to isolate workload expansion. It does NOT implement iterative debugging, hierarchical task-tree extension or integrated planner replacement. Those remain subsequent harness revisions. No predetermined implementation task list is supplied: first Claude call produces plan from public goal and generic packaging contract.
+
+Conditions: Claude selection and auto/Jev selection, one attempt each. First run generates plan (record preparation time/cost separately), both use the identical frozen plan and brief, projected/v3, Opus5.5 medium, concurrency2 and threshold0.65. Max existing 4 tasks. Claude runs first; auto follows with --plan-source; shared provider cache/order remain confounders. No claim of statistical superiority. If plan generation fails, stop without automatically buying another plan. Known completed failure is retained; no edits/retry to improve grade. Uncertain inference/pending budget stops follow-up paid calls until reconciled.
+
+Grader readiness is required before model spend. Task manifest must pin source hashes and task image digest; empty control must fail, pinned reference must pass. Workers must never receive tests/reference code/evaluator output. Verifier uses fresh offline container and candidate pre/post hashes. Preserve grading errors distinctly from model failures.
+
+Compare decision latency and worker workflow time, total tokens including cache writes/reads, API-equivalent Claude cost and conservative Jev budget estimate, independent outcome, and errors. Report first plan cost separately and include the same plan cost in both normalized goal totals if such totals are shown. Raw first wall contains plan generation and cannot be compared directly to replayed-plan wall. Grade and monitoring time/cost separate. Actual incremental subscription charge unknown.
+
+Existing shared benchmark-runs/jev-usd1-budget.json retained (49 settled,84787 input,pending null at preparation). USD1 conservative ceiling, no reset. Exactly one candidate auto decision expected unless deterministic bypass applies; actual count from events/ledger. Post verification no repeat batches. No original PersonalOS/Vault changes, no commit/push requested.
+
+Model/version, sources, configuration, ledger snapshot and commands recorded in private d040-protocol.json before inference; sources include uncommitted code hashes. Verification receipt and final result links will be added after execution. Dedicated Opus monitor receives sanitized outcomes, no tools, usage reported separately.
+
+Pre-spend review found unequal post-plan timeout exposure: first condition spent part of the 30-minute allowance planning while reused-plan condition did not. Fixed pilot to start a separate equal post-plan budget after freezing the plan; raw wall still includes preparation. Per-call10m/stream4MiB/content2MB limits retained and output failures classified separately. Claude planner still proposes2–4 tasks; frozen-plan selection comparison does not test single-plan bypass or integrated planning baseline. No inference ran before this correction.

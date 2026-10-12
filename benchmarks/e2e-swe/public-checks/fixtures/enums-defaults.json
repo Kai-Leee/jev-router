@@ -1,0 +1,122 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Public Defaults",
+    "version": "1.2.3"
+  },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "Color": {
+        "type": "string",
+        "enum": [
+          "a",
+          "B",
+          "a23",
+          "123",
+          "spare",
+          "!",
+          "",
+          "a Thing WIth spaces"
+        ]
+      },
+      "Number": {
+        "type": "integer",
+        "enum": [
+          2,
+          -4
+        ]
+      },
+      "CustomNumber": {
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "x-enum-varnames": [
+          "One",
+          "More than OnE",
+          "not_quite_four",
+          "Negative Four"
+        ]
+      },
+      "EnumProbe": {
+        "type": "object",
+        "properties": {
+          "color": {
+            "$ref": "#/components/schemas/Color"
+          },
+          "number": {
+            "$ref": "#/components/schemas/Number"
+          },
+          "marker": {
+            "type": "string",
+            "const": "fixed"
+          }
+        },
+        "required": [
+          "color",
+          "number",
+          "marker"
+        ]
+      },
+      "Defaults": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date",
+            "default": "2020-01-02"
+          },
+          "moment": {
+            "type": "string",
+            "format": "date-time",
+            "default": "2020-01-02T03:04:05"
+          },
+          "identifier": {
+            "type": "string",
+            "format": "uuid",
+            "default": "12345678-1234-5678-1234-567812345678"
+          },
+          "count": {
+            "type": "integer",
+            "default": "4"
+          },
+          "amount": {
+            "type": "number",
+            "default": "5.5"
+          },
+          "upperTrue": {
+            "type": "boolean",
+            "default": "True"
+          },
+          "lowerTrue": {
+            "type": "boolean",
+            "default": "true"
+          },
+          "upperFalse": {
+            "type": "boolean",
+            "default": "False"
+          },
+          "lowerFalse": {
+            "type": "boolean",
+            "default": "false"
+          },
+          "color": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Color"
+              }
+            ],
+            "default": "a"
+          },
+          "absent": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

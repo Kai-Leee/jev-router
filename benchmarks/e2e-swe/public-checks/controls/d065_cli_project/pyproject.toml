@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "d065-public-control"
+version = "1.0.0"
+dependencies = ["httpx", "ruamel.yaml"]
+
+[project.scripts]
+pyclientgen = "pyclientgen.cli:main"
+
+[tool.setuptools]
+packages = ["pyclientgen"]

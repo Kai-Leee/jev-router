@@ -1,0 +1,901 @@
+{
+  "schema_version": "dag-public-control-receipt/v1",
+  "recorded_on": "2026-10-10",
+  "evidence_level": "authored_local_controls_only",
+  "source_integrity": {
+    "d056_manifest_sha256": "c5dbaed1cc4eb286299e7606b1f91cf54065e46e3651d6b372e6e99c819f7ef8",
+    "public_source_sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+    "verified": true
+  },
+  "mapping": {
+    "status": "blocked",
+    "source_test_count": 85,
+    "implemented_test_count": 36,
+    "missing_test_count": 49,
+    "missing_test_ids": [
+      "T.R01.01",
+      "T.R01.02",
+      "T.R01.03",
+      "T.R02.01",
+      "T.R02.02",
+      "T.R02.03",
+      "T.R03.01",
+      "T.R03.03",
+      "T.R03.06",
+      "T.R04.06",
+      "T.R05.01",
+      "T.R05.02",
+      "T.R05.03",
+      "T.R05.04",
+      "T.R08.05",
+      "T.R08.06",
+      "T.R08.07",
+      "T.R09.01",
+      "T.R10.02",
+      "T.R10.03",
+      "T.R11.05",
+      "T.R12.01",
+      "T.R13.01",
+      "T.R13.02",
+      "T.R13.03",
+      "T.R15.01",
+      "T.R15.02",
+      "T.R15.03",
+      "T.R16.01",
+      "T.R16.02",
+      "T.R16.03",
+      "T.R16.04",
+      "T.R16.05",
+      "T.R16.06",
+      "T.R16.07",
+      "T.R16.08",
+      "T.R16.09",
+      "T.R16.10",
+      "T.R17.01",
+      "T.R17.02",
+      "T.R17.03",
+      "T.R18.01",
+      "T.R18.02",
+      "T.R19.03",
+      "T.R20.01",
+      "T.integration.unions-arrays",
+      "T.integration.transports",
+      "T.integration.config-layout",
+      "T.integration.diagnostics"
+    ]
+  },
+  "controls": {
+    "status": "passed",
+    "normal_count": 4,
+    "defective_count": 35,
+    "normal": [
+      {
+        "check_id": "public.runtime-model-core",
+        "passed": true,
+        "python_version": "3.10.13",
+        "assertions": 93,
+        "skipped": 0,
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.04"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R04.05"
+          },
+          {
+            "assertions": 3,
+            "status": "passed",
+            "test_id": "T.R06.01"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R06.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R06.03"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R07.01"
+          },
+          {
+            "assertions": 2,
+            "status": "passed",
+            "test_id": "T.R07.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R07.03"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R07.04"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R08.01"
+          },
+          {
+            "assertions": 13,
+            "status": "passed",
+            "test_id": "T.R08.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R08.03"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R08.04"
+          },
+          {
+            "assertions": 5,
+            "status": "passed",
+            "test_id": "T.R09.02"
+          },
+          {
+            "assertions": 5,
+            "status": "passed",
+            "test_id": "T.R10.01"
+          }
+        ],
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "number": 1
+          }
+        ]
+      },
+      {
+        "check_id": "public.enums-defaults",
+        "passed": true,
+        "python_version": "3.10.13",
+        "assertions": 71,
+        "skipped": 0,
+        "cases": [
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R11.01"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R11.02"
+          },
+          {
+            "assertions": 2,
+            "status": "passed",
+            "test_id": "T.R11.03"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R11.04"
+          },
+          {
+            "assertions": 2,
+            "status": "passed",
+            "test_id": "T.R11.06"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R14.01"
+          },
+          {
+            "assertions": 2,
+            "status": "passed",
+            "test_id": "T.R14.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R14.03"
+          },
+          {
+            "assertions": 3,
+            "status": "passed",
+            "test_id": "T.R14.04"
+          },
+          {
+            "assertions": 32,
+            "status": "passed",
+            "test_id": "T.integration.defaults"
+          }
+        ],
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "number": 1
+          }
+        ]
+      },
+      {
+        "check_id": "public.cli-layout",
+        "passed": true,
+        "python_version": "3.10.13",
+        "assertions": 91,
+        "skipped": 0,
+        "cases": [
+          {
+            "assertions": 28,
+            "status": "passed",
+            "test_id": "T.R03.02"
+          },
+          {
+            "assertions": 3,
+            "status": "passed",
+            "test_id": "T.R03.04"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R04.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R04.02"
+          },
+          {
+            "assertions": 24,
+            "status": "passed",
+            "test_id": "T.R04.03"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R18.03"
+          }
+        ],
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "number": 2
+          },
+          {
+            "exit_code": 0,
+            "number": 3
+          },
+          {
+            "exit_code": 0,
+            "number": 4
+          },
+          {
+            "exit_code": 0,
+            "number": 5
+          },
+          {
+            "exit_code": 0,
+            "number": 6
+          },
+          {
+            "exit_code": 0,
+            "number": 7
+          },
+          {
+            "exit_code": 0,
+            "number": 8
+          },
+          {
+            "exit_code": 0,
+            "number": 9
+          },
+          {
+            "exit_code": 0,
+            "number": 10
+          },
+          {
+            "exit_code": 0,
+            "number": 11
+          },
+          {
+            "exit_code": 0,
+            "number": 12
+          },
+          {
+            "exit_code": 1,
+            "number": 13
+          },
+          {
+            "exit_code": 0,
+            "number": 14
+          }
+        ]
+      },
+      {
+        "check_id": "public.diagnostics",
+        "passed": true,
+        "python_version": "3.10.13",
+        "assertions": 35,
+        "skipped": 0,
+        "cases": [
+          {
+            "assertions": 5,
+            "status": "passed",
+            "test_id": "T.R03.05"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R19.01"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R19.02"
+          },
+          {
+            "assertions": 13,
+            "status": "passed",
+            "test_id": "T.R19.04"
+          },
+          {
+            "assertions": 2,
+            "status": "passed",
+            "test_id": "T.R19.05"
+          }
+        ],
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "number": 1
+          },
+          {
+            "exit_code": 1,
+            "number": 2
+          },
+          {
+            "exit_code": 0,
+            "number": 3
+          },
+          {
+            "exit_code": 1,
+            "number": 4
+          },
+          {
+            "exit_code": 0,
+            "number": 5
+          },
+          {
+            "exit_code": 1,
+            "number": 6
+          },
+          {
+            "exit_code": 1,
+            "number": 7
+          },
+          {
+            "exit_code": 1,
+            "number": 8
+          },
+          {
+            "exit_code": 1,
+            "number": 9
+          },
+          {
+            "exit_code": 1,
+            "number": 10
+          },
+          {
+            "exit_code": 0,
+            "number": 11
+          },
+          {
+            "exit_code": 1,
+            "number": 12
+          }
+        ]
+      }
+    ],
+    "negative": [
+      {
+        "defect": "missing_runtime_module",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R04.04"
+        ],
+        "failed_test_ids": [
+          "T.R04.04"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "missing_model_export",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R04.05"
+        ],
+        "failed_test_ids": [
+          "T.R04.05"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "truthy_unset",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R06.01"
+        ],
+        "failed_test_ids": [
+          "T.R06.01"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "wrong_file_tuple",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R06.02"
+        ],
+        "failed_test_ids": [
+          "T.R06.02"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "missing_response_parsed",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R06.03"
+        ],
+        "failed_test_ids": [
+          "T.R06.03"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "optional_default_none",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R07.01"
+        ],
+        "failed_test_ids": [
+          "T.R06.01",
+          "T.R07.01",
+          "T.R07.02",
+          "T.R09.02"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "wrong_json_name",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R07.02"
+        ],
+        "failed_test_ids": [
+          "T.R07.02",
+          "T.R07.03"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "required_key_wrong_error",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R07.03"
+        ],
+        "failed_test_ids": [
+          "T.R07.03"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "nonstring_annotations",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R07.04"
+        ],
+        "failed_test_ids": [
+          "T.R07.04",
+          "T.R10.01"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "scalar_number_string",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R08.01"
+        ],
+        "failed_test_ids": [
+          "T.R08.01"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "date_decode_raw",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R08.02"
+        ],
+        "failed_test_ids": [
+          "T.R08.02"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "nested_decode_raw",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R08.03"
+        ],
+        "failed_test_ids": [
+          "T.R08.03"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "array_decode_raw",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R08.04"
+        ],
+        "failed_test_ids": [
+          "T.R08.04"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "drop_additional",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R09.02"
+        ],
+        "failed_test_ids": [
+          "T.R09.02"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "missing_doc_colon",
+        "check_id": "public.runtime-model-core",
+        "expected_failed_ids": [
+          "T.R10.01"
+        ],
+        "failed_test_ids": [
+          "T.R10.01"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "enum_accepts_invalid",
+        "check_id": "public.enums-defaults",
+        "expected_failed_ids": [
+          "T.R11.01"
+        ],
+        "failed_test_ids": [
+          "T.R11.01"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "string_enum_wrong_name",
+        "check_id": "public.enums-defaults",
+        "expected_failed_ids": [
+          "T.R11.02"
+        ],
+        "failed_test_ids": [
+          "T.R11.02"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "integer_enum_wrong_name",
+        "check_id": "public.enums-defaults",
+        "expected_failed_ids": [
+          "T.R11.03"
+        ],
+        "failed_test_ids": [
+          "T.R11.03"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "varname_wrong_boundary",
+        "check_id": "public.enums-defaults",
+        "expected_failed_ids": [
+          "T.R11.04"
+        ],
+        "failed_test_ids": [
+          "T.R11.04"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "const_unvalidated",
+        "check_id": "public.enums-defaults",
+        "expected_failed_ids": [
+          "T.R11.06"
+        ],
+        "failed_test_ids": [
+          "T.R11.06"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "date_default_raw",
+        "check_id": "public.enums-defaults",
+        "expected_failed_ids": [
+          "T.R14.01"
+        ],
+        "failed_test_ids": [
+          "T.R14.01",
+          "T.integration.defaults"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "numeric_default_raw",
+        "check_id": "public.enums-defaults",
+        "expected_failed_ids": [
+          "T.R14.02"
+        ],
+        "failed_test_ids": [
+          "T.R14.02",
+          "T.integration.defaults"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "boolean_default_raw",
+        "check_id": "public.enums-defaults",
+        "expected_failed_ids": [
+          "T.R14.03",
+          "T.integration.defaults"
+        ],
+        "failed_test_ids": [
+          "T.R14.03",
+          "T.integration.defaults"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "enum_default_raw",
+        "check_id": "public.enums-defaults",
+        "expected_failed_ids": [
+          "T.R14.04"
+        ],
+        "failed_test_ids": [
+          "T.R14.04",
+          "T.integration.defaults"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "wrong_default_meta",
+        "check_id": "public.cli-layout",
+        "expected_failed_ids": [
+          "T.R03.02"
+        ],
+        "failed_test_ids": [
+          "T.R03.02"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "overwrite_ignored",
+        "check_id": "public.cli-layout",
+        "expected_failed_ids": [
+          "T.R03.04"
+        ],
+        "failed_test_ids": [
+          "T.R03.04"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "wrong_package_name",
+        "check_id": "public.cli-layout",
+        "expected_failed_ids": [
+          "T.R04.01"
+        ],
+        "failed_test_ids": [
+          "T.R03.02",
+          "T.R04.01",
+          "T.R04.02",
+          "T.R04.03",
+          "T.R18.03"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "none_nested_package",
+        "check_id": "public.cli-layout",
+        "expected_failed_ids": [
+          "T.R04.02"
+        ],
+        "failed_test_ids": [
+          "T.R03.04",
+          "T.R04.02",
+          "T.R18.03"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "project_package_missing",
+        "check_id": "public.cli-layout",
+        "expected_failed_ids": [
+          "T.R04.03"
+        ],
+        "failed_test_ids": [
+          "T.R04.01",
+          "T.R04.03"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "none_adds_metadata",
+        "check_id": "public.cli-layout",
+        "expected_failed_ids": [
+          "T.R18.03"
+        ],
+        "failed_test_ids": [
+          "T.R04.02",
+          "T.R18.03"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "warning_flag_ignored",
+        "check_id": "public.diagnostics",
+        "expected_failed_ids": [
+          "T.R03.05"
+        ],
+        "failed_test_ids": [
+          "T.R03.05",
+          "T.R19.01"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "unsupported_schema_kept",
+        "check_id": "public.diagnostics",
+        "expected_failed_ids": [
+          "T.R19.01"
+        ],
+        "failed_test_ids": [
+          "T.R19.01"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "circular_warning_missing",
+        "check_id": "public.diagnostics",
+        "expected_failed_ids": [
+          "T.R19.02"
+        ],
+        "failed_test_ids": [
+          "T.R19.02"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "invalid_structure_accepted",
+        "check_id": "public.diagnostics",
+        "expected_failed_ids": [
+          "T.R19.04"
+        ],
+        "failed_test_ids": [
+          "T.R19.04"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      },
+      {
+        "defect": "swagger_accepted",
+        "check_id": "public.diagnostics",
+        "expected_failed_ids": [
+          "T.R19.05"
+        ],
+        "failed_test_ids": [
+          "T.R19.05"
+        ],
+        "rejected": true,
+        "skipped": 0,
+        "outcome_uncertain": false
+      }
+    ]
+  },
+  "file_sha256": {
+    "run_public_checks.py": "b0992e07a56c4f53a1696f87db5eb2f88bf7877fe957609c27a2cd833845053c",
+    "fixtures/runtime-model-core.json": "587159067e532c1dc6ec4e8b2af4ceffab556226655cb6309b14efa59c6599a4",
+    "fixtures/enums-defaults.json": "d911e330ff43f3fe67ad036a87964984eedbf97c163e075b99b05a1bb44a06cc",
+    "controls/generator.py": "31e503c04feeb40e593bd7d878d9a8071c1fab8a2a1291db5d3524b3932d1e83",
+    "controls/templates.py": "36a6289c8460e8eb83c66ecb42434c8a0fcd4b074cb4cb1d9636141fe7089313",
+    "controls/catalog.json": "3c58fe024ee75d1331084bfd8ba0210e30d133af7a467181e707ace4e31fa125",
+    "bindings/normal.json": "9d5868617439febd4349dfe1062696d469d7a34a5ab2f19bc6f22be4be180464",
+    "registry.json": "e2718fe130ad3865a69d4269d63096de6634138a8900e621680ece55839cfaf5",
+    "inventory.json": "80797dff25add7ff6653572f1982cc9ce8c3250700b56e1465a1d81ea85a115f",
+    "environment.json": "5efdd8a0b474155d193e77f6357186945916b6bc11b5af25192b3880c9da14d8"
+  },
+  "raw_report_sha256": "3caa1569cba441b85f8ea4dea38f8435893997fc8346a7aa7c9907dd32bbffa7",
+  "product_execution_ready": false,
+  "paid_inference_calls": 0
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": "adaptive-dag-comparison/v1",
+  "input": "benchmarks/e2e-swe/manifests/d056-obligations.json",
+  "public_registry": "benchmarks/e2e-swe/public-checks/registry.json",
+  "public_checker_root": "benchmarks/e2e-swe/public-checks",
+  "public_environment_ref": "e2e-swe-public-python/v2",
+  "image_lock": "benchmark-runs/d040-openapi-image-lock.json",
+  "worker_profile": {"id": "opus55-medium", "model": "claude-opus-5-5", "effort": "medium"},
+  "arms": ["claude_all", "jev_split", "jev_split_relations", "jev_all"],
+  "limits": {"max_units": 30, "max_artifacts": 60, "max_files": 60, "max_leaves": 30, "max_depth": 3, "max_nodes": 59, "max_relation_pairs": 435, "max_decisions": 128, "relation_batch_size": 32, "max_request_bytes": 240000, "max_concurrency": 2, "maximum_workers": 30, "minimum_workers": 2, "wall_timeout_seconds": 14400, "planning_input_tokens": 700000, "max_file_bytes": 262144, "max_total_bytes": 4194304},
+  "max_repair_rounds": 2,
+  "automatic_retries": 0,
+  "jev_budget": {"schema_version": "jev-token-budget/v2", "ledger_path": "benchmark-runs/jev-usd1-budget.json", "max_input_tokens": 10000000, "reserve_input_tokens": 65536},
+  "valuation": {"usd_per_million_input_tokens": 0.6, "basis": "informational_token_pack_equivalent_not_monthly_invoice", "actual_billed_usd": null},
+  "preparation_accounting": "One fresh source-only Claude Opus medium catalog call is physically shared. Every condition headline includes its FULL preparation time and usage; cohort actual-once and per-arm one-quarter amortized quantities are separate secondary metrics.",
+  "deadline_basis": "Each fresh arm has an explicit 14400-second overall deadline. Worker, decision and check calls receive remaining arm time; no separate 10-minute worker cap. Catalog preparation has the same 14400-second deadline and its measured time is added to each headline arm total.",
+  "session_semantics": "Each initial or selected repair leaf launches a fresh CLI session with no conversation reuse. Carry-forward copies make no model call. All implementation and Claude decision/catalog calls use the same fixed Opus medium profile. Implementation runs with two slots; four conditions execute sequentially.",
+  "independent_grade": "Root-owned after candidate freeze; hidden tests and hidden failure details never enter planning, implementation or public repair. Successful completion time remains null until independently successful."
+}

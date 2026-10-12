@@ -1,0 +1,14 @@
+{
+  "schema_version": "adaptive-artifact-repair-contract/v1",
+  "packet_version": "adaptive-artifact-repair/v1",
+  "decision_instructions": "Choose only among the offered task and artifact scopes using the complete inline public failure evidence. Artifact IDs are the exact write authority, not merely suggestions. Unselected artifacts keep their prior bytes and must pass fresh checks. Preserve every supplied requirement and interface; select stop when the offered scope lacks evidence or necessary repair authority. Read-only dependency contracts are not permission to modify their artifacts. Task input declarations may be incomplete at the artifact level; unknown dependencies are not evidence of independence. All public checks will run again.",
+  "worker_instructions": "Repair only the selected artifact paths. Read prior own files and available task inputs with the artifact tool. Preserve all supplied requirements and interfaces, including behavior unrelated to the immediate assertion. Other own artifacts are inherited byte-for-byte and are read-only. Do not edit checks, expand scope, write outside allowed paths, or claim tests ran. If the defect requires an unselected artifact, report the unmet repair boundary rather than modifying it. The controller reruns all local and public checks against the assembled candidate.",
+  "rules": {
+    "source": "Exact selected-unit requirements, interface text and source quotes are inline; unrelated source clauses remain immutable outside this packet, not remotely accessible to the model.",
+    "ownership": "Every selected artifact belongs to a selected implementation task; every selected task has at least one selected artifact.",
+    "dependencies": "Read-only dependency contracts are the selected tasks' explicit DAG inputs. Same-owner inherited files stay readable for undeclared internal dependencies. Missing artifact-level dependencies remain explicitly unknown.",
+    "fallback": "Unmapped or stale assertion ownership must use explicit full-task output scopes, never a guessed narrowed artifact scope.",
+    "preservation": "All public case/error/not-reached and runtime provenance evidence remains inline through the versioned failure projection. Only recognized successful installer progress may be omitted under that contract.",
+    "execution": "Original DAG output coverage is retained. The external worker receives a narrowed task view and transport scope. Nonselected own artifacts are compared with the immutable prior manifests after the callback, and all public checks rerun."
+  }
+}

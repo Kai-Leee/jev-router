@@ -221,6 +221,15 @@ def prepare_control(args):
     output = new_directory(args.output)
     if args.control == "oracle":
         shutil.copytree(source, output, dirs_exist_ok=True, symlinks=True)
+        # Task-specific evaluator-only adaptation from pinned upstream solution/solve.sh.
+        if MANIFEST.get("oracle_console_script_rename"):
+            old, new = MANIFEST["oracle_console_script_rename"]
+            project = output / "pyproject.toml"
+            original = project.read_text()
+            adapted, count = re.subn(r"(?m)^" + re.escape(old) + r" = ", new + " = ", original)
+            if count != 1:
+                raise RuntimeError("Oracle console-script adaptation did not match exactly once")
+            project.write_text(adapted)
         # Identical setup command to the pinned upstream solution/solve.sh.
         (output / "setup.sh").write_text("pip install -e . --no-build-isolation\n")
     else:
@@ -302,8 +311,19 @@ def grade(args):
     return record
 
 
+def select_manifest(path):
+    """Select evaluator configuration before any action; default remains pytest-check."""
+    global MANIFEST, TASK
+    selected = json.loads(Path(path).read_text())
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", selected.get("task_id", "")):
+        raise ValueError("Invalid manifest task_id")
+    MANIFEST = selected
+    TASK = UPSTREAM / "tasks" / MANIFEST["task_id"]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--manifest", default=str(HERE / "manifest.json"))
     commands = parser.add_subparsers(dest="action", required=True)
     commands.add_parser("preflight")
     lock = commands.add_parser("lock-image")
@@ -326,6 +346,7 @@ def main():
     check = commands.add_parser("check-result")
     check.add_argument("--output", required=True)
     args = parser.parse_args()
+    select_manifest(args.manifest)
     actions = {"preflight": lambda: source_preflight(), "lock-image": lambda: lock_image(args.output),
                "start-agent": lambda: start_agent(args), "export": lambda: export_artifact(args),
                "prepare-control": lambda: prepare_control(args), "grade": lambda: grade(args),

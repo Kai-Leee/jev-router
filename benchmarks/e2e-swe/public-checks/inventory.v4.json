@@ -1,0 +1,2691 @@
+{
+  "schema_version": "dag-public-check-inventory/v1",
+  "authored_on": "2026-10-11",
+  "source_policy": "Original public instruction and authored D056 public test specifications plus D071 public R10.02 description-source counterexamples. No hidden grader content.",
+  "public_source_sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+  "d056_manifest_sha256": "c5dbaed1cc4eb286299e7606b1f91cf54065e46e3651d6b372e6e99c819f7ef8",
+  "rows": [
+    {
+      "test_id": "T.R01.01",
+      "scenario": "Complete OpenAPI client package",
+      "requirement_ids": [
+        "R01.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 3,
+          "end_line": 7
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.R01.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R01.02",
+      "scenario": "Installed console entry point",
+      "requirement_ids": [
+        "R01.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 9,
+          "end_line": 10
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.R01.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R01.03",
+      "scenario": "Transport, value equality, and source formats",
+      "requirement_ids": [
+        "R01.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 12,
+          "end_line": 13
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.R01.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R02.01",
+      "scenario": "Offline environment and setup boundary",
+      "requirement_ids": [
+        "R02.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 17,
+          "end_line": 20
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.R02.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R02.02",
+      "scenario": "Available dependency choices and YAML loader",
+      "requirement_ids": [
+        "R02.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 22,
+          "end_line": 29
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.R02.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R02.03",
+      "scenario": "Declared runtime dependencies",
+      "requirement_ids": [
+        "R02.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 31,
+          "end_line": 32
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.R02.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R03.01",
+      "scenario": "Generate command and exclusive source selection",
+      "requirement_ids": [
+        "R03.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 36,
+          "end_line": 44
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.R03.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R03.02",
+      "scenario": "Output and metadata CLI options",
+      "requirement_ids": [
+        "R03.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 45,
+          "end_line": 47
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-layout"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-layout:T.R03.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R03.03",
+      "scenario": "JSON and YAML configuration option",
+      "requirement_ids": [
+        "R03.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 48,
+          "end_line": 48
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 317,
+          "end_line": 317
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.R03.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R03.04",
+      "scenario": "Existing output overwrite behavior",
+      "requirement_ids": [
+        "R03.04"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 49,
+          "end_line": 50
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-layout"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-layout:T.R03.04"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R03.05",
+      "scenario": "Warning exit policy",
+      "requirement_ids": [
+        "R03.05"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 51,
+          "end_line": 52
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.diagnostics"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#diagnostics:T.R03.05"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R03.06",
+      "scenario": "Source suffix selects parser",
+      "requirement_ids": [
+        "R03.06"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 54,
+          "end_line": 54
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.R03.06"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R04.01",
+      "scenario": "Project and package naming",
+      "requirement_ids": [
+        "R04.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 58,
+          "end_line": 64
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-layout"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-layout:T.R04.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R04.02",
+      "scenario": "Package-only output paths",
+      "requirement_ids": [
+        "R04.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 68,
+          "end_line": 70
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-layout"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-layout:T.R04.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R04.03",
+      "scenario": "Project output paths",
+      "requirement_ids": [
+        "R04.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 71,
+          "end_line": 73
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-layout"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-layout:T.R04.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R04.04",
+      "scenario": "Generated runtime module layout",
+      "requirement_ids": [
+        "R04.04"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 75,
+          "end_line": 80
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R04.04"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R04.05",
+      "scenario": "Model modules and re-exports",
+      "requirement_ids": [
+        "R04.05"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 81,
+          "end_line": 83
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R04.05"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R04.06",
+      "scenario": "Tagged operation modules",
+      "requirement_ids": [
+        "R04.06"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 84,
+          "end_line": 87
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R04.06"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R05.01",
+      "scenario": "Named schema class boundary",
+      "requirement_ids": [
+        "R05.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 91,
+          "end_line": 95
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R05.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R05.02",
+      "scenario": "Inline property model and enum naming",
+      "requirement_ids": [
+        "R05.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 96,
+          "end_line": 99
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R05.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R05.03",
+      "scenario": "Inline request-body naming",
+      "requirement_ids": [
+        "R05.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 100,
+          "end_line": 104
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R05.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R05.04",
+      "scenario": "Python attribute and parameter names preserve JSON keys",
+      "requirement_ids": [
+        "R05.04"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 105,
+          "end_line": 108
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R05.04"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R06.01",
+      "scenario": "Unset runtime sentinel",
+      "requirement_ids": [
+        "R06.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 112,
+          "end_line": 113
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R06.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R06.02",
+      "scenario": "File value and tuple contract",
+      "requirement_ids": [
+        "R06.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 114,
+          "end_line": 116
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R06.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R06.03",
+      "scenario": "Generic Response runtime contract",
+      "requirement_ids": [
+        "R06.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 117,
+          "end_line": 118
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R06.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R07.01",
+      "scenario": "Value model constructor and requiredness",
+      "requirement_ids": [
+        "R07.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 122,
+          "end_line": 126
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R07.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R07.02",
+      "scenario": "Model dictionary serialization",
+      "requirement_ids": [
+        "R07.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 127,
+          "end_line": 128
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R07.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R07.03",
+      "scenario": "Mapping parsing and required-property errors",
+      "requirement_ids": [
+        "R07.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 129,
+          "end_line": 130
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R07.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R07.04",
+      "scenario": "Class-level string annotations",
+      "requirement_ids": [
+        "R07.04"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 132,
+          "end_line": 138
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R07.04"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R08.01",
+      "scenario": "Scalar, null, and unconstrained types",
+      "requirement_ids": [
+        "R08.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 144,
+          "end_line": 149
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 142,
+          "end_line": 143
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R08.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R08.02",
+      "scenario": "Formatted strings and unknown-format fallback",
+      "requirement_ids": [
+        "R08.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 150,
+          "end_line": 153
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 142,
+          "end_line": 143
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R08.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R08.03",
+      "scenario": "Referenced object conversion",
+      "requirement_ids": [
+        "R08.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 154,
+          "end_line": 154
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 142,
+          "end_line": 143
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R08.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R08.04",
+      "scenario": "Homogeneous and unconstrained arrays",
+      "requirement_ids": [
+        "R08.04"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 155,
+          "end_line": 156
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 142,
+          "end_line": 143
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R08.04"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R08.05",
+      "scenario": "Reference-chain resolution",
+      "requirement_ids": [
+        "R08.05"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 158,
+          "end_line": 159
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R08.05"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R08.06",
+      "scenario": "allOf property merging",
+      "requirement_ids": [
+        "R08.06"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 159,
+          "end_line": 161
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R08.06"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R08.07",
+      "scenario": "prefixItems union arrays",
+      "requirement_ids": [
+        "R08.07"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 163,
+          "end_line": 165
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R08.07"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R09.01",
+      "scenario": "Unknown property storage and schema conversion",
+      "requirement_ids": [
+        "R09.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 169,
+          "end_line": 172
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R09.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R09.02",
+      "scenario": "Additional property mapping and round-trip",
+      "requirement_ids": [
+        "R09.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 173,
+          "end_line": 175
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R09.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R10.01",
+      "scenario": "Google-style model docstrings",
+      "requirement_ids": [
+        "R10.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 179,
+          "end_line": 186
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.runtime-model-core"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#runtime-model-core:T.R10.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R10.02",
+      "scenario": "Endpoint description and argument docstrings",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 179,
+          "end_line": 180
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R10.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R10.03",
+      "scenario": "Endpoint return docstrings",
+      "requirement_ids": [
+        "R10.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 193,
+          "end_line": 195
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 179,
+          "end_line": 180
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R10.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R11.01",
+      "scenario": "String and integer enum value behavior",
+      "requirement_ids": [
+        "R11.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 199,
+          "end_line": 201
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.enums-defaults"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#enums-defaults:T.R11.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R11.02",
+      "scenario": "String enum member naming",
+      "requirement_ids": [
+        "R11.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 203,
+          "end_line": 210
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.enums-defaults"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#enums-defaults:T.R11.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R11.03",
+      "scenario": "Integer enum member naming",
+      "requirement_ids": [
+        "R11.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 211,
+          "end_line": 212
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.enums-defaults"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#enums-defaults:T.R11.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R11.04",
+      "scenario": "x-enum-varnames word splitting",
+      "requirement_ids": [
+        "R11.04"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 213,
+          "end_line": 219
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.enums-defaults"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#enums-defaults:T.R11.04"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R11.05",
+      "scenario": "Nullable and null-only enums",
+      "requirement_ids": [
+        "R11.05"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 221,
+          "end_line": 223
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R11.05"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R11.06",
+      "scenario": "Constant validation",
+      "requirement_ids": [
+        "R11.06"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 225,
+          "end_line": 226
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.enums-defaults"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#enums-defaults:T.R11.06"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R12.01",
+      "scenario": "Literal-enum configuration semantics",
+      "requirement_ids": [
+        "R12.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 230,
+          "end_line": 233
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 322,
+          "end_line": 322
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R12.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R13.01",
+      "scenario": "Union annotations and inlining references",
+      "requirement_ids": [
+        "R13.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 237,
+          "end_line": 246
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R13.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R13.02",
+      "scenario": "Union matching and flattening",
+      "requirement_ids": [
+        "R13.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 246,
+          "end_line": 249
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R13.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R13.03",
+      "scenario": "Union encoding uses concrete type",
+      "requirement_ids": [
+        "R13.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 248,
+          "end_line": 249
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.R13.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R14.01",
+      "scenario": "Date, datetime, and UUID defaults",
+      "requirement_ids": [
+        "R14.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 253,
+          "end_line": 256
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.enums-defaults"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#enums-defaults:T.R14.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R14.02",
+      "scenario": "Numeric-string defaults",
+      "requirement_ids": [
+        "R14.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 256,
+          "end_line": 257
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 253,
+          "end_line": 255
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.enums-defaults"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#enums-defaults:T.R14.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R14.03",
+      "scenario": "Boolean-string defaults",
+      "requirement_ids": [
+        "R14.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 257,
+          "end_line": 258
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 253,
+          "end_line": 255
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.enums-defaults"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#enums-defaults:T.R14.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R14.04",
+      "scenario": "Enum default through allOf reference",
+      "requirement_ids": [
+        "R14.04"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 258,
+          "end_line": 259
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 253,
+          "end_line": 255
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.enums-defaults"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#enums-defaults:T.R14.04"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R15.01",
+      "scenario": "Client value constructors and authentication settings",
+      "requirement_ids": [
+        "R15.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 263,
+          "end_line": 267
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R15.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R15.02",
+      "scenario": "Sync and async httpx client storage",
+      "requirement_ids": [
+        "R15.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 268,
+          "end_line": 273
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R15.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R15.03",
+      "scenario": "Immutable-style client configuration helpers",
+      "requirement_ids": [
+        "R15.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 274,
+          "end_line": 275
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R15.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R16.01",
+      "scenario": "Four keyword-only endpoint functions",
+      "requirement_ids": [
+        "R16.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 279,
+          "end_line": 286
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R16.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R16.02",
+      "scenario": "Path parameter percent encoding",
+      "requirement_ids": [
+        "R16.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 290,
+          "end_line": 292
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R16.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R16.03",
+      "scenario": "Query serialization and omission",
+      "requirement_ids": [
+        "R16.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 293,
+          "end_line": 295
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R16.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R16.04",
+      "scenario": "JSON request body",
+      "requirement_ids": [
+        "R16.04"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 296,
+          "end_line": 297
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R16.04"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R16.05",
+      "scenario": "Multipart request body",
+      "requirement_ids": [
+        "R16.05"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 297,
+          "end_line": 299
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R16.05"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R16.06",
+      "scenario": "Form and binary request bodies",
+      "requirement_ids": [
+        "R16.06"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 300,
+          "end_line": 301
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R16.06"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R16.07",
+      "scenario": "Body media type header",
+      "requirement_ids": [
+        "R16.07"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 302,
+          "end_line": 304
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R16.07"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R16.08",
+      "scenario": "Explicit transport request dispatch",
+      "requirement_ids": [
+        "R16.08"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 305,
+          "end_line": 307
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R16.08"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R16.09",
+      "scenario": "Documented response parsing",
+      "requirement_ids": [
+        "R16.09"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 309,
+          "end_line": 311
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R16.09"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R16.10",
+      "scenario": "Unexpected response status policy",
+      "requirement_ids": [
+        "R16.10"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 311,
+          "end_line": 313
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R16.10"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R17.01",
+      "scenario": "Post-generation hook behavior",
+      "requirement_ids": [
+        "R17.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 319,
+          "end_line": 321
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 317,
+          "end_line": 317
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R17.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R17.02",
+      "scenario": "Class and module overrides",
+      "requirement_ids": [
+        "R17.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 323,
+          "end_line": 324
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 317,
+          "end_line": 317
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R17.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R17.03",
+      "scenario": "Field prefix default and override",
+      "requirement_ids": [
+        "R17.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 325,
+          "end_line": 327
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 317,
+          "end_line": 317
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.R17.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R18.01",
+      "scenario": "Poetry metadata content",
+      "requirement_ids": [
+        "R18.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 334,
+          "end_line": 336
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.R18.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R18.02",
+      "scenario": "Setup, pdm, and uv metadata variants",
+      "requirement_ids": [
+        "R18.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 337,
+          "end_line": 338
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.R18.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R18.03",
+      "scenario": "No metadata mode",
+      "requirement_ids": [
+        "R18.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 339,
+          "end_line": 339
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-layout"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-layout:T.R18.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R19.01",
+      "scenario": "Named nonfatal unsupported-schema warnings",
+      "requirement_ids": [
+        "R19.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 343,
+          "end_line": 349
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.diagnostics"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#diagnostics:T.R19.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R19.02",
+      "scenario": "Circular property reference warning",
+      "requirement_ids": [
+        "R19.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 350,
+          "end_line": 352
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.diagnostics"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#diagnostics:T.R19.02"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R19.03",
+      "scenario": "Malformed source diagnostics",
+      "requirement_ids": [
+        "R19.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 353,
+          "end_line": 355
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.R19.03"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R19.04",
+      "scenario": "Invalid OpenAPI structure diagnostics",
+      "requirement_ids": [
+        "R19.04"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 355,
+          "end_line": 357
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.diagnostics"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#diagnostics:T.R19.04"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R19.05",
+      "scenario": "Swagger 2.0 rejection",
+      "requirement_ids": [
+        "R19.05"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 357,
+          "end_line": 358
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.diagnostics"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#diagnostics:T.R19.05"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R20.01",
+      "scenario": "Offline editable setup script",
+      "requirement_ids": [
+        "R20.01"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 362,
+          "end_line": 368
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.R20.01"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.integration.defaults",
+      "scenario": "Generate, import, construct, inspect, and serialize a model using all public default conversions.",
+      "requirement_ids": [
+        "R06.01",
+        "R07.01",
+        "R07.02",
+        "R07.04",
+        "R14.01",
+        "R14.02",
+        "R14.03",
+        "R14.04"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 112,
+          "end_line": 113
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 122,
+          "end_line": 126
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 127,
+          "end_line": 128
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 132,
+          "end_line": 138
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 253,
+          "end_line": 256
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 256,
+          "end_line": 257
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 253,
+          "end_line": 255
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 257,
+          "end_line": 258
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 253,
+          "end_line": 255
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 258,
+          "end_line": 259
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 253,
+          "end_line": 255
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.enums-defaults"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#enums-defaults:T.integration.defaults"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.integration.unions-arrays",
+      "scenario": "Generate and round-trip nested referenced unions in prefixItems arrays.",
+      "requirement_ids": [
+        "R05.01",
+        "R07.04",
+        "R08.03",
+        "R08.04",
+        "R08.05",
+        "R08.06",
+        "R08.07",
+        "R13.01",
+        "R13.02",
+        "R13.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 91,
+          "end_line": 95
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 132,
+          "end_line": 138
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 154,
+          "end_line": 154
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 142,
+          "end_line": 143
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 155,
+          "end_line": 156
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 142,
+          "end_line": 143
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 158,
+          "end_line": 159
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 159,
+          "end_line": 161
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 163,
+          "end_line": 165
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 237,
+          "end_line": 246
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 246,
+          "end_line": 249
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 248,
+          "end_line": 249
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.schema-models"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#schema-models:T.integration.unions-arrays"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.integration.transports",
+      "scenario": "Exercise generated endpoint functions with controlled synchronous and asynchronous transports.",
+      "requirement_ids": [
+        "R06.02",
+        "R06.03",
+        "R15.01",
+        "R15.02",
+        "R16.01",
+        "R16.02",
+        "R16.03",
+        "R16.04",
+        "R16.05",
+        "R16.06",
+        "R16.07",
+        "R16.08",
+        "R16.09",
+        "R16.10"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 114,
+          "end_line": 116
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 117,
+          "end_line": 118
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 263,
+          "end_line": 267
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 268,
+          "end_line": 273
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 279,
+          "end_line": 286
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 290,
+          "end_line": 292
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 293,
+          "end_line": 295
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 296,
+          "end_line": 297
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 297,
+          "end_line": 299
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 300,
+          "end_line": 301
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 302,
+          "end_line": 304
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 305,
+          "end_line": 307
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 309,
+          "end_line": 311
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 311,
+          "end_line": 313
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.http-client"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#http-client:T.integration.transports"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.integration.config-layout",
+      "scenario": "Use the installed CLI with JSON/YAML configuration and every metadata layout.",
+      "requirement_ids": [
+        "R01.02",
+        "R03.01",
+        "R03.02",
+        "R03.03",
+        "R04.01",
+        "R04.02",
+        "R04.03",
+        "R04.04",
+        "R04.05",
+        "R04.06",
+        "R05.02",
+        "R05.03",
+        "R05.04",
+        "R12.01",
+        "R17.02",
+        "R17.03",
+        "R18.01",
+        "R18.02",
+        "R18.03"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 9,
+          "end_line": 10
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 36,
+          "end_line": 44
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 45,
+          "end_line": 47
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 48,
+          "end_line": 48
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 317,
+          "end_line": 317
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 58,
+          "end_line": 64
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 68,
+          "end_line": 70
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 71,
+          "end_line": 73
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 75,
+          "end_line": 80
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 81,
+          "end_line": 83
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 84,
+          "end_line": 87
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 96,
+          "end_line": 99
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 100,
+          "end_line": 104
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 105,
+          "end_line": 108
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 230,
+          "end_line": 233
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 322,
+          "end_line": 322
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 323,
+          "end_line": 324
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 317,
+          "end_line": 317
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 325,
+          "end_line": 327
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 317,
+          "end_line": 317
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 334,
+          "end_line": 336
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 337,
+          "end_line": 338
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 339,
+          "end_line": 339
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.integration.config-layout"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.integration.diagnostics",
+      "scenario": "Preserve error severity and surviving outputs across generation failures and warnings.",
+      "requirement_ids": [
+        "R03.04",
+        "R03.05",
+        "R03.06",
+        "R17.01",
+        "R19.01",
+        "R19.02",
+        "R19.03",
+        "R19.04",
+        "R19.05"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 49,
+          "end_line": 50
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 51,
+          "end_line": 52
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 54,
+          "end_line": 54
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 319,
+          "end_line": 321
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 317,
+          "end_line": 317
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 343,
+          "end_line": 349
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 350,
+          "end_line": 352
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 353,
+          "end_line": 355
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 355,
+          "end_line": 357
+        },
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 357,
+          "end_line": 358
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.cli-config-environment"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#cli-config-environment:T.integration.diagnostics"
+      ],
+      "missing_reason": null
+    },
+    {
+      "test_id": "T.R10.02.body-description.distinct.sync",
+      "scenario": "Different requestBody and model schema descriptions.",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.description-provenance"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#description-provenance:T.R10.02.body-description.distinct.sync"
+      ],
+      "missing_reason": null,
+      "source_test_protocol": "benchmarks/e2e-swe/public-checks/description-provenance.v1.json"
+    },
+    {
+      "test_id": "T.R10.02.body-description.distinct.sync_detailed",
+      "scenario": "Different requestBody and model schema descriptions.",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.description-provenance"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#description-provenance:T.R10.02.body-description.distinct.sync_detailed"
+      ],
+      "missing_reason": null,
+      "source_test_protocol": "benchmarks/e2e-swe/public-checks/description-provenance.v1.json"
+    },
+    {
+      "test_id": "T.R10.02.body-description.distinct.asyncio",
+      "scenario": "Different requestBody and model schema descriptions.",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.description-provenance"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#description-provenance:T.R10.02.body-description.distinct.asyncio"
+      ],
+      "missing_reason": null,
+      "source_test_protocol": "benchmarks/e2e-swe/public-checks/description-provenance.v1.json"
+    },
+    {
+      "test_id": "T.R10.02.body-description.distinct.asyncio_detailed",
+      "scenario": "Different requestBody and model schema descriptions.",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.description-provenance"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#description-provenance:T.R10.02.body-description.distinct.asyncio_detailed"
+      ],
+      "missing_reason": null,
+      "source_test_protocol": "benchmarks/e2e-swe/public-checks/description-provenance.v1.json"
+    },
+    {
+      "test_id": "T.R10.02.body-description.request-only.sync",
+      "scenario": "A requestBody description with no model schema description.",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.description-provenance"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#description-provenance:T.R10.02.body-description.request-only.sync"
+      ],
+      "missing_reason": null,
+      "source_test_protocol": "benchmarks/e2e-swe/public-checks/description-provenance.v1.json"
+    },
+    {
+      "test_id": "T.R10.02.body-description.request-only.sync_detailed",
+      "scenario": "A requestBody description with no model schema description.",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.description-provenance"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#description-provenance:T.R10.02.body-description.request-only.sync_detailed"
+      ],
+      "missing_reason": null,
+      "source_test_protocol": "benchmarks/e2e-swe/public-checks/description-provenance.v1.json"
+    },
+    {
+      "test_id": "T.R10.02.body-description.request-only.asyncio",
+      "scenario": "A requestBody description with no model schema description.",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.description-provenance"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#description-provenance:T.R10.02.body-description.request-only.asyncio"
+      ],
+      "missing_reason": null,
+      "source_test_protocol": "benchmarks/e2e-swe/public-checks/description-provenance.v1.json"
+    },
+    {
+      "test_id": "T.R10.02.body-description.request-only.asyncio_detailed",
+      "scenario": "A requestBody description with no model schema description.",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ],
+      "mapping_status": "implemented",
+      "check_ids": [
+        "public.description-provenance"
+      ],
+      "case_refs": [
+        "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py#description-provenance:T.R10.02.body-description.request-only.asyncio_detailed"
+      ],
+      "missing_reason": null,
+      "source_test_protocol": "benchmarks/e2e-swe/public-checks/description-provenance.v1.json"
+    }
+  ],
+  "execution_target": "authored_local_control",
+  "readiness": "local_controls_only",
+  "candidate_binding_required": true,
+  "implementation_note": "D071: the original 85 public descriptions retain their mappings; eight additional R10.02 description-source cases form an eighth suite. Mapping is metadata; actual candidate execution, frozen checker controls and immutable revisions remain distinct evidence.",
+  "version": "4",
+  "additional_test_protocol": "benchmarks/e2e-swe/public-checks/description-provenance.v1.json"
+}

@@ -7,6 +7,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {processResult} from '../src/benchmark/docker.mjs';
 import {claudeArguments} from '../src/benchmark/launch.mjs';
+import {createJevClient} from '../src/client.mjs';
 
 const request=()=>({model:'jev-latest',state:'Choose the valid implementation.',questions:{next:{type:'choice',instructions:'Choose an action.',criteria:{build:'Implement the specification',stop:'Stop'}}}});
 const response=()=>({model:'jev-1.13',usage:{input_tokens:20,output_tokens:3,cost:null},billing:{creditsCharged:'1.25'}});
@@ -55,6 +56,43 @@ test('uncertain error records one attempt with fixed code, no diagnostic secret'
   await assert.rejects(run(request()));assert.equal(posts,1);
   assert.equal(events.at(-1).status,'uncertain');assert.equal(events.at(-1).code,'TRANSPORT_ERROR');
   assert.equal(JSON.stringify(events).includes('DO_NOT_EXPOSE'),false);
+});
+
+for (const status of [429,504]) test(`HTTP ${status} preserves status and uncertainty without response secrets or retry`,async()=>{
+  const events=[];let posts=0,settlements=0,reservations=0;
+  const actual=createJevClient({apiKey:'TEST_KEY_DO_NOT_LOG',fetchImpl:async()=>{
+    posts++;
+    return new Response('RESPONSE_BODY_DO_NOT_LOG',{status,headers:{'x-jev-run-id':'provider-run-123','retry-after':'2','x-private':'HEADER_DO_NOT_LOG'}});
+  }});
+  const budget={reserve:()=>{reservations++;return 'reserved';},settle:()=>settlements++,snapshot:()=>({reserved_input_tokens:65536})};
+  const run=createMeasuredDecider({budget,client:{...actual,listModels:async()=>({models:[{name:'jev-latest'}]}),listCredits:async()=>({})},record:async e=>events.push(e)});
+  let caught;
+  await assert.rejects(run(request()),error=>{caught=error;return error.code==='HTTP_ERROR'&&error.http_status===status&&error.status===status&&error.outcomeUncertain===(status>=500);});
+  const event=events.at(-1);
+  assert.equal(event.event,'inference_finished');assert.equal(event.http_status,status);
+  assert.equal(event.status,status>=500?'uncertain':'failed');assert.equal(event.outcome_uncertain,status>=500);
+  assert.equal(event.recovery_allowed,false);assert.equal(event.provider_run_id,'provider-run-123');assert.equal(event.retry_after_ms,2000);
+  await assert.rejects(run(request()),{code:'DECIDER_STOPPED'});
+  assert.equal(posts,1);assert.equal(reservations,1);assert.equal(settlements,0);
+  const serialized=JSON.stringify({events,error:caught,message:caught.message,stack:caught.stack});
+  for(const secret of ['TEST_KEY_DO_NOT_LOG','RESPONSE_BODY_DO_NOT_LOG','HEADER_DO_NOT_LOG'])assert.equal(serialized.includes(secret),false);
+  assert.equal(Object.hasOwn(caught,'retryAfterMs'),false);
+});
+
+test('untrusted HTTP status values cannot become diagnostic payloads',async()=>{
+  for(const status of ['SECRET_STATUS',429.5,600,null]){
+    const events=[];
+    const run=createMeasuredDecider({client:{listModels:async()=>({models:[{name:'jev-latest'}]}),decide:async()=>{throw Object.assign(new Error('SECRET_ERROR'),{code:'HTTP_ERROR',status,outcomeUncertain:false});}},record:async e=>events.push(e)});
+    await assert.rejects(run(request()),e=>e.http_status===null&&e.status===null&&!e.message.includes('SECRET'));
+    assert.equal(events.at(-1).http_status,null);assert.equal(JSON.stringify(events).includes('SECRET'),false);
+  }
+});
+
+test('local invalid request carries known-unsent outcome without inference or budget work',async()=>{
+  const events=[];let network=0,reserved=0;
+  const run=createMeasuredDecider({client:{listModels:async()=>network++,decide:async()=>network++},budget:{reserve:()=>reserved++},record:async e=>events.push(e)});
+  await assert.rejects(run({}),{code:'INVALID_REQUEST',outcomeUncertain:false});
+  assert.equal(network,0);assert.equal(reserved,0);assert.equal(events.length,0);
 });
 test('stdout chunks preserve split UTF-8 bytes in the live journal',async()=>{
   const chunks=[];
@@ -145,4 +183,83 @@ test('independent state writer rejects a pre-existing output without overwriting
     await assert.rejects(createGateStateWriter(path)(gate.status()),{code:'STATE_RECORD_FAILED'});
     assert.equal(readFileSync(path,'utf8'),'preserve-existing');assert.deepEqual(readdirSync(directory),['gate-state.json']);
   }finally{rmSync(directory,{recursive:true,force:true});}
+});
+
+test('HTTP 429 preserves bounded provider reconciliation IDs and retry hints without retry',async()=>{
+ const events=[];let posts=0;
+ const run=createMeasuredDecider({client:{listModels:async()=>({models:[{name:'jev-latest'}]}),decide:async()=>{posts++;throw Object.assign(Error('private body'),{code:'HTTP_ERROR',status:429,runId:'run_0123-abc.def',retryAfterMs:12000,outcomeUncertain:false,headers:{Authorization:'SECRET'},body:'SECRET'});}},record:async e=>events.push(e)});
+ await assert.rejects(run(request()),e=>e.http_status===429&&e.provider_run_id==='run_0123-abc.def'&&e.retry_after_ms===12000&&!JSON.stringify(e).includes('SECRET'));
+ assert.equal(events.at(-1).provider_run_id,'run_0123-abc.def');assert.equal(events.at(-1).retry_after_ms,12000);assert.equal(events.at(-1).recovery_allowed,false);assert.equal(JSON.stringify(events).includes('private body'),false);assert.equal(JSON.stringify(events).includes('SECRET'),false);
+ await assert.rejects(run(request()),{code:'DECIDER_STOPPED'});assert.equal(posts,1);
+});
+test('unsafe provider IDs and invalid retry hints are dropped, never stringified',async()=>{
+ const values=[['Bearer SECRET',-1],['run\n',Infinity],['x'.repeat(97),NaN],[{secret:'SECRET'},'1200'],['한글',null],['../secret',86400001],[42,{secret:'SECRET'}]];
+ for(const [runId,retryAfterMs]of values){const events=[];const run=createMeasuredDecider({client:{listModels:async()=>({models:[{name:'jev-latest'}]}),decide:async()=>{throw Object.assign(Error('SECRET'),{code:'HTTP_ERROR',status:429,runId,retryAfterMs});}},record:async e=>events.push(e)});
+ await assert.rejects(run(request()),e=>e.provider_run_id===null&&e.retry_after_ms===null&&!JSON.stringify(e).includes('SECRET'));assert.equal(events.at(-1).provider_run_id,null);assert.equal(events.at(-1).retry_after_ms,null);assert.equal(JSON.stringify(events).includes('SECRET'),false);}
+});
+
+test('captured safe diagnostics survive the measured failure event and rethrow without settlement or retry',async()=>{
+ const events=[];let posts=0,reservations=0,settlements=0;
+ const actual=createJevClient({apiKey:'TEST_DIAGNOSTIC_KEY',fetchImpl:async()=>{
+  posts++;return new Response(JSON.stringify({error:{code:'context_length_exceeded',message:'Authorization: Bearer TEST_DIAGNOSTIC_KEY PRIVATE_STATE',details:{state:'PRIVATE_STATE'}}}),{status:400});
+ }});
+ const budget={reserve:()=>{reservations++;return'reserved';},settle:()=>settlements++,snapshot:()=>({reserved_input_tokens:65536})};
+ const run=createMeasuredDecider({budget,client:{...actual,listModels:async()=>({models:[{name:'jev-latest'}]}),listCredits:async()=>({})},record:async event=>events.push(event)});
+ let caught;
+ await assert.rejects(run(request()),error=>{caught=error;return error.code==='HTTP_ERROR'&&error.status===400;});
+ const diagnostic=events.at(-1).error_diagnostics;
+ assert.equal(diagnostic.schema_version,'jev-http-error-diagnostics/v3');assert.equal(diagnostic.category,'context_limit');assert.equal(diagnostic.classification_source,'provider_code');
+ assert.equal(diagnostic.body_read_status,'complete');assert.equal(diagnostic.body_hash_scope,'complete');
+ assert.deepEqual(caught.error_diagnostics,diagnostic);assert.equal(caught.outcomeUncertain,false);assert.equal(events.at(-1).recovery_allowed,false);
+ const serialized=JSON.stringify({events,error:caught,message:caught.message,stack:caught.stack});
+ for(const secret of ['TEST_DIAGNOSTIC_KEY','PRIVATE_STATE','Authorization','Bearer'])assert.equal(serialized.includes(secret),false);
+ await assert.rejects(run(request()),{code:'DECIDER_STOPPED'});
+ assert.equal(posts,1);assert.equal(reservations,1);assert.equal(settlements,0);
+});
+
+test('forged diagnostic fields on a custom exception are ignored, including plausible secret hashes',async()=>{
+ const events=[];const secret='abcdef0123456789'.repeat(4);
+ const run=createMeasuredDecider({client:{listModels:async()=>({models:[{name:'jev-latest'}]}),decide:async()=>{
+  throw Object.assign(Error('PRIVATE_ERROR'),{code:'HTTP_ERROR',status:400,outcomeUncertain:false,diagnostics:{
+   schema_version:'jev-http-error-diagnostics/v3',category:'context_limit',classification_source:'provider_code',provider_code:'context_length_exceeded',
+   body_read_status:'complete',body_format:'json',body_bytes:64,body_sha256:secret,body_hash_scope:'complete',raw:'PRIVATE_ERROR',
+  }});
+ }},record:async event=>events.push(event)});
+ await assert.rejects(run(request()),error=>error.error_diagnostics===null&&error.status===400&&!JSON.stringify(error).includes(secret));
+ assert.equal(events.at(-1).error_diagnostics,null);assert.equal(JSON.stringify(events).includes(secret),false);assert.equal(JSON.stringify(events).includes('PRIVATE_ERROR'),false);
+});
+
+test('lookup and balance failures preserve safe diagnostics without recording an inference attempt',async()=>{
+ for(const phase of ['model_lookup','credits']){
+  const events=[];let calls=0,reservations=0;
+  const actual=createJevClient({apiKey:'PREFLIGHT_TEST_KEY',fetchImpl:async()=>{calls++;return new Response(JSON.stringify({error:{code:429,message:'PREFLIGHT_TEST_KEY'}}),{status:429});}});
+  const budget={reserve:()=>reservations++,snapshot:()=>({})};
+  const client=phase==='model_lookup'?actual:{...actual,listModels:async()=>({models:[{name:'jev-latest'}]})};
+  const run=createMeasuredDecider({client,budget,record:async event=>events.push(event)});
+  await assert.rejects(run(request()),error=>error.code==='HTTP_ERROR'&&error.status===429&&error.outcomeUncertain===false&&error.error_diagnostics.category==='rate_or_capacity');
+  assert.equal(events.at(-1).event,phase==='model_lookup'?'model_lookup_failed':'budget_blocked');
+  assert.equal(events.at(-1).http_status,429);assert.equal(events.at(-1).error_diagnostics.provider_code,429);
+  assert.equal(events.some(event=>event.event==='inference_started'),false);assert.equal(JSON.stringify(events).includes('PREFLIGHT_TEST_KEY'),false);
+  await assert.rejects(run(request()),{code:'DECIDER_STOPPED'});assert.equal(calls,1);assert.equal(reservations,0);
+ }
+});
+
+test('semantic signals and numeric limits survive telemetry while replacement messages are discarded',async()=>{
+ const events=[];let calls=0;
+ const actual=createJevClient({apiKey:'SEMANTIC_TEST_KEY',fetchImpl:async()=>{calls++;return new Response(JSON.stringify({
+  error:'State plus longest question 38000 tokens exceeds the maximum 32768 tokens. Authorization: SEMANTIC_TEST_KEY PRIVATE_STATE',
+ }),{status:400});}});
+ const run=createMeasuredDecider({client:{...actual,listModels:async()=>({models:[{name:'jev-latest'}]}),decide:async input=>{
+  try{return await actual.decide(input);}catch(error){error.diagnostics={...error.diagnostics,semantic_signals:['PRIVATE_STATE'],message:'SEMANTIC_TEST_KEY'};throw error;}
+ }},record:async event=>events.push(event)});
+ await assert.rejects(run(request()),error=>{
+  assert.equal(error.error_diagnostics.schema_version,'jev-http-error-diagnostics/v3');
+  assert.equal(error.error_diagnostics.classification_source,'message_pattern');
+  assert.deepEqual(error.error_diagnostics.semantic_signals,['context_length_exceeded']);
+  assert.deepEqual(error.error_diagnostics.reported_limits,[{kind:'state_question_tokens',actual:38000,limit:32768}]);
+  assert.equal(JSON.stringify(error).includes('SEMANTIC_TEST_KEY'),false);return true;
+ });
+ assert.equal(events.at(-1).error_diagnostics.semantic_status,'recognized');
+ assert.equal(JSON.stringify(events).includes('PRIVATE_STATE'),false);assert.equal(JSON.stringify(events).includes('SEMANTIC_TEST_KEY'),false);
+ await assert.rejects(run(request()),{code:'DECIDER_STOPPED'});assert.equal(calls,1);
 });

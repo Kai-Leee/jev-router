@@ -1,0 +1,6 @@
+{
+  "schema_version": "dag-public-command/v2",
+  "kind": "candidate",
+  "candidate_root": "/candidate",
+  "environment_ref": "e2e-swe-public-python/v2"
+}

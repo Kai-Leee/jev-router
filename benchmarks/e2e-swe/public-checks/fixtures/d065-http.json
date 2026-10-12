@@ -1,0 +1,64 @@
+{
+  "openapi": "3.1.0",
+  "info": {"title": "Public HTTP", "version": "1.2.3"},
+  "paths": {
+    "/records/{recordKey}": {
+      "post": {
+        "operationId": "createRecord",
+        "tags": ["transport"],
+        "description": "Create a public record.",
+        "parameters": [
+          {"name": "recordKey", "in": "path", "required": true, "schema": {"type": "string"}},
+          {"name": "state", "in": "query", "required": true, "schema": {"$ref": "#/components/schemas/State"}},
+          {"name": "ids", "in": "query", "required": true, "schema": {"type": "array", "items": {"type": "integer"}}},
+          {"name": "note", "in": "query", "schema": {"type": "string"}}
+        ],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/JsonBody"}}}},
+        "responses": {
+          "201": {"description": "Created", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Record"}}}},
+          "400": {"description": "Rejected", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorDetail"}}}}
+        }
+      }
+    },
+    "/records": {
+      "get": {
+        "operationId": "listRecords",
+        "responses": {"200": {"description": "Records", "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/Record"}}}}}}
+      }
+    },
+    "/upload": {
+      "post": {
+        "operationId": "uploadRecord",
+        "tags": ["transport"],
+        "requestBody": {"required": true, "content": {"multipart/form-data": {"schema": {"$ref": "#/components/schemas/MultipartBody"}}}},
+        "responses": {"200": {"description": "Uploaded", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Record"}}}}}
+      }
+    },
+    "/form": {
+      "post": {
+        "operationId": "submitForm",
+        "tags": ["transport"],
+        "requestBody": {"required": true, "content": {"application/x-www-form-urlencoded": {"schema": {"$ref": "#/components/schemas/FormBody"}}}},
+        "responses": {"200": {"description": "Submitted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Record"}}}}}
+      }
+    },
+    "/binary": {
+      "put": {
+        "operationId": "sendBinary",
+        "tags": ["transport"],
+        "requestBody": {"required": true, "content": {"application/octet-stream": {"schema": {"type": "string", "format": "binary"}}}},
+        "responses": {"200": {"description": "Stored", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Record"}}}}}
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Record": {"type": "object", "required": ["recordId", "name"], "properties": {"recordId": {"type": "integer"}, "name": {"type": "string"}}},
+      "ErrorDetail": {"type": "object", "required": ["message"], "properties": {"message": {"type": "string"}}},
+      "State": {"type": "string", "enum": ["ready", "waiting"]},
+      "JsonBody": {"type": "object", "required": ["labelName"], "properties": {"labelName": {"type": "string"}, "optionalNote": {"type": "string"}}},
+      "MultipartBody": {"type": "object", "required": ["uploadFile", "title"], "properties": {"uploadFile": {"type": "string", "format": "binary"}, "title": {"type": "string"}}},
+      "FormBody": {"type": "object", "required": ["displayName"], "properties": {"displayName": {"type": "string"}}}
+    }
+  }
+}

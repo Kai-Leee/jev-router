@@ -1,7 +1,7 @@
 import { openSync, writeFileSync, fsyncSync, closeSync, renameSync, linkSync, unlinkSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { prepareDecision } from '../client.mjs';
+import { prepareDecision, getHttpErrorDiagnostics } from '../client.mjs';
 import { BUDGET_ERROR_CODES } from './budget.mjs';
 
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -12,6 +12,17 @@ const gateCodes = new Set(['INVALID_CONFIG', 'INVALID_INPUT', 'BUDGET_EXHAUSTED'
   'DECISION_FAILED', 'INVALID_DECISION', 'RECORD_FAILED', 'STATE_RECORD_FAILED', 'EXECUTION_UNCERTAIN',
   'MCP_TRANSPORT_FAILED', ...BUDGET_ERROR_CODES]);
 const fail = code => { throw Object.assign(new Error(code), { code }); };
+
+function httpFailureDetails(error, code) {
+  const httpStatus = code === 'HTTP_ERROR' && Number.isInteger(error?.status)
+    && error.status >= 100 && error.status <= 599 ? error.status : null;
+  // Bounded reconciliation hints only; never preserve raw headers, body or error text.
+  const providerRunId = code === 'HTTP_ERROR' && identifier(error?.runId) && !/[\r\n]/.test(error.runId) ? error.runId : null;
+  const retryAfter = code === 'HTTP_ERROR' && typeof error?.retryAfterMs === 'number'
+    && Number.isFinite(error.retryAfterMs) && error.retryAfterMs >= 0 && error.retryAfterMs <= 86_400_000 ? error.retryAfterMs : null;
+  return { http_status: httpStatus, provider_run_id: providerRunId, retry_after_ms: retryAfter,
+    error_diagnostics: code === 'HTTP_ERROR' ? getHttpErrorDiagnostics(error) : null };
+}
 
 // Empty IDs are retained for legacy/offline callers; supplied IDs are complete
 // and validated. A runner supplies the same identifiers to both providers.
@@ -111,7 +122,13 @@ export function createMeasuredDecider({ client, record, identifiers: suppliedIde
   let stopped = false;
   return async (request, context) => {
     if (stopped) fail('DECIDER_STOPPED');
-    const prepared = prepareDecision(request);
+    let prepared;
+    try { prepared = prepareDecision(request); }
+    catch (error) {
+      // Local validation has not transmitted an inference request.
+      const code = errorCodes.has(error?.code) ? error.code : 'INVALID_REQUEST';
+      throw Object.assign(new Error(code), { code, outcomeUncertain: false });
+    }
     const linkage = linkedContext(identifiers, context);
     const persist = async event => {
       try { await record({ ...event, ...linkage }); }
@@ -126,8 +143,9 @@ export function createMeasuredDecider({ client, record, identifiers: suppliedIde
       } catch (error) {
         stopped = true;
         const code = errorCodes.has(error?.code) ? error.code : 'MODEL_LOOKUP_FAILED';
-        await persist({ event: 'model_lookup_failed', provider: 'jev', phase: 'model_lookup', status: 'failed', code, recovery_allowed: false });
-        fail(code);
+        const details = httpFailureDetails(error, code);
+        await persist({ event: 'model_lookup_failed', provider: 'jev', phase: 'model_lookup', status: 'failed', code, ...details, recovery_allowed: false });
+        throw Object.assign(new Error(code), { code, ...details, status: details.http_status, outcomeUncertain: false });
       }
       await persist({ event: 'model_lookup', provider: 'jev', phase: 'model_lookup', models: result.models, receipt: result.receipt });
       modelsChecked = true;
@@ -142,9 +160,10 @@ export function createMeasuredDecider({ client, record, identifiers: suppliedIde
       } catch (error) {
         stopped = true;
         const code = errorCodes.has(error?.code) ? error.code : 'BUDGET_PREFLIGHT_FAILED';
+        const details = httpFailureDetails(error, code);
         await persist({ event: 'budget_blocked', provider: 'jev', phase: 'decision', code,
-          budget: budget.snapshot(), outcome_uncertain: false, recovery_allowed: false });
-        throw Object.assign(new Error(code), { code, outcomeUncertain: false });
+          ...details, budget: budget.snapshot(), outcome_uncertain: false, recovery_allowed: false });
+        throw Object.assign(new Error(code), { code, ...details, status: details.http_status, outcomeUncertain: false });
       }
       await persist({ event: 'budget_reserved', provider: 'jev', phase: 'decision', request_id: requestId, budget: budget.snapshot() });
     }
@@ -156,10 +175,11 @@ export function createMeasuredDecider({ client, record, identifiers: suppliedIde
       stopped = true;
       const code = errorCodes.has(error?.code) ? error.code : 'DECISION_FAILED';
       const uncertain = error?.outcomeUncertain !== false;
+      const details = httpFailureDetails(error, code);
       await persist({ event: 'inference_finished', provider: 'jev', phase: 'decision', request_id: requestId,
-        status: uncertain ? 'uncertain' : 'failed', code, outcome_uncertain: uncertain, recovery_allowed: false,
+        status: uncertain ? 'uncertain' : 'failed', code, ...details, outcome_uncertain: uncertain, recovery_allowed: false,
         duration_ms: Math.max(0, Math.round(clock() - started)) });
-      throw Object.assign(new Error(code), { code, outcomeUncertain: uncertain });
+      throw Object.assign(new Error(code), { code, ...details, status: details.http_status, outcomeUncertain: uncertain });
     }
     await persist({ event: 'inference_finished', provider: 'jev', phase: 'decision', request_id: requestId, status: 'completed',
       model: response.model, usage: response.usage, billing: response.billing, receipt: response.receipt,

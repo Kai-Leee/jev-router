@@ -1,0 +1,67 @@
+{
+  "observed_date": "2026-10-10",
+  "upstream_commit": "b11ac067b1dfe8ce8b6db245d88756f426007797",
+  "method": "instruction.md raw bytes and sha256; task.toml declared metadata only; no hidden tests or solutions read",
+  "tasks": [
+    {
+      "task": "pytest-check",
+      "instruction_bytes": 8648,
+      "spec_sha256": "712095a7fe9bfb56d2a8c40a168f1df80c72f11bdf89374a5229a3b339442b7f",
+      "declared_tests": 30,
+      "language": "Python",
+      "cpus": 6,
+      "memory_mb": 8192,
+      "agent_timeout_sec": 14400.0
+    },
+    {
+      "task": "diskcache",
+      "instruction_bytes": 17340,
+      "spec_sha256": "71bc8782a2c55a73ceb4819567ce4c47728d8c64cc26dedcda4d66277ca6f703",
+      "declared_tests": 60,
+      "language": "Python",
+      "cpus": 6,
+      "memory_mb": 8192,
+      "agent_timeout_sec": 14400.0
+    },
+    {
+      "task": "openapi_python_client",
+      "instruction_bytes": 19656,
+      "spec_sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+      "declared_tests": 63,
+      "language": "Python",
+      "cpus": 6,
+      "memory_mb": 8192,
+      "agent_timeout_sec": 14400.0
+    },
+    {
+      "task": "graphql-core",
+      "instruction_bytes": 24404,
+      "spec_sha256": "ea1d2f19ca6e68ab7bcb59c924ffa66e7daf6aa687805cd4b1500d7e74150a5e",
+      "declared_tests": 22,
+      "language": "Python",
+      "cpus": 6,
+      "memory_mb": 8192,
+      "agent_timeout_sec": 14400.0
+    },
+    {
+      "task": "apscheduler",
+      "instruction_bytes": 7774,
+      "spec_sha256": "314225304e31adbfb68ef9b210ee0f7b88fe12851522c4294cbd5da890faff85",
+      "declared_tests": 21,
+      "language": "Python",
+      "cpus": 6,
+      "memory_mb": 8192,
+      "agent_timeout_sec": 14400.0
+    },
+    {
+      "task": "mongita",
+      "instruction_bytes": 16459,
+      "spec_sha256": "6ce2af3e6772330ebc00d49d153aaf9b6c8580f7dacabdebe9b94482a72656dc",
+      "declared_tests": 24,
+      "language": "Python",
+      "cpus": 6,
+      "memory_mb": 8192,
+      "agent_timeout_sec": 14400.0
+    }
+  ]
+}

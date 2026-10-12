@@ -8,8 +8,8 @@ export function safeArtifactPath(path){
   if(typeof path!=='string'||!path||path.length>240||path.includes('\\')||path.startsWith('/')||path.split('/').some(p=>!p||p==='.'||p==='..'||p.startsWith('.git'))||!/^[-a-zA-Z0-9_./]+$/.test(path))fail('INVALID_ARTIFACT_PATH');
   return path;
 }
-export function validatePlan(plan){
-  if(!plan||!Array.isArray(plan.tasks)||plan.tasks.length<2||plan.tasks.length>4||typeof plan.integrationInstructions!=='string'||!plan.integrationInstructions.trim())fail('INVALID_PLAN');
+export function validatePlan(plan,{minTasks=2}={}){
+  if(![1,2].includes(minTasks)||!plan||!Array.isArray(plan.tasks)||plan.tasks.length<minTasks||plan.tasks.length>5||typeof plan.integrationInstructions!=='string'||!plan.integrationInstructions.trim())fail('INVALID_PLAN');
   const ids=new Set(),paths=new Set();
   for(const task of plan.tasks){
     if(!/^[a-zA-Z][a-zA-Z0-9_-]{0,39}$/.test(task.id)||ids.has(task.id)||typeof task.description!=='string'||!task.description.trim()||!Array.isArray(task.paths)||!task.paths.length||!Array.isArray(task.dependsOn))fail('INVALID_TASK');
@@ -36,8 +36,8 @@ export function splitPolicies(answer){
   return [.5,.65,.8].map(threshold=>({threshold,probability:p,evidence:e,action:e==='insufficient'?'collect_evidence':p>=threshold?'split':'single'}));
 }
 // No generated command is executed. Caller owns a new private directory.
-export async function runFileArm({plan,brief,mode,outputDir,call,record=async()=>{},maxConcurrency=2,profile={model:'fixture-model',effort:'medium'},inputMode='legacy'}){
-  plan=validatePlan(plan);
+export async function runFileArm({plan,brief,mode,outputDir,call,record=async()=>{},maxConcurrency=2,profile={model:'fixture-model',effort:'medium'},inputMode='legacy',allowSingleTask=false}){
+  plan=validatePlan(plan,{minTasks:allowSingleTask?1:2});
   if(!['single','split'].includes(mode)||![1,2].includes(maxConcurrency)||!['legacy','deduplicated','projected'].includes(inputMode))fail('INVALID_ARM');
   mkdirSync(outputDir,{mode:0o700});
   const started=performance.now(),completed=new Set(),files=[],receipts=[];

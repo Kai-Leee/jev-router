@@ -1,0 +1,922 @@
+{
+  "schema_version": "jev-requirement-manifest/v1",
+  "goal": "Build pyclientgen to satisfy the complete public OpenAPI Python HTTP client specification.",
+  "requirements": [
+    {
+      "id": "R01",
+      "title": "pyclientgen",
+      "source": "# pyclientgen\n\nBuild `pyclientgen`, a command-line tool that reads an **OpenAPI 3.0 / 3.1**\ndocument and generates a complete, ready-to-use **Python HTTP client package** for\nthat API. The generated package contains typed model classes for every schema, one\ncallable function per API operation (built on `httpx`), and a small runtime support\nlayer.\n\nYour project must install a console-script entry point named **`pyclientgen`** (so\nthat, after `pip install -e .`, running `pyclientgen` on the command line works).\n\nThe generated client code imports **`httpx`** (HTTP transport) and uses\nvalue-equality data classes for models. The generator must read both JSON and YAML documents.\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 1,
+        "end_line": 14,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Generate a complete Python HTTP client from OpenAPI 3.0 or 3.1 JSON and YAML; install the pyclientgen console entry point."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyproject.toml",
+        "setup.sh",
+        "pyclientgen/cli.py"
+      ],
+      "required_artifacts": [],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Global product accountability anchored to packaging/entry point; full goal completion remains global verifier responsibility."
+      }
+    },
+    {
+      "id": "R02",
+      "title": "Dependencies",
+      "source": "## Dependencies\n\nThe environment is **fully offline** — there is no network access, and you **must not install\nanything** (no `pip install`, no downloads). All dependencies you need are **already installed**;\njust `import` them. The project is installed by a `setup.sh` that also runs offline (see *setup.sh*\nbelow). Available runtime libraries include:\n\n- **`httpx`** — HTTP transport used by the generated client code.\n- **`attrs`** — convenient value-equality data classes (the standard-library `dataclasses` module\n  is also available if you prefer it for the models).\n- **`ruamel.yaml`** — a YAML parser/loader, for reading YAML OpenAPI documents (JSON documents are\n  read with the standard-library `json` module). `pyyaml` is **not** installed; use `ruamel.yaml`.\n- **`pydantic`**, **`jinja2`**, **`typer`** (with `shellingham`), and **`ruff`** — also installed and\n  available should your generator implementation make use of templating, structured parsing, a CLI\n  framework, or a code formatter.\n\nDeclare these as your project's runtime dependencies in your packaging metadata as appropriate;\nthey are already present in the environment, so `setup.sh` will not need to fetch them.\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 15,
+        "end_line": 33,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Use only already installed dependencies and offline setup; use ruamel.yaml rather than unavailable pyyaml."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyproject.toml",
+        "setup.sh"
+      ],
+      "required_artifacts": [
+        "pyproject.toml",
+        "setup.sh"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R03",
+      "title": "Command line",
+      "source": "## Command line\n\n```\npyclientgen generate [OPTIONS]\n```\n\nOptions:\n\n- `--path PATH` — read the OpenAPI document from a local file.\n- `--url URL` — read it from a URL. Exactly one of `--path` / `--url` is required;\n  giving both, or neither, is an error (non-zero exit).\n- `--output-path PATH` — where to write the generated code (see *Output layout*).\n- `--meta {none,poetry,setup,pdm,uv}` — what project metadata to emit (default\n  `poetry`).\n- `--config PATH` — a JSON or YAML configuration file (see *Configuration*).\n- `--overwrite` — overwrite an existing output directory (otherwise an existing\n  directory is an error).\n- `--fail-on-warning` — exit non-zero if any warning was produced (by default\n  warnings do not change the exit code).\n\nA `.json` source is parsed as JSON; anything else is parsed as YAML.\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 34,
+        "end_line": 55,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Implement every documented CLI option, defaults, mutual exclusion and non-zero error behavior; parse .json as JSON and other sources as YAML."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/cli.py",
+        "pyclientgen/generator.py",
+        "pyclientgen/loader.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/cli.py",
+        "pyclientgen/generator.py",
+        "pyclientgen/loader.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R04",
+      "title": "Output layout",
+      "source": "## Output layout\n\nThe generated package and project names are derived from the document's\n`info.title`:\n\n- **project name** = kebab-case(title) + `-client` (e.g. title `My Cool API` →\n  `my-cool-api-client`).\n- **package name** = the project name with `-` replaced by `_` (e.g.\n  `my_cool_api_client`). This is the importable Python package.\n\nWhere files land depends on `--meta` and `--output-path`:\n\n- With `--meta none`: only the importable package is emitted (no project metadata).\n  If `--output-path P` is given, the package's contents are written directly into\n  `P`; otherwise they are written into `./<package_name>`.\n- With any other `--meta`: a **project directory** is emitted (named `<project>` by\n  default, or `--output-path` if given) containing project metadata plus the\n  package in a `<package_name>/` subdirectory.\n\nThe package contains:\n\n- `<package>/__init__.py`\n- `<package>/types.py` — shared runtime types (below).\n- `<package>/client.py` — `Client` and `AuthenticatedClient`.\n- `<package>/errors.py` — `UnexpectedStatus`.\n- `<package>/models/__init__.py` and one module per schema. Each schema module is\n  named in snake_case and defines a class named in PascalCase; `models/__init__.py`\n  re-exports every model/enum class.\n- `<package>/api/__init__.py`, and for each tag a package `<package>/api/<tag>/`\n  with one module per operation. The operation module is named after the\n  operation's `operationId` in snake_case. Operations without a tag go under the tag\n  `default`.\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 56,
+        "end_line": 88,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Emit the documented package, model, API and metadata layout for each output-path/meta combination."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/generator.py",
+        "pyclientgen/meta.py",
+        "pyclientgen/gen_models.py",
+        "pyclientgen/gen_endpoints.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/generator.py",
+        "pyclientgen/meta.py",
+        "pyclientgen/gen_models.py",
+        "pyclientgen/gen_endpoints.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R05",
+      "title": "Naming",
+      "source": "### Naming\n\n- A schema's class name is the PascalCase of its `components/schemas` key; its\n  module is the snake_case of that name. This class-naming rule applies to **object**\n  and **enum** schemas — the ones that become a generated class. A `oneOf`/`anyOf`/\n  multi-type (union) schema does **not** become its own generated class referenced by\n  name (see *Unions*).\n- An **inline** schema (an object/enum defined directly under a property rather than\n  referenced) is named after its owning class followed by the PascalCase of the\n  property name — e.g. property `inlineEnumProp` of `MyModel` → class\n  `MyModelInlineEnumProp`.\n- An **inline request-body** schema (defined directly under\n  `requestBody.content.<media>.schema` rather than referenced) becomes a model class\n  named after the operation's `operationId` in PascalCase with a `Body` suffix — e.g.\n  operation `operationId: uploadThing` → class `UploadThingBody`, module\n  `upload_thing_body`.\n- A model **attribute** name is the snake_case of the JSON property name, while the\n  original JSON name is preserved for serialization (so `stringProp` ⇄ attribute\n  `string_prop`). An operation parameter keyword is the snake_case of the parameter\n  name.\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 89,
+        "end_line": 109,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Apply the exact class/module/property/parameter, inline schema and inline request-body naming rules; do not generate named union classes."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/naming.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/gen_models.py",
+        "pyclientgen/gen_endpoints.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/naming.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/gen_models.py",
+        "pyclientgen/gen_endpoints.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R06",
+      "title": "`types.py`",
+      "source": "## `types.py`\n\n- `Unset` — a class whose instances are falsy; `UNSET` is its singleton instance,\n  used as the default for every optional value (meaning \"not provided\").\n- `File` — a value class constructed as\n  `File(payload=<binary stream>, file_name=<str|None>, mime_type=<str|None>)`, with a\n  method `to_tuple()` returning `(file_name, payload, mime_type)`.\n- `Response` — a generic class with attributes `status_code`, `content`, `headers`,\n  `parsed`.\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 110,
+        "end_line": 119,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Generated Unset is falsy with singleton UNSET; File.to_tuple and generic Response have all specified fields."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/runtime_templates.py",
+        "pyclientgen/gen_models.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/runtime_templates.py",
+        "pyclientgen/gen_models.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R07",
+      "title": "Models",
+      "source": "## Models\n\nEach object schema becomes a data class supporting **value-based equality** with:\n\n- A constructor taking the properties. **Required** properties have no default;\n  **optional** properties default to `UNSET`. Additional/free-form properties (see\n  below) are *not* constructor parameters.\n- `to_dict() -> dict` — serialize to a JSON-ready dict, using the original JSON\n  property names. Optional properties whose value is `UNSET` are omitted.\n- `from_dict(data: Mapping) -> Model` (classmethod) — parse a JSON dict. A missing\n  **required** property raises `KeyError`. A non-mapping argument raises.\n\nEach property is declared as a **class-level attribute annotation** on the model\nclass (i.e. `attr_name: <annotation>` in the class body, as attrs/dataclass models\ndo), so every property is discoverable in the class's `__annotations__` — not carried\nonly on the `__init__` signature. Model attribute **annotations are strings** (PEP 563\n/ `from __future__ import annotations`). For an optional property the annotation is\n`<type> | Unset`; for a required property it is just `<type>`. (The order of members in\na union annotation is not significant.)\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 120,
+        "end_line": 139,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Generated models have value equality, correct required/optional constructors, class-level string annotations, JSON-name serialization and required-key/mapping validation."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/gen_models.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/typecode.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/gen_models.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/typecode.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R08",
+      "title": "Property types",
+      "source": "### Property types\n\n| Schema | Python type (annotation) | Decode/encode |\n|--------|--------------------------|---------------|\n| `boolean` | `bool` | as-is |\n| `string` | `str` | as-is |\n| `integer` | `int` | as-is |\n| `number` | `float` | as-is |\n| `\"null\"` | `None` | as-is |\n| empty schema `{}` | `Any` | as-is |\n| `string`,`format: date` | `datetime.date` | ISO 8601 string ⇄ `date` |\n| `string`,`format: date-time` | `datetime.datetime` | ISO 8601 string ⇄ `datetime` |\n| `string`,`format: uuid` | `UUID` | string ⇄ `uuid.UUID` |\n| `string`, unknown format | `str` | as-is (unknown formats fall back to string) |\n| `$ref` to an object schema | that class | nested `to_dict`/`from_dict` |\n| `array` with `items: S` | `list[<S>]` | element-wise |\n| `array` with `items: {}` | `list[Any]` | as-is |\n\n`$ref` chains (a schema that is only `{$ref: ...}` pointing at another, etc.) resolve\nto the final concrete schema. `allOf` **merges** the listed schemas' properties into\none class (so an `allOf` of a base object plus extra properties yields a class with\nall of them).\n\nAn `array` with `prefixItems` (with or without `items`) is decoded as a `list` whose\nelement annotation is the **union of all the prefix/item element types**, e.g.\n`prefixItems: [ObjA, string]` → `list[ObjA | str]`.\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 140,
+        "end_line": 166,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "All property types and formats round-trip as specified; resolve ref chains, merge allOf and support prefixItems unions."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/parser.py",
+        "pyclientgen/typecode.py",
+        "pyclientgen/gen_models.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/parser.py",
+        "pyclientgen/typecode.py",
+        "pyclientgen/gen_models.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R09",
+      "title": "Additional properties",
+      "source": "### Additional properties\n\nUnless a schema sets `additionalProperties: false`, a model also accepts unknown\nkeys, stored in an `additional_properties` dict (parsed per the\n`additionalProperties` schema if one is given, otherwise kept as-is). It is **not** a\nconstructor parameter. Models expose a mapping-style interface over it:\n`instance[key]`, `instance[key] = value`, `key in instance`, and an\n`additional_keys` property. `to_dict` includes these entries; `from_dict` routes\nunknown keys into it.\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 167,
+        "end_line": 176,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Additional properties obey false/free-form/typed behavior, are excluded from constructor parameters and implement the specified mapping interface."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/parser.py",
+        "pyclientgen/gen_models.py",
+        "pyclientgen/typecode.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/parser.py",
+        "pyclientgen/gen_models.py",
+        "pyclientgen/typecode.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R10",
+      "title": "Docstrings",
+      "source": "### Docstrings\n\nDocstrings use Google style (sections introduced by a `Header:` line, each entry on\nits own line, sections separated by a blank line).\n\nA model's docstring starts with the schema's `description` (if any), followed by an\n`Attributes:` section with one line per property formatted `name (type): description`.\nWhen a property has no description the line ends right after the colon\n(`name (type):`) — the colon is always present, and the `type` is the same string\nannotation used for the attribute.\n\nAn endpoint function's docstring starts with the operation's `description`, then:\n\n- an `Args:` section with one `name (type): description` line **per OpenAPI parameter\n  and for the request `body`**. The `client` argument is **not** listed. A parameter\n  with no description ends right after the colon (`name (type):`).\n- a `Returns:` section. For `sync` / `asyncio` it names the **parsed success type**\n  (e.g. `GoodResponse`, or `GoodResponse | ErrorResponse` when several status codes\n  are documented); the `*_detailed` variants instead name `Response[...]`.\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 177,
+        "end_line": 196,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Generated model and endpoint Google-style docstrings preserve descriptions, attribute/argument types and required sections including empty-description colons."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/gen_models.py",
+        "pyclientgen/gen_endpoints.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/gen_models.py",
+        "pyclientgen/gen_endpoints.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R11",
+      "title": "Enums and consts",
+      "source": "## Enums and consts\n\nA `string`/`integer` schema with an `enum` becomes an enum class whose **values** are\nthe enum values: `MyEnum(value)` returns the member, and an unknown value raises\n`ValueError`. The model attribute holds an enum member; `to_dict` writes its value.\n\nMember **names** are derived as follows:\n\n- **String enums:** if the value is a valid Python identifier it is upper-cased\n  (`\"a\"` → `A`, `\"B\"` → `B`, `\"a23\"` → `A23`); otherwise the member is named\n  `VALUE_<i>` where `i` is the value's zero-based position in the `enum` list\n  (`\"123\"` at index 3 → `VALUE_3`, `\"\"` at index 6 → `VALUE_6`). Other non-identifier\n  characters (spaces, symbols) become underscores and the result is upper-cased\n  (`\"a Thing WIth spaces\"` → `A_THING_WITH_SPACES`).\n- **Integer enums:** a value `n` is named `VALUE_<n>`, and a negative value `-n` is\n  named `VALUE_NEGATIVE_<n>` (`2` → `VALUE_2`, `-4` → `VALUE_NEGATIVE_4`).\n- **`x-enum-varnames`:** if present, this list supplies the member names. Each varname\n  is run through the **same snake_case word-splitting used elsewhere** (split on\n  whitespace and non-identifier characters **and** on lowercase→uppercase / acronym\n  case boundaries), the resulting words are joined with single underscores, and the\n  whole thing is upper-cased — so `\"One\"` → `ONE`, `\"More than OnE\"` →\n  `MORE_THAN_ON_E` (the `On|E` case boundary adds an underscore), `\"not_quite_four\"` →\n  `NOT_QUITE_FOUR`, and `\"Negative Four\"` → `NEGATIVE_FOUR`.\n\nA schema combining an enum with `\"null\"` (via `oneOf` with `type: \"null\"`, or a type\nlist including `\"null\"`) makes the property nullable: annotation `<Enum> | None`,\naccepting and round-tripping `None`. An enum of only `[null]` is just `None`.\n\nA property with a `const` value is fixed to that value: `from_dict` accepts the const\nvalue and rejects anything else with `ValueError`.\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 197,
+        "end_line": 227,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Enums, varnames, nullable enums and const validation follow the exact value, naming, exception and serialization rules."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/naming.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/gen_models.py",
+        "pyclientgen/typecode.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/naming.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/gen_models.py",
+        "pyclientgen/typecode.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R12",
+      "title": "`literal_enums` mode",
+      "source": "### `literal_enums` mode\n\nWhen the configuration sets `literal_enums: true`, enums are generated as\n`typing.Literal[...]` **type aliases** instead of enum classes (so the generated\n`MyEnum` equals `Literal[<values...>]`), and the model attribute holds the raw value.\nAn invalid value passed to `from_dict` raises `TypeError` (rather than `ValueError`).\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 228,
+        "end_line": 234,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "literal_enums emits Literal aliases and raw values with TypeError on invalid decode."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/config.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/gen_models.py",
+        "pyclientgen/typecode.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/config.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/gen_models.py",
+        "pyclientgen/typecode.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R13",
+      "title": "Unions",
+      "source": "## Unions\n\n`oneOf`, `anyOf`, and multi-type schemas (`type: [\"string\", \"integer\"]`) become a\nunion. The annotation is the union of the member type spellings (plus `None` if\nnullable, plus `Unset` if optional). A union schema is **inlined as this member union\nwherever it is referenced**, including through a `$ref` (or an `allOf` wrapper): a\n`$ref` that resolves to a `oneOf`/`anyOf`/multi-type schema is expanded into the union\nof its member type spellings at the reference site — it is **not** referenced by the\nunion schema's own generated name. For example, a top-level union schema\n`ThingAOrB: {oneOf: [$ref ThingA, $ref ThingB]}` referenced by a property\n`thing: {$ref: ThingAOrB}` yields the annotation `ThingA | ThingB` (plus `| Unset` if\n`thing` is optional), never `ThingAOrB`. On decode, the matching member is chosen:\nobjects are disambiguated by their **required properties**, an object is told apart\nfrom a scalar by the JSON value's shape, and nested unions are flattened. On encode,\nthe concrete value's type selects how it is serialized.\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 235,
+        "end_line": 250,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Unions inline member spellings through references, flatten nested unions, disambiguate object/scalar and required keys, and encode concrete values."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/parser.py",
+        "pyclientgen/typecode.py",
+        "pyclientgen/gen_models.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/parser.py",
+        "pyclientgen/typecode.py",
+        "pyclientgen/gen_models.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R14",
+      "title": "Defaults",
+      "source": "## Defaults\n\nA property's `default` becomes the attribute's default value, converted to the\nproperty's Python type, so a model constructed with no arguments carries those\ndefaults. Conversions include: `date`/`date-time`/`uuid` strings parsed to their\nobjects; a numeric string default for an `integer`/`number` parsed to `int`/`float`\n(`\"4\"` → `4`, `\"5.5\"` → `5.5`); a string default for a `boolean` (`\"True\"`/`\"true\"` →\n`True`, `\"False\"`/`\"false\"` → `False`). An enum default may be given via an `allOf`\nwrapper around the enum `$ref`.\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 251,
+        "end_line": 260,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Defaults convert to the specified Python types including numeric/boolean strings, temporal values, UUID and enum allOf wrappers."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/parser.py",
+        "pyclientgen/typecode.py",
+        "pyclientgen/gen_models.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/parser.py",
+        "pyclientgen/typecode.py",
+        "pyclientgen/gen_models.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R15",
+      "title": "Client",
+      "source": "## Client\n\n`<package>.client` defines `Client` and `AuthenticatedClient` (value classes):\n\n- Both take `base_url` and an optional keyword `raise_on_unexpected_status`\n  (default `False`). `AuthenticatedClient` additionally takes `token`, and optional\n  `prefix` (default `\"Bearer\"`) and `auth_header_name` (default `\"Authorization\"`).\n- `set_httpx_client(httpx_client)` installs an explicit `httpx.Client`;\n  `get_httpx_client()` returns it, constructing one from the stored settings if none\n  was set. (`AuthenticatedClient.get_httpx_client()` adds the header\n  `auth_header_name: \"<prefix> <token>\"`.) The matching\n  `set_async_httpx_client(async_client)` / `get_async_httpx_client()` manage an\n  `httpx.AsyncClient` the same way, for the async endpoint functions.\n- `with_headers(mapping)` returns a **new** client like this one but with the given\n  headers merged in. (Equivalent `with_cookies` / `with_timeout` also exist.)\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 261,
+        "end_line": 276,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Client and AuthenticatedClient implement defaults, lazy/injected sync and async transports, authorization header and immutable with_* settings."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/runtime_templates.py",
+        "pyclientgen/gen_models.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/runtime_templates.py",
+        "pyclientgen/gen_models.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R16",
+      "title": "Endpoints",
+      "source": "## Endpoints\n\nEach operation module defines four functions, all keyword-only, taking `client=`\nplus the operation's parameters and (if there is a request body) `body=`:\n\n- `sync_detailed(...) -> Response[...]` — make the request and return a full\n  `Response` (`status_code` as an `http.HTTPStatus`, `content`, `headers`, and\n  `parsed`).\n- `sync(...)` — return just `Response.parsed`.\n- `asyncio_detailed(...)` / `asyncio(...)` — the async equivalents.\n\nRequest building:\n\n- The URL is the path template with `{param}` placeholders replaced by the path\n  arguments, **percent-encoding** characters that are not allowed unescaped in a path\n  segment (`/` → `%2F`, space → `%20`, `#` → `%23`, `?` → `%3F`, `&` → `%26`, etc.).\n- Query parameters go in a `params` dict (an enum value is serialized to its value;\n  an array value is passed through as a `list` so the key repeats; optional\n  parameters left unset are omitted).\n- A request body is sent according to its media type: `application/json` →\n  `json=body.to_dict()`; `multipart/form-data` → `files=body.to_multipart()` (a list\n  of `(field-name, file-tuple)` pairs, where a binary `File` property contributes its\n  `to_tuple()` and scalar fields contribute `(None, <bytes>, \"text/plain\")`);\n  `application/x-www-form-urlencoded` → `data=body.to_dict()`;\n  `application/octet-stream` → `content=<bytes>`.\n- When there is a request body, the request also carries a `Content-Type` request\n  header equal to the body's media type (e.g. `application/x-www-form-urlencoded`, or a\n  `multipart/form-data` value for a multipart body).\n- The request is issued via `client.get_httpx_client().request(method=..., url=...,\n  ...)`; the async functions instead await\n  `client.get_async_httpx_client().request(...)`.\n\nResponse handling: for each **documented** status code the body is parsed to the\ndeclared type (a model via `from_dict`, a `list` of such, etc.) and returned as\n`Response.parsed`. For an **undocumented** status code, `parsed` is `None`, unless the\nclient was created with `raise_on_unexpected_status=True`, in which case\n`errors.UnexpectedStatus` is raised.\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 277,
+        "end_line": 314,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Every operation has four keyword-only sync/async functions, exact path/query/body/content-type construction and documented/undocumented response behavior."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/gen_endpoints.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/typecode.py",
+        "pyclientgen/runtime_templates.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/gen_endpoints.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/typecode.py",
+        "pyclientgen/runtime_templates.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R17",
+      "title": "Configuration file",
+      "source": "## Configuration file\n\n`--config` accepts JSON or YAML with these keys (all optional):\n\n- `post_hooks` — a list of shell commands run in the output directory after\n  generation (e.g. a code formatter). An **empty list disables** post-processing. A\n  command that is not found produces a warning, not a failure.\n- `literal_enums` — boolean (see *literal_enums mode*).\n- `class_overrides` — a map from a schema's generated class name to\n  `{class_name, module_name}`, renaming both the class and its module.\n- `field_prefix` — a string (default `\"field_\"`) prepended to property names that are\n  not valid Python identifiers (e.g. those starting with a digit or underscore), to\n  form the attribute name.\n\n(Other passthrough options such as `project_name_override`, `package_name_override`,\nand `package_version_override` may also be supported but are not required here.)\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 315,
+        "end_line": 331,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "JSON/YAML configuration implements post_hooks, literal_enums, class_overrides and field_prefix; optional passthrough keys remain optional."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/config.py",
+        "pyclientgen/generator.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/naming.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/config.py",
+        "pyclientgen/generator.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/naming.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R18",
+      "title": "Project metadata (`--meta`)",
+      "source": "## Project metadata (`--meta`)\n\n- `poetry` (default): emit a `pyproject.toml` (with the project `name`, a `version`\n  taken from the document's `info.version`, and the runtime dependencies), a\n  `README.md`, a `.gitignore`, and the package in its subdirectory.\n- `setup`: as `poetry` plus a `setup.py`.\n- `pdm` / `uv`: `pyproject.toml` variants.\n- `none`: emit only the package (no project metadata).\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 332,
+        "end_line": 340,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Emit the specified metadata for poetry/setup/pdm/uv/none, including document version and runtime dependencies."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/meta.py",
+        "pyclientgen/generator.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/meta.py",
+        "pyclientgen/generator.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R19",
+      "title": "Diagnostics",
+      "source": "## Diagnostics\n\n- A schema the generator cannot process is reported as a **warning** on the\n  generator's output (stdout/stderr) that **names the schema** (by its name, e.g. in a\n  `/components/schemas/<Name>` reference); that schema is omitted from the output, the\n  rest of the client is still generated, and the command exits **0** (unless\n  `--fail-on-warning` is given, which makes it exit non-zero). Schemas treated as\n  unprocessable include an `enum` whose values are not all of one type (e.g. mixing a\n  string and an integer) and an `array` schema with neither `items` nor `prefixItems`.\n- A **circular** `$ref` chain reached through a property is detected and reported\n  (the message contains `Circular`); the affected schema is dropped and generation\n  still completes (exit 0).\n- The following are **fatal** (non-zero exit) with a message containing the quoted\n  text: invalid JSON in a `.json` source → `Invalid JSON`; invalid YAML →\n  `Invalid YAML`; a document that is not a valid OpenAPI document or is missing a\n  required field (`openapi`, `info.title`, `info.version`, or `paths`) →\n  `Failed to parse OpenAPI document`; a Swagger/OpenAPI 2.0 document → a message\n  mentioning `Swagger`.\n\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 341,
+        "end_line": 359,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Diagnostics distinguish recoverable schema warnings/circular refs from fatal parse/version errors and obey fail-on-warning."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "pyclientgen/loader.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/cli.py"
+      ],
+      "required_artifacts": [
+        "pyclientgen/loader.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/cli.py"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    },
+    {
+      "id": "R20",
+      "title": "setup.sh",
+      "source": "## setup.sh\n\nWrite a `setup.sh` that installs your package so the `pyclientgen` command is\navailable. The environment is offline and the build backend is pre-installed, so install\n**without** build isolation:\n\n```bash\npip install -e . --no-build-isolation\n```\n",
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 360,
+        "end_line": 368,
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+      },
+      "acceptance": [
+        "Provide setup.sh installing offline with pip install -e . --no-build-isolation."
+      ],
+      "constraints": [],
+      "interfaces": [],
+      "gaps": [],
+      "artifact_paths": [
+        "setup.sh",
+        "pyproject.toml"
+      ],
+      "required_artifacts": [
+        "setup.sh",
+        "pyproject.toml"
+      ],
+      "artifact_mapping_provenance": {
+        "kind": "derived shared-design traceability",
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "basis": "Public requirement behavior mapped to function responsibilities in the historical design, not literal artifact paths demanded by the public brief.",
+        "limitation": "Relevance and dependency availability are partial checks; they do not prove that implementation satisfies behavior."
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "pyclientgen/__init__.py",
+      "purpose": "Generator package initialization.",
+      "dependency_paths": [],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "pyclientgen/__main__.py",
+      "purpose": "Python module entry point invoking the CLI.",
+      "dependency_paths": [
+        "pyclientgen/cli.py"
+      ],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "pyclientgen/cli.py",
+      "purpose": "generate CLI command and documented options, diagnostics and exit behavior.",
+      "dependency_paths": [
+        "pyclientgen/config.py",
+        "pyclientgen/generator.py"
+      ],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "pyclientgen/config.py",
+      "purpose": "Config dataclass and load_config(path|None), including documented settings and defaults.",
+      "dependency_paths": [],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "pyclientgen/gen_endpoints.py",
+      "purpose": "render_api_files(data,config) -> dict of package-relative API paths and source.",
+      "dependency_paths": [
+        "pyclientgen/ir.py",
+        "pyclientgen/typecode.py"
+      ],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "pyclientgen/gen_models.py",
+      "purpose": "render_model_files(data,config) -> dict of package-relative paths and source, covering generated models and runtime files.",
+      "dependency_paths": [
+        "pyclientgen/ir.py",
+        "pyclientgen/typecode.py",
+        "pyclientgen/runtime_templates.py"
+      ],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "pyclientgen/generator.py",
+      "purpose": "Orchestrate loading, parsing, rendering, output directory/overwrite rules and post hooks.",
+      "dependency_paths": [
+        "pyclientgen/config.py",
+        "pyclientgen/loader.py",
+        "pyclientgen/parser.py",
+        "pyclientgen/gen_models.py",
+        "pyclientgen/gen_endpoints.py",
+        "pyclientgen/meta.py"
+      ],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "pyclientgen/ir.py",
+      "purpose": "Shared dataclasses and GeneratorError. Defines TypeRef, PropertyDef, ModelDef, EnumDef, ParamDef, BodyDef, ResponseDef, EndpointDef and GeneratorData using the shared interface contract.",
+      "dependency_paths": [],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "pyclientgen/loader.py",
+      "purpose": "load_document(path|None,url|None) -> dict, JSON/YAML and httpx URL loading with GeneratorError diagnostics.",
+      "dependency_paths": [
+        "pyclientgen/ir.py"
+      ],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "pyclientgen/meta.py",
+      "purpose": "render_meta(data,meta) -> dict of project-root-relative metadata paths and source.",
+      "dependency_paths": [],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "pyclientgen/naming.py",
+      "purpose": "Naming functions: split_words, snake_case, pascal_case, kebab_case, python_identifier, enum_member_names, project_name and package_name.",
+      "dependency_paths": [],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "pyclientgen/parser.py",
+      "purpose": "parse_document(doc,config) -> GeneratorData, implementing schema/operation semantics and warning handling.",
+      "dependency_paths": [
+        "pyclientgen/ir.py",
+        "pyclientgen/config.py",
+        "pyclientgen/naming.py"
+      ],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "pyclientgen/runtime_templates.py",
+      "purpose": "TYPES_PY, CLIENT_PY and ERRORS_PY source constants for generated runtime modules.",
+      "dependency_paths": [],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "pyclientgen/typecode.py",
+      "purpose": "annotation(TypeRef), imports(TypeRef), decode_lines(TypeRef,src,dest), encode_lines(TypeRef,src,dest) Python source helpers.",
+      "dependency_paths": [
+        "pyclientgen/ir.py"
+      ],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "pyproject.toml",
+      "purpose": "Offline-installable generator package metadata, dependencies and pyclientgen console entry point.",
+      "dependency_paths": [],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    },
+    {
+      "path": "setup.sh",
+      "purpose": "Offline editable installation without build isolation.",
+      "dependency_paths": [],
+      "source_ref": {
+        "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+        "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+        "kind": "reused_generated_design"
+      },
+      "dependency_note": "Known shared API producer/consumer facts from the historical design, not task readiness or preassigned ownership. Empty lists mean no dependency asserted here, not proof of independence."
+    }
+  ],
+  "integrationInstructions": "Package root: pyclientgen/ at the artifact root (/app), installed by setup.sh with an offline `pip install -e . --no-build-isolation`.\n\nShared contracts (ownership will be assigned by the current decomposition):\n- ir.py: TypeRef, PropertyDef, ModelDef, EnumDef, ParamDef, BodyDef, ResponseDef, EndpointDef, GeneratorData, GeneratorError.\n- naming.py: split_words, snake_case, pascal_case, kebab_case, python_identifier, enum_member_names, project_name, package_name.\n- config.py: Config, load_config.\n- loader.py: load_document.\n- parser.py: parse_document(doc, config) -> GeneratorData.\n- typecode.py: annotation, imports, decode_lines, encode_lines.\n\nRenderer contracts:\n- gen_models.render_model_files(data, config) returns {package-relative path: source} covering types.py, client.py, errors.py and models/*.\n- gen_endpoints.render_api_files(data, config) returns api/* files.\n- generator.py merges both dicts, adds the package __init__.py and the meta files, writes them to disk, and runs post hooks.\n\nRules:\n- Renderers must not write files themselves.\n- All fatal errors are raised as GeneratorError with the brief's exact message fragments ('Invalid JSON', 'Invalid YAML', 'Failed to parse OpenAPI document', 'Swagger'). Non-fatal problems are strings appended to GeneratorData.warnings, naming the schema as /components/schemas/<Name> and containing 'Circular' for ref cycles.\n- Generated code:\n  - Uses `from __future__ import annotations`.\n  - Uses attrs for models, Client and File.\n  - Uses relative imports inside the generated package.\n  - Defines optional values as '<type> | Unset' defaulting to UNSET.\n  - Must be valid Python without running any formatter.\n- Unions are never referenced by a generated name. Only models and enums get modules/classes.\n- Do not modify files owned by another task.\n\nShared IR interface details reused from the historical design (not a task assignment):\nUse stdlib dataclasses. Define:\n- class GeneratorError(Exception), carrying .message.\n- TypeRef(kind:str, class_name:str|None=None, module_name:str|None=None, items:TypeRef|None=None, members:list[TypeRef]=[], const_value:Any=None, enum_values:list|None=None, required_keys:frozenset[str]=frozenset()).\n  - kind is one of: bool, str, int, float, none, any, date, datetime, uuid, file, model, enum, literal_enum, list, union, const.\n  - model, enum and literal_enum set class_name and module_name, which is the module basename under models/.\n  - For a model, required_keys holds that model's required JSON keys and is used to disambiguate unions.\n  - list uses items. Build items as a union for prefixItems.\n  - union holds flattened members. Nullable is expressed as a union member of kind none. No union is ever named.\n  - literal_enum also keeps enum_values.\n- PropertyDef(json_name, attr_name, type:TypeRef, required:bool, description:str|None, default_code:str|None).\n  - default_code is Python source for the default, already converted per the brief, e.g. datetime.date(2020, 1, 1), uuid.UUID('...'), 4, 5.5, True, MyEnum.A, or a literal value.\n- ModelDef(class_name, module_name, description, properties:list[PropertyDef], additional_properties:TypeRef|None|False, is_multipart:bool=False).\n  - False means additionalProperties:false.\n  - None means free-form (Any).\n- EnumDef(class_name, module_name, description, value_type:'str'|'int', members:list[tuple[str, Any]], literal:bool).\n- ParamDef(name, python_name, location:'path'|'query'|'header'|'cookie', type:TypeRef, required:bool, description).\n- BodyDef(media_type:str, type:TypeRef, required:bool, description).\n- ResponseDef(status_code:int, media_type:str|None, type:TypeRef|None).\n- EndpointDef(tag, module_name, method (lowercase), path, description, params:list[ParamDef], body:BodyDef|None, responses:list[ResponseDef]).\n  - tag is the snake_case of tags[0], or 'default' when there is no tag.\n  - module_name is the snake_case of operationId, or of method+path if operationId is missing.\n- GeneratorData(title, version, description, project_name, package_name, models:list[ModelDef], enums:list[EnumDef], endpoints:list[EndpointDef], warnings:list[str]).",
+  "provenance": {
+    "public_source": {
+      "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+      "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+    },
+    "shared_design": {
+      "path": "benchmark-runs/d040-claude-01/frozen-plan.json",
+      "sha256": "f697219bc33e2df17988f4e585c000a154575854261f7dc213ccdfa3a0e3ed04",
+      "kind": "historical generated file/interface architecture",
+      "ownership_imported": false,
+      "task_dependencies_imported": false,
+      "planning_cost": "Historical generation cost not remeasured; live comparison must report reused preparation separately, not as zero-cost new architecture generation."
+    },
+    "preparation": "Deterministic public heading extraction with human-readable acceptance summaries; exact source text retained. No hidden tests or grader feedback used.",
+    "boundary": "Jev assigns requirement and file ownership and task dependencies. It does not invent these 16 file paths or shared interfaces."
+  },
+  "source_coverage": {
+    "method": "Concatenate requirement.source in ID order and compare byte-for-byte with the public source.",
+    "total_lines": 368,
+    "covered_lines": 368,
+    "source_bytes": 19656,
+    "covered_bytes": 19656,
+    "exact_reconstruction": true
+  },
+  "constraints": [
+    "No original Personal OS or vault writes.",
+    "Offline candidate execution; no downloads or dependency installation beyond the required offline setup script.",
+    "Only assigned artifact paths may be written by each worker."
+  ],
+  "unresolved_gaps": [
+    "Requirement ownership and artifact ownership must be checked for semantic compatibility; structural completeness alone cannot prove compatible allocation.",
+    "Shared architecture is supplied from prior generation; this experiment does not measure free-form architecture invention.",
+    "The complete brief remains authoritative if an acceptance summary omits a detail."
+  ]
+}

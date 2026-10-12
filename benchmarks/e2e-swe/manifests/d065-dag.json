@@ -1,0 +1,22 @@
+{
+  "schema_version": "dag-benchmark/v1",
+  "condition": "D065 actual Jev worker count and capacity-feasible atomic-file ownership with fixed Opus medium",
+  "input": "benchmarks/e2e-swe/manifests/d056-obligations.json",
+  "public_registry": "benchmarks/e2e-swe/public-checks/registry.json",
+  "public_checker_root": "benchmarks/e2e-swe/public-checks",
+  "public_environment_ref": "e2e-swe-public-python/v2",
+  "image_lock": "benchmark-runs/d040-openapi-image-lock.json",
+  "worker_profile": {"id": "opus55-medium", "model": "claude-opus-5-5", "effort": "medium"},
+  "limits": {"maximum_workers": 30, "minimum_workers": 2, "max_concurrency": 2, "wall_timeout_seconds": 14400, "maximum_decisions": 32, "planning_input_tokens": 1500000, "max_request_bytes": 240000, "max_file_bytes": 262144, "max_total_bytes": 4194304, "max_search_nodes": 100000},
+  "deadline_basis": "Root D065 instruction sets an explicit generous 14,400-second overall protocol deadline for whole completion. Each provider/check receives the remaining overall time; there is no separate 10-minute worker timeout or inherited 30-minute phase ceiling. The cumulative 10M input-token ledger remains the spending boundary.",
+  "jev_budget": {"schema_version": "jev-token-budget/v2", "ledger_path": "benchmark-runs/jev-usd1-budget.json", "max_input_tokens": 10000000, "reserve_input_tokens": 65536},
+  "count_question": "Choose the number of implementation workers for the supplied fixed atomic file tasks. Choose only a listed integer count. Every atomic task launches a fresh Claude CLI session with no conversation reuse. A complete execution launches 16 CLI sessions regardless of the logical worker count. Worker count changes only mutual-exclusion and resource assignment; all workers use the same fixed Opus medium profile and share two execution slots. Subsequent capacity-feasible choices assign each atomic file to an actual owner. Consider the public specification, declared artifact dependencies and task responsibilities under those exact execution semantics. Do not infer session savings, invent measurements or assume that maximum worker count improves completion time. Root count one is excluded by the user's policy.",
+  "decomposition_boundary": "The 16 historical public-interface file boundaries are fixed scaffolding. Jev chooses worker count and actual file ownership. This condition does not invent arbitrary new architecture or claim a free-form recursive split.",
+  "requirement_owner_basis": "Each obligation is anchored to the latest topological artifact in its declared relevance scope; the owner contributes within that file boundary. Readiness checks establish file integrity and syntax only. All substantive requirement assertions run in the final public verification task.",
+  "automatic_retries": 0,
+  "public_repairs": 0,
+  "independent_grade": "root-owned after candidate freeze; no hidden feedback enters implementation",
+  "valuation": {"usd_per_million_input_tokens": 0.6, "basis": "informational_token_pack_equivalent_not_monthly_invoice", "source": "https://jev-ai.pro/pricing", "checked_date": "2026-10-10", "calculation": "USD9 / 15 million input tokens = USD0.60 per million; actual monthly invoice and allocation unknown."},
+  "mock_fixture": "examples/dag/contract-fixture.json",
+  "mock_files": {"examples/dag/output/core.json": "{\"value\":7}\n", "examples/dag/output/ui.json": "{\"label\":\"value:7\"}\n"}
+}

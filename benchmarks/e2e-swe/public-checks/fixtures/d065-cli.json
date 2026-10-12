@@ -1,0 +1,13 @@
+{
+  "openapi": "3.1.0",
+  "info": {"title": "Public CLI", "version": "4.5.6"},
+  "paths": {
+    "/sample": {
+      "get": {
+        "operationId": "getSample",
+        "responses": {"200": {"description": "Sample", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Sample"}}}}}
+      }
+    }
+  },
+  "components": {"schemas": {"Sample": {"type": "object", "required": ["value"], "properties": {"value": {"type": "string"}}}}}
+}

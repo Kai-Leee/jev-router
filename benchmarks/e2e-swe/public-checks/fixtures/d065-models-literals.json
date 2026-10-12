@@ -1,0 +1,13 @@
+{
+  "openapi": "3.1.0",
+  "info": {"title": "D065 Public Literals", "version": "1.0.0"},
+  "paths": {},
+  "components": {"schemas": {
+    "StateEnum": {"type": "string", "enum": ["open", "closed"]},
+    "RankEnum": {"type": "integer", "enum": [2, 5]},
+    "LiteralProbe": {"type": "object", "required": ["state", "rank"], "properties": {
+      "state": {"$ref": "#/components/schemas/StateEnum"},
+      "rank": {"$ref": "#/components/schemas/RankEnum"}
+    }}
+  }}
+}

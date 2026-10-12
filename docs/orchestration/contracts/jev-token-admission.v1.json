@@ -1,0 +1,52 @@
+{
+  "schema_version": "jev-token-admission-contract/v1",
+  "policy_id": "d069-jev113-byte-estimate-v1",
+  "checked_on": "2026-10-11",
+  "applies_to_requested_models": ["jev-latest", "jev-1.13.0"],
+  "model_context_assumption": "jev-1.13.0",
+  "accepted_observed_model_labels": ["jev-1.13.0", "typesafe-ai/jev", "typesafe/jev-1.13-20260917"],
+  "observed_model_label_basis": "D068's 47 successful jev-latest responses reported jev-1.13.0 (14), typesafe-ai/jev (30), and typesafe/jev-1.13-20260917 (3). These historically observed labels are accepted under the documented Jev 1.13 assumption; a generic provider label does not independently prove the underlying model version.",
+  "official_limit_labels": {
+    "request_tokens": "64k",
+    "state_plus_longest_question_tokens": "32k"
+  },
+  "local_limit_interpretation": {
+    "request_tokens": 64000,
+    "state_plus_longest_question_tokens": 32000,
+    "basis": "Decimal interpretation below any 65536/32768 interpretation; the official labels do not specify the meaning of k. These are thresholds for local estimates, not measured token counts."
+  },
+  "estimator": {
+    "kind": "heuristic",
+    "tokens_per_utf8_byte_numerator": 2,
+    "tokens_per_utf8_byte_denominator": 5,
+    "framing_allowance_tokens": 512,
+    "formula": "ceil(measured_utf8_bytes * 2 / 5) + 512",
+    "request_scope": "The exact compact JSON bytes returned by prepareDecision, including the complete state, all questions, type, instructions, criteria and JSON envelope.",
+    "single_question_scope": "The sum of JSON.stringify(state) UTF-8 bytes and the largest JSON.stringify(question) UTF-8 byte count. All question fields accepted by prepareDecision participate.",
+    "basis": "Conservative local sizing policy for the observed English structured workload; the ratio and 512-token allowance are engineering assumptions. Historical aggregate usage coverage does not validate per-question context size.",
+    "proven_upper_bound": false,
+    "provider_framing_known": false
+  },
+  "exact_count": {
+    "status": "not_found_in_reviewed_official_sources",
+    "endpoint": null,
+    "tokenizer": null,
+    "tokenizer_version": null,
+    "provider_serialization": null
+  },
+  "admission_semantics": "admit_estimated permits an attempt under this local policy only. It does not guarantee provider acceptance, actual token limits, decision quality or charge. A blocked request must be changed and reassessed before any POST; this module never retries or truncates.",
+  "request_binding": "Bind the assessment to its canonical request SHA-256 and policy SHA-256; recheck immediately before POST. An explicitly observed resolved model label outside the documented/historically observed allowlist invalidates this policy.",
+  "sources": [
+    {"url": "https://jev-ai.pro/jev-api", "scope": "Hosted Jev aliases and the two model-context constraints."},
+    {"url": "https://jev-ai.pro/docs", "scope": "Separate body/question validator limits, models GET, SDK destination and failure handling."},
+    {"url": "https://docs.typesafe.ai/models", "scope": "Model version, moving aliases, aggregate context and state-plus-longest-question scopes."},
+    {"url": "https://docs.typesafe.ai/api", "scope": "Request/response fields; no pre-inference token counter documented."},
+    {"url": "https://docs.typesafe.ai/concepts/state/", "scope": "Structured state is supported; no exact tokenizer/framing algorithm provided."},
+    {"url": "https://docs.typesafe.ai/llms.txt", "scope": "Official documentation index reviewed for counter/tokenizer resources."},
+    {"url": "https://raw.githubusercontent.com/typesafe-ai/typesafe-sdk-js/main/src/client.ts", "scope": "Official JavaScript SDK systemOne sends JSON; no count method."},
+    {"url": "https://raw.githubusercontent.com/typesafe-ai/typesafe-sdk-js/main/src/resources/models.ts", "scope": "Model listing resource only."},
+    {"url": "https://raw.githubusercontent.com/typesafe-ai/typesafe-sdk-js/main/src/types.ts", "scope": "Usage is returned with inference; model cards lack tokenizer/context-counter identity."},
+    {"url": "https://raw.githubusercontent.com/typesafe-ai/typesafe-sdk-js/main/src/index.ts", "scope": "Reviewed exported SDK surface."},
+    {"url": "https://raw.githubusercontent.com/typesafe-ai/typesafe-sdk-js/main/package.json", "scope": "SDK 0.6.0, no runtime tokenizer dependency."}
+  ]
+}

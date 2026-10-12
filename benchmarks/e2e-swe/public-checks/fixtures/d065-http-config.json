@@ -1,0 +1,22 @@
+{
+  "openapi": "3.1.0",
+  "info": {"title": "Public HTTP Config", "version": "2.3.4"},
+  "paths": {
+    "/echo": {
+      "post": {
+        "operationId": "echoPayload",
+        "tags": ["config"],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["message"], "properties": {"message": {"type": "string"}}}}}},
+        "responses": {"200": {"description": "Echoed", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Envelope"}}}}}
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Mode": {"type": "string", "enum": ["ready", "waiting"]},
+      "Payload": {"type": "object", "required": ["3value", "_secret"], "properties": {"3value": {"type": "string"}, "_secret": {"type": "integer"}, "mode": {"$ref": "#/components/schemas/Mode"}}},
+      "Envelope": {"type": "object", "required": ["payload"], "properties": {"payload": {"$ref": "#/components/schemas/Payload"}}},
+      "InlineHolder": {"type": "object", "required": ["inlineChoice"], "properties": {"inlineChoice": {"type": "string", "enum": ["yes", "no"]}}}
+    }
+  }
+}

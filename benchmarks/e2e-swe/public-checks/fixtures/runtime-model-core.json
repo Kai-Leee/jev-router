@@ -1,0 +1,129 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Public Core",
+    "version": "1.2.3"
+  },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "Probe": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "A required title."
+          },
+          "note": {
+            "type": "string"
+          },
+          "stringProp": {
+            "type": "string",
+            "description": "A JSON name."
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "description": "A public model fixture."
+      },
+      "ScalarProbe": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "text": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "nothing": {
+            "type": "null"
+          },
+          "anything": {}
+        },
+        "required": [
+          "enabled",
+          "text",
+          "count",
+          "amount",
+          "nothing",
+          "anything"
+        ]
+      },
+      "FormatProbe": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date"
+          },
+          "moment": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "identifier": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "unknown": {
+            "type": "string",
+            "format": "not-a-known-format"
+          }
+        },
+        "required": [
+          "day",
+          "moment",
+          "identifier",
+          "unknown"
+        ]
+      },
+      "Child": {
+        "type": "object",
+        "properties": {
+          "childName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "childName"
+        ]
+      },
+      "CollectionsProbe": {
+        "type": "object",
+        "properties": {
+          "child": {
+            "$ref": "#/components/schemas/Child"
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Child"
+            }
+          },
+          "values": {
+            "type": "array",
+            "items": {}
+          }
+        },
+        "required": [
+          "child",
+          "records",
+          "values"
+        ]
+      },
+      "Status": {
+        "type": "string",
+        "enum": [
+          "ready",
+          "waiting"
+        ]
+      }
+    }
+  }
+}

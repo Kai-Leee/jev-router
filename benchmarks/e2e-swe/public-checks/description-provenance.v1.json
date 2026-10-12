@@ -1,0 +1,175 @@
+{
+  "schema_version": "public-description-provenance-protocol/v1",
+  "version": "1",
+  "legacy_test_count": 85,
+  "additional_test_count": 8,
+  "total_test_count": 93,
+  "check_id": "public.description-provenance",
+  "check_version": "4",
+  "assertion_contract": "benchmarks/e2e-swe/public-checks/assertions.v2.json",
+  "registry": "benchmarks/e2e-swe/public-checks/registry.v4.json",
+  "public_source": {
+    "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+    "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22"
+  },
+  "baseline_fixture": "benchmarks/e2e-swe/public-checks/fixtures/d065-models.json",
+  "fixture_changes": [
+    "/paths/~1widgets~1{itemId}/post/requestBody/description",
+    "/paths/~1widgets~1{itemId}/post/requestBody/content/application~1json/schema/description"
+  ],
+  "attribution_boundary": "Failure proves incorrect emitted public body-description behavior, not a particular producer/IR/renderer fault. causal_paths require separate current-source and artifact binding verification.",
+  "tests": [
+    {
+      "id": "T.R10.02.body-description.distinct.sync",
+      "assertion_id": "A.R10.02.body-description.distinct.sync",
+      "requirement_refs": [
+        "R10.02"
+      ],
+      "scenario": "distinct",
+      "function": "sync",
+      "input": "Different requestBody and model schema descriptions.",
+      "expected": "The imported endpoint Args body description equals requestBody.description exactly.",
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ]
+    },
+    {
+      "id": "T.R10.02.body-description.distinct.sync_detailed",
+      "assertion_id": "A.R10.02.body-description.distinct.sync_detailed",
+      "requirement_refs": [
+        "R10.02"
+      ],
+      "scenario": "distinct",
+      "function": "sync_detailed",
+      "input": "Different requestBody and model schema descriptions.",
+      "expected": "The imported endpoint Args body description equals requestBody.description exactly.",
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ]
+    },
+    {
+      "id": "T.R10.02.body-description.distinct.asyncio",
+      "assertion_id": "A.R10.02.body-description.distinct.asyncio",
+      "requirement_refs": [
+        "R10.02"
+      ],
+      "scenario": "distinct",
+      "function": "asyncio",
+      "input": "Different requestBody and model schema descriptions.",
+      "expected": "The imported endpoint Args body description equals requestBody.description exactly.",
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ]
+    },
+    {
+      "id": "T.R10.02.body-description.distinct.asyncio_detailed",
+      "assertion_id": "A.R10.02.body-description.distinct.asyncio_detailed",
+      "requirement_refs": [
+        "R10.02"
+      ],
+      "scenario": "distinct",
+      "function": "asyncio_detailed",
+      "input": "Different requestBody and model schema descriptions.",
+      "expected": "The imported endpoint Args body description equals requestBody.description exactly.",
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ]
+    },
+    {
+      "id": "T.R10.02.body-description.request-only.sync",
+      "assertion_id": "A.R10.02.body-description.request-only.sync",
+      "requirement_refs": [
+        "R10.02"
+      ],
+      "scenario": "request-only",
+      "function": "sync",
+      "input": "A requestBody description with no model schema description.",
+      "expected": "The imported endpoint Args body description equals requestBody.description exactly.",
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ]
+    },
+    {
+      "id": "T.R10.02.body-description.request-only.sync_detailed",
+      "assertion_id": "A.R10.02.body-description.request-only.sync_detailed",
+      "requirement_refs": [
+        "R10.02"
+      ],
+      "scenario": "request-only",
+      "function": "sync_detailed",
+      "input": "A requestBody description with no model schema description.",
+      "expected": "The imported endpoint Args body description equals requestBody.description exactly.",
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ]
+    },
+    {
+      "id": "T.R10.02.body-description.request-only.asyncio",
+      "assertion_id": "A.R10.02.body-description.request-only.asyncio",
+      "requirement_refs": [
+        "R10.02"
+      ],
+      "scenario": "request-only",
+      "function": "asyncio",
+      "input": "A requestBody description with no model schema description.",
+      "expected": "The imported endpoint Args body description equals requestBody.description exactly.",
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ]
+    },
+    {
+      "id": "T.R10.02.body-description.request-only.asyncio_detailed",
+      "assertion_id": "A.R10.02.body-description.request-only.asyncio_detailed",
+      "requirement_refs": [
+        "R10.02"
+      ],
+      "scenario": "request-only",
+      "function": "asyncio_detailed",
+      "input": "A requestBody description with no model schema description.",
+      "expected": "The imported endpoint Args body description equals requestBody.description exactly.",
+      "source_refs": [
+        {
+          "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+          "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+          "start_line": 188,
+          "end_line": 192
+        }
+      ]
+    }
+  ]
+}

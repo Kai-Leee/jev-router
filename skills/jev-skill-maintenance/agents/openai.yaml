@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jev Skill Maintenance"
+  short_description: "Maintain Jev skill sources and evidence-backed updates"
+  default_prompt: "Use $jev-skill-maintenance to audit Jev skill sources and installed copies, then make and verify the evidence-backed updates."

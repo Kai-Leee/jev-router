@@ -1,0 +1,96 @@
+{
+  "openapi": "3.1.0",
+  "info": {"title": "D065 Public Models", "version": "1.0.0"},
+  "paths": {
+    "/plain": {
+      "get": {
+        "operationId": "readStatus",
+        "description": "Read the public status.",
+        "responses": {"200": {"description": "A result.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ThingA"}}}}}
+      }
+    },
+    "/widgets/{itemId}": {
+      "post": {
+        "operationId": "uploadThing",
+        "tags": ["widgets"],
+        "description": "Upload a public item.",
+        "parameters": [
+          {"name": "itemId", "in": "path", "required": true, "description": "The item identifier.", "schema": {"type": "string"}},
+          {"name": "searchTerm", "in": "query", "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "The item body.",
+          "content": {"application/json": {"schema": {
+            "type": "object", "description": "The item body.",
+            "required": ["bodyValue"], "properties": {"bodyValue": {"type": "string"}}
+          }}}
+        },
+        "responses": {
+          "200": {"description": "An alpha result.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ThingA"}}}},
+          "400": {"description": "A beta result.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ThingB"}}}}
+        }
+      }
+    }
+  },
+  "components": {"schemas": {
+    "ThingA": {"type": "object", "required": ["alpha"], "properties": {"alpha": {"type": "string"}}},
+    "ThingB": {"type": "object", "required": ["beta"], "properties": {"beta": {"type": "integer"}}},
+    "namedObject": {"type": "object", "required": ["label"], "properties": {"label": {"type": "string"}}},
+    "namedState": {"type": "string", "enum": ["ready", "waiting"]},
+    "MyModel": {
+      "type": "object", "required": ["stringProp", "inlineObjectProp", "inlineEnumProp"],
+      "properties": {
+        "stringProp": {"type": "string"},
+        "inlineObjectProp": {"type": "object", "required": ["innerCode"], "properties": {"innerCode": {"type": "integer"}}},
+        "inlineEnumProp": {"type": "string", "enum": ["first", "second"]}
+      }
+    },
+    "ChainOne": {"$ref": "#/components/schemas/ChainTwo"},
+    "ChainTwo": {"$ref": "#/components/schemas/ThingA"},
+    "DateBase": {"type": "string", "format": "date"},
+    "DateAliasA": {"$ref": "#/components/schemas/DateAliasB"},
+    "DateAliasB": {"$ref": "#/components/schemas/DateBase"},
+    "RefProbe": {"type": "object", "required": ["chained", "day"], "properties": {
+      "chained": {"$ref": "#/components/schemas/ChainOne"}, "day": {"$ref": "#/components/schemas/DateAliasA"}
+    }},
+    "BaseRecord": {"type": "object", "required": ["baseName"], "properties": {"baseName": {"type": "string"}}},
+    "MergedRecord": {"allOf": [
+      {"$ref": "#/components/schemas/BaseRecord"},
+      {"type": "object", "required": ["extraCount"], "properties": {"extraCount": {"type": "integer"}}}
+    ]},
+    "OpenRecord": {"type": "object", "required": ["label"], "properties": {"label": {"type": "string"}}},
+    "TypedRecord": {"type": "object", "required": ["label"], "properties": {"label": {"type": "string"}}, "additionalProperties": {"$ref": "#/components/schemas/ThingA"}},
+    "ClosedRecord": {"type": "object", "required": ["label"], "properties": {"label": {"type": "string"}}, "additionalProperties": false},
+    "NullableState": {"type": ["string", "null"], "enum": ["active", "paused", null]},
+    "NullableProbe": {"type": "object", "required": ["viaOneOf", "viaTypeList", "onlyNull"], "properties": {
+      "viaOneOf": {"oneOf": [{"$ref": "#/components/schemas/namedState"}, {"type": "null"}]},
+      "viaTypeList": {"$ref": "#/components/schemas/NullableState"},
+      "onlyNull": {"enum": [null]}
+    }},
+    "ThingAOrB": {"oneOf": [{"$ref": "#/components/schemas/ThingA"}, {"$ref": "#/components/schemas/ThingB"}]},
+    "AnyScalar": {"anyOf": [{"type": "string"}, {"type": "integer"}]},
+    "MultiScalar": {"type": ["string", "integer"]},
+    "NestedChoice": {"anyOf": [
+      {"$ref": "#/components/schemas/ThingAOrB"},
+      {"oneOf": [{"$ref": "#/components/schemas/MultiScalar"}]}
+    ]},
+    "WrappedChoice": {"allOf": [{"$ref": "#/components/schemas/NestedChoice"}]},
+    "UnionProbe": {"type": "object", "required": ["directOne", "viaRef", "viaWrapper", "directAny", "multi", "nullable"], "properties": {
+      "directOne": {"oneOf": [{"$ref": "#/components/schemas/ThingA"}, {"$ref": "#/components/schemas/ThingB"}]},
+      "viaRef": {"$ref": "#/components/schemas/ThingAOrB"},
+      "viaWrapper": {"$ref": "#/components/schemas/WrappedChoice"},
+      "directAny": {"anyOf": [{"type": "string"}, {"type": "integer"}]},
+      "multi": {"$ref": "#/components/schemas/MultiScalar"},
+      "nullable": {"type": ["integer", "null"]},
+      "thing": {"$ref": "#/components/schemas/ThingAOrB"},
+      "optionalAny": {"$ref": "#/components/schemas/AnyScalar"}
+    }},
+    "PrefixProbe": {"type": "object", "required": ["prefixOnly", "prefixTail", "nestedOnly", "nestedTail"], "properties": {
+      "prefixOnly": {"type": "array", "prefixItems": [{"$ref": "#/components/schemas/ThingA"}, {"type": "string"}]},
+      "prefixTail": {"type": "array", "prefixItems": [{"$ref": "#/components/schemas/ThingA"}, {"type": "string"}], "items": {"type": "integer"}},
+      "nestedOnly": {"type": "array", "prefixItems": [{"$ref": "#/components/schemas/WrappedChoice"}, {"type": "boolean"}]},
+      "nestedTail": {"type": "array", "prefixItems": [{"$ref": "#/components/schemas/WrappedChoice"}, {"type": "boolean"}], "items": {"type": "number"}}
+    }}
+  }}
+}

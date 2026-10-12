@@ -1,0 +1,64 @@
+{
+  "schema_version": "dag-routing/v1",
+  "version": "1.0.0",
+  "source_ref": "docs/orchestration/jev-dag-design/ARCHITECTURE.md#42-고정-영어-질문과-선택값--처리-함수",
+  "policy": {
+    "maximum_owners": 30,
+    "default_max_search_nodes_per_candidate": 50000,
+    "automatic_retries": 0,
+    "singleton_selection": "local",
+    "unknown_feasibility": "exclude_and_record",
+    "split_keep_scope": "explicit_leaf_policy_only",
+    "semantic_handlers": "proposed_only"
+  },
+  "kinds": {
+    "split": {
+      "id": "dag.split.v1",
+      "type": "choice",
+      "instructions": "Choose the candidate decomposition that best preserves all required outcomes and reduces expected end-to-end completion time, including planning, startup, verification, integration, and likely rework. Use only the supplied candidate IDs. Select need_candidate_revision if none has adequate evidence or valid output boundaries.",
+      "fixed_handlers": {
+        "keep_scope": "markLeafCandidate",
+        "need_candidate_revision": "requestCandidateRevision"
+      },
+      "dynamic_handler": {"prefix": "candidate_", "id": "validateAndExpandNode"}
+    },
+    "relation": {
+      "id": "dag.relation.v1",
+      "type": "choice",
+      "instructions": "For tasks A and B, determine whether either task must consume a verified artifact produced by the other before it can execute its stated contract. Use the supplied requirement and artifact evidence. A shared file alone is not an artifact dependency. If the evidence cannot establish a relation, select unknown.",
+      "fixed_handlers": {
+        "a_requires_b": "proposeArtifactEdge",
+        "b_requires_a": "proposeArtifactEdge",
+        "no_artifact_dependency": "recordRelationNoEdge",
+        "both_require_each_other": "requestBoundaryRevision",
+        "unknown": "requestDependencyEvidence"
+      }
+    },
+    "owner": {
+      "id": "dag.owner.v1",
+      "type": "choice",
+      "instructions": "Select one eligible owner for this obligation or indivisible obligation bundle. Consider required artifacts, write ownership, current assigned work, and integration cost. Every listed owner satisfies the current hard capacity checks. Select revise_boundary if assigning this bundle would require an unsupported interface or an unresolved dependency.",
+      "fixed_handlers": {"revise_boundary": "requestCandidateRevision"},
+      "dynamic_handler": {"prefix": "owner_", "id": "reserveAndAssign"}
+    },
+    "profile": {
+      "id": "dag.profile.v1",
+      "type": "choice",
+      "instructions": "Choose an available model and effort profile for this executable task, using observed capability, latency, usage, and tool compatibility. Preserve the required quality bar and optimize total completion time, including expected retries and integration. Select need_profile_evidence when no supplied profile has sufficient support.",
+      "fixed_handlers": {"need_profile_evidence": "requestProfileEvidence"},
+      "dynamic_handler": {"prefix": "profile_", "id": "bindProfile"}
+    },
+    "failure": {
+      "id": "dag.failure.v1",
+      "type": "choice",
+      "instructions": "Classify the observed failure using the provided command result, artifact revision, and public check evidence. Select the next authorized repair action. Do not treat a missing check, an unknown request outcome, or a claimed completion as a successful verification.",
+      "fixed_handlers": {
+        "repair_local": "repairLocal",
+        "repair_contract": "repairContract",
+        "revise_dependency": "reviseDependency",
+        "repair_verifier": "repairVerifier",
+        "need_evidence": "requestFailureEvidence"
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "dag-routing/v2",
+  "version": "2.0.0",
+  "source_ref": "docs/orchestration/jev-dag-design/ARCHITECTURE.md#42-고정-영어-질문과-선택값--처리-함수",
+  "policy": {"root_minimum_workers": 2, "maximum_workers": 30, "automatic_retries": 0, "owner_allocator": "dag-decision-adapter.mjs#allocateDagOwners", "singleton_selection": "local", "completed_revisions": "immutable"},
+  "kinds": {
+    "split": {
+      "id": "dag.split.v2", "type": "choice",
+      "instructions": "Choose the candidate decomposition that best preserves all required outcomes and reduces expected end-to-end completion time, including planning, startup, verification, integration, and likely rework. Use only the supplied candidate IDs. Select need_candidate_revision if none has adequate evidence or valid output boundaries.",
+      "handlers": {"candidate_": "commitValidatedPartition", "keep_scope": "retainExecutableLeaf", "need_candidate_revision": "blockForCandidateRevision"}
+    },
+    "relation": {
+      "id": "dag.relation.v2", "type": "choice",
+      "instructions": "For tasks A and B, determine whether either task must consume a verified artifact produced by the other before it can execute its stated contract. Use the supplied requirement and artifact evidence. A shared file alone is not an artifact dependency. If the evidence cannot establish a relation, select unknown.",
+      "handlers": {"a_requires_b": "bindVerifiedArtifactInput", "b_requires_a": "bindVerifiedArtifactInput", "no_artifact_dependency": "resolveUnknownPairWithoutEdge", "both_require_each_other": "blockForBoundaryRevision", "unknown": "blockForDependencyEvidence"}
+    },
+    "profile": {
+      "id": "dag.profile.v2", "type": "choice",
+      "instructions": "Choose an available model and effort profile for this executable task, using observed capability, latency, usage, and tool compatibility. Preserve the required quality bar and optimize total completion time, including expected retries and integration. Select need_profile_evidence when no supplied profile has sufficient support.",
+      "handlers": {"profile_": "bindAllowedWorkerProfile", "need_profile_evidence": "blockForProfileEvidence"}
+    },
+    "failure": {
+      "id": "dag.failure.v2", "type": "choice",
+      "instructions": "Classify the observed failure using the provided command result, artifact revision, and public check evidence. Select the next authorized repair action. Do not treat a missing check, an unknown request outcome, or a claimed completion as a successful verification.",
+      "handlers": {"repair_local": "authorizeFreshRepairAttempt", "repair_contract": "commitConservedRepairPartition", "revise_dependency": "queueDependencyDecision", "repair_verifier": "installRegisteredVerifierRevision", "need_evidence": "blockForFailureEvidence"}
+    }
+  }
+}

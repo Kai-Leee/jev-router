@@ -95,6 +95,46 @@ class ResultContractTests(unittest.TestCase):
         self.assertIs(result["expected_test_count_observed"], False)
 
 
+class ManifestSelectionTests(unittest.TestCase):
+    def setUp(self):
+        self.original_manifest, self.original_task = adapter.MANIFEST, adapter.TASK
+
+    def tearDown(self):
+        adapter.MANIFEST, adapter.TASK = self.original_manifest, self.original_task
+
+    def test_explicit_task_uses_its_count_and_rejects_wrong_image_lock(self):
+        adapter.select_manifest(adapter.HERE / "manifests/openapi_python_client.json")
+        self.assertEqual(adapter.TASK.name, "openapi_python_client")
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "verifier").mkdir()
+            (root / "verifier/reward.txt").write_text("1")
+            adapter.write_json(root / "verifier/ctrf.json", {"results": {
+                "summary": {"tests": 30, "passed": 30},
+                "tests": [{"status": "passed"} for _ in range(30)]}})
+            self.assertEqual(adapter.evaluate_result(root)["reason"], "reward_ctrf_disagreement")
+            adapter.write_json(root / "verifier/ctrf.json", {"results": {
+                "summary": {"tests": 63, "passed": 63},
+                "tests": [{"status": "passed"} for _ in range(63)]}})
+            self.assertIs(adapter.evaluate_result(root)["resolved"], True)
+            adapter.write_json(root / "wrong-lock.json", {"image_tag": self.original_manifest["image_tag"]})
+            with patch.object(adapter, "inspect_image") as inspect:
+                with self.assertRaisesRegex(RuntimeError, "selected task"):
+                    adapter.validated_image(root / "wrong-lock.json")
+                inspect.assert_not_called()
+        adapter.select_manifest(adapter.HERE / "manifest.json")
+        self.assertEqual(adapter.MANIFEST["task_id"], "pytest-check")
+        self.assertEqual(adapter.MANIFEST["test_case_count"], 30)
+
+    def test_path_traversal_task_id_is_rejected_without_mutation(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "invalid.json"
+            adapter.write_json(path, {"task_id": "../other"})
+            with self.assertRaises(ValueError):
+                adapter.select_manifest(path)
+        self.assertIs(adapter.MANIFEST, self.original_manifest)
+
+
 class ContainerBoundaryTests(unittest.TestCase):
     def test_role_labels_and_positive_resource_bounds_are_explicit(self):
         for role in ("agent", "verifier"):

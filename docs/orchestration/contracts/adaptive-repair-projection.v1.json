@@ -1,0 +1,18 @@
+{
+  "schema_version": "adaptive-repair-projection-contract/v1",
+  "state_version": "adaptive-repair-projection/v1",
+  "failure_version": "adaptive-repair-failure-projection/v1",
+  "purpose": "Deduplicate repair evidence without removing public outcomes, diagnostics or provenance.",
+  "inline_reference_rules": {
+    "artifact_revision_ids": "Resolve every ID against failure.artifact_revisions, preserving the listed order. Local checks with unpublished outputs retain their original artifact_revisions map and task_id/attempt_id, bound by failure.task_attempt_ids; these revisions are not asserted to be exported.",
+    "runtime_binding_ref": "Resolve against failure.repair_projection.runtime_bindings.",
+    "check_defaults_ref": "Merge the named failure.repair_projection.check_defaults object into the check, including its evidence defaults. Original and default fields may not overlap; all values remain inline.",
+    "inherited_fields": "An evidence.inherited_fields entry has exactly the same value as the enclosing check field.",
+    "stdout_omitted": "Only recognized normal successful editable-install progress is omitted. Its hash and byte count bind immutable original evidence; all failure stdout, stderr and unrecognized output remain inline. The model does not need to retrieve omitted progress.",
+    "interfaces_from_units": "For a leaf marked interfaces_from_units, reconstruct interfaces in leaf.unit_ids order as {unit_id:id,title,interface} from state.units. Unavailable unit records leave original interfaces inline."
+  },
+  "preserve": ["all case objects", "failure/error/traceback details", "unexecuted IDs", "stderr", "unknown evidence fields", "candidates", "questions", "units", "artifacts", "requirements", "source quotes", "environment", "revision bindings"],
+  "fail_closed_on": ["artifact revision mismatch", "runtime binding mismatch", "environment mismatch", "duplicate evidence fields disagree", "leaf interface mismatch", "invalid inline reference", "failed evidence reconstruction"],
+  "no_remote_file_access": "All decision facts and reference targets are inline; report paths only identify immutable evidence.",
+  "measurement_boundary": "UTF-8 serialized request bytes from prepareDecision; byte reduction is not model token reduction or provider acceptance."
+}

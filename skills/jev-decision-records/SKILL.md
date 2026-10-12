@@ -17,6 +17,7 @@ After evidence arrives:
 - Record latency boundary (HTTP, CLI/process, workflow, grading), sample size, denominator for percentages, exact model/effort/brief/image matching, and failed or excluded attempts. Changed scaffolding is a new condition. Explain mismatches before comparing.
 - Keep role generation, implementation, Jev judgment, monitoring, grading, and failed attempts distinct in cost calculations. Identify actual billing, API-equivalent estimate, monthly subscription allocation, and conservative budget accounting separately. Unknown usage/cost remains `null`; never coerce it to zero. Reuse the shared budget ledger.
 - For rule changes, link rule revision/hash, the evidence version, who generated it, Jev's typed decision, deterministic validation, and effective revision. A rejected artifact stays rejected even if delegation itself succeeded. Record which Claude work was actually skipped versus merely intended to be skipped.
+- For artifact-DAG work, use [the DAG evidence notes](references/record-contract.md#artifact-dag-evidence) to bind a claim to its graph, artifact revisions, and actual check execution. Mapping coverage, a passing local fixture, and product completion are separate claims.
 - Finish with unresolved work, owner, next trigger, and side effects. Update the existing state/decision indexes by reference, without duplicating all raw results.
 
 Validate the structured record from the repository root:

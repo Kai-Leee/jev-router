@@ -1,0 +1,177 @@
+{
+  "model": "jev-latest",
+  "state": {
+    "schema_version": "adaptive-inferred-owner-input/v2",
+    "instructions": "For each question, infer the existing artifact that should be inspected or repaired first. This is a primary responsibility hypothesis, not defect proof or a claim of one cause. All existing artifacts remain legal choices, including upstream producers, representations, renderers and callers. Use their complete inline interfaces, original evidence quotes and current task dependency contracts. Every failed public case and its original mapped requirements are inline. A repeated error does not establish a shared cause. The controller derives the existing owner and writable paths from the chosen artifact ID. Return unknown when the available contracts or observations cannot support a choice. Do not invent owners or paths, assign a not-reached assertion as an observed failure, weaken requirements or tests, or declare completion. Every case in public_gate must rerun after repair. Controller-only references are provenance and cannot be retrieved by the model. Artifact revision and request bindings are validated by the controller. A task with read_paths_from_input_artifacts or write_paths_from_output_artifacts true has exactly the concatenated paths of its listed input or output artifacts, respectively, in that order.",
+    "provenance": {
+      "source_sha256": "dc5875e62fb89750294aa0774545f0a0c0e938733ecdeab38ca7ae4402ded344",
+      "catalog_sha256": "840bebb975367d841fd2b87a614277cafe9fa10cc5fc1504f94de072182910dd",
+      "graph_revision": "example-1",
+      "controller_validates_all_artifact_revisions": true
+    },
+    "failure_state": {
+      "status": "failed",
+      "code": "ARTIFACT_CHECK_NOT_PASSED",
+      "outcome_uncertain": false
+    },
+    "public_gate": {
+      "case_count": 1,
+      "passed_count": 0,
+      "failed_count": 1,
+      "complete_gate_rerun_required": true,
+      "results": [
+        {
+          "check_id": "public.example",
+          "status": "failed",
+          "executed": true,
+          "outcome_uncertain": false,
+          "failed_test_ids": [
+            "T.example"
+          ],
+          "passed_test_ids": []
+        }
+      ]
+    },
+    "detailed_failed_cases": [
+      {
+        "check_id": "public.example",
+        "testcase": {
+          "test_id": "T.example",
+          "status": "failed",
+          "failed_assertion_id": "A.example",
+          "assertion_results": [
+            {
+              "assertion_id": "A.example",
+              "status": "failed"
+            }
+          ],
+          "message": "Synthetic label differs from the fixture requirement."
+        },
+        "original_requirement_ids": [
+          "R.example"
+        ]
+      }
+    ],
+    "inline_case_resolution": "Every original failed case is fully inline in detailed_failed_cases. Its original_requirement_ids resolve to original_requirements in this same state. No second failure summary or external retrieval is needed. Each question identifies the exact check/test/assertion in its instruction.",
+    "failed_check_contexts": [],
+    "local_check_results": {
+      "count": 0,
+      "known_successful_check_ids": [],
+      "status": "passed",
+      "executed": true,
+      "exit_code": 0,
+      "evidence_error": null
+    },
+    "original_requirements": [
+      {
+        "id": "R.example",
+        "text": "The rendered label retains the declared source label.",
+        "source_refs": [
+          "synthetic-example-source#label"
+        ]
+      }
+    ],
+    "requirement_scope": {
+      "basis": "Exact original requirements named by observed failed-case mappings and explicit causal paths. Every candidate interface, original evidence quote and dependency contract remains complete. Ambiguous or missing mappings retain all original requirements.",
+      "mapping_complete": true,
+      "controller_only_requirement_ids": [],
+      "full_requirement_access": "controller_and_implementation_workers_only",
+      "missing_requirement_effect": "If omitted implementation details are necessary to attribute this failure, return unknown; do not assume their content."
+    },
+    "artifact_contracts": [
+      {
+        "id": "A-producer",
+        "paths": [
+          "src/producer.py"
+        ],
+        "owner_task_id": "task-producer",
+        "worker_id": "worker-producer",
+        "unit_id": "unit-producer",
+        "evidence_ids": [
+          "E-producer"
+        ]
+      },
+      {
+        "id": "A-renderer",
+        "paths": [
+          "src/renderer.py"
+        ],
+        "owner_task_id": "task-renderer",
+        "worker_id": "worker-renderer",
+        "unit_id": "unit-renderer",
+        "evidence_ids": [
+          "E-renderer"
+        ]
+      }
+    ],
+    "unit_interfaces": [
+      {
+        "id": "unit-producer",
+        "artifact_ids": [
+          "A-producer"
+        ],
+        "interface": "Expose the original source label as text.",
+        "evidence_ids": [
+          "E-producer"
+        ]
+      },
+      {
+        "id": "unit-renderer",
+        "artifact_ids": [
+          "A-renderer"
+        ],
+        "interface": "Render the supplied label without replacement.",
+        "evidence_ids": [
+          "E-renderer"
+        ]
+      }
+    ],
+    "task_dependencies": [
+      {
+        "id": "task-producer",
+        "worker_id": "worker-producer",
+        "input_artifact_ids": [],
+        "output_artifact_ids": [
+          "A-producer"
+        ],
+        "read_paths_from_input_artifacts": true,
+        "write_paths_from_output_artifacts": true
+      },
+      {
+        "id": "task-renderer",
+        "worker_id": "worker-renderer",
+        "input_artifact_ids": [
+          "A-producer"
+        ],
+        "output_artifact_ids": [
+          "A-renderer"
+        ],
+        "read_paths_from_input_artifacts": true,
+        "write_paths_from_output_artifacts": true
+      }
+    ],
+    "evidence_quotes": [
+      {
+        "id": "E-producer",
+        "quote": "Synthetic source requires preserving the source label."
+      },
+      {
+        "id": "E-renderer",
+        "quote": "Synthetic source requires rendering the supplied label."
+      }
+    ],
+    "causal_paths": [],
+    "repair_history": []
+  },
+  "questions": {
+    "owner.7c59feaaf5b87e0f7742": {
+      "type": "choice",
+      "instructions": "For public check public.example, failed case T.example, assertion A.example, which existing artifact should be inspected or repaired first? Apply state.instructions and the complete inline case; choose unknown if unsupported.",
+      "criteria": {
+        "A-producer": null,
+        "A-renderer": null,
+        "unknown": "No sufficiently supported existing artifact."
+      }
+    }
+  }
+}

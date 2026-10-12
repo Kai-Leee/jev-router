@@ -1,0 +1,3 @@
+# D062 measured planning review
+
+Reviewer owns docs/agents/D062_REVIEW.md only. Read D062_LIVE_PLAN protocol and actual d062-live-01 artifacts. Independently verify13receipt totals, count2, fourinvalidmembershipcounts, source snapshots, budget delta and no workers. Replay stored responses throughv3allocator with codec roundtrip/requestcomparison and expect ALLOCATION_REFINEMENT_EXHAUSTED. No paidcalls, retries, source/candidatechanges or ledgeredits. Distinguish API success fromplanningfailure. Note top-level run_id metadata collision benchmark-runs; root will fix future runner after immutable evidence audit, not rewrite events.

@@ -1,0 +1,2725 @@
+{
+  "schema_version": "d065-model-control-results/v1",
+  "source_basis": "original public instruction and D056 public specifications only",
+  "results": [
+    {
+      "defect": "none",
+      "valid_control_result": true,
+      "expected_failed_ids": [],
+      "actual_failed_ids": [],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 263,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 0,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "passed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_operation_missing_package",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R04.06"
+      ],
+      "actual_failed_ids": [
+        "T.R04.06"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 259,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 3,
+            "error_type": "AssertionError",
+            "message": "operation package/module exists: api/default/__init__.py",
+            "status": "failed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_named_class_export",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R05.01"
+      ],
+      "actual_failed_ids": [
+        "T.R05.01",
+        "T.R12.01"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 243,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 1,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 2,
+            "error_type": "AssertionError",
+            "message": "named schema export NamedObject",
+            "status": "failed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 0,
+            "error_type": "AssertionError",
+            "message": "valid public fixture generation failed:  Traceback (most recent call last):\n  File \"/Users/lee/workspace/plugins/jev-router/benchmarks/e2e-swe/public-checks/controls/generator.py\", line 170, in <module>\n    raise SystemExit(main())\n  File \"/Users/lee/workspace/plugins/jev-router/benchmarks/e2e-swe/public-checks/controls/generator.py\", line 120, in main\n    files = importlib.import_module(name).build_control_files(doc, config, args.defect)\n  File \"/Users/lee/workspace/plugins/jev-router/benchmarks/e2e-swe/public-checks/controls/d065_models.py\", line 199, in build_control_files\n    raise ValueError(f\"D065 model mutation did not match: {defect}\")\nValueError: D065 model mutation did not match: models_named_class_export\n",
+            "status": "failed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_inline_class_export",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R05.02"
+      ],
+      "actual_failed_ids": [
+        "T.R05.02",
+        "T.R12.01"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 253,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 1,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 5,
+            "error_type": "AssertionError",
+            "message": "inline schema class export MyModelInlineEnumProp",
+            "status": "failed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 0,
+            "error_type": "AssertionError",
+            "message": "valid public fixture generation failed:  Traceback (most recent call last):\n  File \"/Users/lee/workspace/plugins/jev-router/benchmarks/e2e-swe/public-checks/controls/generator.py\", line 170, in <module>\n    raise SystemExit(main())\n  File \"/Users/lee/workspace/plugins/jev-router/benchmarks/e2e-swe/public-checks/controls/generator.py\", line 120, in main\n    files = importlib.import_module(name).build_control_files(doc, config, args.defect)\n  File \"/Users/lee/workspace/plugins/jev-router/benchmarks/e2e-swe/public-checks/controls/d065_models.py\", line 199, in build_control_files\n    raise ValueError(f\"D065 model mutation did not match: {defect}\")\nValueError: D065 model mutation did not match: models_inline_class_export\n",
+            "status": "failed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_inline_body_export",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R05.03"
+      ],
+      "actual_failed_ids": [
+        "T.R05.03",
+        "T.R12.01"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 251,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 1,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 2,
+            "error_type": "AssertionError",
+            "message": "inline body exports UploadThingBody",
+            "status": "failed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 0,
+            "error_type": "AssertionError",
+            "message": "valid public fixture generation failed:  Traceback (most recent call last):\n  File \"/Users/lee/workspace/plugins/jev-router/benchmarks/e2e-swe/public-checks/controls/generator.py\", line 170, in <module>\n    raise SystemExit(main())\n  File \"/Users/lee/workspace/plugins/jev-router/benchmarks/e2e-swe/public-checks/controls/generator.py\", line 120, in main\n    files = importlib.import_module(name).build_control_files(doc, config, args.defect)\n  File \"/Users/lee/workspace/plugins/jev-router/benchmarks/e2e-swe/public-checks/controls/d065_models.py\", line 199, in build_control_files\n    raise ValueError(f\"D065 model mutation did not match: {defect}\")\nValueError: D065 model mutation did not match: models_inline_body_export\n",
+            "status": "failed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_parameter_camelcase",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R05.04"
+      ],
+      "actual_failed_ids": [
+        "T.R05.04",
+        "T.R10.02"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 199,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 3,
+            "error_type": "AssertionError",
+            "message": "operation parameter keywords use snake_case",
+            "status": "failed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 11,
+            "error_type": "AssertionError",
+            "message": "Args contains every parameter/body and excludes client: expected {'body', 'search_term', 'item_id'}, got {'searchTerm', 'body', 'item_id'}",
+            "status": "failed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_chain_raw",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R08.05"
+      ],
+      "actual_failed_ids": [
+        "T.R08.05"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 257,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 1,
+            "error_type": "AssertionError",
+            "message": "object ref chain reaches final concrete class",
+            "status": "failed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_allof_loses_base",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R08.06"
+      ],
+      "actual_failed_ids": [
+        "T.R08.06"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 256,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 1,
+            "error_type": "AssertionError",
+            "message": "MergedRecord.base_name has a class-level string annotation",
+            "status": "failed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_prefix_ignores_items",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R08.07",
+        "T.integration.unions-arrays"
+      ],
+      "actual_failed_ids": [
+        "T.R08.07",
+        "T.integration.unions-arrays"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 242,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 4,
+            "error_type": "AssertionError",
+            "message": "PrefixProbe.prefix_tail member types: expected ('subscript', 'list', ('union', frozenset({'int', 'ThingA', 'str'}))), got ('subscript', 'list', ('union', frozenset({'ThingA', 'str'})))",
+            "status": "failed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 4,
+            "error_type": "AssertionError",
+            "message": "PrefixProbe.nested_tail member types: expected ('subscript', 'list', ('union', frozenset({'float', 'ThingB', 'ThingA', 'bool', 'str', 'int'}))), got ('subscript', 'list', ('union', frozenset({'ThingB', 'ThingA', 'bool', 'str', 'int'})))",
+            "status": "failed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_typed_additional_raw",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R09.01"
+      ],
+      "actual_failed_ids": [
+        "T.R09.01"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 260,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 9,
+            "error_type": "AssertionError",
+            "message": "typed additional property schema is decoded",
+            "status": "failed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_closed_keeps_unknown",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R09.01"
+      ],
+      "actual_failed_ids": [
+        "T.R09.01"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 262,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 11,
+            "error_type": "AssertionError",
+            "message": "closed model does not store unknown key",
+            "status": "failed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_doc_arg_missing_colon",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R10.02"
+      ],
+      "actual_failed_ids": [
+        "T.R10.02"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 202,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 7,
+            "error_type": "AssertionError",
+            "message": "each Args entry has name (type): and a colon even without description",
+            "status": "failed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_doc_return_raw",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R10.03"
+      ],
+      "actual_failed_ids": [
+        "T.R10.03"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 237,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 10,
+            "error_type": "AssertionError",
+            "message": "sync_detailed documents its parsed/Response type: expected ('subscript', 'Response', ('union', frozenset({'ThingA', 'ThingB'}))), got ('union', frozenset({'ThingA', 'ThingB'}))",
+            "status": "failed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_nullable_rejects_none",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R11.05"
+      ],
+      "actual_failed_ids": [
+        "T.R11.05"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 259,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 6,
+            "error_type": "ValueError",
+            "message": "None is not a valid NamedState",
+            "status": "failed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_literal_accepts_invalid",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R12.01"
+      ],
+      "actual_failed_ids": [
+        "T.R12.01"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 262,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 5,
+            "error_type": "AssertionError",
+            "message": "invalid string literal rejects with TypeError: no exception",
+            "status": "failed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_union_alias_annotation",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R13.01"
+      ],
+      "actual_failed_ids": [
+        "T.R05.01",
+        "T.R13.01"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 247,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 12,
+            "error_type": "AssertionError",
+            "message": "UnionProbe.via_ref member types: expected ('union', frozenset({'ThingA', 'ThingB'})), got 'ThingAOrB'",
+            "status": "failed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 4,
+            "error_type": "AssertionError",
+            "message": "UnionProbe.via_ref member types: expected ('union', frozenset({'ThingA', 'ThingB'})), got 'ThingAOrB'",
+            "status": "failed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 17,
+            "status": "passed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_union_wrong_object",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R13.02"
+      ],
+      "actual_failed_ids": [
+        "T.R13.02",
+        "T.integration.unions-arrays"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 237,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 1,
+            "error_type": "AssertionError",
+            "message": "required keys distinguish union object members",
+            "status": "failed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 4,
+            "status": "passed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 10,
+            "error_type": "AssertionError",
+            "message": "array union uses required keys and scalar shape",
+            "status": "failed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    },
+    {
+      "defect": "models_union_raw_encoding",
+      "valid_control_result": true,
+      "expected_failed_ids": [
+        "T.R13.03"
+      ],
+      "actual_failed_ids": [
+        "T.R13.02",
+        "T.R13.03"
+      ],
+      "report": {
+        "artifact_revisions": null,
+        "assertions": 247,
+        "binding_kind": "authored_local_control",
+        "candidate_invocations": [
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 1
+          },
+          {
+            "exit_code": 0,
+            "installed_cli": false,
+            "number": 2
+          }
+        ],
+        "cases": [
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R04.06"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R05.01"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R05.02"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R05.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R05.04"
+          },
+          {
+            "assertions": 7,
+            "status": "passed",
+            "test_id": "T.R08.05"
+          },
+          {
+            "assertions": 8,
+            "status": "passed",
+            "test_id": "T.R08.06"
+          },
+          {
+            "assertions": 9,
+            "status": "passed",
+            "test_id": "T.R08.07"
+          },
+          {
+            "assertions": 12,
+            "status": "passed",
+            "test_id": "T.R09.01"
+          },
+          {
+            "assertions": 68,
+            "status": "passed",
+            "test_id": "T.R10.02"
+          },
+          {
+            "assertions": 36,
+            "status": "passed",
+            "test_id": "T.R10.03"
+          },
+          {
+            "assertions": 10,
+            "status": "passed",
+            "test_id": "T.R11.05"
+          },
+          {
+            "assertions": 6,
+            "status": "passed",
+            "test_id": "T.R12.01"
+          },
+          {
+            "assertions": 16,
+            "status": "passed",
+            "test_id": "T.R13.01"
+          },
+          {
+            "assertions": 4,
+            "error_type": "AssertionError",
+            "message": "selected union members round trip: expected {'directOne': {'alpha': 'first'}, 'viaRef': {'beta': 7}, 'viaWrapper': {'alpha': 'a'}, 'directAny': 'text', 'multi': 4, 'nullable': None}, got {'directOne': {'alpha': 'first'}, 'viaRef': {'beta': 7}, 'viaWrapper': ThingA(alpha='a'), 'directAny': 'text', 'multi': 4, 'nullable': None}",
+            "status": "failed",
+            "test_id": "T.R13.02"
+          },
+          {
+            "assertions": 1,
+            "error_type": "AssertionError",
+            "message": "concrete object/scalar value controls union encoding: expected {'directOne': {'alpha': 'first'}, 'viaRef': {'beta': 7}, 'viaWrapper': {'alpha': 'object'}, 'directAny': 'text', 'multi': 4, 'nullable': None}, got {'directOne': {'alpha': 'first'}, 'viaRef': {'beta': 7}, 'viaWrapper': ThingA(alpha='object'), 'directAny': 'text', 'multi': 4, 'nullable': None}",
+            "status": "failed",
+            "test_id": "T.R13.03"
+          },
+          {
+            "assertions": 20,
+            "status": "passed",
+            "test_id": "T.integration.unions-arrays"
+          }
+        ],
+        "check_id": "public.schema-models",
+        "check_version": "1",
+        "environment_evidence": {},
+        "environment_ref": "public-python310-stdlib-control/v1",
+        "error": null,
+        "executed": true,
+        "exit_code": 1,
+        "outcome_uncertain": false,
+        "product_certified": false,
+        "python_version": "3.10.13",
+        "schema_version": "dag-public-check-evidence/v1",
+        "setup_evidence": null,
+        "skipped": 0,
+        "status": "failed",
+        "test_ids": [
+          "T.R04.06",
+          "T.R05.01",
+          "T.R05.02",
+          "T.R05.03",
+          "T.R05.04",
+          "T.R08.05",
+          "T.R08.06",
+          "T.R08.07",
+          "T.R09.01",
+          "T.R10.02",
+          "T.R10.03",
+          "T.R11.05",
+          "T.R12.01",
+          "T.R13.01",
+          "T.R13.02",
+          "T.R13.03",
+          "T.integration.unions-arrays"
+        ],
+        "unexecuted_test_ids": []
+      }
+    }
+  ]
+}

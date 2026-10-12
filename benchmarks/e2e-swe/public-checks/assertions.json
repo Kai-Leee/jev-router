@@ -1,0 +1,55 @@
+{
+  "schema_version": "public-assertion-contract/v1",
+  "version": "1",
+  "scope_basis": "Public interface repair candidates, not proof of implementation fault. Resolve paths through the current plan and artifact bindings; unsupported or stale evidence uses a conservative fallback.",
+  "assertions": [
+    {
+      "id": "A.integration.diagnostics.existing-output-refused",
+      "check_id": "public.cli-config-environment",
+      "test_id": "T.integration.diagnostics",
+      "requirement_ids": ["R03.04"],
+      "artifact_paths": ["pyclientgen/cli.py"],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 49,
+        "end_line": 50
+      }
+    },
+    {
+      "id": "A.integration.diagnostics.overwrite-accepted",
+      "check_id": "public.cli-config-environment",
+      "test_id": "T.integration.diagnostics",
+      "requirement_ids": ["R03.04"],
+      "artifact_paths": ["pyclientgen/cli.py"],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 49,
+        "end_line": 50
+      }
+    },
+    {
+      "id": "A.integration.diagnostics.missing-hook-exit",
+      "check_id": "public.cli-config-environment",
+      "test_id": "T.integration.diagnostics",
+      "requirement_ids": ["R17.01"],
+      "artifact_paths": ["pyclientgen/hooks.py"],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 319,
+        "end_line": 321
+      }
+    },
+    {
+      "id": "A.integration.diagnostics.missing-hook-diagnostic",
+      "check_id": "public.cli-config-environment",
+      "test_id": "T.integration.diagnostics",
+      "requirement_ids": ["R17.01"],
+      "artifact_paths": ["pyclientgen/hooks.py"],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 319,
+        "end_line": 321
+      }
+    }
+  ]
+}

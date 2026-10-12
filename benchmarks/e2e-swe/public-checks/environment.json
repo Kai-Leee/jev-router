@@ -1,0 +1,33 @@
+{
+  "schema_version": "dag-public-check-environment/v2",
+  "id": "e2e-swe-public-python/v2",
+  "image_id": "sha256:b47cc8871095d567c4f4c6a3116a5a26269fd37a3958b59e8586d6fc6b579eba",
+  "image_digest": "ghcr.io/facebookresearch/e2e-swe@sha256:6fff26a8c24b60f855046bc61e657af2112217addbb7d4ac553eb5d449a7dab5",
+  "platform": "linux/amd64",
+  "python": "3.11.2",
+  "minimum_python": "3.10",
+  "preinstalled_dependencies": {
+    "attrs": "26.1.0",
+    "httpx": "0.28.1",
+    "jinja2": "3.1.6",
+    "typer": "0.26.7",
+    "ruamel.yaml": "0.19.1",
+    "setuptools": "66.1.1",
+    "pip": "23.0.1"
+  },
+  "unavailable_dependencies": [
+    "PyYAML"
+  ],
+  "container": {
+    "network_mode": "none",
+    "readonly_rootfs": true,
+    "writable_directory": "/tmp",
+    "tmpfs_size_bytes": 2147483648,
+    "tmpfs_options": "rw,exec,size=2g"
+  },
+  "installation": "Fresh candidate copy and isolated venv with preinstalled system dependencies; actual setup.sh runs with PIP_NO_INDEX=1 and no-build-isolation is observed in the pip process.",
+  "network_calls_in_controls": "Loopback HTTP source retrieval only; generated operations use httpx.MockTransport.",
+  "sandbox_provided_by": "Docker controller; Python checker alone is not a sandbox.",
+  "candidate_readiness": "Per-run binding and actual candidate execution are required; authored controls never certify a candidate.",
+  "artifact_revision_binding": "D065 filesystem runtime pins candidate/checker/fixture/environment vectors outside this metadata-only inventory."
+}

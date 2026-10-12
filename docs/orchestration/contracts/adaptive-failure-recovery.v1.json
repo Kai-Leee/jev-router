@@ -1,0 +1,18 @@
+{
+  "schema_version": "adaptive-failure-recovery-policy/v1",
+  "id": "evidence-loop-v1",
+  "design_source": {"path": "docs/orchestration/contracts/jev-failure-loop.v1.json", "sha256": "2af59c0703ef5972628b8e7de780722725c4c6d02ce225202006a1b34847947f"},
+  "opt_in": true,
+  "sdk_automatic_retries": 0,
+  "local_token_cap": null,
+  "local_cost_cap": null,
+  "transport_backoff": "not_configured_no_automatic_retry",
+  "source_evidence": "Only exact UTF-8 ranges from controller-verified current artifact bytes; static observations are hypotheses, not fault proof.",
+  "worker_repeat_identity": "Current failed observations, selected task/read/write scope, relevant artifact revisions and exact new source observations. Exclude attempt IDs, timestamps, wording and model/effort changes.",
+  "no_progress": "Collect new relevant public source evidence before owner inference, profile selection or worker redispatch; identical evidence cannot release the gate.",
+  "input_rebuild": "A changed serialized request, preserved choice schema and a coverage proof are required; the transport gate independently verifies the actual request and settled prior request.",
+  "uncertain": "Stop at reconcile_request. Do not invoke the recovery callback or submit another request.",
+  "verification": "Verification environment failures request restored evidence; they never nominate a product owner. Every repair still reruns all public checks.",
+  "historical": "History is separate evidence, activated only by exact source/catalog, current relevant revision and failed-observation binding. It is not a current-run repair attempt.",
+  "completion": "Public success requires an independent verifier outside this executor. Independent hidden details never enter model input."
+}

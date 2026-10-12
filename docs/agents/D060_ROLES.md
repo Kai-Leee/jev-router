@@ -1,0 +1,7 @@
+# D060 bounded allocation and executable evidence gates
+
+User accepts independence-aware allocation and public requirement validation before successors, and requests reducing excessive worker1 obligations. Preserve D059 sources/runs. Root owns integration, docs and verification. Planner agent owns new sequential-allocation-v2.mjs, its test and new JSON question contract only. Gate agent owns new worker-verification-gate.mjs and its tests only. Reviewer reads new changes and owns D060_REVIEW.md only. No paid calls by subagents.
+
+English prewritten questions. Include path overlap and explicit dependency metadata in every allocation state. Experimental cap ceil(1.25*N/count); apply all workers including final remainder. Oversized/undersized selections need explicit Jev refinement, never silent trimming or model fallback. Finite refinement limit, coverage unchanged. Count is not workload/time; unknown dependencies are not independence. Keep old API behavior available for historical replay.
+
+Worker gate requires real executable public-check evidence mapped to each assigned test specification; descriptions, skipped tests and unimplemented mappings are not passes. A worker cannot unlock successors until execution and verification both succeed. Keep whole-product integration checks separate; do not feed hidden grader feedback. Preserve no-retry paid-outcome behavior and cumulative10M ledger. Local fixtures prove only runtime mechanics, not product completion. No originalPOS/Vault edits/commit/push.

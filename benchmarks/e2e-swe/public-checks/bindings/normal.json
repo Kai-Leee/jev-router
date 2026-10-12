@@ -1,0 +1,16 @@
+{
+  "schema_version": "dag-public-command/v1",
+  "kind": "authored_local_control",
+  "command": [
+    "python3",
+    "benchmarks/e2e-swe/public-checks/controls/generator.py",
+    "--defect",
+    "none"
+  ],
+  "repository_path_arguments": [
+    1
+  ],
+  "environment_ref": "e2e-swe-public-python/v2",
+  "candidate_root": "benchmarks/e2e-swe/public-checks",
+  "control_setup_overlay": "controls/d065_cli_project"
+}

@@ -1,0 +1,84 @@
+{
+  "schema_version": "artifact-dag/v1",
+  "goal_revision": "fixture-goal-v1",
+  "graph_revision": "fixture-graph-v1",
+  "requirement_ids": ["requirement-core", "requirement-ui"],
+  "worker_limit": 30,
+  "max_concurrency": 2,
+  "workers": [
+    {"id": "worker-core", "profile_id": "fixture-local"},
+    {"id": "worker-ui", "profile_id": "fixture-local"}
+  ],
+  "tasks": [
+    {
+      "id": "build-core",
+      "kind": "implementation",
+      "parent_id": null,
+      "requirement_ids": ["requirement-core"],
+      "input_artifact_ids": [],
+      "output_artifact_ids": ["artifact-core"],
+      "check_ids": ["check-core"],
+      "worker_id": "worker-core",
+      "read_scope": [],
+      "write_scope": ["examples/dag/output/core.json"],
+      "duration": {"basis": "estimate", "estimate_ms": 30, "sample_count": 0, "source_refs": ["docs/agents/D064_PARALLEL.md"]}
+    },
+    {
+      "id": "build-ui",
+      "kind": "implementation",
+      "parent_id": null,
+      "requirement_ids": ["requirement-ui"],
+      "input_artifact_ids": [],
+      "output_artifact_ids": ["artifact-ui"],
+      "check_ids": ["check-ui"],
+      "worker_id": "worker-ui",
+      "read_scope": [],
+      "write_scope": ["examples/dag/output/ui.json"],
+      "duration": {"basis": "estimate", "estimate_ms": 20, "sample_count": 0, "source_refs": ["docs/agents/D064_PARALLEL.md"]}
+    },
+    {
+      "id": "verify-integration",
+      "kind": "verification",
+      "parent_id": null,
+      "requirement_ids": ["requirement-core", "requirement-ui"],
+      "input_artifact_ids": ["artifact-core", "artifact-ui"],
+      "output_artifact_ids": [],
+      "check_ids": ["check-integration"],
+      "worker_id": null,
+      "read_scope": ["examples/dag/output/core.json", "examples/dag/output/ui.json"],
+      "write_scope": [],
+      "duration": {"basis": "estimate", "estimate_ms": 10, "sample_count": 0, "source_refs": ["docs/agents/D064_PARALLEL.md"]}
+    }
+  ],
+  "artifacts": [
+    {"id": "artifact-core", "producer_task_id": "build-core"},
+    {"id": "artifact-ui", "producer_task_id": "build-ui"}
+  ],
+  "checks": [
+    {
+      "id": "check-core", "version": "1", "phase": "local",
+      "artifact_ids": ["artifact-core"], "requirement_ids": ["requirement-core"],
+      "runner_ref": "node-assert-json-v1",
+      "argv": ["node", "-e", "const assert=require('node:assert/strict');const fs=require('node:fs');assert.equal(JSON.parse(fs.readFileSync('output/core.json','utf8')).value,7)"],
+      "cwd": "examples/dag", "environment_ref": "node22-fixture-v1",
+      "source_ref": "examples/dag/contract-fixture.json"
+    },
+    {
+      "id": "check-ui", "version": "1", "phase": "local",
+      "artifact_ids": ["artifact-ui"], "requirement_ids": ["requirement-ui"],
+      "runner_ref": "node-assert-json-v1",
+      "argv": ["node", "-e", "const assert=require('node:assert/strict');const fs=require('node:fs');assert.equal(JSON.parse(fs.readFileSync('output/ui.json','utf8')).label,'value:7')"],
+      "cwd": "examples/dag", "environment_ref": "node22-fixture-v1",
+      "source_ref": "examples/dag/contract-fixture.json"
+    },
+    {
+      "id": "check-integration", "version": "1", "phase": "integration",
+      "artifact_ids": ["artifact-core", "artifact-ui"], "requirement_ids": ["requirement-core", "requirement-ui"],
+      "runner_ref": "node-assert-json-v1",
+      "argv": ["node", "-e", "const assert=require('node:assert/strict');const fs=require('node:fs');const core=JSON.parse(fs.readFileSync('output/core.json','utf8'));const ui=JSON.parse(fs.readFileSync('output/ui.json','utf8'));assert.equal(ui.label,'value:'+core.value)"],
+      "cwd": "examples/dag", "environment_ref": "node22-fixture-v1",
+      "source_ref": "examples/dag/contract-fixture.json"
+    }
+  ],
+  "unknown_relationships": []
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": "sequential-allocation.v2",
+  "policy": {"load_multiplier": 1.25, "max_refinement_rounds": 3, "batch_size": 32, "count_options": [2, 3, 4, 5]},
+  "questions": {
+    "count": "Choose a worker count to minimize complete-task elapsed time while retaining all public requirements. Consider shared write paths, explicit dependencies and coordination costs. Unknown dependencies are not proof of independence. Obligation counts are a load proxy, not measured effort. Keep-one is excluded.",
+    "allocate": "Choose membership in a coherent independently executable worker assignment. Prefer avoiding shared write paths and cross-worker dependencies; minimize serialization and first-worker concentration. Use the supplied dependency evidence and current load. Across batches meet both minimum and maximum total selection; leave feasible capacity for later workers. Earlier batch selections remain included. Do not claim unknown dependencies are independent. Retain associated public test obligations.",
+    "refine": "The previous complete selection violated its cardinality bounds. Explicitly reconsider ALL remaining candidates and return a replacement selection. Do not preserve rejected membership automatically. Minimize shared write paths, explicit cross-worker dependencies and concentration while meeting the supplied minimum and maximum total. Earlier selections in this refinement round remain included. Unknown dependency information does not prove independence. Preserve public requirement and test coverage.",
+    "profile": "Select one supplied model and reasoning-effort profile for this worker using public requirements and documented descriptions. Optimize complete-task quality, latency and cost. Do not invent capabilities or profile IDs. Verification evidence will be required before successors run."
+  },
+  "criteria": {"assignment": {"include": "Assign this obligation and its public verification responsibility to this worker.", "exclude": "Leave this obligation and its public verification responsibility for a later worker."}}
+}

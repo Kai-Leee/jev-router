@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:jev-router:artifact-dag:v1",
+  "title": "Artifact DAG v1 offline plan contract",
+  "description": "Closed structural schema. validateDagPlan additionally enforces references, ownership, check coverage, parent acyclicity and identity namespaces. analyzeDag rejects semantic artifact cycles. Mapping and plan validity do not certify execution, assertions, filesystem isolation or product readiness.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "goal_revision", "graph_revision", "requirement_ids", "worker_limit", "max_concurrency", "workers", "tasks", "artifacts", "checks", "unknown_relationships"],
+  "properties": {
+    "schema_version": {"const": "artifact-dag/v1"},
+    "goal_revision": {"$ref": "#/$defs/text"},
+    "graph_revision": {"$ref": "#/$defs/text"},
+    "requirement_ids": {"allOf": [{"$ref": "#/$defs/ids"}], "minItems": 1},
+    "worker_limit": {"type": "integer", "minimum": 1, "maximum": 30},
+    "max_concurrency": {"type": "integer", "minimum": 1, "maximum": 30, "description": "Also must be <= worker_limit. All tasks including verification consume a scheduling slot in v1."},
+    "workers": {"type": "array", "minItems": 1, "maxItems": 30, "items": {"$ref": "#/$defs/worker"}},
+    "tasks": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/task"}, "description": "Task count has no worker-pool cap."},
+    "artifacts": {"type": "array", "items": {"$ref": "#/$defs/artifact"}},
+    "checks": {"type": "array", "items": {"$ref": "#/$defs/check"}},
+    "unknown_relationships": {"type": "array", "items": {"$ref": "#/$defs/unknownRelationship"}, "description": "Unresolved relationships block involved tasks, not unrelated branches. Empty is explicit, omission is invalid."}
+  },
+  "$defs": {
+    "text": {"type": "string", "minLength": 1, "pattern": "^(?!\\s)(?!.*\\s$)[^\\u0000-\\u001f\\u007f]+$"},
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "texts": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/text"}},
+    "path": {
+      "allOf": [{"$ref": "#/$defs/text"}],
+      "pattern": "^(?!.*(?:^|/)(?:\\.{1,2}|\\s[^/]*|[^/]*\\s)(?:/|$))(?!.*[\\\\:%~*?\\[\\]{}#])[^/]+(?:/[^/]+)*$",
+      "description": "Canonical relative POSIX path, no empty/dot/dotdot/space-padded segments, URI/drive/encoded/glob/home aliases or backslashes. validateDagPlan also requires NFC. Adapter must enforce symlink/case aliases and real access bounds. Paths are relative to a controller-owned workspace; cwd cannot be dot."
+    },
+    "paths": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/path"}},
+    "worker": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "profile_id"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "profile_id": {"$ref": "#/$defs/id"}}
+    },
+    "duration": {
+      "type": "object", "additionalProperties": false,
+      "required": ["basis", "estimate_ms", "sample_count", "source_refs"],
+      "properties": {
+        "basis": {"enum": ["unknown", "estimate", "observed"]},
+        "estimate_ms": {"type": ["number", "null"], "minimum": 0},
+        "sample_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "source_refs": {"$ref": "#/$defs/texts"}
+      },
+      "allOf": [
+        {"if": {"properties": {"basis": {"const": "unknown"}}}, "then": {"properties": {"estimate_ms": {"const": null}, "sample_count": {"const": 0}}}, "else": {"properties": {"estimate_ms": {"type": "number", "minimum": 0}}}},
+        {"if": {"properties": {"basis": {"const": "observed"}}}, "then": {"properties": {"sample_count": {"minimum": 1}, "source_refs": {"minItems": 1}}}}
+      ]
+    },
+    "task": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "kind", "parent_id", "requirement_ids", "input_artifact_ids", "output_artifact_ids", "check_ids", "worker_id", "read_scope", "write_scope", "duration"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "kind": {"enum": ["implementation", "verification"]},
+        "parent_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/id"}], "description": "Organizational only. Existing distinct task or null; no parent cycles."},
+        "requirement_ids": {"$ref": "#/$defs/ids"},
+        "input_artifact_ids": {"$ref": "#/$defs/ids"},
+        "output_artifact_ids": {"$ref": "#/$defs/ids"},
+        "check_ids": {"allOf": [{"$ref": "#/$defs/ids"}], "minItems": 1},
+        "worker_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]},
+        "read_scope": {"$ref": "#/$defs/paths"},
+        "write_scope": {"$ref": "#/$defs/paths"},
+        "duration": {"$ref": "#/$defs/duration"}
+      },
+      "allOf": [{"if": {"properties": {"kind": {"const": "implementation"}}}, "then": {"properties": {"worker_id": {"$ref": "#/$defs/id"}}}}]
+    },
+    "artifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "producer_task_id"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "producer_task_id": {"$ref": "#/$defs/id"}}
+    },
+    "check": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "version", "phase", "artifact_ids", "requirement_ids", "runner_ref", "argv", "cwd", "environment_ref", "source_ref"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"}, "version": {"$ref": "#/$defs/text"},
+        "phase": {"enum": ["contract", "local", "integration"]},
+        "artifact_ids": {"$ref": "#/$defs/ids"}, "requirement_ids": {"$ref": "#/$defs/ids"},
+        "runner_ref": {"$ref": "#/$defs/text"},
+        "argv": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/text"}},
+        "cwd": {"$ref": "#/$defs/path"}, "environment_ref": {"$ref": "#/$defs/text"},
+        "source_ref": {"$ref": "#/$defs/path"}
+      }
+    },
+    "unknownRelationship": {
+      "type": "object", "additionalProperties": false,
+      "required": ["task_ids", "reason", "evidence_refs"],
+      "properties": {
+        "task_ids": {"allOf": [{"$ref": "#/$defs/ids"}], "minItems": 2, "maxItems": 2},
+        "reason": {"$ref": "#/$defs/text"}, "evidence_refs": {"$ref": "#/$defs/texts"}
+      }
+    }
+  },
+  "x-semantic-rules": [
+    "IDs unique within each collection; task, worker and artifact identities disjoint; worker count <= worker_limit; max_concurrency <= worker_limit.",
+    "Every declared goal requirement has exactly one implementation owner; verification can reference the same requirement.",
+    "Every artifact has exactly one matching task output and producer; all inputs exist, and none are self-produced.",
+    "Every check assigned exactly once; check artifact IDs exist and are in the assigned task input+output vector; integration checks belong to verification tasks.",
+    "Every task requirement is covered by an assigned check; check requirements are within the task's declared requirements.",
+    "V1 requires every produced artifact to be covered by a producer-assigned check. Deferred downstream-only verification is not supported.",
+    "Parent references exist and have no cycles, but create no execution dependency; semantic dependencies derive only from artifact producers.",
+    "Unknown relationship pairs are distinct existing tasks, unique irrespective of pair order, and remain explicit dispatch blockers.",
+    "Path overlap is equality or directory ancestry; schema validity does not enforce runtime leases, symlinks, case aliases, runner trust or actual assertion adequacy."
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "schema_version": "adaptive-dag-comparison/v7",
+  "input": "benchmarks/e2e-swe/manifests/d056-obligations.json",
+  "public_registry": "benchmarks/e2e-swe/public-checks/registry.v4.json",
+  "public_checker_root": "benchmarks/e2e-swe/public-checks",
+  "public_environment_ref": "e2e-swe-public-python/v2",
+  "image_lock": "benchmark-runs/d040-openapi-image-lock.json",
+  "worker_profile": {
+    "id": "opus55-medium",
+    "model": "claude-opus-5-5",
+    "effort": "medium"
+  },
+  "arms": [
+    "claude_all",
+    "jev_all",
+    "jev_profile"
+  ],
+  "cohort_concurrency": 3,
+  "limits": {
+    "max_units": 30,
+    "max_artifacts": 60,
+    "max_files": 60,
+    "max_leaves": 30,
+    "max_depth": 3,
+    "max_nodes": 59,
+    "max_relation_pairs": 435,
+    "max_decisions": 128,
+    "relation_batch_size": 32,
+    "max_request_bytes": 240000,
+    "max_concurrency": 2,
+    "maximum_workers": 30,
+    "minimum_workers": 2,
+    "wall_timeout_seconds": 14400,
+    "planning_input_tokens": null,
+    "max_file_bytes": 262144,
+    "max_total_bytes": 4194304
+  },
+  "max_repair_rounds": 2,
+  "automatic_retries": 0,
+  "jev_budget": {
+    "schema_version": "jev-token-budget/v3",
+    "ledger_path": "benchmark-runs/jev-usd1-budget.json",
+    "max_input_tokens": null,
+    "reserve_input_tokens": 65536
+  },
+  "valuation": {
+    "usd_per_million_input_tokens": 0.6,
+    "basis": "informational_token_pack_equivalent_not_monthly_invoice",
+    "actual_billed_usd": null
+  },
+  "catalog_reuse": {
+    "schema_version": "adaptive-catalog-reuse/v4",
+    "preparation_directory": "benchmark-runs/d066-catalog-01",
+    "original_manifest": "benchmarks/e2e-swe/manifests/d066-adaptive.json",
+    "original_manifest_sha256": "93d0d1484e96c12d56e193551964692f88eed2171dce76f466908ece7b51579b",
+    "result_sha256": "af1eb42476f5d9a0cdbc9fca647743f59c1a708ba8446032609fec0bc42a03b2",
+    "catalog_file_sha256": "03a7a03737719e8d6e66b478af847626bcb44254e4a7c6eea5a03b5fd1d47200",
+    "source_pins_sha256": "d2b28ed81bc0b6e1693ba439a22d4e4a0b8d14b08b96ff09944587b9d22906f5",
+    "prepared_request_sha256": "06448a561dee27f7d160292d15e398cb7a04500a6a271b832b68be416adef2f3",
+    "provider_request_sha256": "346ca7f3ffa4a8bbd315b100bcadd21f4e2787602d9bbceeca56af80a596ed9e",
+    "allowed_changed_source_paths": [
+      "src/benchmark/adaptive-dag-runner.mjs",
+      "scripts/adaptive-dag-comparison.mjs",
+      "src/benchmark/budget.mjs",
+      "src/benchmark/budget-acquire.mjs",
+      "src/benchmark/dag-runner.mjs",
+      "src/orchestration/adaptive-dag-planner.mjs",
+      "src/orchestration/adaptive-dag-execution.mjs",
+      "scripts/audit-dag-public-checks.mjs",
+      "benchmarks/e2e-swe/public-checks/run_public_checks.py",
+      "benchmarks/e2e-swe/public-checks/extensions/cli_config.py",
+      "src/orchestration/artifact-transport.mjs",
+      "src/orchestration/adaptive-failure.mjs"
+    ]
+  },
+  "preparation_accounting": "Reuse the exact completed D066 source-only catalog with pinned result, source snapshots and identical generation prompt/schema. There are no new catalog calls or preparation charges in this cohort. Current-run arm wall time and usage are primary; historical full-preparation inclusive references are recorded separately and never added to current-cohort physical spend.",
+  "deadline_basis": "Each fresh arm retains an explicit 14400-second overall deadline. Worker, decision, lock waiting and check calls receive remaining arm time; no separate 10-minute worker cap. Token spending caps are explicitly null, while request-size, structural and uncertainty guards remain.",
+  "session_semantics": "D071 three matched fresh arms share source catalog, 93 public checks, two execution slots, up to30 leaves and the causal repair policy. claude_all uses Claude Opus5.5 medium for decisions and workers; jev_all moves decisions to Jev with fixed workers; jev_profile also lets Jev select exact model/effort profiles for each initial task and selected repair. Decisions never silently replace model IDs. Arm execution is concurrent and lock contention remains in elapsed time. This structured Claude-only baseline has multiple sessions, not one unrestricted monolithic session. A separate preserved-D070 repair is accounted independently.",
+  "independent_grade": "Root-owned after candidate freeze; hidden tests and hidden failure details never enter planning, implementation or public repair. Successful completion time remains null until independently successful.",
+  "repair_policy": {
+    "artifact_contract": "docs/orchestration/contracts/adaptive-causal-repair.v1.json",
+    "assertion_contract": "benchmarks/e2e-swe/public-checks/assertions.v2.json",
+    "failure_contract": "adaptive-terminal-cause/v1",
+    "scope_contract": "public-causal-v1",
+    "token_admission_contract": "docs/orchestration/contracts/jev-token-admission.v3.json"
+  },
+  "decomposition_policy": {
+    "id": "balanced-v2",
+    "contract": "docs/orchestration/contracts/adaptive-decomposition.v2.json"
+  },
+  "public_runner": "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py",
+  "public_controls_evidence": "benchmark-runs/d071-preflight/public-controls-v4.json",
+  "profile_policy": {
+    "contract": "docs/orchestration/contracts/adaptive-profile-selection.v1.json",
+    "candidate_contract": "docs/orchestration/contracts/adaptive-profiles.v1.json",
+    "phase_policy": "initial_and_selected_repairs",
+    "cli_version": "2.1.293",
+    "account_probe": "benchmark-runs/d071-model-probes-01/result.json",
+    "account_probe_sha256": "4201fa4fe2df4b9caea6db759e5609e892605ba99c7bd4afc45b4c59e85b691a",
+    "allowed_profile_ids": [
+      "claude_opus55_low",
+      "claude_opus55_medium",
+      "claude_opus55_high",
+      "claude_opus55_xhigh",
+      "claude_opus55_max",
+      "claude_sonnet55_low",
+      "claude_sonnet55_medium",
+      "claude_sonnet55_high",
+      "claude_sonnet55_xhigh",
+      "claude_sonnet55_max",
+      "claude_haiku55_low",
+      "claude_haiku55_medium",
+      "claude_haiku55_high",
+      "claude_haiku55_xhigh",
+      "claude_haiku55_max",
+      "claude_fable51_low",
+      "claude_fable51_medium",
+      "claude_fable51_high",
+      "claude_fable51_xhigh",
+      "claude_fable51_max"
+    ]
+  }
+}

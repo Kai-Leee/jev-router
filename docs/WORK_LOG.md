@@ -1,4 +1,135 @@
+## 2026-10-12 — D075 강제 전송 검사·복구 병렬 구현과 실제 비교
+
+- [결정](decisions/D075.md) · [결과와 명령](orchestration/D075_RESULTS.md). 전송 gate/복구/입력/보존 runner/측정/단일 스킬 관리자/독립 검토를 분리했다. 보존 CLI 기본v10, prompt v2, 3phase 실제 요청 검사와 근거 기반 복구를 연결했다.
+- 첫 live에서 owner controller context가 profile로 복제돼149079B HTTP400이었다. worker0·원candidate포인터누락·수리round오집계를 보존하고 profile전달/준비실패 처리를 수정했다. 첫 후보는 별도감사 후79/93·60/63 채점, 원결과 미수정이다.
+- 두 번째 동일출발 실행은5JevPOST·2SonnetCLI →88/93·60/63이다. 남은 무변경 담당에 대해 근거9개 수집 후 owner5질문92629B가 모델한도로 거부됐다. 이미canonical이라 재구성중단; 추가worker0. profiles 자동재구성 미지원도 명시했다.
+- 이전 대비 채점까지355366→369093ms, 알려진803431→709276토큰, 공식환산0.7062281→0.6804039USD. 전체추론량·월정액배분unknown. 품질/시간악화이므로 성공절감아님. 공식환산과 원CLI보고액0.7271624USD를 구별했다.
+- 전체1270기준 sandbox listen12는 해당3파일24/24 재검사로 해소, live후81관련+독립4/4통과. 기존1380파일 변경/누락0, helper8·독립source17일치, root125핀 drift0. 실제전송5건×3phase 연결을 확인했다.
+- root가 첫Opus 지시문에 JSON계약을 누락해 형식실패. 첫응답보존 후 두 번째attention 통과. 두수리+두모니터 알려진793794토큰·공식1.0249025USD. 모니터23490토큰·0.310004USD는 제품수리와 별도다.
+- 실패예약2건은 관측한 계정환불+원HTTP+freshcredits 근거로 정산. 누적17359776입력/946정산·한도/pending/blocked null, 실험컨테이너0·추가0. 새private근거와 미커밋 코드/문서 보존, commit/push·PersonalOS·전역설치없음.
+
+## 2026-10-12 — D074 Jev 프롬프팅·사전 검사·실패 루프
+
+- [설계·사용법·명령](orchestration/D074_PROMPTING_AND_FAILURE_LOOP.md) · [결정](decisions/D074.md). 공식 호스팅 규칙과 제조사 프롬프팅 권장을 조사하고 새 저장소 jev-prompting 스킬, 고정 정책과 offline 검사 CLI를 연결했다. Codex/Claude 진입점과 npm script를 갱신했다.
+- 고정 검사 범위는 projected repair_owners/inferred-v2다. 기존 client/adapter/v4를 재사용하고 고정 질문·실패/근거/기존 담당·선택지·handler 연결, 모든 공개/로컬 검사의 실행 상태와 집계를 검사한다. 새 로컬 토큰 상한은 없다.
+- 최종 관련 회귀63/63·독립17/17. 최초 identity hash 오탐과 이후 테스트61/61에도 빠진 잘못된 입력5개 통과를 기록하고 고쳤다. 초기 출력·소스와 수정 후 보고서를 따로 보존했다.
+- 실패 루프는 결과/정산 확인, 입력·환경 복구, 무진전 근거 조사, 남은 실패 Jev 선택, 선택 worker, 전체 공개/독립 검사로 설계했다. 같은 revision의 검사를 반복하지 않고, 동일 근거의 worker 재호출과 profile만 바꾸는 우회를 허용하지 않는 조건을 명시했다. 실제 복구 실행은 아직 없다.
+- 정책 참조 기존 소스8개·원본 요청2개 해시 불변. 14/2문항 모두 구조 통과해도 후자의 과거 HTTP400을 성공으로 바꾸지 않았다. 실제 API/worker/Docker·키·장부 접근 없음. 저장소 파일과 private 증거는 미커밋이며 전역 설치·push·Personal OS 변경은 없다.
+
+## 2026-10-12 — D073 기존 담당 추론·무상한 입력·실제 수리
+
+- [결과](orchestration/D073_RESULTS.md)·[결정](decisions/D073.md). inferred-v1/v2, v4비차단추정, provider-limits-v2 profile을 병렬연결했다. 회귀1225/1225와 독립 권한·실행 감사를 확인했다.
+- 첫 새개발79/93·60/63과 첫 보존수리67/93·49/63은 ownerHTTP400이었다. 입력v2의 기존후보26담당추론은 성공했으나 chooserHTTP400으로 worker0. 병렬 새후보는 공유장부 미정산으로 전송전중단(POST0/CLI0)했다.
+- 정산후 new-02는14실패담당추론→2worker/3artifact→A14/A15쓰기·A10쓰기0→공개91/93·독립61/63이다. round2 ownerHTTP400으로 미완료, 채점까지355,366ms·알려진803,431토큰·공식환산$0.7062281이다. 전체토큰/월청구배분은null이다.
+- 5시도 중복제거합계는 Jev65POST·Claude17CLI/알려진3,764,738토큰/$7.8507227. 별도Opus5.5medium 숫자검토1회attention/33,290토큰/$0.31238. 기준선·catalog재사용·root개발작업을 신규 provider합계에 넣지 않았다.
+- 입력감사HTTP400누락, 환불helper의UI잔액필수전제, 분석manifest metadata오류를 별도기록했다. 실패/null원본과 보정뷰를 분리했고 chooser압축시안은 오프라인만 검증했다.
+- 원본7219/실행376핀 변경0, 동일장부17,190,366입력/938정산·무상한·pending/blockednull, 기존Docker22/실행3개불변. 새스킬설치·commit/push·PersonalOS변경없음. 소스·후보·로그는 미커밋이다.
+
+## 2026-10-12 — D072 입력 검사 CLI·저장 요청 재생·미완료 원인
+
+- [기록](orchestration/D072_INPUT_VALIDATION.md)·[결정](decisions/D072.md). 실제 adapter/v3 admission을 재사용한 offline CLI와 npm 진입점을 추가했다. D071 108요청의 형식/공식바이트108통과, 추정107통과/repair1차단, 과거POST107 HTTP200·목적지, 입력440파일 불변을 확인했다. 차단이 있으므로 정상적인 exit2다.
+- 최초 모델명 동등 비교는 호출 전 관측과 현재 응답의 허용 별칭 변화를48건 오류로 오판했다. 최초 JSON/소스 보존 후 별도02감사에서0오류로 수정했다. 집중9/9, 새추론0. 첫 제한환경 GET실패를 보존하고 허용환경에서 모델GET200·jev-latest 가용성을 확인했다.
+- Jev 고정은 독립3실패가 남은 품질 문제, 프로필은26공개실패/18담당fallback으로86,809B 수리 입력이 되어전송전차단된 문제다. 정확토큰은미측정, 기존D069추정통과후API거절 반례도 남겼다. 담당/질문/정책 수정·새개발/수리·commit/push는 진행하지 않았다.
+
+## 2026-10-12 — D071 실제 비교·보존 수리·회계·독립 감사 종료
+
+- [최종 결과](orchestration/D071_RESULTS.md)와 [결정](decisions/D071.md)에 실제 세 조건과 별도 보존 수리를 기록했다. Claude만93/93·63/63완료, Jev 고정93/93·60/63·프로필67/93·49/63은 미완료다. 채점 포함39분05.048초/30분52.044초/22분54.804초, 토큰4,589,913/3,648,801/2,874,640, 공식환산$16.6926398/$12.6353014/$6.8848420이다. 실패한 낮은 시간·지출을 성공 절감률로 계산하지 않았다.
+- 기존 설명 누락 후보는 Jev1POST→producer A14의 실제 담당 n8→operations.py1파일 수리→93/93·63/63으로 성공했다. 별도 시작점의638,073ms/205,689토큰/$0.6454572이며 원본·비선택산출물은 보존했다.
+- 프로필 Jev5POST→Opus4/Sonnet6 medium→실제10/10identity를 확인했다. 새 실패26개 중18개 미지원·미연결 assertion의 fallback이75요구/86,809B/문항추정35,206을 만들었고 수리 전송 전에 차단됐다. 사전58개 preview가 이 다중실패 범위를 증명하지 못한 사실을 남겼다.
+- 원시 profile callback64 중 로컬1개의 usage/costnull은 보존했다. 별도 보조집계와 독립감사에서 POST53+CLI10만 실제 호출 범위로 집계했다. Sonnet cache-read452,438 ×단가차$0.10/MTok=$0.0452438 차이로 CLI보고 환산6.9300858과 공식6.884842를 구분했다.
+- source269/prelaunch300·과거14,576파일 drift0와 네 후보-grade hash/revision binding을 감사했다. 장부107POST/입력1,550,787 증가 일치, ID/이력/무상한 유지, pending/blockednull. 기존 Docker22/실행3개 불변이다. 실행기·채점·모니터는 종료됐다.
+- 숫자전용 Opus모니터1회는attention/32.720초/32,425토큰/$0.29742다. 추가 회계보정을 권고에 반영하지 않은 부분은 원시근거로 정정했고 재호출하지 않았다. probe4+모니터+보존수리+세조건 총11,353,865토큰/환산$37.1750816, 실제 월청구 배분null이다.
+- 단일 스킬 담당이 reference두문장과 유지보수·역할 기록을 갱신했다. 신규스킬/설치/추가유료실험/commit/push/PersonalOS변경없다. 기존 HTML은D070 snapshot이며 D071결과로 갱신하지 않았다. 아래 시작 기록은 당시 상태로 보존한다.
+
+## 2026-10-12 — D071 실제 병렬 실행 시작
+
+`benchmark-runs/d071-preflight/launch-gate.json`에서 source269pins, 기존14,576파일 불변, 전체1190/1190·독립91/91, 최종profile58/58입력/metadata 재생을 확인했다. Root driver75186으로 세 개발 조건과 보존 후보 수리를 새 경로에서 병렬 실행했다. 각 후보 종료 뒤 독립63채점을 자동 연결하며 terminal까지 소스를 변경하지 않는다. Root 테스트 요약기가 spec reporter를 놓친 결함은 원본을 보존하고 summary02로 정정했다. 실제 완료·비용·효율 결과는 아직 미확정이다.
+
+## 2026-10-12 — D071 병렬 구현·검사·계정 확인
+
+추가 description 실패의 producer/IR/renderer 담당 연결, immutable read overlay, 반복 수리 이력, Jev 모델/effort 선택을 병렬 통합하고 있다. 정상8/결함83 Docker controls 통과, 원문14,576파일 보존, 실제4모델 low-effort identity 확인. 계정 probe 비용 $0.0194212는 별도 API 환산이며 실제 월정액 배분은 null. 새 세 조건 개발과 보존 후보 수리 결과는 아직 미측정이다. [D071](decisions/D071.md)과 [실험 계약](orchestration/D071_EXPERIMENT.md)을 따른다.
+
 # Jev Router 작업 기록
+
+## 2026-10-11 — 현재 DAG·Jev 요청을 인터랙티브 HTML로 설명
+
+- [가이드](visualizations/jev-dag-explorer/index.html)·[사용법과 검증](visualizations/jev-dag-explorer/README.md)·[빌더](../scripts/build-dag-explorer.mjs)를 추가했다. 현재 D070의 질문 문서, 허용 후보, `choice` 적용, 재귀 트리, 실제 파일 의존 DAG, 병렬 dispatch, 공개 실패 수리를 연결한다. 런타임·실험 변경과 새 추론 호출은 없다.
+- 요청/응답/이벤트/영수증을 묶어 실제 POST50개(분할13·배정33·관계2·수리2)와 로컬18개를 구분했다. 트리17노드→구현10+검증1, 구현 간선8개이며 관계45문항은32+13으로 전송됐다. 267출처 해시·기존242 launch source 해시 drift0, 내장 JavaScript 문법을 확인했다.
+- 브라우저에서 노드·필터·원문·재생·근거창을 직접 조작했다. 무관한 노드를 통과해 보이던 관계선, 필터 변경 뒤 남던 이전 상세, 흐린 노드 글자를 발견해 수정했다. 기존148gate 통과/추가0/8 실패와 수리 후보 누락·임계 경로 미구현 한계를 표시했다.
+- 서버는 결과물 폴더만 `127.0.0.1:56751`에서 제공한다. 브라우저 API 호출 없음·새 파일 미커밋, 기존8787 통합/배포/commit/push는 없다. 모바일·OS 클립보드·JSON 다운로드·파일 직접 열기는 미검증이며 [검증 기록](visualizations/jev-dag-explorer/verification.json)에 구분했다.
+
+## 2026-10-11 — D070 실제 비교·보존 수리·추가 품질 진단 종료
+
+- [최종 결과](orchestration/D070_RESULTS.md)·[독립 감사](../benchmark-runs/d070-review/postrun-review-01.json). A 고정공개85/85·독립63/63,2,064,734.652875ms/4,267,230토큰/환산$12.1814126. 기존 Claude 대비 시간5.31796%·토큰36.99335%·비용42.36426% 감소, 각1회·동시성차이 한계를 기록했다.
+- 신규 최대leaf는12→3unit, 같은10leaf다. 실제Jev50POST·Claude12CLI. 같은 템플릿 범위의3worker→1worker 묶음은 토큰65.354%·비용6.920% 증가한 반증을 남겼다. A 검증444.990초/B368.609초, A초기lock37.754초도 분리했다.
+- [추가 공개 진단](orchestration/D070_QUALITY_REVIEW.md)은 A0/8·Claude/D069각8/8. 동일한 두 description 때문에 원래 fixture가 출처 혼동을 놓쳤고, Jev 후보는A19/중단뿐이라 upstream을 선택할 수 없었다. 고정gate 성공을 동일품질 목표 달성으로 확대하지 않는다. 원래148개 점수는 보존했다.
+- B는84/85 실패재현→Jev1POST/Claude1수리→85/85·63/63. cli.py1파일만수정,37파일·비선택21artifactrevision불변,비선택9worker재호출0. 533,346.788666ms/125,964토큰/$0.2762162는 전체개발과 별도 수리 범위다.
+- 별도Opus모니터identity확인·attention·37.244초/17,278토큰/$0.182832. 신규 A+B+monitor 총4,410,472토큰/$12.6404608환산, 실제월구독배분null. packet생략은root원본분석으로보충했고재호출없다.
+- 회귀1126/1126·source242pins·기존5841파일/329snapshot drift0. 장부14,653,024입력/766정산,증가750,338/51회영수증일치,pending/blockednull. 컨테이너기존22개/실행3개불변. 모든실행종료·로컬미커밋·신규commit/push/설치/PersonalOS변경없음. 설명producer 기반수리·공개경계검사·작업량분해·lock/검증축소는남겼다.
+
+## 2026-10-11 — D070 원인 분석·병렬 구현·실제 실행 시작
+
+- [프로토콜](orchestration/D070_EXPERIMENT.md)·[구현](orchestration/D070_IMPLEMENTATION.md)·[역할](agents/D070_PARALLEL.md)을 기록했다. 분해·수리·측정·독립리뷰·단일스킬 담당이 분업했다. n9의12unit·50요구 집중은 불균형 배정과 depth3 로컬 종료가 함께 만든 결과다.
+- balanced-v2의 부담 상한·균형 membership·깊이 추가 분해와 보존 후보의 실제 선택 산출물 수리를 연결했다. 처음 원자21leaf 입력의 질문별추정32,116 초과를 발견해 원문을 보존하는 중복제거로 최대26,958까지 낮췄다. 최초 진단은 보존했다.
+- 최종회귀1126/1126·독립리뷰18/18·모의모든요청116개 한도검사, source242pins·과거5841파일 보존을 확인했다. driver45343으로 새A와B를 동시에 시작했으며 각종료후독립채점을자동실행한다. 실제완료/효율은아직미측정이다.
+
+
+## 2026-10-11 — D069 새 전체 실행·독립 채점·분석 종료
+
+- [결과](orchestration/D069_RESULTS.md), [구현](orchestration/D069_IMPLEMENTATION.md), [분석02](../benchmark-runs/d069-analysis-02.json). assertion4개 담당 연결·artifact 수리 scope·v2입력검사를 병렬 통합했다. 최종회귀1108/1108·공개controls7묶음/결함81개, 원시 소스247/과거4482변경0을 확인했다.
+- fresh Jev47POST+Claude10구현, 공개85/85·독립63/63으로완료. arm2364670.661541ms, 캐시포함5809782토큰/$12.3604662환산. 실제수리/재호출절감은0회/미측정이다. Claude기준선보다시간8.4361%증가,토큰14.2172%/비용41.5171%감소;각조건1회·동시성차이를보존한다.
+- v1진단70510B가추정통과후실제입력한도거절. 새v2는23715B로감소(분모97071B대비75.5694%)하고진단03에서수락됐으나worker0이다. 초기timeout오류POST0·고정성공문구오류·환불/usage미상·sandboxEPERM실패를원본과함께기록했다.
+- 별도Opus모니터31.291초/8674토큰/$0.106932·attention. 질문범위와요청전체토큰의오차비율주장을기각해root정정에보존했고자동추가실험은없다. 종료Docker첫수집절단도보존하고직접파일02로22개/실행3개불변확인.
+- 장부13902686입력/715정산/pending·blockednull,기존ID/무상한유지. 원본·후보·소스·로그미커밋보존,실험컨테이너제거,commit/push/전역설치/PersonalOS변경없다. 실제artifact수리·반복효율·미지원assertion·정확tokenizer는남은검증이다.
+
+## 2026-10-11 — D069 병렬 수정과 재실행 사전 검증
+
+- [계약](orchestration/D069_EXPERIMENT.md)·[역할](agents/D069_PARALLEL.md)·[결정](decisions/D069.md)을 먼저 기록했다. assertion 담당/산출물 수리/토큰 admission/독립 리뷰/단일 스킬 관리로 분업하고 root가 runner·planner·v4 manifest를 연결했다.
+- 지원4개 assertion은 현재 계약원문/hash·runtime·revision이 맞을 때만 담당 산출물을 좁힌다. 미지원·stale은 task 범위 fallback이다. 쓰기 허용 밖 자체 산출물은 바이트·권한을 상속하고 모두 재검사한다. public-interface 담당은 실제 원인 파일 확정 증거가 아니다.
+- `npm test` 1099/1099·skip0(34,504.409625ms), 새 정상control7묶음·결함81개(110.735657s), 실제 GET/OAuth/고정Docker preflight ready·추론0. D06848요청의 토큰정책 재생은 성공47통과/과거실패1차단이나 exact count·새수락보장은 아니다.
+- 기존 후보를 새 runtime에 그대로 복사해 실제 공개재검사와 assertion packet을 만드는 중이다. 다음은 별도 작은 질문1회 실제수락 진단 및 새Jeval l 조건이다. 현재 새 모델결과·완료·절감은 미측정이다.
+
+## 2026-10-11 — D068 세 병렬 수정·실제 Jev 전체 재실행 종료
+
+- 요청에 따라 입력 투영/실패 전파/수리 범위를 역할별 병렬 수정했다. [구현](orchestration/D068_IMPLEMENTATION.md), [결정](decisions/D068.md), [실측](orchestration/D068_RESULTS.md). 사전 전체1072/1072, 소스31pin과 과거 결과 보존 후 새 한 조건만 실행했다.
+- 공개84/85·독립63/63, 전체미완료. Claude10구현과 Jev48POST(분해45·관계2·실패수리1), 실제수리worker0. 투영172019→97071B였으나HTTP400 model_input_limit가남았다. terminal_cause와앞선공개실패·정산을분리하는수정은실제경로에서확인했다.
+- 실행기1843397.350542ms/관측4350647토큰/$10.5692038환산. 실패usage미상으로전체합null. 과거Jev전체보다실패시도181221.819999ms짧고관측토큰1023347늘었다. 과거4조건동시와새단독·실패차이때문에완료효율개선주장없음.
+- 실패통합case는9요구사항으로owner3/consumer포함4명후보를만들었다. 전원10명후보없으나n9의12unit/50요구사항이큰명세를남겼다. case내부미도달검사표현부족을기록했다. [범위분석](../benchmark-runs/d068-scope-live-failure-01.json), [입력분석](../benchmark-runs/d068-projection-live-failure-01.json).
+- 별도Opus5.5medium수치모니터21.209초/$0.083824·failed. r666환불증거대조후장부정산완료(누적12994396입력/666정산/pending0), 원본pending은보존. 실패청구0과추론토큰미상은별도다.
+- 이전검증실패14건(권한12·실제장부의존mock2), 새정적진단AugAssign오류, cohort실패exit오류와후처리null/분석해시결함을숨기지않고수정기록했다. 후보38파일보존·독립skip0, 기존컨테이너22/실행3유지. 미커밋코드·문서·private증거를남기며추가자동실행·push·전역설치·PersonalOS변경없음.
+
+## 2026-10-11 — D067 실제 병렬 실행·채점·환불·분석 종료
+
+- [실측 결과](orchestration/D067_RESULTS.md), [분석02](../benchmark-runs/d067-analysis-02.json). 네 fresh arm을 병렬 실행했고 driver exit2로 종료했다. Claude36분20.704초/$21.135172, Jev분해25분54.036초/$9.864863, Jev분해·관계28분24.540초/$8.766580은 공개85/85·독립63/63 통과다. Jev전체33분44.619초시도는공개83/85·독립63/63이며수리POSTHTTP400입력한도실패로전체완료아니다.
+- 새227호출=ClaudeCLI92+JevPOST135, Jev성공134·실패1. 전체확인환산소계$50.6784966,별도Opus5.5medium모니터1회30.862초/$0.120288·attention. 실제월청구배분과실패추론사용량은null이다. 준비catalog는재사용해새준비지출0. 조건당1회, 동일선택형문법Claude기준선, 모델/환경/캐시/배정차이를한계로기록한다.
+- Jev수리요청은직렬화188240B<local240000B이지만모델context제한으로거절됐다. 전체실패기록이state를팽창시켰다. 하위확정HTTP실패를상위uncertain으로올리는어댑터와이전공개실패를최종code로내보내는결함을원본보존하에확인했다. Claude기준선은정규식실패로59검사미실행,수리후보가미실행항목까지소유자에연결해7/7worker를재호출했다. 실제변경산출물4/22다.
+- 인증UI실패/환불행과인접성공행·freshcreditsGET·저장HTTP400을대조한뒤r618만기존함수로정산했다. 기존ID유지,입력9,584,555→12,096,997,정산483→618,pending0. 자동POSTretry/실패조건재개0. 실행원본uncertain은성공으로수정하지않았다.
+- 독립채점4개모두63/63,skip0,후보전후동일,컨테이너제거. 원시감사는선택→DAG→허용파일→실행→공개revision과비용을대조했다. 대시보드v3projection53/53은8787전체adaptive화면연결검증과다르다. 스킬담당은기존기록계약에요청바이트/모델토큰,실패/정산상태,공개+독립완료규칙을추가했다.
+- 종료컨테이너검사첫버전은전체ID와축약ID를비교해모두신규로오분류했다. 원본을보존하고--no-trunc로다시대조한02에서시작/종료22개동일·새잔류0·실행3개유지확인. 생성후보·로그·임시설정·미커밋소스문서보존. PersonalOS/Vault·Gitcommit/push·전역설치없음.
+
+## 2026-10-11 — D067 상한 해제와 병렬 실행 준비
+
+- 사용자가 조건별 상한과 누적 장부 토큰 제한을 해제하고 병렬 실행을 승인했다. [프로토콜](orchestration/D067_EXPERIMENT.md), [역할](agents/D067_PARALLEL.md)을 먼저 기록하고 budget/runner/독립 검토/단일 스킬 담당이 분업했다. root는 통합 검사·실제 장부 이관·유료 실행을 담당한다.
+- 실제 이관 전 장부 사본에서 ID·사용량9,584,555·정산483·pendingnull을 보존했다. 새로운 빈 장부나 사용량 초기화는 하지 않았다. 이 사전 기록 시점의 D067 모델 호출은0이다.
+- 무상한 v3와 병렬 대기 경로를 구현하며 null이0으로 강제 변환되는 preflight, 정상 진행 중 pending의 오차단, 다른 조건의 장부 문제로 완료 결과가 바뀌는 종료 기록 경계를 함께 검토했다. 새 생산 경로의 실제 제품 결과는 아직 미측정이다.
+- 스킬은 기존 reference에 한도 정책·준비 재사용·병렬 workflow와 직렬 정산 경계를 보완했다. 대시보드 projection도 v3의 제한 없음과 사용량 미확인을 구분하며 focused53/53을 통과했다. 이는 새 adaptive 실행의8787전체연결 또는 브라우저검증 완료가 아니다.
+
+## 2026-10-11 — D066 실제 종료·실패 원인·독립 채점
+
+- [최종 결과](orchestration/D066_RESULTS.md), [결정 기록](decisions/D066.md). 공통 준비 21단위·22산출물·38파일·80요구사항을 공유한 4조건 시도가 종료됐다. Claude는 공개84/85→85/85, 독립63/63·skip0으로 완료됐다. 공통 준비 전액 포함42분54.750초/API환산$22.148223이다. Jev3조건은 각각33POST/650,271입력 뒤 다음 예약65,536이 조건별700,000을 넘어 분해 중단됐다. 관계·수리·제품 완료 속도 비교는 미측정이다.
+- 독립 구조 감사에서 Jev 각33요청의 바이트·33선택·44결정·미완성 트리가 세 조건에서 일치했다. 유료 소속31개 모두child_1,18/1/1/1→15/1/1/1로 집중됐다. 33개 요청1,781,829바이트 중 요구사항·단위/인터페이스·인용·산출물 값1,719,252바이트(96.49%)가 두 projection으로 반복됐다. 바이트 분석을 토큰 절감 실측으로 바꾸지 않았다.
+- 원시 receipt별 비용과 source/후보/검사 binding을 별도 담당이 감사했다. 실제 cohort153호출(Claude54/Jev99), 공유 준비1회 포함API환산$23.3187108. 실제 Opus5.5 수치 모니터1회/27.650초/$0.069496은 별도이며 합계$23.3882068, 실제 월 청구는null이다. 최초 메타데이터 패킷은 자동 승인 검토에서 전송 거절됐고 식별자·경로 없는 수치 패킷은 별도 승인 뒤 실행됐다.
+- 첫 분석의 Jev 시작 이벤트 경계 오류를 v2에서 정정했다. 호출 어댑터 시간은 모델 조회·예약 등을 포함하므로 순수POST지연으로 쓰지 않는다. v1과 원본 요청/응답/후보는 보존했다. 공개 최초검사2,174assertions/84pass·1fail,수리후2,228assertions/85pass; 독립제품63pass와 별개다.
+- 기존 장부9,584,555/10M·잔여415,445·pending/reserved0, 같은ID/이력 유지. terminal cohort/grade/monitor 프로세스 종료, D066컨테이너 없음, 기존컨테이너 보존. 원본PersonalOS/Vault·전역설치·Git커밋/푸시 변경없음. 단일스킬담당이 기존 reference/목록에 실제전송계수·예약한도·시간경계·리뷰입력범위를 보완했다. 소스·문서·실험로그·후보는 미커밋이다.
+- 최종 오프라인 검사는 분석 입력 해시 285개·source pin/사본 566개·문서 7개/로컬 링크 64개에서 실패 0이었다. 기록 검사 sources 19/claims 17, `git diff --check`도 통과했다. [종료 검증](../benchmark-runs/d066-preflight/closeout-validation.json), [독립 원시 근거 감사](../benchmark-runs/d066-review/final-independent-audit-01.md). 모델 호출·후보 재실행 없이 종료 상태를 확인했다.
+
+## 2026-10-11 — D066 4조건 비교 연결
+
+- 최신 사용자가 기존 `openapi_python_client` 과제로 재귀 분해·관계 판단·자동 수리·Claude 대비 효율의 실제 비교를 요청했다. D065를 보존하고 [새 프로토콜](orchestration/D066_EXPERIMENT.md)과 역할 문서를 먼저 작성했다.
+- 기존 6개 역할 담당이 새 planner/execution/runner와 평가·독립 검토·스킬 기록을 병렬 진행했다. 스킬 원본 추가 없이 기존 2개 스킬을 적용했다. 실제 호출은 root만 실행한다.
+- 공개 원문으로 준비한 새 후보 목록, 같은 영어 질문·작업자·검사 조건에서 4조건을 비교한다. 후보 준비 전액 포함과 cohort 실제 1회 비용을 구분한다. 수리 기회는 각 최대 2회다.
+- 추론 없는 실제 조회에서 CLI 로그인·고정 이미지·Jev 모델 목록과 기존 장부를 확인했다. 입력 사용7,633,742/10M, 잔여2,366,258, pending0이었다. 근거: `benchmark-runs/d066-preflight/initial-readonly.json`.
+- 준비 중 catalog와 실제 파일 도구의 경로 규칙 불일치, 체크 argv의 줄바꿈 제약을 확인하고 유료 실행 전에 수정했다. 기존 실패·원본 소스는 보존한다. 최종 회귀와 live 결과는 이어서 기록한다.
 
 ## 2026-10-09 — D-019 paired 개발과 별도 Opus 모니터
 
@@ -371,3 +502,161 @@ Opus5.5/Fable5.1/Sonnet5.5/Haiku5.5와 effort 5단계 정본, worker v2, CLAUDE.
 ## 2026-10-09 D030/D031 공개 반영
 
 사용자 요청에 따라 입력개선·판단기 비교 코드와 조사 문서의 커밋/push를 진행한다. 최종코드 무과금 재생 d031-push-verification.json에서 기존 집계와 동일함 확인. D031_SAVINGS_STATUS.md에 작업자별 bytes와 과거 D029 유료측정의 시간감소/비용증가 및 미검증 절감 분리. 원시 private 로그/키는 제외한다. 실제 토큰/비용 재측정 없음.
+
+## 2026-10-10 D032 축소 후보 조사·설명 영상
+
+사용자 요청에 따라 codebase-design 스킬을 적용, 현재 완료된 request 중복제거와 추가 system 계약 축소 후보를 구분했다. D032_BUILDER_EXPLAINER.md, video/d032-scenes.json/render_d032.py 작성. private MP4105.16초 한국어 합성내레이션 제작; ffprobe/전체decode검증 통과. 최초 sandbox TTS파일 duration N/A 실패 후 로컬 음성서비스 권한으로 재제작. 실제 모델호출0,런타임변경0,commit/push없음.
+
+## D033 — 2026-10-10 20회 실험 완료
+
+[결과](orchestration/D033_RESULTS.md). 기본+4후보각4회,Opusmedium,패키징3파일/나머지8고정.20/20원본30/30통과. output_dedup평균입력5.099%/비용환산4.873%/시간6.735%감소(각baseline평균분모).compact는입력감소최대이나시간3.278%증가. CLI환산총USD1.5133082,Jev0.20verifier제거,미커밋소스·private결과유지.운영채택미수행.
+
+## D034 — 2026-10-10 자동/강제 Jev 확인
+
+[감사](orchestration/D034_ROUTING_AUDIT.md). 최근20회Jev0,default forced는Jev호출후양쪽실행으로답미사용. jev모드만답기반실제arm선택. 저장답재생에서jev와script둘다split. 호출만추가하면감소하지않으며matched선택호출비교필요.정책4/4테스트,추가유료0.소스변경/push없음.
+
+## D035 — 2026-10-10 자동 라우팅 업그레이드 조사
+
+[조사](orchestration/D035_UPGRADE_RESEARCH.md), [구조화 기록](decisions/D035.md). 공식 Jev 문서, RouteLLM, Anthropic workflow/evals, Jev rubric-judge 논문 초록 확인. event→script→exact cache→Jev→handler, template 기반 planner 생략, 새 근거 기반 fallback을 제안. Claude 통합 계획+선택 baseline을 포함하는 평가 설계. 정책 채택/구현/신규 유료호출 없이 문서만 갱신. 논문 전체 재현과 실제 절감은 미검증.
+
+## D036 — 2026-10-10 자동 checkpoint 구현
+
+[D036](orchestration/D036_IMPLEMENTATION.md), [기록](decisions/D036.md). main 구현/독립 읽기전용 리뷰. auto→rule/cache/Jev→실제 file arm 연결, force_jev와 forced 분리. 기본 auto/명시 threshold. 숫자 ID 불일치, 단일작업 실행기 거절, 재진입 교착, 실패시간 0 계측 결함 수정. 집중17/17,전체407/407,저장응답+합성cache 재생통과. 최초localhost EPERM12실패보존.새유료0,실제절감미측정,미커밋변경/로그유지,push없음.
+
+## D037 — 2026-10-10 실제 라우팅 비교
+
+[결과](orchestration/D037_RESULTS.md). Claude/force_jev/auto각1회,동일고정계획,Opusmedium,threshold.65. 3/3각30/30통과. runwall157.595/108.900/107.379초. 비교환산USD.5265176/.5658288/.5741208:빨라졌으나7.47%/9.04%더비쌈. Claude10/Jev2새호출,공유Jev누적USD.0508722,pending없음. auto실제Jev호출확인,캐시/bypass없음. 반환model문자열차이보존. verifier3개제거,private후보/로그유지,PersonalOS/push미변경.
+
+## D038 — 2026-10-10 다음 실험 조사
+
+[조사](orchestration/D038_NEXT_EXPERIMENTS.md), [기록](decisions/D038.md). main과 읽기 전용 연구 agent가 공식 문서/원저자 자료를 확인했다. 분할·병렬화 분리→전체 작업 output_dedup→비용제약 분할→반복 checkpoint→통합 planner/template 비교를 제안. 실제 API transport와 fixture 채점의 차이를 기록. 미래 횟수/정책은 제안이며 새 유료 실행 없음. 문서만 갱신, 기존 미커밋 변경 보존, push 없음.
+
+## D039 — 2026-10-10 더 큰 과제 조사
+
+[조사](orchestration/D039_LARGER_TASKS.md), [기록](decisions/D039.md). 공개 명세/metadata로 OpenAPI·DiskCache·GraphQL 등을 비교, Personal OS 역할별 읽기 전용 검토. 최대4작업/동시2/no-tools와 전용 grader 제약 확인. 새 실행·설치·paid 없음. 웹 개별 파일 fetch 실패는 로컬 고정 commit 근거로 구분. tomllib 초기 오류 뒤 기존Python3.14로 목록 생성. 미커밋 문서 유지,push 없음.
+
+## D040 — 2026-10-10 OpenAPI 첫 실행
+
+[결과](orchestration/D040_RESULTS.md), [기록](decisions/D040.md). 선택 manifest 채점기 구현, emptyreward0/reference63/63 대조완료. Claude plan+decision 완료 뒤 단일 구현600초 timeout/uncertain, 생성파일0. 총비용unknown, 완료2호출환산부분합USD.489676. stop rule로 auto/Jev 및유료Opusmonitor 미실행. 실패분석/독립검토 완료, 비교미완료. Jev신규0/장부유지. verifier2제거,이미지·clone·private로그 보존,미커밋/push없음.
+
+## D041 — 2026-10-10 제한 변경과 원인 설명
+
+고정10분 호출cap 제거,남은phase예산 사용. D040 Jev신규0이며 메인의 중단규칙 적용 때문임을 정정. 새유료실행없음. [기록](decisions/D041.md).
+
+
+## D042 — 2026-10-10
+
+Concurrent trial finished. Both provider responses succeeded but artifact JSON parsing failed; zero files and no independent grade. Jev settled1 request/11,205 input; cumulative95,992 of10M. Separate Opus monitor completed. See `docs/orchestration/D042_RESULTS.md`. Output contract repair remains pending; no push.
+
+
+## D043 — confidence 기준 (2026-10-10)
+
+현재 pilot 기본 판단 기준은 confidence다. `split-confidence.v1.json`의 execution choice(split/single/defer)에 붙은 confidence를 명시 `--confidence-threshold`와 비교한다. 낮으면 needs_evidence, 충분하면 선택된 실행으로 직접 연결한다. `--decision-basis probability --split-threshold`는 과거 재현용이다. 정본 설명: `docs/orchestration/D043_CONFIDENCE.md`. 회귀 419/419, 유료 호출 없음. D042 산출물 JSON 실패는 아직 미수정. 임계값은 미보정이며 확정 최적값 없음.
+
+
+## D044 — 2026-10-10
+
+Choice audit and 25/25 local checks completed. split-confidence.v2.json clarifies actual artifact transport and defer blockers. Live diagnostic process was rejected by automatic approval review pending concrete payload egress approval; no new API request. See docs/orchestration/D044_CHOICE_AUDIT.md.
+
+
+### D044 live result after explicit approval — 2026-10-10
+
+One Jev POST completed: defer/confidence0.89, HTTP752ms, input11592/output40. Shared input ledger107584 of10M, pending0. No worker call or grader. All three options retained; transport repair remains pending. Supersedes earlier pending-approval status. Evidence: docs/orchestration/D044_CHOICE_AUDIT.md and benchmark-runs/d044-choice-audit-01/.
+
+
+## D045 — 1~5 작업 개수 (2026-10-10)
+
+현재 pilot 기본은 count. task-count.v1.json에서 실제 후보1..N(최대5)을 선택하고 confidence는 기록만 한다. 1은 유지, 2~5는 해당 개수로 역할·작업 묶음 실행. 동시 실행 수와 별개다. 단일 후보는 Choice API 최소2개 제한 때문에 force_jev 포함 무호출로 진행한다. 과거 confidence/probability 정책은 명시 옵션으로 유지. 문서: docs/orchestration/D045_TASK_COUNT.md. 전체424/424 검증, 유료 호출 없음. D042 출력 실패는 미수정.
+
+
+## D046 — 2026-10-10
+
+Actual numeric trial terminated failed after20min37sec: Jev selected2/confidence0.53, first8-file group hit output continuation and final JSON parse error; files0, group2 not started, grading not run. Opus monitor completed separately. Shared ledger139322/10M, pendingnull. See docs/orchestration/D046_COUNT_RUN.md. No commit/push.
+
+
+## D047 — 전체 작업 효율 우선 (2026-10-10)
+
+사용자 정정: 현재 Jev 입력량은 허용 가능하며 전체 작업 효율을 우선한다. 입력 축소를 우선 과제로 삼지 말고 충분한 판단 근거를 유지한다. 기존 예산은 유지. 현재 D046은 초기 task_count만 Jev1회 호출하며 작업 중 실패·재분할·모델/effort·요구사항 판단은 미연결이다. D044 실패 근거도 D046 state에 전달되지 않았다. 감사: docs/orchestration/D047_DECISION_COVERAGE.md. 후속 연결 순서는 제안이며 이번에는 구현·유료 호출 없음.
+
+## 2026-10-10 — D048/D049/D050 complete measurement, unsuccessful tasks
+
+User requested new whole-task configuration and parallel cost/time/efficiency comparison. Executed fixed Opus5.5medium workers with Claude versus Jev lifecycle decisions. D048 verifier tomllib import was our environment defect; D049 preserved completed artifacts and reverified using installed tomli. D049 local oversized request never reached API; D050 removed exact repeated strings, preserving original content. Representation now differs between conditions; causal judge-speedup forbidden.
+
+Original pinned independent grades: Claude60/63, Jev0/63. Jev's next review HTTP_ERROR stopped before group4; missing pyclientgen executable observed in grade output. Telemetry discarded numeric HTTP code; now preserved and tested without retries or ledger changes. Outstanding65536-token reservation retained; exact failed-call cost unknown. Continuous original start→grade: Claude1532792.806ms, Jev1721740.897ms; API-equivalent Claude8.6874798USD, Jev known subtotal5.6714524USD (totalnull). Separate monitor0.08522USD; transport smoke0.018532USD. These are not actual subscription charges or success-adjusted savings.
+
+Evidence: benchmark-runs/d050-analysis-final.json, d050-grade-{claude,jev}/result.json, d050-monitor/result.json; docs/orchestration/D048_D050_LIFECYCLE_RESULTS.md. Full tests464/464 before final telemetry patch; targeted client/telemetry40/40 after patch. Logs pinned under benchmark-runs/d050-verification/. Grader containers removed. Ignored run artifacts, temporary isolated CLI directories and uncommitted changes remain; no commit/push, no Personal OS changes.
+
+## 2026-10-10 — D051 corrected matched rerun complete
+
+Implemented explicit evidence-bound refund reconciliation, identical decision projection/encoding for both conditions, isolated public generated-client smoke, and safe HTTP failure metadata. Existing failed run remains immutable. Fresh comparison: Claude61/63 versus Jev0/63. Jev first group repaired then review stopped before remaining groups; all3POSTs succeeded. Lower decision API-equivalent cost did not reduce total completion cost or produce completion. Report: [D051 results](orchestration/D051_RESULTS.md); reproducible analysis and timing commands included. Separate monitor complete. Full498tests passed before final public-smoke expansion; final public7passed. No more calls. Run logs/candidates, isolated temporary directories and uncommitted changes retained; no commit/push or Personal OS edits.
+
+## 2026-10-10 — Current question wording correction
+
+User requested removal of confidence-recording/non-threshold wording. Removed it from two active question contracts and five runner prompts. Confidence response fields and execution logic remain unchanged; no new threshold was specified. Historical benchmark requests/responses and D051 protocol are preserved; current sources now differ from the completed experiment. User raised Jev-driven task decomposition: proposal is requirement-unit assignment/dependency decisions through typed questions, followed by deterministic plan validation and worker instruction assembly. This proposal is not implemented or measured. No paid calls.
+
+## 2026-10-10 — Jev-driven decomposition design and test plan
+
+User requested consideration of the proposed tests and architecture. Recorded requirement-first typed assignment, dependency decisions, deterministic plan validation, worker instruction assembly, recursion boundaries and fair end-to-end comparison in docs/orchestration/JEV_TASK_DECOMPOSITION_DESIGN.md. Status: design only; no new implementation, inference, threshold selection or performance claim. Next: contracts/validators and offline negative controls before a frozen live comparison.
+
+## 2026-10-10 — D052–D054 decomposition implementation and live verification
+
+Parallel builder/fixture/reviewer work completed. Typed questions, anchored file ownership, requirement accountability, deterministic dependency validation, scoped worker instructions and evidence-bound repair were implemented. Live planning30calls succeeded; whole-task prepared62/63 versus anchored continuation0/63. Local payload defect corrected with exact-roundtrip representation; providerHTTP400 remains unexplained because client discarded body. Provider refund confirmed and ledger reconciled without replay. Separate Opus monitor completed, API-equivalentUSD0.071498; planning30calls versus31total is explained by one worker. Final npm test561/561passed (benchmark-runs/d054-preflight/full-tests.log). Full evidence/reproduction: orchestration/D052_D053_RESULTS.md. No efficiency claim. Runtime/grade/monitor terminal; retained artifacts and uncommitted changes, no commit/push/POS edits.
+
+## 2026-10-10 — D055 recursive task/test design prepared
+
+Read current contracts and official Jev question-type docs. Added D055 design and English question/worker instruction draft with two output lists, source preservation, bounded-progress requirements and test specification versus execution distinction. No arbitrary-text generation attributed to Jev. Draft is not loaded by existing runners. Format/evidence-record checks only; no inference, worker, benchmark, ledger change or Personal OS edit. Exact experimental bounds remain to be configured.
+## 2026-10-10 — D056 recursive task/test planning
+
+출처가 있는 의무 80개·테스트 명세 85개, 재귀 분할·배정, 표 기반 입력과 CLI를 구현했다. 실패한 POST 3건을 보존하고 환불을 확인했다. 진단 요청에서 모델 입력 한도 초과를 확인한 후, 표현을 바꾼 조건은 240/240회 응답을 받았다. 계획은 240회 판단 한도에서 `partial`로 끝났다. 분할 9회, leaf 27개, 깊이 3이며 의무 80/80개를 보존했다. 단일 후보 처리 20개와 검토 대기 7개를 구분했다.
+
+계획 249.348초, 입력 5,232,649·출력 33,144토큰, 토큰팩 환산 USD3.1395894다. 별도 Opus 5.5 medium 모니터는 `attention`, CLI 환산 USD0.66078이다. 책임자 배정 195회가 입력의 87.2332%를 사용했다. 최종 장부는 6,669,999/10M이며 미정산은 없다. 적정 분할과 전체 효율 개선은 미검증이다. [결과·재현·정정](orchestration/D056_RESULTS.md).
+
+검토 이후 최상위 종료 코드와 모니터 지표 설명을 보완했으며 유료 재호출은 하지 않았다. 제품 작업자·테스트·채점, Personal OS 수정, 커밋·푸시는 수행하지 않았다. 비공개 근거, CLI 임시 디렉터리와 미커밋 변경을 보존한다.
+
+
+## D057 — 실제 개발 완료 비교 (2026-10-10)
+
+[결과](orchestration/D057_RESULTS.md), [결정](decisions/D057.md). 실제 A63/63완료29분28.518초, B62/63미완료(시도23분25.734초). Jev는 실제1회호출로1leaf/0split을 선택했다. 완료 속도 개선값은 null이며 병렬화 이득 미검증. API환산 A7.6330826/B8.4574292 USD, 실제 청구 unknown. 원본 후보/평가를 보존했고 유료 반복·커밋·푸시는 없다.
+
+
+## D058 — Jev 유지1 제외 재판단
+
+[기록](decisions/D058.md): D057 state 그대로,2~5 조건부 선택에서3채택. 실제1회/1765.3185ms/입력25015·출력46/환산USD0.015009. 작업배정·개발은 미실행. 최초 로컬 계측 역할명 검증 오류는 API 이전 실패로 보존.
+
+## 2026-10-10 — D059 순차 멀티 선택 실제 개발
+
+[결과](orchestration/D059_RESULTS.md), [기록](decisions/D059.md). 개수3→65/13/2배정→Opushigh/Opushigh/Sonnetmedium 실제 연결; Jev8회11.563초. 29분50.166초 뒤 독립57/63로 미완료. 환산USD9.444808,별도모니터0.13888. 초기입력한도실패·환불·새codec조건·모니터전달누락 보존. 전체748/748회귀와29/29소스동결확인,제품실패와구분. 원본POS변경·커밋·푸시없음.
+
+## 2026-10-10 — D060 배정 상한과 공개 검증
+
+역할 문서 후 planner/gate/reviewer 분업. 새 v2질문·할당기·검증registry·workflow 연결, 기존 D059보존. 로컬799/799통과; 실제80/85입력 모의65개초과거부와27/27/26재배정. 초기fixture schema누락과 review의선검사/실패반환결함 수정. 제품85개검사매핑 누락을 호출전차단; 실제 모델·제품재실험 미실행. [상세](orchestration/D060_BOUNDED_VERIFICATION.md).
+
+## 2026-10-10 D061 최대작업자확대
+
+기존v2증거보존하며v3선택지2..30/envelope30연결.30명모의배정20*3+10*2,85mockrequests;전체811/811pass.유료미실행/실제절감미확인.[상세](orchestration/D061_MAX_WORKERS.md).
+
+## 2026-10-10 — D062 실제 최대30 작업자 선택 실험
+
+[기록](decisions/D062.md), [결과](orchestration/D062_LIVE_PLAN.md). 실제Jev13회/19.78265초,2명선택,3재배정후실패. 입력450692/출력10077,환산USD0.2704152. 독립원본재생13/13일치. 별도Opus모니터완료 및 계산오류정정. 실행후eventID결함수정,관련12/12검증. 개발/제품테스트 미실행,기존PersonalOS변경·커밋·푸시없음.
+
+## 2026-10-10 — D063 DAG 설계 검토·계획 반영
+
+사이드 README와 연결5문서, 현재 allocator/envelope/workflow/gate/registry/executor/loader를 대조했다. 역할 문서 작성 후 독립 검토를 분업했다. [계획](orchestration/D063_DAG_PLAN.md)에 작업자/task 분리, 불가분 묶음 가능성, 검증 revision 벡터, 지역/통합 검사 교착 방지, unknown 시간 정책과 동일 실행기 비교를 반영했다. AGENTS/CLAUDE/계약 안내/명세/STATE에 진입점을 연결했다. 사이드 원본은 당시 전달 실패까지 보존한다. 문서 검사 결과는 D063 기록 참조; 제품 소스·장부·유료 호출·실험 원본 변경 없음.
+
+## 2026-10-10 — D064 병렬 로컬 개발·스킬 관리
+
+[역할 계약](agents/D064_PARALLEL.md)에 경로 소유권과 API를 먼저 정한 뒤 스킬1명/계약/공개검사/어댑터/스케줄러/검증/관측을 분업하고 독립 검토했다. root는 workflow·합성 pilot을 통합했다. revision precheck와 snapshot 사이 경쟁 및 run ID 사전 검증 누락을 실제 재현해 수정했다. 공개 checker의 경로 alias/import 오류, strict registry 메타데이터 오류, pilot01 환경 표기도 정정하고 초기 증거를 보존했다.
+
+최종 `npm test`993/993 통과, pilot02 실측154.889334ms·검사 subprocess3/3·최대동시2. 임의CP40ms와 제품 완료시간을 구분한다. 공개36/85연결,49누락은 명시적으로 blocked; 정상4/결함35대조 실행과290assertion 근거를 남겼다. 스킬 source2개 구조검사·helper6/6·독립 수동 적용, inventory/backlog를 추가했고 설치본은 유지했다. [구현·남은 순서](orchestration/D064_IMPLEMENTATION.md), [결정](decisions/D064.md). 모델 요청·장부 변경·원본PersonalOS변경·커밋·푸시 없음. 로컬 소스/문서/evidence는 보존했다.
+
+## 2026-10-11 — D065 병렬 구현·실제 실행·검증기 정정
+
+[역할 계약](agents/D065_PARALLEL.md)으로 공개검사3영역, 실제 파일 runtime, 의미 handler, runner, 중복 테스트 정리, 기존 스킬 담당1명과 독립 검토를 분리했다. 실제 Jev/Claude 호출은 root만 실행했다. 공개 mapping36/85→85/85, 삭제 대상 테스트 정의74→58. 고유 oracle 변조/일부 의무 누락 반례가 초기 통합에서 빠진 것을 독립 검토로 발견하고 남은 정의 안에 복원했다. 전체 회귀1,009개와 실제 제품 결과의 분모는 다르다.
+
+`node scripts/dag-e2e.mjs benchmark-runs/d065-live-01 --spend`가 Jev17회·Claude16회로16개 파일을 생성했다. 담당자2명·최대동시2·각8개파일, Opus5.5 medium이었다. 원본19m56.51s 뒤 `uncertain / DAG_PUBLIC_EVIDENCE_INVALID`, 독립 채점62/63 통과. 후보에서 생성한 무인자 endpoint의 bare-star 구문 오류를 공개 검사로 확인했다. 후보/원본실행은수정하지않았다.
+
+별도 HTTP/CLI진단에서초기화실패17개미실행과CLI8/15pass·7fail을관측했다. 실패case assertion0과전체초기화실패를잘못거부하는runner를수정하고보존보고서를무모델재생했다. CLI설치원본검사의2건오탐은상속cwd의import우선순위때문임을실제재현했다. 중립cwd수정과foreign-origin거부증거를남기고공개검사v3대조를갱신한다. 첫분석기의이벤트순서오류와일회성진단launcher실패도원본을보존했다. 최신검증명령·시간·소스해시는[실측결과](orchestration/D065_RESULTS.md)와[독립검토](agents/D065_REVIEW.md)를따른다.
+
+Jev입력229,540·출력823,공식토큰팩환산$0.137724. Claude구현API환산$9.6346728,별도Opus모니터$0.63698. 월구독실제청구액은null이며개발대화/보조에이전트비용은미계측이다. 누적장부7,633,742/10M입력·pending0. 기존PersonalOS/Vault·설치스킬·Git원격은유지하고로컬소스/문서/모든실패와후속진단을보존했다. 성공속도개선은아직측정되지않았다.
+
+최종 고정 완료: 공개 v3 정상85/85·결함81/81, 전체 회귀1,009/1,009 통과. 최초 최종 회귀의 sandbox listener EPERM 12건은 보존하고 같은 소스의 권한 있는 재실행을 분리했다. 삭제 대상4개 파일의 최종 감소는16개 정의·199줄·10,071바이트다. D065 기록 해시34개/주장13개, D064 보존 기록, tracked diff 검사와 문서21개/링크341개를 확인했다. 실제 후보 실패와 별개로 검증기 R1–R8은 독립 검토에서 수정 확인됐다. 원본 후보를 고치거나 유료 모델을 재호출하지 않았다. [종료 도구 출력](../benchmark-runs/d065-local/closeout-tool-checks.json), [검증 정본](../VERIFICATION.md).

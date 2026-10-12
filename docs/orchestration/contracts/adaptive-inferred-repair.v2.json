@@ -1,0 +1,56 @@
+{
+  "schema_version": "adaptive-inferred-repair-contract/v2",
+  "scope_policy": "public-inferred-owner-v2",
+  "artifact_policy": "inferred-v2",
+  "stage": "repair_owners",
+  "model": "jev-latest",
+  "question": {
+    "type": "choice",
+    "target_template": "For failure {failure_id}, public check {check_id}, case {test_id}, observed failed assertion {assertion_id}: ",
+    "instructions": "Choose the existing artifact whose implementation should be inspected or repaired first for this observed failure. Read the exact failed case and any not-reached assertions in state.failure, its original requirement mapping in state.failures, the artifact interfaces and original requirements, and the current task ownership and dependencies. Distinguish the public symptom from its possible upstream producer, representation, renderer or caller. Repeated equal errors can share one origin but do not prove one defect. Return one existing artifact ID, or unknown if the supplied evidence does not support a responsible artifact. This is a primary repair hypothesis, not proof of a defect or a claim that one artifact fixes every cause. Never assign a not-reached assertion as an observed failure, invent an owner or path, weaken a requirement, or use hidden tests.",
+    "call_instructions": "Apply state.instructions to this failed case and choose the existing artifact to inspect or repair first, or unknown. Read the exact artifact contract and current owner from state.artifacts/tasks; this is a hypothesis, not fault proof.",
+    "artifact_description_template": "Existing {artifact_id}; read its inline artifact contract.",
+    "unknown_description": "No adequately supported existing artifact can be selected from the supplied public evidence; keep this failure unresolved."
+  },
+  "state_instructions": "Infer primary repair responsibility separately for each listed failed public case. The full public observations, original requirements and current artifact/task contracts are supplied inline. Existing ownership is a permission map, not fault proof. Select only artifact IDs in the question criteria. The controller maps each ID to its existing owner and validates current source, environment and artifact revisions. Unknown and not-reached observations remain unresolved and all public checks will run after any repair. Local evidence references and source hashes are provenance, not files the model can retrieve. Shared revision/default references in state.failure resolve only to values supplied inside that state.",
+  "candidate_reference_template": "Select {candidate_id}, as defined in state.candidates.",
+  "decision_call_instructions": "Choose one listed exact repair scope using state.instructions, the public failures and the inferred ownership provenance. Inferred responsibility is a hypothesis, not proof. Unknown failures remain unresolved. Select stop if no listed scope is supported.",
+  "decision_instructions": "Choose the smallest listed legal scope likely to address the observed public failures. Compare each primary inferred artifact with the explicit producer, representation and renderer contracts and prior actual changes. Inferred assignments are fallible hypotheses; choosing a causal alternative is allowed only from the exact listed scopes. Unknown assignments do not authorize broader writes or removal of requirements. Other public failures remain visible even when outside this selected repair. Do not declare completion: the controller must rerun every public case and the independent grade. Each candidate names its inference ID, exact existing owners and writable artifacts; every other artifact is inherited unchanged.",
+  "worker_instructions": "Treat inferred ownership as a starting hypothesis. Inspect the supplied public failure, original requirements, selected artifact contracts and read-only dependency snapshots before editing. Modify only the exact allowed artifact paths, even if another file appears responsible. Report unresolved or insufficient evidence rather than widening writes. Other public failures are retained in the packet but are not permission to edit their artifacts. Unknown and not-reached observations are not resolved successes. Preserve nonselected bytes and executable modes and do not hardcode fixture values or weaken tests.",
+  "rules": {
+    "answer_authority": "existing artifact ID only; owner and paths are controller-derived",
+    "inference_is_fault_proof": false,
+    "unknown_is_resolved": false,
+    "not_reached_is_failed": false,
+    "broad_case_fallback_is_active_candidate": false,
+    "automatic_retries": 0,
+    "all_public_checks_after_repair": true,
+    "local_token_limit": null,
+    "local_repair_wire_limit": null
+  },
+  "owner_input": {
+    "schema_version": "adaptive-inferred-owner-input/v2",
+    "mode": "single_target_state",
+    "instructions": "For each question, infer the existing artifact that should be inspected or repaired first. This is a primary responsibility hypothesis, not defect proof or a claim of one cause. All existing artifacts remain legal choices, including upstream producers, representations, renderers and callers. Use their complete inline interfaces, original evidence quotes and current task dependency contracts. Every failed public case and its original mapped requirements are inline. A repeated error does not establish a shared cause. The controller derives the existing owner and writable paths from the chosen artifact ID. Return unknown when the available contracts or observations cannot support a choice. Do not invent owners or paths, assign a not-reached assertion as an observed failure, weaken requirements or tests, or declare completion. Every case in public_gate must rerun after repair. Controller-only references are provenance and cannot be retrieved by the model. Artifact revision and request bindings are validated by the controller. A task with read_paths_from_input_artifacts or write_paths_from_output_artifacts true has exactly the concatenated paths of its listed input or output artifacts, respectively, in that order.",
+    "target_template": "For public check {check_id}, failed case {test_id}, assertion {assertion_id}, which existing artifact should be inspected or repaired first? Apply state.instructions and the complete inline case; choose unknown if unsupported.",
+    "unknown_description": "No sufficiently supported existing artifact.",
+    "inline_case_resolution": "Every original failed case is fully inline in detailed_failed_cases. Its original_requirement_ids resolve to original_requirements in this same state. No second failure summary or external retrieval is needed. Each question identifies the exact check/test/assertion in its instruction.",
+    "requirement_scope_basis": "Exact original requirements named by observed failed-case mappings and explicit causal paths. Every candidate interface, original evidence quote and dependency contract remains complete. Ambiguous or missing mappings retain all original requirements.",
+    "missing_requirement_effect": "If omitted implementation details are necessary to attribute this failure, return unknown; do not assume their content.",
+    "rules": {
+      "all_existing_artifact_choices_inline": true,
+      "failed_cases_exact": true,
+      "unknown_case_fields_retained": true,
+      "not_reached_is_failed": false,
+      "known_successful_checks_summarized": true,
+      "all_public_gate_identities_retained": true,
+      "original_request_retained_in_controller": true,
+      "unrecognized_semantic_shape": "raw_request_fallback",
+      "ambiguous_requirement_mapping": "keep_all_original_requirements",
+      "criterion_null_meaning": "The choice key is the existing artifact ID whose complete contract is inline; null carries no additional description.",
+      "provider_acceptance": "unmeasured",
+      "local_token_limit": null,
+      "local_repair_wire_limit": null
+    }
+  }
+}

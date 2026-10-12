@@ -554,3 +554,46 @@ test('recorded provider failure remains failed rather than inferred uncertainty 
   assert.equal(provider(run, 'claude').calls.uncertain, 0);
   assert.equal(provider(run, 'claude').tokens.input.value, null);
 });
+
+test('token-native budget displays 10M input-token limit and observed history above old USD cap', () => {
+  const configured = { ...manifest, jev_budget: { schema_version: 'jev-token-budget/v2', max_input_tokens: 10000000, reserve_input_tokens: 65536, ledger_path: '/private/hidden.json' } };
+  const data = { schema_version: 'jev-token-budget-snapshot/v2', budget_unit: 'input_tokens', token_limit: 10000000, budget_id: 'budget-test', limit_usd: null, rate_usd_per_million: 0.6, charged_input_tokens: 2000000, reserved_input_tokens: 65536, remaining_input_tokens: 1, estimated_spent_usd: 999, private: 'hidden' };
+  const project = budget => summarizeRun({ id: 'token-budget', manifest: configured, decisions: [{ event: 'budget_reserved', budget }] }).jev_budget;
+  const budget = project(data);
+  assert.equal(budget.status, 'observed'); assert.equal(budget.budget_unit, 'input_tokens');
+  assert.equal(budget.token_limit, 10000000); assert.equal(budget.limit_usd, null);
+  assert.equal(budget.charged_input_tokens, 2000000); assert.equal(budget.remaining_input_tokens, 7934464);
+  assert.equal(budget.estimated_spent_usd, 1.2); assert.equal(budget.actual_billed_usd, null);
+  assert.equal(JSON.stringify(budget).includes('hidden'), false);
+  for (const invalid of [{ ...data, charged_input_tokens: 10000000 }, { ...data, limit_usd: 1 }, { ...data, token_limit: 1666666 }, { ...data, schema_version: 'jev-token-budget-snapshot/v1' }]) {
+    assert.equal(project(invalid).status, 'not_observed'); assert.equal(project(invalid).charged_input_tokens, null);
+  }
+  const unobserved = summarizeRun({ id: 'waiting', manifest: configured }).jev_budget;
+  assert.equal(unobserved.token_limit, 10000000); assert.equal(unobserved.remaining_input_tokens, null);
+  assert.equal(unobserved.estimated_spent_usd, null);
+});
+
+test('explicit v3 unlimited budget preserves usage above 10M and distinguishes unknown usage', () => {
+  const configured = { ...manifest, jev_budget: { schema_version: 'jev-token-budget/v3', max_input_tokens: null,
+    reserve_input_tokens: 65536, ledger_path: '/private/hidden.json' } };
+  const data = { schema_version: 'jev-token-budget-snapshot/v3', budget_unit: 'input_tokens', token_limit: null,
+    unlimited: true, budget_id: 'budget-test', limit_usd: null, rate_usd_per_million: 0.6,
+    charged_input_tokens: 11000000, reserved_input_tokens: 65536, remaining_input_tokens: null };
+  const project = budget => summarizeRun({ id: 'unlimited-budget', manifest: configured,
+    decisions: [{ event: 'budget_reserved', budget }] }).jev_budget;
+  const actual = project(data);
+  assert.equal(actual.status, 'observed'); assert.equal(actual.unlimited, true);
+  assert.equal(actual.charged_input_tokens, 11000000); assert.equal(actual.estimated_spent_usd, 6.6);
+  assert.equal(actual.token_limit, null); assert.equal(actual.remaining_input_tokens, null);
+  assert.equal(actual.estimated_remaining_usd, null); assert.equal(actual.actual_billed_usd, null);
+  for (const invalid of [{ ...data, unlimited: false }, { ...data, remaining_input_tokens: 0 },
+    { ...data, token_limit: 10000000 }, { ...data, schema_version: 'jev-token-budget-snapshot/v2' },
+    { ...data, charged_input_tokens: Number.MAX_SAFE_INTEGER }]) {
+    assert.equal(project(invalid).status, 'not_observed'); assert.equal(project(invalid).charged_input_tokens, null);
+  }
+  const unobserved = summarizeRun({ id: 'waiting', manifest: configured }).jev_budget;
+  assert.equal(unobserved.unlimited, true); assert.equal(unobserved.charged_input_tokens, null);
+  assert.equal(unobserved.estimated_spent_usd, null);
+  assert.equal(summarizeRun({ id: 'invalid', manifest: { ...configured,
+    jev_budget: { ...configured.jev_budget, schema_version: 'jev-token-budget/v2' } } }).jev_budget, null);
+});

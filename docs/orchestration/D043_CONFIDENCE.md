@@ -1,0 +1,17 @@
+# D043 — Confidence-gated strategy selection
+
+2026-10-10. User requested using confidence as the routing criterion. The implementation uses confidence attached to the actual execution-strategy choice, not confidence attached to the unrelated evidence-sufficiency question.
+
+The fixed English question is `docs/orchestration/contracts/split-confidence.v1.json`. It asks for `execution` (choice): `split`, `single`, or `defer`. It includes quality, elapsed time, coordination, verification, output-size and recovery constraints. Jev supplies its choice confidence. No repeated question-generation call is introduced.
+
+Execution rule: an explicit defer always collects evidence; confidence below the explicitly configured threshold collects evidence; otherwise dispatch the selected strategy. High confidence in single means single, never split. Missing, nonnumeric or out-of-range confidence rejects the response. No probability or evidence-confidence fallback is allowed. Collection currently returns needs_evidence; it does not perform new research automatically.
+
+The pilot now defaults to confidence and requires `--confidence-threshold NUMBER` for model routing. Example option suffix: `--routing-mode auto --decision-basis confidence --confidence-threshold 0.65`. This number is illustrative, not a calibrated or user-selected optimum. No default threshold is silently chosen. Candidate thresholds 0.5/0.65/0.8 are recorded as offline policy projections, not independent executions. For historical probability policy, pass `--decision-basis probability --split-threshold 0.65`. Mixed threshold flags reject. Existing raw D042 records remain untouched.
+
+The low-level reusable policy and adapter retain probability defaults for legacy callers. The active pilot explicitly propagates confidence to the question, cache policy, dispatch and logs. The older generic document-router remains the historical probability path, not migrated by this change. The single-validated-task deterministic bypass in auto still avoids Jev; force_jev invokes it. The question and policy participate in cache identity, preventing reuse across decision bases.
+
+Claude comparison uses the same choices and threshold but asks Claude to report its own confidence. This is a different confidence source from Jev's returned field and must not be treated as equivalently calibrated. No success-probability claim is made for either.
+
+Validation: `node --check scripts/tree-e2e-pilot.mjs`; `node --test test/confidence-routing.test.mjs test/routing-policy.test.mjs test/checkpoint-router.test.mjs` (24/24 before final metadata-only adjustment; rerun recorded below). Tests exercise high-confidence single, exact boundary split, low confidence for either choice, explicit defer, malformed confidence, question loading, cache separation and direct handler dispatch with injected responses. No paid API call or successful generated candidate in this change. D042 output continuation / JSON artifact failure remains unresolved; confidence alone does not repair it.
+
+Final validation: `npm test` with local-server binding permitted passed 419/419, zero failures. Initial sandbox execution was blocked by listen EPERM, not counted as a passed run. `node --check scripts/tree-e2e-pilot.mjs` and `git diff --check` passed. Independent read-only review found and corrected one-task override metadata loss; the final suite includes its regression test. Adapter uses checkpoints.v2.json; v1 remains historical.

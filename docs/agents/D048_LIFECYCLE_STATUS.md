@@ -1,0 +1,11 @@
+# D048 lifecycle implementation handoff
+
+Implemented 2026-10-10 (KST). Owned module `src/orchestration/lifecycle-router.mjs`, contract `docs/orchestration/contracts/lifecycle.v1.json`, tests `test/lifecycle-router.test.mjs`.
+
+`runLifecycle({plan,brief,decide,execute,verify,record,initialEvidence,maxConcurrency=2,maxRecoveryPerTask=1,model='opus',effort='medium'})` carries original goal, complete initial evidence and revisioned results/failures into all management decisions. Initial numeric selection uses existing frozen count candidates. Fixed profile explicitly bypassed. Dependency-ready executable subsets up to concurrency limit are offered; a singleton is script-dispatched. Worker results go through mechanical verification and separate requirement review. Confirmed failures and semantic review gaps can trigger one actual same-scope repair. All sibling outputs settle before recovery. Any uncertain worker outcome blocks new work and never retries. Whole verification is required before `ready_for_independent_grade`; this status is not independent benchmark success.
+
+Callback interface in contract. Decision keys: initial_count/task_count; ready_selection/next_batch; post_worker_review/review; failure_recovery/recovery. Confidence recorded, not gated. `execute` may return `outcome_uncertain:true` or `uncertain:true`, or throw these flags. `verify` returns `{ok:boolean,...}` and must mechanically validate actual required file writes; passing syntax does not certify requirements. Main supplies scoped transport and verification.
+
+Test command: `node --test test/lifecycle-router.test.mjs` — **9/9 passed**. Tests execute asynchronous fake callbacks, assert actual parallel overlap, evidence propagation, one-repair bound, uncertain no replay, dependency gating, numeric choice validation, semantic repair despite syntax success, whole-check failure, singleton bypass, and sibling result retention.
+
+No providers called; no live performance or quality claim. Module does not itself introduce new task boundaries, change profiles, or recursively subdivide mid-flight; the existing count candidate generator owns initial grouping. A failed whole-project check stops for diagnosis; independent grading and any hidden-feedback repair remain outside the lifecycle. No commit/push.
