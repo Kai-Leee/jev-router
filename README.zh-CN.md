@@ -50,13 +50,14 @@ Jev Router 验证这些重复判断能否以固定英文问题和结构化答案
 ```sh
 git clone https://github.com/Kai-Leee/jev-router.git
 cd jev-router
+npm run mcp:fetch   # 为 MCP 测试安装固定版本的 jev-mcp 二进制文件，校验 SHA-256
 npm test            # 仅使用假密钥和模拟 HTTP；不推理，不消耗余额
+npm run check:links # 检查相对链接、标题锚点和 research 分支链接
 npm run eval:demo   # 对合成记录进行离线评估
 ```
 
-其中 3 个 MCP 测试需要位于 `vendor/jev-mcp/0.3.1/` 的固定版本 `jev-mcp` 二进制文件（macOS ARM64）。
-该二进制文件未提交到仓库。请从 [vendor/jev-mcp/SOURCE.json](vendor/jev-mcp/SOURCE.json)
-中的归档 URL 下载并核对 SHA-256。缺少该文件时，新克隆的仓库 390 个测试中通过 387 个。
+`mcp:fetch` 支持 macOS ARM64、Linux x64 和 Linux arm64（[SOURCE.json](vendor/jev-mcp/SOURCE.json)）。
+缺少该二进制文件时，3 个 MCP 测试会失败。CI 在 macOS（Node 22）和 Docker（Node 24、26）中运行测试。
 
 连接 Jev 需要 Jev AI 账户和密钥，并须同意 Jev AI 使用条款（[登录](docs/USAGE.en.md#sign-in)）：
 

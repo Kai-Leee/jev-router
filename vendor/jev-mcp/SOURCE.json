@@ -2,9 +2,24 @@
   "repository": "https://github.com/freepik-company/jev-mcp",
   "release": "v0.3.1",
   "license": "Apache-2.0",
-  "platform": "darwin-arm64",
-  "archiveURL": "https://github.com/freepik-company/jev-mcp/releases/download/v0.3.1/jev-mcp_darwin_arm64.tar.gz",
-  "archiveSha256": "2b0320b79809b92106196b06255049a23ce271c17ba8f5b2580827e5ff6eb6b5",
-  "binarySha256": "955384ed3d1d3c9f8131fb4f3deed6c87d0400113c610367af2b44a899dd8bbc",
-  "checkedAt": "2026-10-08"
+  "platforms": {
+    "darwin-arm64": {
+      "archiveURL": "https://github.com/freepik-company/jev-mcp/releases/download/v0.3.1/jev-mcp_darwin_arm64.tar.gz",
+      "archiveSha256": "2b0320b79809b92106196b06255049a23ce271c17ba8f5b2580827e5ff6eb6b5",
+      "binarySha256": "955384ed3d1d3c9f8131fb4f3deed6c87d0400113c610367af2b44a899dd8bbc",
+      "checkedAt": "2026-10-08"
+    },
+    "linux-x64": {
+      "archiveURL": "https://github.com/freepik-company/jev-mcp/releases/download/v0.3.1/jev-mcp_linux_amd64.tar.gz",
+      "archiveSha256": "8821a34d67916d51218c3041b4c54f22419fc5eb083c482d235f922be84d223a",
+      "binarySha256": "c1c47a9a3888b15ce72f52e309e9735f195bda9c5d23e790bb46beb7293299ed",
+      "checkedAt": "2026-10-13"
+    },
+    "linux-arm64": {
+      "archiveURL": "https://github.com/freepik-company/jev-mcp/releases/download/v0.3.1/jev-mcp_linux_arm64.tar.gz",
+      "archiveSha256": "e5535dfb97e9b47bd4ae97689d1f5368747aab41ba20fb79c8473d160a749025",
+      "binarySha256": "d18a207cda353adf76c10016bfdbd98c52567c979ddda6341670595ccff1c6bd",
+      "checkedAt": "2026-10-13"
+    }
+  }
 }

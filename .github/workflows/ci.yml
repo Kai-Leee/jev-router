@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test-macos:
+    name: test (macOS, Node 22)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: npm run mcp:fetch
+      - run: npm test
+
+  test-docker:
+    name: test (Docker, Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['24', '26']
+    steps:
+      - uses: actions/checkout@v7
+      # Non-root user so permission tests run; the copy keeps the checkout untouched.
+      - run: >-
+          docker run --rm -u node -v "$PWD:/src:ro" node:${{ matrix.node }}
+          sh -c 'cp -R /src /tmp/app && cd /tmp/app && node -v && npm run mcp:fetch && npm test'
+
+  links:
+    name: links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: git fetch --no-tags --depth=1 origin +refs/heads/research:refs/remotes/origin/research
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: npm run check:links

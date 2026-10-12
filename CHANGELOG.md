@@ -23,6 +23,9 @@ Before 1.0.0, a minor bump marks new features or breaking changes, and a patch b
 - Apache-2.0 license. Live Jev use requires accepting the Jev AI Terms of Use and Privacy Policy.
 - `npm run login` and a Claude Code SessionStart sign-in prompt.
 - This changelog and a test that keeps the package, plugin and changelog versions in step.
+- CI on pull requests to `main`: tests on macOS with Node 22 and in Docker with Node 24 and 26, plus a Markdown link check.
+- `npm run mcp:fetch` installs the pinned jev-mcp binary after checking SHA-256; Linux x64 and arm64 are now pinned.
+- `npm run check:links` checks relative links, heading anchors and links into the research branch.
 
 ### Changed
 

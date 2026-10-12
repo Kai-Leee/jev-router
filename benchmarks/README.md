@@ -104,15 +104,15 @@ Run all commands from the repository root:
 - `python3 -B benchmarks/personal-os/evaluator/selftest.py`: **10/10 passed**. These test the grader,
   not a reconstructed application.
 - Final real E2E oracle and no-op receipts:
-  [oracle](../benchmark-runs/grade-oracle-v2/result.json), [no-op](../benchmark-runs/grade-noop-v2/result.json).
+  oracle (`benchmark-runs/grade-oracle-v2/result.json`, local only), no-op (`benchmark-runs/grade-noop-v2/result.json`, local only).
   Both used fresh offline verifiers with fixed digest, and both reported container removal.
   The no-op collected zero tests due to missing `pytest_check`; it is not thirty failed assertions.
 - Real MCP protocol → chosen command → Docker → journal smoke, with no models:
-  [E2E environment](../benchmark-runs/mcp-smoke-xA5b78/result.json),
-  [Personal OS environment](../benchmark-runs/mcp-smoke-6vJik1/result.json).
+  E2E environment (`benchmark-runs/mcp-smoke-xA5b78/result.json`, local only),
+  Personal OS environment (`benchmark-runs/mcp-smoke-6vJik1/result.json`, local only).
   Selected marker present, unselected action absent, hidden tests absent.
 - Personal OS negative control CLI reports:
-  [empty](../benchmark-runs/personal-os-controls/empty.json), [no-op](../benchmark-runs/personal-os-controls/noop.json).
+  empty (`benchmark-runs/personal-os-controls/empty.json`, local only), no-op (`benchmark-runs/personal-os-controls/noop.json`, local only).
   Both exit 1 and `full_product_verified:false`. A missing adapter is incomplete, even if process exit is 0.
 
 The reports above are ignored local artifacts, not committed dependencies. Regenerate them with the

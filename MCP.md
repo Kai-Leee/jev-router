@@ -10,7 +10,7 @@ Checked: 2026-10-08, Asia/Seoul.
 
 Create a Jev AI key at https://jev-ai.pro/jev-api. Run `npm run login`, or edit `~/workspace/.env` locally and set `JEV_AI_API_KEY`. This file is parsed as data; it is never sourced as shell code. Only the Jev key is read. The server process environment takes precedence; `JEV_AI_ENV_FILE` can select another private environment file.
 
-For deployment, set `JEV_AI_API_KEY` in the server runtime's secret store and restart the MCP process. This installed binary is macOS ARM64 only; Linux/Windows deployment requires its matching pinned upstream binary and checksum, plus adjusting the launch path. No deployment has been performed.
+For deployment, set `JEV_AI_API_KEY` in the server runtime's secret store and restart the MCP process. Pinned binaries cover macOS ARM64, Linux x64 and Linux arm64 (`vendor/jev-mcp/SOURCE.json`). `npm run mcp:fetch` installs the one for this machine after checking the archive and binary SHA-256. Other platforms need a new pin. No deployment has been performed.
 
 The launcher maps the key to the upstream MCP's `API_KEY` environment variable. It explicitly sets:
 
@@ -68,8 +68,7 @@ Known upstream limitation: provider errors expose their status but not `Retry-Af
 
 ## Verification
 
-Release archive SHA-256: `2b0320b79809b92106196b06255049a23ce271c17ba8f5b2580827e5ff6eb6b5`.
-Installed binary SHA-256: `955384ed3d1d3c9f8131fb4f3deed6c87d0400113c610367af2b44a899dd8bbc`.
+Archive and binary SHA-256 values for each platform are pinned in `vendor/jev-mcp/SOURCE.json`.
 The launcher checks the installed binary digest before starting it.
 
 `npm test` runs the existing client tests plus a real MCP binary against a localhost mock API using a fake credential. The integration test observes actual requests: initialization/tool listing sends no provider request; model discovery sends GET `/v1/models`; `decide` sends POST `/v1/systemone` with the expected Bearer header and JSON; 429 and 504 each produce one request, without retry; a credential echoed in an error body does not reach the caller. This is protocol/transport evidence, not real Jev inference.

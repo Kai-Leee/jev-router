@@ -51,13 +51,14 @@ Node.js 22 이상이 필요합니다. 외부 패키지는 없습니다.
 ```sh
 git clone https://github.com/Kai-Leee/jev-router.git
 cd jev-router
+npm run mcp:fetch   # MCP 테스트용 고정 jev-mcp 바이너리. 체크섬 확인
 npm test            # 가짜 키와 모의 HTTP만 사용. 추론·잔액 사용 없음
+npm run check:links # 상대 링크, 제목 앵커, research 브랜치 링크 검사
 npm run eval:demo   # 합성 기록의 오프라인 평가
 ```
 
-MCP 테스트 3개는 `vendor/jev-mcp/0.3.1/`의 고정 `jev-mcp` 바이너리(macOS ARM64)가 필요합니다.
-바이너리는 커밋하지 않았습니다. [vendor/jev-mcp/SOURCE.json](vendor/jev-mcp/SOURCE.json)의
-아카이브 URL에서 받고 SHA-256을 확인합니다. 바이너리가 없으면 새 클론에서 390개 중 387개가 통과합니다.
+`mcp:fetch`는 macOS ARM64, Linux x64, Linux arm64를 지원합니다([SOURCE.json](vendor/jev-mcp/SOURCE.json)).
+바이너리가 없으면 MCP 테스트 3개가 실패합니다. CI는 macOS(Node 22)와 Docker(Node 24, 26)에서 테스트합니다.
 
 Jev 연결에는 Jev AI 계정과 키, Jev AI 이용약관 동의가 필요합니다 ([로그인](docs/USAGE.md#로그인)).
 

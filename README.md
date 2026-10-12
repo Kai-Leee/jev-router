@@ -52,14 +52,14 @@ Requires Node.js 22 or later. There are no external packages.
 ```sh
 git clone https://github.com/Kai-Leee/jev-router.git
 cd jev-router
+npm run mcp:fetch   # pinned jev-mcp binary for the MCP tests, checksum-verified
 npm test            # fake key and mock HTTP only; no inference, no balance use
+npm run check:links # relative links, heading anchors and research-branch links
 npm run eval:demo   # offline evaluation of synthetic records
 ```
 
-Three MCP tests need the pinned `jev-mcp` binary (macOS ARM64) in `vendor/jev-mcp/0.3.1/`.
-The binary is not committed. Get it from the archive URL in
-[vendor/jev-mcp/SOURCE.json](vendor/jev-mcp/SOURCE.json) and check its SHA-256.
-Without it, a fresh clone passes 387 of 390 tests.
+`mcp:fetch` supports macOS ARM64, Linux x64 and Linux arm64 ([SOURCE.json](vendor/jev-mcp/SOURCE.json)).
+Without it, the three MCP tests fail. CI runs the tests on macOS (Node 22) and in Docker (Node 24 and 26).
 
 Connecting to Jev needs a Jev AI account and key, and acceptance of the Jev AI Terms of Use
 ([sign-in](docs/USAGE.en.md#sign-in)):
