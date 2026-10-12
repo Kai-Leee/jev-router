@@ -7,15 +7,20 @@ versioned; they use decision IDs such as D029.
 
 ## Releasing
 
-1. Move the `Unreleased` entries under a new `## [X.Y.Z] - YYYY-MM-DD` heading.
+1. Move the `Unreleased` entries under a new `## [X.Y.Z] - YYYY-MM-DD` heading. Start the entry with a `Goal:` line.
 2. Run `npm version X.Y.Z --no-git-tag-version` and set the same version in `.codex-plugin/plugin.json`.
    `npm test` fails if the two versions differ or the changelog has no heading for the version.
 3. Merge the change into `main` through a pull request.
 4. Tag the merge commit on `main`: `git tag -a vX.Y.Z -m vX.Y.Z` and `git push origin vX.Y.Z`.
 
-Before 1.0.0, a minor bump marks new features or breaking changes, and a patch bump marks fixes.
+Each goal that reaches `main` is one release. Before 1.0.0, a goal that adds features or breaks
+behavior bumps the minor version, and a fix-only goal bumps the patch version.
 
 ## [Unreleased]
+
+## [0.2.0] - 2026-10-13
+
+Goal: a public release branch with its own docs, license, sign-in, versioning and CI.
 
 ### Added
 
