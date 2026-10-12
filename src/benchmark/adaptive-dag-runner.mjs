@@ -11,7 +11,7 @@ import {providerOutcome, writePrivateJson} from './runner.mjs';
 import {claudeEnvironment} from './claude-env.mjs';
 import {createMeasuredDecider} from './telemetry.mjs';
 import {createTokenBudget, validateBudgetConfig, readTokenBudgetSnapshot} from './budget.mjs';
-import {acquireTokenBudget} from './budget-acquire.mjs';
+import {acquireTokenBudget, createConcurrentTokenBudget} from './budget-acquire.mjs';
 import {preflightDagRun, runDagDockerCheck, validateDagPublicReport} from './dag-runner.mjs';
 import {loadPublicAuditInputs, publicSourceHashes} from '../../scripts/audit-dag-public-checks.mjs';
 import {prepareAdaptiveCatalog} from '../orchestration/adaptive-dag-planner.mjs';
@@ -226,13 +226,19 @@ function combinedUsage(summaries) {
   }));
 }
 
-/** Controller-owned receipt/session transport. No provider retry or implicit catalog/worker reuse. */
+/** Controller-owned receipt/session transport. No provider retry or implicit catalog/worker reuse.
+ * Opt-in speed options (defaults reproduce the historical per-call sequence):
+ * modelLookup 'per_session' reuses one model GET until a non-completed call or unaccepted model;
+ * budgetLock 'ledger_op' (v4 ledger only) holds the ledger lock per mutation, not across provider I/O. */
 export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirectory, manifest, remaining,
-  record = async () => {}, abortSignal, adapters = {}}) {
+  record = async () => {}, abortSignal, adapters = {}, modelLookup = 'per_call', budgetLock = 'call'}) {
   const runCommand = adapters.runCommand ?? processResult, receipts = [];
   const config = adapters.jevConfig ?? loadConfig(), secret = config.apiKey ?? '';
   const save = (name, value) => writePrivateJson(join(runDirectory, name), JSON.parse(JSON.stringify(value).replaceAll(secret || '\u0000', secret ? '[REDACTED]' : '\u0000')));
   const budgetConfig = validateBudgetConfig(manifest.jev_budget, rootDir);
+  if (!['per_call', 'per_session'].includes(modelLookup) || !['call', 'ledger_op'].includes(budgetLock)
+      || (budgetLock === 'ledger_op' && budgetConfig.schema_version !== 'jev-token-budget/v4')) fail('ADAPTIVE_SESSION_OPTION_INVALID');
+  const modelLookupCache = modelLookup === 'per_session' ? {models_checked: false} : null, narrowLock = budgetLock === 'ledger_op';
   const transmission = transmissionManifest(manifest) ? validateJevTransmissionBinding(manifest.transmission_preflight) : null;
   let sequence = 0, decisions = 0, stopped = false, observedJevModel = null, lastJevFailure = null;
   const checkpoint = async value => { receipts.push(value); save(`receipts/${value.id}.json`, value); await record({event: 'adaptive_provider_finished', ...value}); };
@@ -326,7 +332,7 @@ export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirect
           && used + manifest.jev_budget.reserve_input_tokens > manifest.limits.planning_input_tokens) fail('ADAPTIVE_ARM_TOKEN_LIMIT');
       const id = nextId('jev'), attempt = `${run_id}-${id}`, began = performance.now();
       save(`calls/${id}.request.json`, prepared.body);
-      let held, admission = null, response = null, submitted = false, lockWait = {wait_ms: 0, lock_contentions: 0};
+      let held, admission = null, response = null, submitted = false, lockWait = {wait_ms: 0, lock_contentions: 0}, lookupSource = null, balanceSource = null;
       let reservationCreated = false, reservationCalled = false, providerDecideCalled = false, blockedPhase = null;
       const transmissionChecks = [], pendingTransmissionEvents = [];
       const transmissionSummary = () => transmission ? {required:true, request_sha256:sha(prepared.serialized),
@@ -352,6 +358,8 @@ export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirect
         if (!check.passed) {blockedPhase = phase; fail('ADAPTIVE_TRANSMISSION_PREFLIGHT_BLOCKED');}
       };
       const drainTransmissionEvents = async () => {while (pendingTransmissionEvents.length) await record(pendingTransmissionEvents.shift());};
+      const speedEvidence = () => ({...(modelLookupCache ? {model_lookup_source: lookupSource, balance_source: balanceSource} : {}),
+        ...(narrowLock ? {budget_lock_mode: 'ledger_op', budget_lock_wait_ms: lockWait.wait_ms, budget_lock_contentions: lockWait.lock_contentions} : {})});
       try {
         if (transmission) {checkTransmission('initial'); await drainTransmissionEvents();}
         if (artifactRepairManifest(manifest)) {
@@ -364,14 +372,18 @@ export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirect
           if (admission.request_sha256 !== sha(prepareDecision(prepared.body).serialized)) fail('ADAPTIVE_TOKEN_REQUEST_DRIFT');
           if (!admission.inference_allowed) fail('ADAPTIVE_TOKEN_PREFLIGHT_BLOCKED', {token_admission: admission});
         }
-        held = await acquireTokenBudget(budgetConfig, {open: adapters.openBudget ?? (cfg => createTokenBudget(cfg, {requireExisting: true})),
-          ...(parallelManifest(manifest) ? {signal: abortSignal, timeoutMs: remaining(), onAcquired: value => { lockWait = value; }} : {})});
+        const openBudget = adapters.openBudget ?? (cfg => createTokenBudget(cfg, {requireExisting: true}));
+        // ponytail: lease = wall remaining + 60s settle margin; a crashed owner blocks others only after that deadline.
+        held = narrowLock ? createConcurrentTokenBudget(budgetConfig, {open: openBudget, leaseMs: Math.ceil(remaining()) + 60000,
+          onAcquired: value => { lockWait = {wait_ms: lockWait.wait_ms + value.wait_ms, lock_contentions: lockWait.lock_contentions + value.lock_contentions}; }})
+          : await acquireTokenBudget(budgetConfig, {open: openBudget,
+            ...(parallelManifest(manifest) ? {signal: abortSignal, timeoutMs: remaining(), onAcquired: value => { lockWait = value; }} : {})});
         if (recoveryProof) {
           const settled = held.snapshot();
           if (settled.reservations_pending !== 0 || settled.blocked_code !== null) fail('JEV_TRANSMISSION_RECOVERY_UNSETTLED');
           stopped = false;
         }
-        if (parallelManifest(manifest)) await record({event: 'adaptive_budget_lock_acquired', id, attempt_id: attempt,
+        if (parallelManifest(manifest) && !narrowLock) await record({event: 'adaptive_budget_lock_acquired', id, attempt_id: attempt,
           ...context, ...lockWait, basis: 'local_lock_acquisition_before_provider_call'});
         const client = adapters.jevClientFactory ? adapters.jevClientFactory() : createJevClient({...config, timeoutMs: remaining(),
           fetchImpl: (url, options) => globalThis.fetch(url, {...options, signal: abortSignal ? AbortSignal.any([options.signal, abortSignal]) : options.signal})});
@@ -379,14 +391,17 @@ export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirect
         // inside the reserve and decide boundaries, with no awaited gap before either action.
         const measuredBudget = transmission ? {...held, reserve:(...args) => {
           checkTransmission('before_reservation'); reservationCalled = true; reservationCreated = null;
-          const reservation = held.reserve(...args); reservationCreated = true; return reservation;
+          const reservation = held.reserve(...args);
+          if (typeof reservation?.then === 'function') return reservation.then(value => { reservationCreated = true; return value; });
+          reservationCreated = true; return reservation;
         }} : held;
         const measuredClient = transmission ? {listModels:(...args) => client.listModels(...args),
           listCredits:(...args) => client.listCredits(...args), decide:body => {
             checkTransmission('before_post', body); providerDecideCalled = true; return client.decide(body);
           }} : client;
-        const measured = createMeasuredDecider({client:measuredClient, budget:measuredBudget, record: async event => {
+        const measured = createMeasuredDecider({client:measuredClient, budget:measuredBudget, modelLookupCache, record: async event => {
           if (event.event === 'inference_started') submitted = true;
+          lookupSource = event.model_lookup_source ?? lookupSource; balanceSource = event.balance_source ?? balanceSource;
           if (transmission) await drainTransmissionEvents();
           await record({...event, ...context});
         }, identifiers: {run_id, attempt_id: attempt, group_id: transmission ? 'd075-decisions' : inferredManifest(manifest) ? 'd073-decisions' : causalManifest(manifest) ? 'd071-decisions' : artifactRepairManifest(manifest) ? 'd069-decisions' : repairManifest(manifest) ? 'd068-decisions' : parallelManifest(manifest) ? 'd067-decisions' : 'd066-decisions', agent_role: 'implementation'}});
@@ -399,7 +414,7 @@ export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirect
           wall_ms: performance.now() - began, inference_started: transmission ? providerDecideCalled : submitted, usage: response.usage, model: response.model,
           api_equivalent_usd: response.usage.input_tokens * manifest.valuation.usd_per_million_input_tokens / 1000000,
           actual_billed_usd: null, outcome_uncertain: false,
-          ...(transmission ? {transmission_preflight:transmissionSummary()} : {}),
+          ...(transmission ? {transmission_preflight:transmissionSummary()} : {}), ...speedEvidence(),
           ...(parallelManifest(manifest) ? {budget_lock_wait_ms: lockWait.wait_ms, budget_lock_contentions: lockWait.lock_contentions} : {})});
         return normalizeAdaptiveAnswers(prepared.body, response);
       } catch (error) {
@@ -413,7 +428,7 @@ export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirect
         if (!receipts.some(row => row.id === id)) await checkpoint({id, provider: 'jev', purpose: 'decision', ...context,
           attempt_id: attempt, status: unknown ? 'uncertain' : 'failed', code: codeOf(error), wall_ms: performance.now() - began,
           inference_started: transmission ? providerDecideCalled : submitted, usage: response?.usage ?? null, api_equivalent_usd: null, actual_billed_usd: null, outcome_uncertain: unknown, terminal_cause,
-          ...(transmission ? {transmission_preflight:transmissionSummary()} : {}),
+          ...(transmission ? {transmission_preflight:transmissionSummary()} : {}), ...speedEvidence(),
           ...(parallelManifest(manifest) ? {budget_lock_wait_ms: held ? lockWait.wait_ms : null, budget_lock_contentions: held ? lockWait.lock_contentions : null} : {})});
         throw Object.assign(error, {outcome_uncertain: unknown, terminal_cause,
           ...(transmission ? {request_sha256:sha(prepared.serialized), transmission_preflight:transmissionSummary()} : {})});

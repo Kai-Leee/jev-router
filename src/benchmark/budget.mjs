@@ -20,6 +20,7 @@ const RESERVATION = 65_536;
 // catalog https://vercel.com/ai-gateway/models/labs/typesafe-ai . This provider
 // alias is not a dated revision; preserve it verbatim in provenance.
 const SETTLEMENT_MODELS = Object.freeze(['jev-1.13.0', 'typesafe/jev-1.13-20260917', 'typesafe-ai/jev']);
+export const JEV_SETTLEMENT_MODELS = SETTLEMENT_MODELS;
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const integer = value => Number.isSafeInteger(value) && value >= 0;
 const identifier = value => typeof value === 'string' && /^[A-Za-z0-9][A-Za-z0-9_.-]{0,95}$/.test(value);
@@ -35,14 +36,25 @@ const POLICY = Object.freeze({ max_usd: 1, usd_per_million_input_tokens: 0.6, re
 
 const TOKEN_POLICY = Object.freeze({ max_input_tokens: 10_000_000, reserve_input_tokens: RESERVATION });
 const UNLIMITED_POLICY = Object.freeze({ max_input_tokens: null, reserve_input_tokens: RESERVATION });
-const policyFor = version => version.endsWith('/v3') ? UNLIMITED_POLICY : version.endsWith('/v2') ? TOKEN_POLICY : POLICY;
-const limitFor = version => version.endsWith('/v3') ? null : version.endsWith('/v2') ? TOKEN_POLICY.max_input_tokens : TOKEN_LIMIT;
+// v4 keeps the v3 unlimited policy but stores every in-flight reservation (pending is a list).
+const unlimitedVersion = version => /\/v[34]$/.test(version);
+const CONCURRENT_LEDGER = 'jev-token-budget-ledger/v4';
+const ENTRY_CODES = Object.freeze([null, 'BUDGET_OUTSTANDING', 'BUDGET_INVALID_SETTLEMENT', 'BUDGET_MODEL_UNSUPPORTED']);
+const policyFor = version => unlimitedVersion(version) ? UNLIMITED_POLICY : version.endsWith('/v2') ? TOKEN_POLICY : POLICY;
+const limitFor = version => unlimitedVersion(version) ? null : version.endsWith('/v2') ? TOKEN_POLICY.max_input_tokens : TOKEN_LIMIT;
 const migrationAllowed = (source, target) => (source === 'jev-token-budget/v1' && target === 'jev-token-budget/v2')
-  || (source === 'jev-token-budget/v2' && target === 'jev-token-budget/v3');
+  || (source === 'jev-token-budget/v2' && target === 'jev-token-budget/v3')
+  || (source === 'jev-token-budget/v3' && target === 'jev-token-budget/v4');
+const sequenceOf = (id, budgetId) => typeof id === 'string' && id.startsWith(`${budgetId}:r`)
+  && /^[1-9][0-9]*$/.test(id.slice(budgetId.length + 2)) ? Number(id.slice(budgetId.length + 2)) : null;
+const pendingCount = ledger => Array.isArray(ledger?.pending) ? ledger.pending.length : ledger?.pending ? 1 : 0;
+// An unsettled v4 entry blocks once its owner marked it unresolved or its lease (request deadline) passed.
+const blockingEntry = (ledger, now) => Array.isArray(ledger.pending)
+  ? ledger.pending.find(entry => entry.blocked_code !== null || entry.lease_expires_at_ms <= now) ?? null : null;
 
 export function validateBudgetConfig(value, baseDirectory = process.cwd()) {
   try {
-    if (!object(value) || !['jev-token-budget/v1', 'jev-token-budget/v2', 'jev-token-budget/v3'].includes(value.schema_version)) fail('INVALID_BUDGET_CONFIG');
+    if (!object(value) || !['jev-token-budget/v1', 'jev-token-budget/v2', 'jev-token-budget/v3', 'jev-token-budget/v4'].includes(value.schema_version)) fail('INVALID_BUDGET_CONFIG');
     const policy = policyFor(value.schema_version);
     if (!exactKeys(value, ['schema_version', 'ledger_path', ...Object.keys(policy)])
       || Object.entries(policy).some(([key, expected]) => value[key] !== expected)
@@ -64,8 +76,24 @@ function validatePending(value, budgetId, sequence) {
   try { safeLinkage(value); } catch { fail('BUDGET_LEDGER_INVALID'); }
 }
 
+function validateConcurrentPending(value) {
+  const issued = value.settled_requests + (Array.isArray(value.pending) ? value.pending.length : 0);
+  if (!Array.isArray(value.pending) || value.blocked_code !== null || !integer(issued + 2)
+    || !integer(value.charged_input_tokens + RESERVATION * value.pending.length)) fail('BUDGET_LEDGER_INVALID');
+  const seen = new Set();
+  for (const entry of value.pending) {
+    const sequence = sequenceOf(entry?.reservation_id, value.budget_id);
+    if (!exactKeys(entry, ['reservation_id', 'request_id', 'run_id', 'attempt_id', 'group_id', 'reserved_input_tokens', 'lease_expires_at_ms', 'blocked_code'])
+      || entry.reserved_input_tokens !== RESERVATION || !integer(entry.lease_expires_at_ms) || !ENTRY_CODES.includes(entry.blocked_code)
+      || sequence === null || sequence > issued || seen.has(sequence)) fail('BUDGET_LEDGER_INVALID');
+    seen.add(sequence);
+    try { safeLinkage(entry); } catch { fail('BUDGET_LEDGER_INVALID'); }
+  }
+  return { issued, seen };
+}
+
 function validateLedger(value) {
-  if (!object(value) || !['jev-token-budget-ledger/v1', 'jev-token-budget-ledger/v2', 'jev-token-budget-ledger/v3'].includes(value.schema_version)) fail('BUDGET_LEDGER_INVALID');
+  if (!object(value) || !['jev-token-budget-ledger/v1', 'jev-token-budget-ledger/v2', 'jev-token-budget-ledger/v3', CONCURRENT_LEDGER].includes(value.schema_version)) fail('BUDGET_LEDGER_INVALID');
   const policy = policyFor(value.schema_version);
   const tokenLimit = limitFor(value.schema_version);
   if (!exactKeys(value, ['schema_version', 'budget_id', ...Object.keys(policy), 'token_limit', 'charged_input_tokens',
@@ -75,12 +103,13 @@ function validateLedger(value) {
     || !integer(value.charged_input_tokens) || (tokenLimit !== null && value.charged_input_tokens > tokenLimit)
     || !integer(value.settled_requests) || value.settled_requests >= Number.MAX_SAFE_INTEGER
     || (value.blocked_code !== null && !['BUDGET_INVALID_SETTLEMENT', 'BUDGET_MODEL_UNSUPPORTED', 'BUDGET_INVALID_RESERVATION'].includes(value.blocked_code))) fail('BUDGET_LEDGER_INVALID');
-  if (value.pending !== null) {
+  const concurrent = value.schema_version === CONCURRENT_LEDGER ? validateConcurrentPending(value) : null;
+  if (!concurrent && value.pending !== null) {
     validatePending(value.pending, value.budget_id, value.settled_requests + 1);
     if (!integer(value.charged_input_tokens + RESERVATION)
       || (tokenLimit !== null && value.charged_input_tokens + RESERVATION > tokenLimit)) fail('BUDGET_LEDGER_INVALID');
   }
-  if (value.blocked_code !== null && value.pending === null) fail('BUDGET_LEDGER_INVALID');
+  if (!concurrent && value.blocked_code !== null && value.pending === null) fail('BUDGET_LEDGER_INVALID');
   if (value.settled_requests === 0) {
     if (value.charged_input_tokens !== 0 || value.last_settlement !== null) fail('BUDGET_LEDGER_INVALID');
   } else {
@@ -88,14 +117,18 @@ function validateLedger(value) {
     const refund = last?.kind === 'confirmed_refund';
     const validRefund = refund && exactKeys(last, ['reservation_id', 'charged_input_tokens', 'input_tokens', 'billing_run_id',
       'kind', 'actual_billed_usd', 'evidence_sha256', 'account_sha256', 'prior_ledger_sha256'])
-      && ['jev-token-budget-ledger/v2', 'jev-token-budget-ledger/v3'].includes(value.schema_version)
+      && ['jev-token-budget-ledger/v2', 'jev-token-budget-ledger/v3', CONCURRENT_LEDGER].includes(value.schema_version)
       && last.charged_input_tokens === 0 && last.input_tokens === null && last.billing_run_id === null && last.actual_billed_usd === 0
       && ['evidence_sha256', 'account_sha256', 'prior_ledger_sha256'].every(key => digest(last[key]));
     const validInference = !refund && exactKeys(last, ['reservation_id', 'charged_input_tokens', 'input_tokens', 'billing_run_id'])
       && integer(last.charged_input_tokens) && last.charged_input_tokens <= RESERVATION
       && last.input_tokens === last.charged_input_tokens && last.charged_input_tokens <= value.charged_input_tokens
       && providerId(last.billing_run_id);
-    if ((!validRefund && !validInference) || last.reservation_id !== `${value.budget_id}:r${value.settled_requests}`) fail('BUDGET_LEDGER_INVALID');
+    // Concurrent settlements finish out of order: the last one is any issued ID that is no longer pending.
+    const lastSequence = sequenceOf(last?.reservation_id, value.budget_id);
+    const validId = concurrent ? lastSequence !== null && lastSequence <= concurrent.issued && !concurrent.seen.has(lastSequence)
+      : last.reservation_id === `${value.budget_id}:r${value.settled_requests}`;
+    if ((!validRefund && !validInference) || !validId) fail('BUDGET_LEDGER_INVALID');
   }
   return value;
 }
@@ -148,19 +181,25 @@ function settlement(response) {
   return { charged_input_tokens: charged, input_tokens: usage.input_tokens, billing_run_id: billing.runId };
 }
 
-function ledgerSnapshot(ledger, { closed = false, blockingCode = null } = {}) {
-  const reserved = ledger.pending ? RESERVATION : 0;
+function ledgerSnapshot(ledger, { closed = false, blockingCode = null, now = Date.now() } = {}) {
+  const concurrent = ledger.schema_version === CONCURRENT_LEDGER;
+  const reserved = pendingCount(ledger) * RESERVATION;
   const version = ledger.schema_version.split('/')[1];
   const tokenBudget = version !== 'v1';
-  const unlimited = version === 'v3';
+  const unlimited = unlimitedVersion(ledger.schema_version);
+  const stuck = blockingEntry(ledger, now);
   const remaining = unlimited ? null : ledger.token_limit - ledger.charged_input_tokens - reserved;
   return { schema_version: `jev-token-budget-snapshot/${version}`, budget_id: ledger.budget_id,
     limit_usd: tokenBudget ? null : 1, rate_usd_per_million: 0.6, token_limit: ledger.token_limit,
     charged_input_tokens: ledger.charged_input_tokens, reserved_input_tokens: reserved,
     estimated_spent_usd: valueUSD(ledger.charged_input_tokens), estimated_reserved_usd: valueUSD(reserved),
     remaining_usd: unlimited ? null : valueUSD(remaining), actual_billed_usd: null,
-    reservations_pending: ledger.pending ? 1 : 0, pending_reservation_id: ledger.pending?.reservation_id ?? null,
-    blocked_code: blockingCode ?? ledger.blocked_code ?? (ledger.pending ? 'BUDGET_OUTSTANDING' : null), closed,
+    reservations_pending: pendingCount(ledger),
+    pending_reservation_id: (concurrent ? ledger.pending[0]?.reservation_id : ledger.pending?.reservation_id) ?? null,
+    blocked_code: blockingCode ?? (concurrent ? stuck && (stuck.blocked_code ?? 'BUDGET_OUTSTANDING')
+      : ledger.blocked_code ?? (ledger.pending ? 'BUDGET_OUTSTANDING' : null)), closed,
+    ...(concurrent ? { pending_reservation_ids: ledger.pending.map(entry => entry.reservation_id),
+      reservations_in_flight: ledger.pending.filter(entry => entry.blocked_code === null && entry.lease_expires_at_ms > now).length } : {}),
     ...(tokenBudget ? { remaining_input_tokens: remaining,
       settled_requests: ledger.settled_requests, budget_unit: 'input_tokens' } : {}),
     ...(unlimited ? { unlimited: true } : {}) };
@@ -172,7 +211,7 @@ function matchesConfig(ledger, config) {
 
 // Read a single opened inode: a concurrent atomic rename may yield the previous
 // complete snapshot, never a mixture. No lock acquisition or filesystem writes.
-export function readTokenBudgetSnapshot(input) {
+export function readTokenBudgetSnapshot(input, { now = Date.now } = {}) {
   const config = validateBudgetConfig(input);
   let fd;
   try {
@@ -183,7 +222,7 @@ export function readTokenBudgetSnapshot(input) {
     const text = new TextDecoder('utf-8', { fatal: true }).decode(readFileSync(fd));
     const ledger = validateLedger(JSON.parse(text));
     matchesConfig(ledger, config);
-    return ledgerSnapshot(ledger);
+    return ledgerSnapshot(ledger, { now: now() });
   } catch (error) {
     if (error?.code === 'BUDGET_LEDGER_INVALID') throw error;
     fail(error instanceof SyntaxError || error instanceof TypeError ? 'BUDGET_LEDGER_INVALID' : 'BUDGET_IO_FAILED');
@@ -201,7 +240,7 @@ export function migrateTokenBudget(input, targetInput) {
   try { return budget.migrate(target); } finally { budget.close(); }
 }
 
-export function createTokenBudget(input, { requireExisting = false } = {}) {
+export function createTokenBudget(input, { requireExisting = false, now = Date.now } = {}) {
   const config = validateBudgetConfig(input);
   let directory;
   try { directory = realpathSync(dirname(config.ledger_path)); } catch { fail('BUDGET_IO_FAILED'); }
@@ -259,7 +298,7 @@ export function createTokenBudget(input, { requireExisting = false } = {}) {
       try { unlinkSync(temporary); } catch {}
       // If reservation persistence was uncertain, retain its full amount in memory.
       // For settlement failures, retain the older unresolved reservation instead.
-      if (ledger?.pending === null && next.pending !== null) ledger = next;
+      if (pendingCount(next) > pendingCount(ledger)) ledger = next;
       broken = true;
       block('BUDGET_IO_FAILED');
     }
@@ -278,8 +317,9 @@ export function createTokenBudget(input, { requireExisting = false } = {}) {
     } catch (error) {
       if (error?.code !== 'ENOENT') throw error;
       if (requireExisting) fail('BUDGET_LEDGER_INVALID');
-      const fresh = { schema_version: config.schema_version.replace('budget/', 'budget-ledger/'), budget_id: randomUUID(), ...policyFor(config.schema_version), token_limit: limitFor(config.schema_version),
-        charged_input_tokens: 0, settled_requests: 0, pending: null, last_settlement: null, blocked_code: null };
+      const schema_version = config.schema_version.replace('budget/', 'budget-ledger/');
+      const fresh = { schema_version, budget_id: randomUUID(), ...policyFor(config.schema_version), token_limit: limitFor(config.schema_version),
+        charged_input_tokens: 0, settled_requests: 0, pending: schema_version === CONCURRENT_LEDGER ? [] : null, last_settlement: null, blocked_code: null };
       persist(fresh);
     }
   } catch (error) {
@@ -293,7 +333,11 @@ export function createTokenBudget(input, { requireExisting = false } = {}) {
     fail(error?.code === 'BUDGET_LEDGER_CHANGED' ? error.code : 'BUDGET_IO_FAILED');
   }
 
-  function snapshot() { return ledgerSnapshot(ledger, { closed, blockingCode: lastBlockingCode }); }
+  function snapshot() { return ledgerSnapshot(ledger, { closed, blockingCode: lastBlockingCode, now: now() }); }
+  const concurrent = () => ledger.schema_version === CONCURRENT_LEDGER;
+  const entryFor = reservationId => ledger.pending.find(entry => entry.reservation_id === reservationId) ?? null;
+  const withEntry = (reservationId, fields) => ({ ...ledger,
+    pending: ledger.pending.map(entry => entry.reservation_id === reservationId ? { ...entry, ...fields } : entry) });
 
   function migrate(targetInput) {
     assertOpen();
@@ -303,30 +347,60 @@ export function createTokenBudget(input, { requireExisting = false } = {}) {
     if (ledger.blocked_code) fail(ledger.blocked_code);
     if (ledger.pending) fail('BUDGET_OUTSTANDING');
     const { max_usd, usd_per_million_input_tokens, max_input_tokens, ...history } = ledger;
-    persist({ ...history, schema_version: target.schema_version.replace('budget/', 'budget-ledger/'),
-      ...policyFor(target.schema_version), token_limit: limitFor(target.schema_version) });
+    const schema_version = target.schema_version.replace('budget/', 'budget-ledger/');
+    persist({ ...history, schema_version, ...policyFor(target.schema_version), token_limit: limitFor(target.schema_version),
+      ...(schema_version === CONCURRENT_LEDGER ? { pending: [] } : {}) });
     return snapshot();
   }
 
-  function reserve(linkage, balances) {
+  // v1-v3 keep the single-slot rule. v4 admits further reservations while earlier
+  // ones are live, counting each in-flight amount; leaseMs bounds the owner's request.
+  function reserve(linkage, balances, { leaseMs } = {}) {
     assertOpen();
-    if (ledger.blocked_code) block(ledger.blocked_code);
-    if (ledger.pending) block('BUDGET_OUTSTANDING');
+    const parallel = concurrent();
+    if (parallel && (!Number.isSafeInteger(leaseMs) || leaseMs < 1 || !integer(now() + leaseMs))) fail('INVALID_BUDGET_CONFIG');
+    if (parallel) { const stuck = blockingEntry(ledger, now()); if (stuck) block(stuck.blocked_code ?? 'BUDGET_OUTSTANDING'); }
+    if (!parallel && ledger.blocked_code) block(ledger.blocked_code);
+    if (!parallel && ledger.pending) block('BUDGET_OUTSTANDING');
+    const required = RESERVATION * (pendingCount(ledger) + 1);
     let ids;
     try { ids = safeLinkage(linkage); } catch { block('BUDGET_INVALID_LINKAGE'); }
     if (!object(balances) || !['paidInputTokensRemaining', 'tokensReserved', 'tokenDebt'].every(key => integer(balances[key]))
       || typeof balances.spending_frozen !== 'boolean') block('BUDGET_INVALID_BALANCES');
     if (balances.spending_frozen || balances.tokenDebt !== 0) block('BUDGET_ACCOUNT_BLOCKED');
-    if (balances.paidInputTokensRemaining - balances.tokensReserved < RESERVATION) block('BUDGET_PAID_BALANCE_LOW');
-    if (!integer(ledger.charged_input_tokens + RESERVATION) || !integer(ledger.settled_requests + 2)) block('BUDGET_ACCOUNTING_OVERFLOW');
-    if (ledger.token_limit !== null && ledger.charged_input_tokens + RESERVATION > ledger.token_limit) block('BUDGET_EXHAUSTED');
-    const pending = { reservation_id: `${ledger.budget_id}:r${ledger.settled_requests + 1}`, ...ids, reserved_input_tokens: RESERVATION };
-    persist({ ...ledger, pending });
+    if (balances.paidInputTokensRemaining - balances.tokensReserved < required) block('BUDGET_PAID_BALANCE_LOW');
+    if (!integer(ledger.charged_input_tokens + required) || !integer(ledger.settled_requests + pendingCount(ledger) + 2)) block('BUDGET_ACCOUNTING_OVERFLOW');
+    if (ledger.token_limit !== null && ledger.charged_input_tokens + required > ledger.token_limit) block('BUDGET_EXHAUSTED');
+    const pending = { reservation_id: `${ledger.budget_id}:r${ledger.settled_requests + pendingCount(ledger) + 1}`, ...ids, reserved_input_tokens: RESERVATION };
+    if (parallel) persist({ ...ledger, pending: [...ledger.pending, { ...pending, lease_expires_at_ms: now() + leaseMs, blocked_code: null }] });
+    else persist({ ...ledger, pending });
     return pending.reservation_id;
+  }
+
+  // v4 only: the owner's request ended without settlement (failed or uncertain).
+  // Never releases tokens; the entry blocks new reservations until reconciliation.
+  function markUnresolved(reservationId) {
+    assertOpen();
+    const entry = entryFor(reservationId);
+    if (!entry) fail('BUDGET_INVALID_RESERVATION');
+    if (entry.blocked_code === null) persist(withEntry(reservationId, { blocked_code: 'BUDGET_OUTSTANDING' }));
+    return snapshot();
   }
 
   function settle(reservationId, response) {
     assertOpen();
+    if (concurrent()) {
+      const entry = entryFor(reservationId);
+      if (!entry) block('BUDGET_INVALID_RESERVATION');
+      if (entry.blocked_code) block(entry.blocked_code);
+      let observed;
+      try { observed = settlement(response); }
+      catch (error) {
+        const code = error?.code === 'BUDGET_MODEL_UNSUPPORTED' ? error.code : 'BUDGET_INVALID_SETTLEMENT';
+        persist(withEntry(reservationId, { blocked_code: code })); block(code);
+      }
+      return commitSettlement(reservationId, observed);
+    }
     if (ledger.blocked_code) block(ledger.blocked_code);
     if (!ledger.pending) block('BUDGET_INVALID_RESERVATION');
     let observed;
@@ -342,7 +416,8 @@ export function createTokenBudget(input, { requireExisting = false } = {}) {
 
   function commitSettlement(reservationId, observed) {
     const next = { ...ledger, charged_input_tokens: ledger.charged_input_tokens + observed.charged_input_tokens,
-      settled_requests: ledger.settled_requests + 1, pending: null,
+      settled_requests: ledger.settled_requests + 1,
+      pending: concurrent() ? ledger.pending.filter(entry => entry.reservation_id !== reservationId) : null,
       blocked_code: null,
       last_settlement: { reservation_id: reservationId, ...observed } };
     persist(next);
@@ -354,8 +429,14 @@ export function createTokenBudget(input, { requireExisting = false } = {}) {
   // or clears any other blocking condition. Invalid evidence leaves disk intact.
   function reconcile(reservationId, response) {
     assertOpen();
-    if (!ledger.pending || ledger.blocked_code !== 'BUDGET_MODEL_UNSUPPORTED') fail('BUDGET_RECONCILIATION_NOT_ALLOWED');
-    if (reservationId !== ledger.pending.reservation_id) fail('BUDGET_INVALID_RESERVATION');
+    if (concurrent()) {
+      const entry = entryFor(reservationId);
+      if (!entry) fail('BUDGET_INVALID_RESERVATION');
+      if (entry.blocked_code !== 'BUDGET_MODEL_UNSUPPORTED') fail('BUDGET_RECONCILIATION_NOT_ALLOWED');
+    } else {
+      if (!ledger.pending || ledger.blocked_code !== 'BUDGET_MODEL_UNSUPPORTED') fail('BUDGET_RECONCILIATION_NOT_ALLOWED');
+      if (reservationId !== ledger.pending.reservation_id) fail('BUDGET_INVALID_RESERVATION');
+    }
     let observed;
     try { observed = settlement(response); }
     catch (error) { fail(error?.code === 'BUDGET_MODEL_UNSUPPORTED' ? error.code : 'BUDGET_INVALID_SETTLEMENT'); }
@@ -367,9 +448,18 @@ export function createTokenBudget(input, { requireExisting = false } = {}) {
   // they do not authenticate the operator's provider-observation assertion.
   function reconcileConfirmedRefund(reservationId, evidenceInput) {
     assertOpen();
-    if (!['jev-token-budget-ledger/v2', 'jev-token-budget-ledger/v3'].includes(ledger.schema_version)
-      || !ledger.pending || ledger.blocked_code !== null) fail('BUDGET_REFUND_NOT_ALLOWED');
-    if (reservationId !== ledger.pending.reservation_id) fail('BUDGET_INVALID_RESERVATION');
+    let entry;
+    if (concurrent()) {
+      // Only an ended request is refundable: marked unresolved, or unmarked past its lease.
+      entry = entryFor(reservationId);
+      if (!entry) fail('BUDGET_INVALID_RESERVATION');
+      if (entry.blocked_code !== 'BUDGET_OUTSTANDING' && (entry.blocked_code !== null || entry.lease_expires_at_ms > now())) fail('BUDGET_REFUND_NOT_ALLOWED');
+    } else {
+      if (!['jev-token-budget-ledger/v2', 'jev-token-budget-ledger/v3'].includes(ledger.schema_version)
+        || !ledger.pending || ledger.blocked_code !== null) fail('BUDGET_REFUND_NOT_ALLOWED');
+      if (reservationId !== ledger.pending.reservation_id) fail('BUDGET_INVALID_RESERVATION');
+      entry = ledger.pending;
+    }
     checkLedgerUnchanged();
     let observed;
     try {
@@ -392,7 +482,7 @@ export function createTokenBudget(input, { requireExisting = false } = {}) {
         || evidence.status !== 'failed' || evidence.billing !== 'Refunded · no charge'
         || evidence.charged_input_tokens !== 0 || evidence.actual_billed_usd !== 0 || evidence.inference_input_tokens !== null
         || !exactKeys(evidence.ledger_linkage, ['request_id', 'run_id', 'attempt_id', 'group_id'])
-        || Object.keys(evidence.ledger_linkage).some(key => evidence.ledger_linkage[key] !== ledger.pending[key])
+        || Object.keys(evidence.ledger_linkage).some(key => evidence.ledger_linkage[key] !== entry[key])
         || !object(credits) || !integer(credits.paidInputTokensRemaining)
         || evidence.paid_input_tokens_remaining !== credits.paidInputTokensRemaining
         || credits.tokensReserved !== 0 || credits.tokenDebt !== 0 || credits.spending_frozen !== false
@@ -418,5 +508,5 @@ export function createTokenBudget(input, { requireExisting = false } = {}) {
     } catch { broken = true; closed = true; block('BUDGET_IO_FAILED'); }
   }
 
-  return { snapshot, reserve, settle, reconcile, reconcileConfirmedRefund, close, migrate };
+  return { snapshot, reserve, settle, reconcile, reconcileConfirmedRefund, close, migrate, ...(concurrent() ? { markUnresolved } : {}) };
 }

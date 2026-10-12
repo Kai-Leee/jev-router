@@ -2,7 +2,7 @@ import { openSync, writeFileSync, fsyncSync, closeSync, renameSync, linkSync, un
 import { dirname, resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { prepareDecision, getHttpErrorDiagnostics } from '../client.mjs';
-import { BUDGET_ERROR_CODES } from './budget.mjs';
+import { BUDGET_ERROR_CODES, JEV_SETTLEMENT_MODELS } from './budget.mjs';
 
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const identifier = value => typeof value === 'string' && /^[A-Za-z0-9][A-Za-z0-9_.-]{0,95}$/.test(value);
@@ -115,7 +115,12 @@ export function createGateStateWriter(path, { now = () => new Date().toISOString
 
 // Records dispatch intent separately from response evidence. A failed or
 // uncertain attempt closes this decider instance; it never automatically retries.
-export function createMeasuredDecider({ client, record, identifiers: suppliedIdentifiers, budget, clock = () => performance.now() }) {
+// Opt-in modelLookupCache ({models_checked}) is shared by one provider session's
+// deciders: the model GET repeats only after a non-completed call or an
+// unaccepted response model. Credits are always fetched: billing headers carry
+// no tokensReserved/tokenDebt/spending_frozen, so reserve balances cannot be derived.
+export function createMeasuredDecider({ client, record, identifiers: suppliedIdentifiers, budget, clock = () => performance.now(),
+  modelLookupCache = null }) {
   const identifiers = validateIdentifiers(suppliedIdentifiers);
   let modelsChecked = false;
   let sequence = 0;
@@ -130,11 +135,22 @@ export function createMeasuredDecider({ client, record, identifiers: suppliedIde
       throw Object.assign(new Error(code), { code, outcomeUncertain: false });
     }
     const linkage = linkedContext(identifiers, context);
+    let reservation, reservationOpen = false;
+    // A narrow-lock budget cannot infer that this request ended; mark its open reservation unresolved.
+    const unresolved = async () => {
+      if (!reservationOpen || typeof budget?.markUnresolved !== 'function') return {};
+      reservationOpen = false;
+      try { await budget.markUnresolved(reservation); return { reservation_marked_unresolved: true }; }
+      catch { return { reservation_marked_unresolved: false }; }
+    };
     const persist = async event => {
       try { await record({ ...event, ...linkage }); }
-      catch { stopped = true; fail('RECORD_FAILED'); }
+      catch { stopped = true; await unresolved(); fail('RECORD_FAILED'); }
     };
-    if (!modelsChecked) {
+    const cached = modelLookupCache?.models_checked === true;
+    if (modelLookupCache) modelLookupCache.models_checked = false; // re-armed only by a completed, accepted call
+    const sources = modelLookupCache ? { model_lookup_source: cached ? 'session_cache' : 'get' } : {};
+    if (modelLookupCache ? !cached : !modelsChecked) {
       await persist({ event: 'model_lookup_started', provider: 'jev', phase: 'model_lookup' });
       let result;
       try {
@@ -151,12 +167,12 @@ export function createMeasuredDecider({ client, record, identifiers: suppliedIde
       modelsChecked = true;
     }
     const requestId = `jev-${++sequence}`;
-    let reservation;
     if (budget) {
       try {
         if (prepared.body.model !== 'jev-latest') fail('BUDGET_MODEL_UNSUPPORTED');
         const balances = await client.listCredits();
-        reservation = budget.reserve({ ...linkage, request_id: requestId }, balances);
+        reservation = await budget.reserve({ ...linkage, request_id: requestId }, balances);
+        reservationOpen = true;
       } catch (error) {
         stopped = true;
         const code = errorCodes.has(error?.code) ? error.code : 'BUDGET_PREFLIGHT_FAILED';
@@ -165,9 +181,10 @@ export function createMeasuredDecider({ client, record, identifiers: suppliedIde
           ...details, budget: budget.snapshot(), outcome_uncertain: false, recovery_allowed: false });
         throw Object.assign(new Error(code), { code, ...details, status: details.http_status, outcomeUncertain: false });
       }
-      await persist({ event: 'budget_reserved', provider: 'jev', phase: 'decision', request_id: requestId, budget: budget.snapshot() });
+      await persist({ event: 'budget_reserved', provider: 'jev', phase: 'decision', request_id: requestId, budget: budget.snapshot(),
+        ...(modelLookupCache ? { balance_source: 'credits_get' } : {}) });
     }
-    await persist({ event: 'inference_started', provider: 'jev', phase: 'decision', request_id: requestId });
+    await persist({ event: 'inference_started', provider: 'jev', phase: 'decision', request_id: requestId, ...sources });
     const started = clock();
     let response;
     try { response = await client.decide(request); }
@@ -176,8 +193,9 @@ export function createMeasuredDecider({ client, record, identifiers: suppliedIde
       const code = errorCodes.has(error?.code) ? error.code : 'DECISION_FAILED';
       const uncertain = error?.outcomeUncertain !== false;
       const details = httpFailureDetails(error, code);
+      const marked = await unresolved();
       await persist({ event: 'inference_finished', provider: 'jev', phase: 'decision', request_id: requestId,
-        status: uncertain ? 'uncertain' : 'failed', code, ...details, outcome_uncertain: uncertain, recovery_allowed: false,
+        status: uncertain ? 'uncertain' : 'failed', code, ...details, outcome_uncertain: uncertain, recovery_allowed: false, ...marked,
         duration_ms: Math.max(0, Math.round(clock() - started)) });
       throw Object.assign(new Error(code), { code, ...details, status: details.http_status, outcomeUncertain: uncertain });
     }
@@ -185,16 +203,18 @@ export function createMeasuredDecider({ client, record, identifiers: suppliedIde
       model: response.model, usage: response.usage, billing: response.billing, receipt: response.receipt,
       duration_ms: Math.max(0, Math.round(clock() - started)) });
     if (budget) {
-      try { budget.settle(reservation, response); }
+      try { await budget.settle(reservation, response); reservationOpen = false; }
       catch (error) {
         stopped = true;
         const code = errorCodes.has(error?.code) ? error.code : 'BUDGET_SETTLEMENT_FAILED';
+        const marked = await unresolved();
         await persist({ event: 'budget_blocked', provider: 'jev', phase: 'decision', request_id: requestId,
-          code, budget: budget.snapshot(), outcome_uncertain: true, recovery_allowed: false });
+          code, budget: budget.snapshot(), outcome_uncertain: true, recovery_allowed: false, ...marked });
         throw Object.assign(new Error(code), { code, outcomeUncertain: true });
       }
       await persist({ event: 'budget_settled', provider: 'jev', phase: 'decision', request_id: requestId, budget: budget.snapshot() });
     }
+    if (modelLookupCache) modelLookupCache.models_checked = JEV_SETTLEMENT_MODELS.includes(response.model);
     return response;
   };
 }

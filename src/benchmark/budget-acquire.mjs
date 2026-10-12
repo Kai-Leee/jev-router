@@ -1,5 +1,5 @@
 import { setTimeout as delay } from 'node:timers/promises';
-import { createTokenBudget } from './budget.mjs';
+import { createTokenBudget, readTokenBudgetSnapshot } from './budget.mjs';
 // Wait only for a local exclusive lock before any request or reservation.
 // Provider errors and outstanding uncertain reservations are never retried here.
 export async function acquireTokenBudget(config, {
@@ -35,4 +35,29 @@ export async function acquireTokenBudget(config, {
       throw error;
     }
   }
+}
+
+// Opt-in narrow locking for a v4 multi-reservation ledger: each operation holds
+// the file lock only for its synchronous read/validate/persist, never across
+// provider I/O. No abort signal: a settlement after a completed POST must not
+// be skipped. A failed lock wait leaves the entry to block at its lease.
+export function createConcurrentTokenBudget(config, {
+  open = cfg => createTokenBudget(cfg, { requireExisting: true }), leaseMs, intervalMs = 10, ...acquireOptions
+} = {}) {
+  if (config?.schema_version !== 'jev-token-budget/v4' || !Number.isSafeInteger(leaseMs) || leaseMs < 1) {
+    throw Object.assign(new Error('INVALID_BUDGET_CONFIG'), { code: 'INVALID_BUDGET_CONFIG' });
+  }
+  let last = null;
+  const operation = async action => {
+    const held = await acquireTokenBudget(config, { open, intervalMs, ...acquireOptions });
+    try { return action(held); } finally { last = held.snapshot(); held.close(); }
+  };
+  return {
+    reserve: (linkage, balances) => operation(held => held.reserve(linkage, balances, { leaseMs })),
+    settle: (reservationId, response) => operation(held => held.settle(reservationId, response)),
+    markUnresolved: reservationId => operation(held => held.markUnresolved(reservationId)),
+    // Snapshot of the last locked operation, else a lock-free read of one ledger inode.
+    snapshot: () => last ?? readTokenBudgetSnapshot(config),
+    close: () => {},
+  };
 }
