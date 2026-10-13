@@ -1,0 +1,15 @@
+{
+  "schema_version": "adaptive-critical-path-schedule/v1",
+  "policy": "critical-path-v1",
+  "version": "D079.1",
+  "basis": "The DAG scheduler already launches ready tasks in remaining-path order, but only when every task has a duration estimate; adaptive plans set every duration to unknown, so ties fell back to catalog order. In D078 the producer n5 that the generator leaf n2 waited for started at 465 s while independent leaves n1, n3, n4 took both slots first.",
+  "estimate": {
+    "basis": "estimate",
+    "per_requirement_ms": 30000,
+    "minimum_ms": 60000,
+    "verification_ms": 120000,
+    "source_ref": "D078 leaf workload: requirement counts 3-18, worker wall 19-716 s; the count ranks a leaf with a waiting consumer ahead of single leaves, not a duration prediction"
+  },
+  "applied": "Before the plan is committed: implementation tasks get max(minimum_ms, per_requirement_ms x requirement count); the verification task gets verification_ms. The scheduler then orders ready tasks by remaining path.",
+  "unchanged": ["leaves", "relations", "dependencies", "slots", "worker profiles"]
+}

@@ -1,3 +1,7 @@
+D079: [평가 결과](docs/orchestration/D079_EVALUATION.md)를 먼저 읽는다. 전체 개발은 preflight 원장 잠금 수정 전까지 순차로만 실행한다. 보류 없는 `d079-no-deferral.json`이 공개93/93·독립63/63을 1회 달성했고, 공개 명세 검토 수리는 후보 3/3에서 독립 실패를 고쳤다. 숨김 검사 내용을 계획·수리·검토에 넣지 않는다.
+
+D078: [직렬 의존 수리·통합 결과](docs/orchestration/D078_LAYERED_INTEGRATION.md)를 먼저 읽는다. manifest `d078-layered.json`(v12)은 layered-v2 분해·owner 설명 v2·수리 범위 코드·보류와 D076 수리 옵션을 묶는다. 통합 1회는 공개93/93·독립60/63으로 미완료다. 종료 원본을 자동 재개하지 않는다.
+
 D077: [역할별 질문 유형 재설계·보류·통합 결과](docs/orchestration/D077_QUESTION_FORMS.md)와 [STATE](docs/agents/STATE.md)를 먼저 읽는다. manifest v12는 새 계약(cohesion·owner criteria·profile v3·inferred scope·confidence deferral)을 묶으며 과거 계약은 재현용이다. v12는 D075 transmission gate를 쓰지 않는다. 통합 1회는 공개84/93·독립63/63으로 미완료다. 실패 owner POST 예약은 공급자 무과금 근거로 정산했으며 종료 원본을 자동 재개하지 않는다.
 
 현재 D075는 [전송 전 강제 검사와 근거 기반 복구](docs/orchestration/D075_FORCED_PREFLIGHT_AND_RECOVERY.md)의 병렬 구현·두 실제 수리·독립 채점을 종료했다. [결과](docs/orchestration/D075_RESULTS.md)·[STATE](docs/agents/STATE.md)를 먼저 읽는다. 제품은 공개88/93·독립60/63으로 미완료다. 새 보존 수리 기본 경로는 v10 manifest와 prompt policy v2를 사용하며, 과거 manifest·정책·결과는 재현용으로 보존한다. 실제 전송 gate 통과는 모델 문맥 수락을 보장하지 않는다. 최종 owner HTTP400 뒤 CANONICAL_INPUT_ALREADY_APPLIED로 멈췄고 profile 자동 입력 재구성도 미지원이다. 종료 원본을 자동 재개하지 않는다. 현행 수동 고정 검사는 `--policy v2`를 명시한다. 기본 v1은 역사적 소스 핀을 검사하므로 변경된 소스에서 SOURCE_DRIFT가 나올 수 있다.

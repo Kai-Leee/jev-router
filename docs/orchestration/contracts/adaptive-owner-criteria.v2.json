@@ -1,0 +1,11 @@
+{
+  "schema_version": "adaptive-owner-criteria/v2",
+  "version": "D078.2",
+  "base_contract": "docs/orchestration/contracts/adaptive-owner-criteria.v1.json",
+  "applies_to": "projected inferred-v2 repair_owners requests (state.artifact_contracts)",
+  "label_templates": ["{paths}: {description}", "{description}"],
+  "max_question_bytes": 3000,
+  "max_question_bytes_basis": "adaptive-repair-budget.v1 reserves 3000 B for the longest question after state packing (state plus longest question must stay under 32k tokens). D077 labeled owner questions measured up to 2,960 B, leaving 40 B.",
+  "fallback": "Per request, use the first template whose longest labeled question fits max_question_bytes; if none fits, keep the original null descriptions.",
+  "unchanged": ["question ids", "criteria keys", "unknown description", "state", "instructions"]
+}

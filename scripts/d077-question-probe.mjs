@@ -18,6 +18,7 @@ import {processResult} from '../src/benchmark/docker.mjs';
 import {claudeEnvironment} from '../src/benchmark/claude-env.mjs';
 import {adaptiveDecisionSchema, normalizeAdaptiveAnswers} from '../src/benchmark/adaptive-dag-runner.mjs';
 import {buildCohesionRequests, clusterUnits} from '../src/orchestration/adaptive-cohesion.mjs';
+import {buildUnitRelationRequests, readUnitRelations, layeredClusters, loadLayeredContract, LAYERED_CONTRACTS} from '../src/orchestration/adaptive-layered-decomposition.mjs';
 import {createAdaptiveDecompositionBalancer} from '../src/orchestration/adaptive-decomposition-balancing.mjs';
 import {describeOwnerCriteria} from '../src/orchestration/adaptive-owner-criteria.mjs';
 import {splitProfileRequest, combineProfileAnswers} from '../src/orchestration/adaptive-profile-split.mjs';
@@ -57,6 +58,8 @@ const ITEMS = {
           previous_d073_leaves: planning.leaves.map(leaf => leaf.unit_ids)};
       }};
   },
+  layered: () => layeredItem('v1'),
+  layered2: () => layeredItem('v2'),
   owner() {
     const previous = json(`${D075}/jev-0001.response.json`);
     return {requests: [{name: 'owner-d075-run02', stage: 'repair_owners', request: describeOwnerCriteria(json(`${D075}/jev-0001.request.json`)), previous}],
@@ -80,6 +83,26 @@ const ITEMS = {
       previous_jev_choice: previous.answers['adaptive.inferred_repair.v2'].choice, previous_confidence: previous.answers['adaptive.inferred_repair.v2'].confidence})};
   },
 };
+
+function layeredItem(version) {
+    const planning = json(`${D073}/planning.json`), contract = loadLayeredContract(LAYERED_CONTRACTS[version]);
+    const built = buildUnitRelationRequests({catalog: planning.catalog, requirement_descriptions: planning.requirement_descriptions,
+      max_concurrency: 2, limits: planning.limits, contract});
+  return {requests: built.map((batch, index) => ({name: `unit-relations-${index + 1}`, stage: 'split', request: batch.request})),
+      analyze(results) {
+        const relations = readUnitRelations(built, results, contract);
+        const balancer = createAdaptiveDecompositionBalancer({catalog: planning.catalog, max_concurrency: 2, limits: planning.limits});
+        const layered = layeredClusters({unit_ids: planning.catalog.units.map(unit => unit.id), relations, overload: balancer.overload,
+          threshold: contract.policy.merge_threshold, targetCount: balancer.policy.target_leaf_count, targetDepth: contract.policy.target_depth,
+          maxLeaves: planning.limits.max_leaves, maxRelationPairs: planning.limits.max_relation_pairs});
+        const singletons = layeredClusters({unit_ids: planning.catalog.units.map(unit => unit.id), relations, overload: () => ['none'],
+          threshold: 2, targetCount: Infinity, targetDepth: Infinity, maxLeaves: 30, maxRelationPairs: 435});
+        const counts = Object.fromEntries(contract.choices.map(c => [c, relations.filter(r => r.choice === c).length]));
+        return {choices: counts, unit_edges: layered.edges, unit_dag_depth: singletons.depth, clusters: layered.clusters, leaf_depth: layered.depth,
+          depth_target_met: layered.depth_target_met, merges: layered.merges.map(m => ({reason: m.reason, coupling: m.coupling, units: m.units})),
+          leaf_capacity: balancer.policy.leaf_capacity};
+      }};
+  }
 
 const decisionValue = answer => answer.type === 'choice' ? answer.choice : answer.type === 'score' ? Math.round(answer.score) : answer.noul >= 0.5;
 
@@ -141,7 +164,7 @@ async function main() {
     return deferFrom(flags.slice(1, -2).map(dir => resolve(dir)), out);
   }
   const item = value('--item'), outArg = value('--out'), spend = flags.includes('--spend'), defer = flags.includes('--defer');
-  if (!ITEMS[item] || !outArg || existsSync(resolve(outArg))) throw new Error('Usage: --item cohesion|owner|profile|scope --out NEW_DIR [--spend [--defer]]');
+  if (!ITEMS[item] || !outArg || existsSync(resolve(outArg))) throw new Error('Usage: --item cohesion|layered|layered2|owner|profile|scope --out NEW_DIR [--spend [--defer]]');
   const out = resolve(outArg); mkdirSync(out, {recursive: true});
   const save = (name, data) => writeFileSync(join(out, name), JSON.stringify(data, null, 1));
   const {requests, analyze} = ITEMS[item]();

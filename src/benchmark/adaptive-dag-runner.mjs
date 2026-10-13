@@ -51,7 +51,7 @@ const REPAIR_BUDGET_CONTRACT = 'docs/orchestration/contracts/adaptive-repair-bud
 /** D076 opt-in owner-request budget (v11/v12 manifests with repair_budget only). */
 export const adaptiveRepairBudgetOption = manifest => manifest.repair_budget ? {repairBudget: {policy: manifest.repair_budget.policy}} : {};
 const REPAIR_FEEDBACK_VALUES = {read_scope: 'candidate-v1', worker_diagnostics: 'report-v1'};
-/** D076 opt-in repair feedback (v11 manifests with repair_feedback only). */
+/** D076 opt-in repair feedback (v11/v12 manifests with repair_feedback only). */
 export const adaptiveRepairFeedbackOption = manifest => manifest.repair_feedback ? {repairFeedback: {...manifest.repair_feedback}} : {};
 
 /** Denied artifact reads and the final text of one worker stream; the text is the worker's unverified statement. */
@@ -154,7 +154,7 @@ export function loadAdaptiveRunManifest(path = join(ROOT, 'benchmarks/e2e-swe/ma
       || budget.policy !== 'repair-budget-v1' || budget.contract !== REPAIR_BUDGET_CONTRACT
       || sha(readFileSync(join(rootDir, budget.contract))) !== budget.sha256) fail('ADAPTIVE_REPAIR_BUDGET_BINDING');
   }
-  if (value.repair_feedback !== undefined && (!v11 || !object(value.repair_feedback) || !Object.keys(value.repair_feedback).length
+  if (value.repair_feedback !== undefined && ((!v11 && !v12) || !object(value.repair_feedback) || !Object.keys(value.repair_feedback).length
     || Object.entries(value.repair_feedback).some(([key, item]) => REPAIR_FEEDBACK_VALUES[key] !== item))) fail('ADAPTIVE_REPAIR_FEEDBACK_BINDING');
   if (v10) {
     const gate = validateJevTransmissionBinding(value.transmission_preflight);
@@ -980,7 +980,7 @@ export async function runAdaptiveArm({rootDir = ROOT, manifest = loadAdaptiveRun
     session = createAdaptiveProviderSession({rootDir, manifest, run_id: context.run_id, runDirectory: context.directory,
       remaining: context.remaining, record: context.record, abortSignal: context.signal, adapters, ...adaptiveSpeedSessionOptions(manifest)});
     const decide = (request, decisionContext) => session.decide(ADAPTIVE_ARMS[arm][decisionContext.stage], request, decisionContext);
-    const forms = isQuestionFormManifest(manifest) ? createQuestionFormHooks({session, record: context.record}) : null;
+    const forms = isQuestionFormManifest(manifest) ? createQuestionFormHooks({session, record: context.record, manifest}) : null;
     const planningStarted = context.elapsed();
     planning = await (forms ? forms.plan : planner.planAdaptiveDag)({...input, catalog: prepared.catalog, checks, profile_id: manifest.worker_profile.id,
       goal_revision: input.source_ref.sha256, limits: manifest.limits, max_concurrency: manifest.limits.max_concurrency, decide,

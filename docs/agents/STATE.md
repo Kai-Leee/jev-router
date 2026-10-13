@@ -1,3 +1,13 @@
+# D079 — 스케줄·묶음·보류·공개 명세 검토 평가 완료
+
+[평가](../orchestration/D079_EVALUATION.md) · [결정](../decisions/D079.md). 임계 경로 우선 스케줄(`schedule_policy`, 요구사항 수 추정) 적용: 시뮬레이션 D078 −25.6%·E2 −2.6%·E1 +2.4%(시뮬레이터 오차1.2–3.5%). 묶음 완화는 ×1.5 느림·×2 −4.5%로 미적용. 보류 없는 E2(`d079-no-deferral-03`)가 Jev 경로 최초 공개93/93·독립63/63, 성공25분16초·$9.84(D071 Claude 39분05초·$16.69). 보류 실행 E1 공개93·독립58, 2,383초. 보류는 계획 14초→93–120초·$1.2–1.6 추가, 품질 이득 근거 없음(각1회). 공개 명세 검토 수리(`scripts/spec-review-repair.mjs`)는 후보3/3 독립63/63·공개93/93 유지, 회당 $1.68–2.05. 병렬 전체 개발은 preflight 원장 잠금 충돌로 2회 손실·고아 잠금 승인 삭제, 이후 순차 실행. 원장 19,300,596·정산1,022·pending0. D078/D079 research 브랜치 커밋, 테스트1321/1330(실패9 전송 정책 v4 drift). 아래는 과거 기록이다.
+
+# D078 — 직렬 의존 경로 수리·통합 1회, 제품 미완료
+
+[결과·근거](../orchestration/D078_LAYERED_INTEGRATION.md) · [결정](../decisions/D078.md) · manifest `benchmarks/e2e-swe/manifests/d078-layered.json`. PR #1(main ← snapshot/d030-d075-source) 등록. layered-v2: 단위 쌍 의존을 인터페이스로 충분한 사용/완성 파일 필요 사용으로 나눠 묻고 코드가 깊이≤2로 묶는다(v1은 실제 깊이8로 실패). owner 설명 v2(3,000B 보호)·수리 범위 코드·보류 유지, profile 분리 제외, D076 repair_budget·repair_feedback·속도 옵션 연결.
+
+통합1회: 깊이2·leaf6·관계1, 공개93/93(수리0)·독립60/63(path param 인코딩·multipart·urlencoded), 실행기26분21초(D077 47분49초 대비−44.9%), Jev7POST·입력193,708, Claude13(작업자6·보류7), API환산$9.03. D076 진단·읽기확장 0회(수리 없음). runner 2줄(v12 repair_feedback·manifest 전달) → 전송 정책 v4 drift, 테스트1319/1328. 원장 입력18,800,598·정산1,005·pending0. 아래는 과거 기록이다.
+
 # D077 — 역할별 Jev 질문 유형 재설계·보류·통합 1회, 제품 미완료
 
 [설계·probe·통합](../orchestration/D077_QUESTION_FORMS.md) · [결정](../decisions/D077.md) · manifest v12 `benchmarks/e2e-swe/manifests/d077-question-forms.json`. membership·split_count → 단위 쌍 noul+코드 묶음, profile → 모델 choice+노력도 score, owner 후보 경로·설명, 수리 범위 코드 규칙, certainty<0.5 보류 → 새 Claude 결정. 과거 계약·v1–v11 동작 불변, runner는 v12 hook만 추가(커밋5294a90). v12는 D075 transmission gate 미사용.

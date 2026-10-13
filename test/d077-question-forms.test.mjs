@@ -78,3 +78,14 @@ test('low-certainty answers are held and replaced only by the fresh Claude answe
     claude: async () => { throw Object.assign(new Error('CLAUDE_FAILED'), {code: 'CLAUDE_FAILED'}); }});
   await assert.rejects(failing({model: 'jev-latest', state: {x: 1}, questions: {sure: request.questions.sure}}), /CLAUDE_FAILED/);
 });
+
+test('owner criteria v2 falls back to shorter labels, then none, to keep each question within its byte budget', async () => {
+  const {loadOwnerCriteriaContract} = await import('../src/orchestration/adaptive-owner-criteria.mjs');
+  const request = ownerRequest(), [id] = Object.keys(request.questions);
+  request.state.artifact_contracts[0].description = 'Producer of the source label.';
+  const v2 = loadOwnerCriteriaContract('docs/orchestration/contracts/adaptive-owner-criteria.v2.json');
+  assert.equal(describeOwnerCriteria(request, v2).questions[id].criteria['A-producer'], 'src/producer.py: Producer of the source label.');
+  const size = Buffer.byteLength(JSON.stringify(describeOwnerCriteria(request, v2).questions[id]));
+  assert.equal(describeOwnerCriteria(request, {...v2, max_question_bytes: size - 1}).questions[id].criteria['A-producer'], 'Producer of the source label.');
+  assert.equal(describeOwnerCriteria(request, {...v2, max_question_bytes: 10}).questions[id].criteria['A-producer'], null);
+});

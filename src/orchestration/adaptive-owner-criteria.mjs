@@ -6,25 +6,28 @@ import {prepareDecision} from '../client.mjs';
 const CONTRACT_PATH = 'docs/orchestration/contracts/adaptive-owner-criteria.v1.json';
 const fail = code => { throw Object.assign(new Error(code), {code, outcome_uncertain: false}); };
 
-export function loadOwnerCriteriaContract() {
-  const raw = readFileSync(new URL(`../../${CONTRACT_PATH}`, import.meta.url), 'utf8'), contract = JSON.parse(raw);
-  if (contract.schema_version !== 'adaptive-owner-criteria/v1') fail('ADAPTIVE_OWNER_CRITERIA_CONTRACT_INVALID');
-  return {...contract, source: {path: CONTRACT_PATH, sha256: createHash('sha256').update(raw).digest('hex')}};
+export function loadOwnerCriteriaContract(path = CONTRACT_PATH) {
+  const raw = readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8'), contract = JSON.parse(raw);
+  if (!['adaptive-owner-criteria/v1', 'adaptive-owner-criteria/v2'].includes(contract.schema_version)) fail('ADAPTIVE_OWNER_CRITERIA_CONTRACT_INVALID');
+  return {...contract, source: {path, sha256: createHash('sha256').update(raw).digest('hex')}};
 }
 
-/** Return a new request whose null artifact options carry the artifact's inline paths and description. */
+/** Return a new request whose null artifact options carry inline labels. v2 falls back to shorter labels, then none, to fit max_question_bytes. */
 export function describeOwnerCriteria(request, contract = loadOwnerCriteriaContract()) {
   const artifacts = new Map((request?.state?.artifact_contracts ?? []).map(row => [row.id, row]));
   if (!artifacts.size) fail('ADAPTIVE_OWNER_CRITERIA_STATE');
-  const label = row => (row.description ? contract.artifact_description_template : contract.missing_description)
-    .replace('{paths}', row.paths.join(', ')).replace('{description}', row.description ?? '');
-  const questions = Object.fromEntries(Object.entries(request.questions).map(([id, question]) => {
-    const criteria = Object.fromEntries(Object.entries(question.criteria).map(([key, value]) => {
+  for (const question of Object.values(request.questions)) for (const [key, value] of Object.entries(question.criteria)) {
+    if (key !== 'unknown' && (value !== null || !artifacts.has(key))) fail('ADAPTIVE_OWNER_CRITERIA_UNEXPECTED');
+  }
+  const templates = contract.label_templates ?? [contract.artifact_description_template];
+  const labelled = template => Object.fromEntries(Object.entries(request.questions).map(([id, question]) => [id, {...question,
+    criteria: Object.fromEntries(Object.entries(question.criteria).map(([key, value]) => {
       if (key === 'unknown') return [key, value];
-      if (value !== null || !artifacts.has(key)) fail('ADAPTIVE_OWNER_CRITERIA_UNEXPECTED');
-      return [key, label(artifacts.get(key))];
-    }));
-    return [id, {...question, criteria}];
-  }));
+      const row = artifacts.get(key), chosen = row.description ? template : contract.missing_description ?? '{paths}';
+      return [key, chosen.replace('{paths}', row.paths.join(', ')).replace('{description}', row.description ?? '')];
+    }))}]));
+  const fits = questions => !contract.max_question_bytes
+    || Object.values(questions).every(question => Buffer.byteLength(JSON.stringify(question)) <= contract.max_question_bytes);
+  const questions = templates.map(labelled).find(fits) ?? request.questions;
   return prepareDecision({...request, questions}).body;
 }
