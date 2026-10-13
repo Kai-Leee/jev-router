@@ -435,8 +435,8 @@ export async function planAdaptiveDag({catalog, source, requirement_ids, require
 export async function chooseAdaptiveRepair({source, planning, failure, candidates, limits, decide, projectRepairState,
   buildRepairState, artifactBindings, repairPolicy, repairInputPolicy, requestOverride, recovery, onRequest,
   record = async () => {}}) {
-  if (repairPolicy !== undefined && !['causal-v1', 'inferred-v1', 'inferred-v2'].includes(repairPolicy)) fail('ADAPTIVE_REPAIR_POLICY_INVALID');
-  const inferred = ['inferred-v1', 'inferred-v2'].includes(repairPolicy), causal = inferred || repairPolicy === 'causal-v1';
+  if (repairPolicy !== undefined && !['causal-v1', 'inferred-v1', 'inferred-v2', 'inferred-v3'].includes(repairPolicy)) fail('ADAPTIVE_REPAIR_POLICY_INVALID');
+  const inferred = ['inferred-v1', 'inferred-v2', 'inferred-v3'].includes(repairPolicy), causal = inferred || repairPolicy === 'causal-v1';
   if (causal && typeof buildRepairState !== 'function') fail('ADAPTIVE_REPAIR_STATE_REQUIRED');
   if (repairInputPolicy !== undefined && repairInputPolicy !== 'evidence-v1') fail('ADAPTIVE_REPAIR_INPUT_POLICY');
   if (onRequest !== undefined && typeof onRequest !== 'function') fail('ADAPTIVE_REPAIR_REQUEST_OBSERVER');
@@ -473,7 +473,7 @@ export async function chooseAdaptiveRepair({source, planning, failure, candidate
   if (!candidates.length) return stopped('ADAPTIVE_REPAIR_NO_CANDIDATE');
   const contract = loadAdaptiveDagContract(), decisions = [], stats = {provider_calls: 0, provider_questions: 0, local_questions: 0};
   if (causal) {
-    const inferredVersion = repairPolicy === 'inferred-v2' ? 'v2' : 'v1';
+    const inferredVersion = inferred ? repairPolicy.slice(-2) : 'v1';
     const path = inferred ? `docs/orchestration/contracts/adaptive-inferred-repair.${inferredVersion}.json` : 'docs/orchestration/contracts/adaptive-causal-repair.v1.json';
     const raw = readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8'), policy = JSON.parse(raw);
     if (!text(policy.decision_call_instructions)) fail('ADAPTIVE_REPAIR_QUESTION_TEMPLATE');

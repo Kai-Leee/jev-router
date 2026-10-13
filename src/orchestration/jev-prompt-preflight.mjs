@@ -9,7 +9,7 @@ import * as handlers from './adaptive-inferred-repair.mjs';
 import {validateRepairInputState} from './adaptive-repair-input.mjs';
 
 const POLICY_PATHS = {v1:'docs/orchestration/contracts/jev-prompt-policy.v1.json',
-  v2:'docs/orchestration/contracts/jev-prompt-policy.v2.json'};
+  v2:'docs/orchestration/contracts/jev-prompt-policy.v2.json', v3:'docs/orchestration/contracts/jev-prompt-policy.v3.json'};
 const DOCUMENT_PATH = 'docs/orchestration/contracts/adaptive-inferred-repair.v2.json';
 const HANDLER_PATH = 'src/orchestration/adaptive-inferred-repair.mjs';
 const SOURCE_PATHS = [DOCUMENT_PATH, HANDLER_PATH, 'src/orchestration/adaptive-inferred-repair-projection.mjs',
@@ -40,8 +40,9 @@ const format = (template, values) => template.replace(/\{([a-z_]+)\}/g, (_, key)
 
 function pinnedSources(version = 'v1') {
   const {path, bytes:policyBytes, value:policy} = selectedPolicy(version);
-  const sourcePaths = version === 'v2' ? [...SOURCE_PATHS, 'src/orchestration/adaptive-repair-input.mjs',
-    'docs/orchestration/contracts/adaptive-repair-input.v1.json'] : SOURCE_PATHS;
+  // v3 keeps the inferred-v2 fixed template and also pins the v3 owner contract (check-level error questions, raw state only).
+  const sourcePaths = version === 'v1' ? SOURCE_PATHS : [...SOURCE_PATHS, 'src/orchestration/adaptive-repair-input.mjs',
+    'docs/orchestration/contracts/adaptive-repair-input.v1.json', ...(version === 'v3' ? ['docs/orchestration/contracts/adaptive-inferred-repair.v3.json'] : [])];
   const valid = policy.schema_version === `jev-prompt-policy/${version}` && policy.template?.id === 'inferred-v2'
     && policy.template.stage === 'repair_owners' && policy.template.document_path === DOCUMENT_PATH
     && policy.template.handler_module === HANDLER_PATH && policy.template.handler_export === 'applyInferredRepairOwners'
@@ -190,7 +191,7 @@ export function validateJevPrompt(request, {policy:version='v1', stage=null, tem
   if (sources.passed && input.adapter_validation.passed && template === 'inferred-v2' && stage === 'repair_owners') {
     try {
       const body = prepareDecision(request).body;
-      if (version === 'v2' && ['repair_input','repair_input_shared_evidence','recovery_source_evidence']
+      if (version !== 'v1' && ['repair_input','repair_input_shared_evidence','recovery_source_evidence']
         .some(key => Object.hasOwn(body.state, key))) repairInput = validateRepairInputState(body.state);
       links = inferredLinks(body);
     }

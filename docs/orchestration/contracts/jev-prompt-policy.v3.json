@@ -1,0 +1,167 @@
+{
+  "schema_version": "jev-prompt-policy/v3",
+  "policy_id": "d081-inferred-v2-structural-preflight-v3",
+  "checked_on": "2026-10-13",
+  "official_sources": [
+    {
+      "url": "https://jev-ai.pro/docs#official-sdk",
+      "kind": "hosting_connection"
+    },
+    {
+      "url": "https://jev-ai.pro/docs#errors",
+      "kind": "hosting_failure_handling"
+    },
+    {
+      "url": "https://jev-ai.pro/model/jev-1.13",
+      "kind": "hosting_model_guide"
+    },
+    {
+      "url": "https://docs.typesafe.ai/models",
+      "kind": "model_developer_guidance"
+    }
+  ],
+  "connection": {
+    "base_url": "https://jev-ai.pro/api",
+    "decision_url": "https://jev-ai.pro/api/v1/systemone",
+    "models_url": "https://jev-ai.pro/api/v1/models",
+    "authorization_scheme": "Bearer",
+    "automatic_retries": 0,
+    "redirect": "error",
+    "implementation": "repository_fetch_adapter_not_typesafe_sdk",
+    "sdk_note": "TypeSafe publishes @typesafe-ai/sdk. Its hosted Jev integration requires explicit baseURL and retry.maxRetries=0. This repository check exercises the existing fetch client, not an SDK or deployment."
+  },
+  "adapter_scope": {
+    "fields": [
+      "model",
+      "state",
+      "questions"
+    ],
+    "official_body_utf8_bytes": 256000,
+    "question_count": [
+      1,
+      64
+    ],
+    "types": [
+      "noul",
+      "choice",
+      "score"
+    ],
+    "note": "The existing adapter implements a subset. Saved judges, optional metadata, alternative endpoints and broader TypeSafe JSON instructions/criteria are not certified; adapter rejection does not establish provider-wide invalidity."
+  },
+  "template": {
+    "id": "inferred-v2",
+    "stage": "repair_owners",
+    "state_schema": "adaptive-inferred-owner-input/v2",
+    "model": "jev-latest",
+    "document_path": "docs/orchestration/contracts/adaptive-inferred-repair.v2.json",
+    "handler_module": "src/orchestration/adaptive-inferred-repair.mjs",
+    "handler_export": "applyInferredRepairOwners",
+    "handler_effect": "Existing artifact choice resolves to its existing owner; unknown remains unresolved. No dispatch or handler execution in this preflight.",
+    "unsupported": [
+      "split",
+      "relations",
+      "repair",
+      "profiles",
+      "inferred-v1",
+      "raw_request_fallback"
+    ]
+  },
+  "input_policy": "v4",
+  "local_caps": {
+    "request_tokens": null,
+    "state_plus_longest_question_tokens": null,
+    "repair_wire_bytes": null
+  },
+  "checks": [
+    "adapter_shape_and_official_body",
+    "v4_admission",
+    "pinned_document_and_handler_export",
+    "exact_state_and_target_templates",
+    "failed_case_and_inline_requirement_references",
+    "inline_evidence_and_interface_references",
+    "existing_artifact_to_task_worker_paths",
+    "exact_artifact_enum_plus_unknown",
+    "public_failed_case_coverage"
+  ],
+  "not_checked": [
+    "question_meaning",
+    "English_language_quality",
+    "evidence_truth_or_completeness",
+    "runtime_revision_authorization",
+    "handler_execution",
+    "decision_accuracy",
+    "performance",
+    "exact_provider_context_fit",
+    "live_authentication",
+    "live_model_availability",
+    "deployment_configuration"
+  ],
+  "documented_context": {
+    "state_plus_all_questions_tokens": 64000,
+    "state_plus_longest_question_tokens": 32000,
+    "exact_tokenizer_available": false,
+    "local_enforcement": false,
+    "note": "Provider context limits remain real; local byte/token estimates cannot establish fit and do not create a new cap."
+  },
+  "source_pins": [
+    {
+      "path": "docs/orchestration/contracts/adaptive-inferred-repair.v2.json",
+      "sha256": "aadeff073c3977c0c922202b1b4aef1dc71914f49178b102781e9bd87df7ff9f"
+    },
+    {
+      "path": "src/orchestration/adaptive-inferred-repair.mjs",
+      "sha256": "d11fb0096822145b858037bfdbc7607e34dc59b31d107f86bd24c63eef243c5c"
+    },
+    {
+      "path": "src/orchestration/adaptive-inferred-repair-projection.mjs",
+      "sha256": "31faf56d6ca1b43b867c197efa30e7a811df3660fa7e5755f2c6163fbd6396af"
+    },
+    {
+      "path": "src/client.mjs",
+      "sha256": "b35c8f5757a208dffb2937fc8ea4b959eff9e59b235107b57827d77846b3bd47"
+    },
+    {
+      "path": "src/config.mjs",
+      "sha256": "a8b63d4d6bfcea1a9036a11156152ddc82ac3bc30ebb9e914bb3eb00a62ddb59"
+    },
+    {
+      "path": "scripts/validate-jev-input.mjs",
+      "sha256": "0c6eae6159305dfbb1a89719ecb02a4f808231e7025471238b1976acdbbdf8df"
+    },
+    {
+      "path": "src/orchestration/jev-token-admission-v4.mjs",
+      "sha256": "125b05957a7c8c6ef85c1f55551dbb701135fa8520222fdae6727b4abf00551d"
+    },
+    {
+      "path": "docs/orchestration/contracts/jev-token-admission.v4.json",
+      "sha256": "bb268037a56b183732c41d10098bb5b449d7c34e03fd95f7262c2f4198e428f9"
+    },
+    {
+      "path": "src/orchestration/adaptive-repair-input.mjs",
+      "sha256": "debcd26006e3283a930f3b09c65e88181403758b49dda601eb1f73d33301cb1f"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-repair-input.v1.json",
+      "sha256": "451549d4310ec9a540f24be1319b1eafeba5ea757c76fae3d18a076eb082d07b"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-inferred-repair.v3.json",
+      "sha256": "8457472307298b1e11e3bfcef82928deac0653ca7ce8faaffca12685c2e49eda"
+    }
+  ],
+  "source_drift_action": "Block the new preflight and explicitly review/re-pin it; do not change historical experiments or silently accept drift.",
+  "previous_policy": "docs/orchestration/contracts/jev-prompt-policy.v2.json",
+  "repair_input": {
+    "policy": "evidence-v1",
+    "contract": "docs/orchestration/contracts/adaptive-repair-input.v1.json",
+    "wire_validator": "validateRepairInputState",
+    "module": "src/orchestration/adaptive-repair-input.mjs",
+    "supported_relevance_policy": "resolved-unrelated-v1",
+    "scope": "Validate fixed wire rules and inline references. Relevance summaries are explicitly lossy; controller proof owns restoration and source coverage.",
+    "semantic_equality_without_controller_proof": "unverified"
+  },
+  "supersedes": {
+    "path": "docs/orchestration/contracts/jev-prompt-policy.v2.json",
+    "reason": "D081 changed src/orchestration/adaptive-inferred-repair.mjs (owner input policy inferred-v3 adds one check-level error question per errored public check, raw owner state only) and added docs/orchestration/contracts/adaptive-inferred-repair.v3.json. The inferred-v2 fixed template, its wording and its structural checks are unchanged; v3 re-pins the sources and also pins the v3 owner contract. v1 and v2 are unchanged."
+  }
+}

@@ -13,7 +13,7 @@ const root = resolve(import.meta.dirname, '..');
 const read = path => JSON.parse(readFileSync(join(root, path), 'utf8'));
 const sha = value => createHash('sha256').update(value).digest('hex');
 const example = () => read('examples/jev-preflight/inferred-v2.request.json');
-const promptCheck = request => validateJevPrompt(request, {policy: 'v2', stage: 'repair_owners', template: 'inferred-v2',
+const promptCheck = request => validateJevPrompt(request, {policy: 'v3', stage: 'repair_owners', template: 'inferred-v2',
   expectedRequestSha256: sha(prepareDecision(request).serialized)});
 
 function oversized() {

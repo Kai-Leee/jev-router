@@ -9,7 +9,7 @@ import {createJevClient,prepareDecision} from '../src/client.mjs';
 import {validateJevPrompt,jevPromptPolicy,checkJevConnectionWithMock} from '../src/orchestration/jev-prompt-preflight.mjs';
 
 const fixture=()=>JSON.parse(readFileSync('examples/jev-preflight/inferred-v2.request.json'));
-const options={stage:'repair_owners',template:'inferred-v2',policy:'v2'};
+const options={stage:'repair_owners',template:'inferred-v2',policy:'v3'};
 const sha=value=>createHash('sha256').update(value).digest('hex');
 const call=request=>validateJevPrompt(request,options);
 
@@ -21,7 +21,7 @@ test('fixed inferred-v2 prompt binds exact targets, inline evidence and current 
   assert.equal(result.request_sha256,sha(prepareDecision(request).serialized));
   assert.equal(result.structural_links.questions,1);assert.equal(result.structural_links.artifacts,2);
   assert.equal(result.structural_links.unknown_option_present,true);assert.equal(result.handler.executed,false);
-  assert.equal(result.source_integrity.sources.length,10);assert.ok(result.source_integrity.sources.every(row=>row.unchanged));
+  assert.equal(result.source_integrity.sources.length,11);assert.ok(result.source_integrity.sources.every(row=>row.unchanged));
   assert.equal(result.exact_context_fit,'unknown');assert.equal(result.live_authentication,'not_checked');
   assert.deepEqual(result.performed_calls,{GET:0,POST:0});assert.equal(result.key_loaded,false);
   const report=JSON.stringify(result);
@@ -55,7 +55,7 @@ test('source/request hashes and unsupported stages stay distinct from schema and
   assert.ok(validateJevPrompt(request,{...options,expectedPolicySha256:'0'.repeat(64)}).reason_codes.includes('JEV_PROMPT_POLICY_CHANGED'));
   assert.ok(validateJevPrompt(request,{...options,stage:'profiles'}).reason_codes.includes('JEV_PROMPT_TEMPLATE_UNSUPPORTED'));
   assert.ok(validateJevPrompt(request,{...options,template:'inferred-v1'}).reason_codes.includes('JEV_PROMPT_TEMPLATE_UNSUPPORTED'));
-  const snapshot=jevPromptPolicy({policy:'v2'});snapshot.template.stage='profiles';assert.equal(call(request).passed,true);
+  const snapshot=jevPromptPolicy({policy:'v3'});snapshot.template.stage='profiles';assert.equal(call(request).passed,true);
   request.state.evidence_quotes[0].quote='뜻이 충분한지 이 검사기는 알 수 없다.';
   const result=call(request);assert.equal(result.passed,true);assert.equal(result.semantic_sufficiency,'not_checked');
   assert.equal(result.English_language_quality,'not_checked');assert.equal(result.evidence_authenticity,'not_checked');
@@ -121,11 +121,11 @@ test('v4 local sizing remains non-blocking while official body boundary and sche
 test('mock connection exercises exact URL/auth/serialization, error non-retries, mismatch rejection and no live transport',async()=>{
   const previous=globalThis.fetch;globalThis.fetch=()=>{throw new Error('Live transport must not be used.');};
   try {
-    const result=await checkJevConnectionWithMock({policy:'v2'});assert.equal(result.passed,true);
+    const result=await checkJevConnectionWithMock({policy:'v3'});assert.equal(result.passed,true);
     assert.deepEqual(result.mock_calls,{GET:1,POST:5});assert.deepEqual(result.performed_calls,{GET:0,POST:0});
     assert.ok(result.scenarios.every(row=>row.passed));assert.equal(result.real_key_loaded,false);
     assert.equal(result.deployment_configuration,'not_checked');assert.equal(result.live_model_availability,'not_checked');
-    const bad=await checkJevConnectionWithMock({policy:'v2',clientFactory:config=>createJevClient({...config,fetchImpl:(url,init)=>
+    const bad=await checkJevConnectionWithMock({policy:'v3',clientFactory:config=>createJevClient({...config,fetchImpl:(url,init)=>
       config.fetchImpl(url,{...init,redirect:'follow',headers:{...init.headers,Authorization:'wrong'}})})});
     assert.equal(bad.passed,false);assert.equal(JSON.stringify(bad).includes('offline-fixture-jev-not-a-real-key'),false);
     assert.equal(JSON.stringify(bad).includes('Authorization'),false);
@@ -135,7 +135,7 @@ test('mock connection exercises exact URL/auth/serialization, error non-retries,
 test('CLI writes only new reports, rejects environment files/invalid input safely, and distinguishes mock-only mode',t=>{
   const directory=mkdtempSync(join(tmpdir(),'jev-prompt-'));t.after(()=>rmSync(directory,{recursive:true,force:true}));
   const input=join(directory,'request.json'),output=join(directory,'report.json');writeFileSync(input,JSON.stringify(fixture()));
-  const cli=args=>spawnSync(process.execPath,['scripts/validate-jev-prompt.mjs','--policy','v2',...args],{encoding:'utf8'});
+  const cli=args=>spawnSync(process.execPath,['scripts/validate-jev-prompt.mjs','--policy','v3',...args],{encoding:'utf8'});
   const args=['--request',input,'--stage','repair_owners','--template','inferred-v2','--out',output];
   assert.equal(cli(args).status,0);const before=readFileSync(output);assert.equal(cli(args).status,1);assert.deepEqual(readFileSync(output),before);
   assert.equal(cli(['--connection-only']).status,0);

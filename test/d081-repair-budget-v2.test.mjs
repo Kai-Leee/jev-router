@@ -119,3 +119,17 @@ test('a v11 or v12 manifest may bind the v2 budget contract by exact path and ha
     assert.throws(() => loadAdaptiveRunManifest(file, root), {code: 'ADAPTIVE_REPAIR_BUDGET_BINDING'});
   }
 });
+
+test('only a v12 manifest may bind the v3 owner contract, with the matching scope contract', async t => {
+  const {mkdtempSync, writeFileSync, rmSync} = await import('node:fs'), {tmpdir} = await import('node:os');
+  const {loadAdaptiveRunManifest} = await import('../src/benchmark/adaptive-dag-runner.mjs');
+  const v12 = JSON.parse(readFileSync(join(root, 'benchmarks/e2e-swe/manifests/d080-defaults.json'), 'utf8'));
+  const v11 = JSON.parse(readFileSync(join(root, 'benchmarks/e2e-swe/manifests/d076-preserved-repair.json'), 'utf8'));
+  const owner = 'docs/orchestration/contracts/adaptive-inferred-repair.v3.json';
+  const directory = mkdtempSync(join(tmpdir(), 'd081-owner-')); t.after(() => rmSync(directory, {recursive: true, force: true}));
+  const file = join(directory, 'manifest.json'), load = value => { writeFileSync(file, JSON.stringify(value)); return loadAdaptiveRunManifest(file, root); };
+  load({...v12, repair_policy: {...v12.repair_policy, owner_inference_contract: owner, scope_contract: 'public-inferred-owner-v3'}});
+  assert.throws(() => load({...v12, repair_policy: {...v12.repair_policy, owner_inference_contract: owner}}), {code: 'ADAPTIVE_MANIFEST_INVALID'});
+  assert.throws(() => load({...v11, repair_policy: {...v11.repair_policy, owner_inference_contract: owner, scope_contract: 'public-inferred-owner-v3'}}),
+    {code: 'ADAPTIVE_MANIFEST_INVALID'});
+});

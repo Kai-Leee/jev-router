@@ -73,7 +73,10 @@ export function adaptiveWorkerReport(streamText, completion) {
 }
 const focusedOwnerManifest = manifest => transmissionManifest(manifest) || isQuestionFormManifest(manifest) || manifest.schema_version === 'adaptive-dag-comparison/v9';
 const inferredManifest = manifest => focusedOwnerManifest(manifest) || manifest.schema_version === 'adaptive-dag-comparison/v8';
-const inferredPolicy = manifest => focusedOwnerManifest(manifest) ? 'inferred-v2' : 'inferred-v1';
+const OWNER_INFERENCE_V3 = 'docs/orchestration/contracts/adaptive-inferred-repair.v3.json';
+// D081: a v12 manifest may opt into check-level error owner questions by binding the v3 owner contract.
+const ownerV3Manifest = manifest => isQuestionFormManifest(manifest) && manifest.repair_policy?.owner_inference_contract === OWNER_INFERENCE_V3;
+const inferredPolicy = manifest => ownerV3Manifest(manifest) ? 'inferred-v3' : focusedOwnerManifest(manifest) ? 'inferred-v2' : 'inferred-v1';
 const causalManifest = manifest => inferredManifest(manifest) || manifest.schema_version === 'adaptive-dag-comparison/v7';
 const profileOptions = manifest => ({...manifest.profile_policy,
   profilePolicy: inferredManifest(manifest) ? 'provider-limits-v2' : 'bounded-v1'});
@@ -131,9 +134,9 @@ export function loadAdaptiveRunManifest(path = join(ROOT, 'benchmarks/e2e-swe/ma
         token_admission_contract: `docs/orchestration/contracts/jev-token-admission.${v5 ? 'v2' : 'v1'}.json`}))
       || (v7 && (!equal(value.repair_policy, {artifact_contract: 'docs/orchestration/contracts/adaptive-causal-repair.v1.json',
         assertion_contract: 'benchmarks/e2e-swe/public-checks/assertions.v2.json', failure_contract: 'adaptive-terminal-cause/v1',
-        scope_contract: v9 ? 'public-inferred-owner-v2' : v8 ? 'public-inferred-owner-v1' : 'public-causal-v1',
+        scope_contract: ownerV3Manifest(value) ? 'public-inferred-owner-v3' : v9 ? 'public-inferred-owner-v2' : v8 ? 'public-inferred-owner-v1' : 'public-causal-v1',
         token_admission_contract: `docs/orchestration/contracts/jev-token-admission.${v8 ? 'v4' : 'v3'}.json`,
-        ...(v8 ? {owner_inference_contract: `docs/orchestration/contracts/adaptive-inferred-repair.${v9 ? 'v2' : 'v1'}.json`} : {})})
+        ...(v8 ? {owner_inference_contract: ownerV3Manifest(value) ? OWNER_INFERENCE_V3 : `docs/orchestration/contracts/adaptive-inferred-repair.${v9 ? 'v2' : 'v1'}.json`} : {})})
         || value.public_registry !== 'benchmarks/e2e-swe/public-checks/registry.v4.json'
         || value.public_runner !== 'benchmarks/e2e-swe/public-checks/run_public_checks_v4.py'
         || !relativePath(value.public_controls_evidence)
@@ -1035,7 +1038,7 @@ export async function runAdaptiveArm({rootDir = ROOT, manifest = loadAdaptiveRun
       publicCheckConcurrency: adaptiveRuntimeSpeed(manifest).public_check_concurrency, ...adaptiveRepairBudgetOption(manifest), ...adaptiveRepairFeedbackOption(manifest),
       ...(arm === 'jev_profile' ? {prepareRoundPlan: selectProfiles} : {}),
       ...(inferredManifest(manifest) ? {decideRepairOwners: forms?.decideRepairOwners ?? ((request, metadata) => session.decide('jev', request, metadata))} : {}),
-      ...(repairManifest(manifest) ? {repairScopePolicy: focusedOwnerManifest(manifest) ? 'public-inferred-owner-v2' : inferredManifest(manifest) ? 'public-inferred-owner-v1' : causalManifest(manifest) ? 'public-causal-v1' : 'minimal-public-v1', projectRepairFailure: repairProjection.projectAdaptiveRepairFailure} : {}),
+      ...(repairManifest(manifest) ? {repairScopePolicy: inferredManifest(manifest) ? `public-inferred-owner-${inferredPolicy(manifest).slice(-2)}` : causalManifest(manifest) ? 'public-causal-v1' : 'minimal-public-v1', projectRepairFailure: repairProjection.projectAdaptiveRepairFailure} : {}),
       ...(artifactRepair ? {artifactRepairPolicy: inferredManifest(manifest) ? inferredPolicy(manifest) : causalManifest(manifest) ? 'causal-v1' : compactRepairManifest(manifest) ? 'artifact-v2' : 'artifact-v1', assertionContract} : {}),
       decideRepair: forms?.decideRepair ?? (request => planner.chooseAdaptiveRepair({source: input.source, ...request,
         limits: {...manifest.limits, ...request.limits}, decide,

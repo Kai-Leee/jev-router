@@ -15,6 +15,9 @@ const contract = JSON.parse(sourceBytes);
 const v2Path = 'docs/orchestration/contracts/adaptive-inferred-repair.v2.json';
 const v2Bytes = readFileSync(new URL(`../../${v2Path}`, import.meta.url));
 const v2Contract = JSON.parse(v2Bytes);
+const v3Path = 'docs/orchestration/contracts/adaptive-inferred-repair.v3.json';
+const v3Bytes = readFileSync(new URL(`../../${v3Path}`, import.meta.url));
+const v3Contract = JSON.parse(v3Bytes);
 const copy = value => structuredClone(value);
 const hash = value => createHash('sha256').update(value).digest('hex');
 const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object'
@@ -33,15 +36,18 @@ const fail = (code, details = {}) => { throw Object.assign(new Error(code), {cod
 const need = (ok, code = 'ADAPTIVE_INFERRED_REPAIR_INVALID') => { if (!ok) fail(code); };
 const source = {path, sha256: hash(sourceBytes), schema_version: contract.schema_version};
 const v2Source = {path: v2Path, sha256: hash(v2Bytes), schema_version: v2Contract.schema_version};
+const v3Source = {path: v3Path, sha256: hash(v3Bytes), schema_version: v3Contract.schema_version};
+// v3 = v2 plus one owner question per public check with a check-level error (D081).
+const projectedPolicy = selected => selected === 'inferred-v2' || selected === 'inferred-v3';
 function policy(input = {}) {
   const selected = input.ownerInputPolicy ?? 'inferred-v1';
-  need(['inferred-v1', 'inferred-v2'].includes(selected), 'ADAPTIVE_INFERRED_INPUT_POLICY');
-  return selected === 'inferred-v2' ? {contract: v2Contract, source: v2Source, selected}
-    : {contract, source, selected};
+  need(['inferred-v1', 'inferred-v2', 'inferred-v3'].includes(selected), 'ADAPTIVE_INFERRED_INPUT_POLICY');
+  return selected === 'inferred-v3' ? {contract: v3Contract, source: v3Source, selected}
+    : selected === 'inferred-v2' ? {contract: v2Contract, source: v2Source, selected} : {contract, source, selected};
 }
 function reconstructing(input) {
   need(input.repairInputPolicy === undefined || input.repairInputPolicy === 'evidence-v1', 'ADAPTIVE_REPAIR_INPUT_POLICY');
-  if (input.repairInputPolicy) need(input.ownerInputPolicy === 'inferred-v2', 'ADAPTIVE_REPAIR_INPUT_POLICY');
+  if (input.repairInputPolicy) need(projectedPolicy(input.ownerInputPolicy), 'ADAPTIVE_REPAIR_INPUT_POLICY');
   need(!input.requestOverride || input.repairInputPolicy === 'evidence-v1', 'ADAPTIVE_REPAIR_INPUT_OVERRIDE_POLICY');
   return input.repairInputPolicy === 'evidence-v1';
 }
@@ -121,6 +127,21 @@ function checked(input) {
         not_reached_assertion_ids: (testcase.assertion_results ?? []).filter(row => row.status === 'not_reached').map(row => row.assertion_id)});
     }
   }
+  if (policy(input).selected === 'inferred-v3') {
+    // A check that raised an error before its tests ran is one observed failure; its unexecuted tests are not failed assertions.
+    for (const report of failure.public_evidence) {
+      const error = report.evidence.error ?? null, unexecuted = report.evidence.unexecuted_test_ids ?? [];
+      if (error === null && !unexecuted.length) continue;
+      const check = planning.plan.checks.find(row => row.id === report.check_id);
+      need(idList(unexecuted) && check && idList(check.requirement_ids) && check.requirement_ids.length
+        && check.requirement_ids.every(id => planning.requirement_descriptions.some(row => row.id === id)), 'ADAPTIVE_INFERRED_REQUIREMENT_BINDING');
+      const identity = {check_id: report.check_id, test_id: null, assertion_id: null, kind: 'check_error'};
+      failures.push({...identity, failure_id: `failure-${digest(identity).slice(0, 20)}`, question_id: `owner.${digest(identity).slice(0, 20)}`,
+        requirement_ids: copy(check.requirement_ids), public_case_sha256: null, observation_ref: {check_id: report.check_id, test_id: null},
+        error_type: object(error) ? error.code ?? null : null, message: object(error) ? error.message ?? null : null,
+        unexecuted_test_ids: copy(unexecuted), not_reached_assertion_ids: []});
+    }
+  }
   need(failures.length > 0, 'ADAPTIVE_INFERRED_NO_PUBLIC_FAILURE');
   return {tasks, artifacts, owners, failures, causal};
 }
@@ -146,12 +167,14 @@ export function buildInferredRepairOwnerRequest(input) {
     format(contract.question.artifact_description_template, {artifact_id: artifact.id})]));
   criteria.unknown = contract.question.unknown_description;
   const questions = Object.fromEntries(data.failures.map(row => [row.question_id, {type: contract.question.type,
-    instructions: format(contract.question.target_template, {...row, assertion_id: row.assertion_id ?? 'none (case-level observed error)'})
-      + contract.question.call_instructions, criteria: copy(criteria)}]));
+    instructions: row.kind === 'check_error'
+      ? format(contract.question.check_error_template, {...row, unexecuted_count: row.unexecuted_test_ids.length}) + contract.question.check_error_call_instructions
+      : format(contract.question.target_template, {...row, assertion_id: row.assertion_id ?? 'none (case-level observed error)'})
+        + contract.question.call_instructions, criteria: copy(criteria)}]));
   const rawRequest = {model: contract.model, state, questions};
   // Only the actual transmitted representation is validated against the body
   // limit; a larger intermediate v1-style corpus is never submitted in v2.
-  const projection = selected === 'inferred-v2' ? projectInferredRepairOwnerRequest(rawRequest, {contract}) : null;
+  const projection = projectedPolicy(selected) ? projectInferredRepairOwnerRequest(rawRequest, {contract}) : null;
   const baseInput = projection?.request ?? rawRequest;
   // Match JSON wire normalization before sealing the additional projection;
   // undefined controller fields are not transmitted by prepareDecision.
@@ -247,7 +270,7 @@ function verifiedInference(input, inference) {
   need(inference.status === 'inferred' && same(inference.contract_source, source)
     && inference.request_sha256 === built.metadata.request_sha256 && same(inference.binding, built.metadata.binding)
     && inference.response_sha256 === digest(inference.response), 'ADAPTIVE_INFERRED_RESULT_BINDING');
-  if (selected === 'inferred-v2') need(inference.owner_input_policy === selected
+  if (projectedPolicy(selected)) need(inference.owner_input_policy === selected
     && same(inference.owner_input_projection, built.metadata.owner_input_projection), 'ADAPTIVE_INFERRED_RESULT_BINDING');
   need(inference.repair_input_policy === built.metadata.repair_input_policy
     && same(inference.repair_input_projection, built.metadata.repair_input_projection), 'ADAPTIVE_INFERRED_RESULT_BINDING');
@@ -286,7 +309,7 @@ export function applyInferredRepairOwners(input) {
   const removed = candidates.filter(row => !row.id.startsWith('repair-causal-'));
   const inferenceSummary = seal({schema_version: 'adaptive-inferred-repair-scope/v1', inference_id: inference.inference_id,
     contract_source: source, request_sha256: inference.request_sha256, response_sha256: inference.response_sha256,
-    ...(selected === 'inferred-v2' ? {owner_input_policy: selected,
+    ...(projectedPolicy(selected) ? {owner_input_policy: selected,
       owner_input_projection_sha256: inference.owner_input_projection.integrity_sha256} : {}),
     ...(reconstructing(input) ? {repair_input_policy: input.repairInputPolicy,
       repair_input_projection_sha256: inference.repair_input_projection.integrity_sha256,
@@ -313,7 +336,9 @@ export function applyInferredRepairOwners(input) {
       artifact_ids: assigned.artifact_id ? [assigned.artifact_id] : [], owner_task_ids: assigned.owner_task_id ? [assigned.owner_task_id] : []};
   });
   analysis.unresolved = [
-    ...analysis.unresolved.filter(row => !assignments.some(assignment => assignment.check_id === row.check_id && assignment.test_id === row.test_id)),
+    // A check-error assignment (inferred or unknown) replaces that check's ownerless blocker row.
+    ...analysis.unresolved.filter(row => !assignments.some(assignment => assignment.check_id === row.check_id
+      && (assignment.test_id === row.test_id || (assignment.kind === 'check_error' && row.test_id === undefined)))),
     ...assignments.filter(row => row.status === 'unknown').map(row => ({check_id: row.check_id, test_id: row.test_id,
       failure_id: row.failure_id, reason: 'JEV_OWNER_UNKNOWN', original_requirement_ids: row.requirement_ids})),
   ];
@@ -341,7 +366,7 @@ export function validateInferredRepairCandidate(input) {
     && candidate.owner_inference_id === proof.inference_id && proof.choice_bindings[candidate.id] === digest(candidate)
     && failure.repair_scope.causal.inferred_owner_scope_sha256 === info.sha256,
   'ADAPTIVE_INFERRED_SCOPE_BINDING');
-  if (selected === 'inferred-v2') {
+  if (projectedPolicy(selected)) {
     const actual = buildInferredRepairOwnerRequest(input);
     need(proof.owner_input_policy === selected && proof.request_sha256 === actual.metadata.request_sha256
       && proof.owner_input_projection_sha256 === actual.metadata.owner_input_projection.integrity_sha256,

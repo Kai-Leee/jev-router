@@ -6,8 +6,8 @@ import {createHash} from 'node:crypto';
 import {validateJevPrompt,checkJevConnectionWithMock} from '../src/orchestration/jev-prompt-preflight.mjs';
 
 const help = `Offline Jev prompt preflight; no key, live GET/POST, ledger or Docker.
-  node scripts/validate-jev-prompt.mjs --request REQUEST.json --stage repair_owners --template inferred-v2 [--policy v1|v2] [--out NEW.json]
-  node scripts/validate-jev-prompt.mjs --connection-only [--policy v1|v2] [--out NEW.json]
+  node scripts/validate-jev-prompt.mjs --request REQUEST.json --stage repair_owners --template inferred-v2 [--policy v1|v2|v3] [--out NEW.json]
+  node scripts/validate-jev-prompt.mjs --connection-only [--policy v1|v2|v3] [--out NEW.json]
 Only projected inferred-v2 owner questions are supported. Other stages can use validate-jev-input.mjs --policy v4 for adapter checks.
 Default policy v1 preserves D074 source pins. D075 explicitly uses v2; an intentional source change may block historical v1.
 Output contains fixed codes, counts and hashes, never request text or Authorization headers.
@@ -26,7 +26,7 @@ function parse(args) {
     options[key]=['request','out'].includes(key)?resolve(value):value;
   }
   if(options.connectionOnly ? options.request||options.stage||options.template : !options.request||!options.stage||!options.template)throw new Error();
-  if(options.policy!==undefined&&!['v1','v2'].includes(options.policy))throw new Error();
+  if(options.policy!==undefined&&!['v1','v2','v3'].includes(options.policy))throw new Error();
   if(options.out&&existsSync(options.out))throw new Error();
   if(options.request&&['.env'].includes(basename(options.request)))throw new Error();
   return options;

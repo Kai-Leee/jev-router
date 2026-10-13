@@ -17,8 +17,8 @@ export const jevTransmissionPolicySchema = path => {
   const match = typeof path === 'string' ? POLICY_FILE.exec(path) : null;
   return match ? `jev-transmission-preflight-policy/v${match[1]}` : null;
 };
-export const JEV_TRANSMISSION_POLICY_PATH = 'docs/orchestration/contracts/jev-transmission-preflight.v7.json';
-export const JEV_TRANSMISSION_SOURCE_PATHS = Object.freeze([
+export const JEV_TRANSMISSION_POLICY_PATH = 'docs/orchestration/contracts/jev-transmission-preflight.v8.json';
+const BASE_SOURCE_PATHS = Object.freeze([
   'src/orchestration/jev-transmission-preflight.mjs', 'src/benchmark/adaptive-dag-runner.mjs',
   'src/benchmark/telemetry.mjs', 'src/orchestration/jev-prompt-preflight.mjs',
   'docs/orchestration/contracts/jev-prompt-policy.v2.json',
@@ -28,6 +28,13 @@ export const JEV_TRANSMISSION_SOURCE_PATHS = Object.freeze([
   'docs/orchestration/contracts/jev-token-admission.v4.json', 'src/orchestration/adaptive-repair-input.mjs',
   'docs/orchestration/contracts/adaptive-repair-input.v1.json', 'src/orchestration/adaptive-dag-planner.mjs'
 ]);
+const PROMPT_POLICY_PATHS = Object.freeze({v2:'docs/orchestration/contracts/jev-prompt-policy.v2.json',
+  v3:'docs/orchestration/contracts/jev-prompt-policy.v3.json'});
+// Policies v1-v7 bind prompt policy v2; v8+ bind prompt policy v3 and also pin the v3 owner contract (D081).
+const sourcePathsFor = promptVersion => promptVersion === 'v3'
+  ? [...BASE_SOURCE_PATHS.map(path => path === PROMPT_POLICY_PATHS.v2 ? PROMPT_POLICY_PATHS.v3 : path),
+    'docs/orchestration/contracts/adaptive-inferred-repair.v3.json'] : [...BASE_SOURCE_PATHS];
+export const JEV_TRANSMISSION_SOURCE_PATHS = Object.freeze(sourcePathsFor('v3'));
 const STAGES = ['split', 'relations', 'repair', 'profiles', 'repair_owners'];
 const sha = value => createHash('sha256').update(value).digest('hex');
 const hashValue = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
@@ -57,9 +64,9 @@ export function validateJevTransmissionBinding(binding) {
 function sourceIntegrity(rootDir, path) {
   const {policy, policyHash} = loadPolicy(path);
   const valid = policy.schema_version === jevTransmissionPolicySchema(path) && policy.enforcement === 'required'
-    && policy.input_policy === 'v4' && policy.prompt_policy?.version === 'v2'
-    && policy.prompt_policy.contract === 'docs/orchestration/contracts/jev-prompt-policy.v2.json'
-    && same(policy.stages, STAGES) && same(policy.source_pins?.map(row => row.path), JEV_TRANSMISSION_SOURCE_PATHS)
+    && policy.input_policy === 'v4' && Object.hasOwn(PROMPT_POLICY_PATHS, policy.prompt_policy?.version)
+    && policy.prompt_policy.contract === PROMPT_POLICY_PATHS[policy.prompt_policy.version]
+    && same(policy.stages, STAGES) && same(policy.source_pins?.map(row => row.path), sourcePathsFor(policy.prompt_policy.version))
     && same(policy.local_caps, {request_tokens:null, state_plus_longest_question_tokens:null, repair_wire_bytes:null})
     && policy.connection?.base_url === BASE_URL && policy.connection.decision_url === DECISION_URL
     && policy.connection.models_url === MODELS_URL && policy.connection.automatic_retries === 0
@@ -101,9 +108,9 @@ export function assessJevTransmission(request, {stage=null, observedModel=null, 
   }
   const fixed = stage === 'repair_owners';
   if (fixed && input.adapter_validation.passed && integrity.passed) {
-    const promptPolicy = jevPromptPolicy({policy:'v2'});
+    const promptPolicy = jevPromptPolicy({policy:policy.prompt_policy.version});
     if (policy.prompt_policy.sha256 !== promptPolicy.source.sha256) reasons.push('JEV_TRANSMISSION_PROMPT_POLICY_CHANGED');
-    prompt = validateJevPrompt(request, {policy:'v2', stage, template:'inferred-v2', observedModel,
+    prompt = validateJevPrompt(request, {policy:policy.prompt_policy.version, stage, template:'inferred-v2', observedModel,
       expectedRequestSha256, expectedPolicySha256:policy.prompt_policy.sha256});
     if (!prompt.passed) reasons.push(...prompt.reason_codes);
   }

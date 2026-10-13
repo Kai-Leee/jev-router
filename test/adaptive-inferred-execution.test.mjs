@@ -362,3 +362,49 @@ test('D081 an uncertain owner part stops the decision without resending earlier 
   assert.equal(result.rounds[0].owner_inference.status, 'uncertain');
   assert.equal(result.status, 'uncertain'); assert.equal(result.outcome_uncertain, true);
 });
+
+// The public check raises a check-level error before its test runs while producer.py is wrong (d080-defaults-03 shape).
+function erroredPublicCheck(state) {
+  const check = state.options.checkTask;
+  state.options.checkTask = async (item, ctx) => {
+    const report = await check(item, ctx);
+    if (item.id !== 'public-description' || report.status !== 'failed') return report;
+    Object.assign(report, {assertions: 0, skipped: 1, cases: [], unexecuted_test_ids: ['test-description'],
+      error: {code: 'SyntaxError', message: 'named arguments must follow bare * (generated.py, line 4)'}});
+    delete report.assertion_contract_sha256;
+    return {...report, evidence: report};
+  };
+}
+
+test('D081 inferred-v3 asks one owner question for a check-level error and repairs it; v2 has no question to ask', async t => {
+  const v3 = await fixture(t);
+  v3.options.repairScopePolicy = 'public-inferred-owner-v3'; v3.options.artifactRepairPolicy = 'inferred-v3';
+  erroredPublicCheck(v3);
+  const execute = v3.options.executeTask;
+  v3.options.executeTask = async (task, context) => {
+    if (context.operation !== 'repair') return execute(task, context);
+    // The check error itself names no assertion, so no causal read is required; only the selected write path changes.
+    assert.deepEqual(task.write_scope, ['producer.py']);
+    await writeFile(join(context.stageDirectory, 'producer.py'), 'description = "REQUEST"\n');
+    return {status: 'completed', outcome_uncertain: false};
+  };
+  const owner = v3.options.decideRepairOwners, seen = [];
+  v3.options.decideRepairOwners = async request => { seen.push(structuredClone(request)); return owner(request); };
+  const result = await runAdaptiveDagExecution(v3.options);
+  assert.equal(result.status, 'completed', JSON.stringify(result.terminal_cause));
+  assert.equal(seen.length, 1);
+  const [question] = Object.values(seen[0].questions), [row] = seen[0].state.failures;
+  assert.match(question.instructions, /raised a check-level error before its tests ran \(1 test IDs unexecuted\)/);
+  assert.deepEqual({kind: row.kind, check_id: row.check_id, test_id: row.test_id, error_type: row.error_type, unexecuted: row.unexecuted_test_ids},
+    {kind: 'check_error', check_id: 'public-description', test_id: null, error_type: 'SyntaxError', unexecuted: ['test-description']});
+  const inference = result.rounds[0].owner_inference;
+  assert.equal(inference.owner_input_projection.mode, 'raw_request_fallback');
+  assert.deepEqual(inference.assignments.map(item => [item.kind, item.artifact_id]), [['check_error', 'artifact-core']]);
+  assert.ok(!result.rounds[0].repair_scope.unresolved.some(item => item.check_id === 'public-description'));
+  const v2 = await fixture(t);
+  v2.options.repairScopePolicy = 'public-inferred-owner-v2'; v2.options.artifactRepairPolicy = 'inferred-v2';
+  erroredPublicCheck(v2);
+  let v2Calls = 0; v2.options.decideRepairOwners = async () => { v2Calls++; };
+  const stopped = await runAdaptiveDagExecution(v2.options);
+  assert.equal(v2Calls, 0); assert.notEqual(stopped.status, 'completed');
+});

@@ -149,6 +149,8 @@ async function causalReadSources(workerContext, snapshots, plan, bindings) {
   return sources;
 }
 
+const INFERRED_SCOPE_POLICIES = ['public-inferred-owner-v1', 'public-inferred-owner-v2', 'public-inferred-owner-v3'];
+const INFERRED_ARTIFACT_POLICIES = ['inferred-v1', 'inferred-v2', 'inferred-v3'];
 const pathsOverlap = (left, right) => left === right || left.startsWith(`${right}/`) || right.startsWith(`${left}/`);
 
 // D076 read_scope candidate-v1: every verified file of the failed candidate becomes
@@ -311,12 +313,13 @@ export async function runAdaptiveDagExecution(options) {
       !Number.isSafeInteger(maxRepairRounds) || maxRepairRounds < 0 ||
       [executeTask, checkTask, probeEnvironment].some(callback => typeof callback !== 'function') ||
       (maxRepairRounds > 0 && typeof decideRepair !== 'function') ||
-      (options.repairScopePolicy !== undefined && !['minimal-public-v1', 'public-causal-v1', 'public-inferred-owner-v1', 'public-inferred-owner-v2'].includes(options.repairScopePolicy)) ||
-      (options.artifactRepairPolicy !== undefined && !['artifact-v1', 'artifact-v2', 'causal-v1', 'inferred-v1', 'inferred-v2'].includes(options.artifactRepairPolicy)) ||
+      (options.repairScopePolicy !== undefined && !['minimal-public-v1', 'public-causal-v1', 'public-inferred-owner-v1', 'public-inferred-owner-v2', 'public-inferred-owner-v3'].includes(options.repairScopePolicy)) ||
+      (options.artifactRepairPolicy !== undefined && !['artifact-v1', 'artifact-v2', 'causal-v1', 'inferred-v1', 'inferred-v2', 'inferred-v3'].includes(options.artifactRepairPolicy)) ||
       ((options.repairScopePolicy === 'public-causal-v1') !== (options.artifactRepairPolicy === 'causal-v1')) ||
       ((options.repairScopePolicy === 'public-inferred-owner-v1') !== (options.artifactRepairPolicy === 'inferred-v1')) ||
       ((options.repairScopePolicy === 'public-inferred-owner-v2') !== (options.artifactRepairPolicy === 'inferred-v2')) ||
-      (['public-inferred-owner-v1', 'public-inferred-owner-v2'].includes(options.repairScopePolicy) && typeof options.decideRepairOwners !== 'function') ||
+      ((options.repairScopePolicy === 'public-inferred-owner-v3') !== (options.artifactRepairPolicy === 'inferred-v3')) ||
+      (INFERRED_SCOPE_POLICIES.includes(options.repairScopePolicy) && typeof options.decideRepairOwners !== 'function') ||
       (options.beforeRepairDecision !== undefined && typeof options.beforeRepairDecision !== 'function') ||
       (options.prepareRoundPlan !== undefined && typeof options.prepareRoundPlan !== 'function') ||
       (options.projectRepairFailure !== undefined && typeof options.projectRepairFailure !== 'function') ||
@@ -325,9 +328,9 @@ export async function runAdaptiveDagExecution(options) {
       (options.record !== undefined && typeof options.record !== 'function') || options.planning?.dispatch_allowed === false ||
       (options.publicCheckConcurrency !== undefined && (!Number.isSafeInteger(options.publicCheckConcurrency) || options.publicCheckConcurrency < 1)) ||
       (options.batchChecks !== undefined && typeof options.batchChecks !== 'function') ||
-      (options.repairBudget !== undefined && (!['inferred-v1', 'inferred-v2'].includes(options.artifactRepairPolicy)
+      (options.repairBudget !== undefined && (!INFERRED_ARTIFACT_POLICIES.includes(options.artifactRepairPolicy)
         || !ADAPTIVE_REPAIR_BUDGET_POLICIES.includes(options.repairBudget?.policy) || Object.keys(options.repairBudget).length !== 1)) ||
-      (options.repairFeedback !== undefined && (!['inferred-v1', 'inferred-v2'].includes(options.artifactRepairPolicy)
+      (options.repairFeedback !== undefined && (!INFERRED_ARTIFACT_POLICIES.includes(options.artifactRepairPolicy)
         || !options.repairFeedback || typeof options.repairFeedback !== 'object' || !Object.keys(options.repairFeedback).length
         || Object.entries(options.repairFeedback).some(([key, value]) => ({read_scope: 'candidate-v1', worker_diagnostics: 'report-v1'})[key] !== value)))) {
     fail('ADAPTIVE_EXECUTION_INVALID_CONFIG');
@@ -364,7 +367,7 @@ export async function runAdaptiveDagExecution(options) {
   const rounds = [], actions = [], snapshots = new Map(), attempted = new Set(), repairAttempts = [];
   const recoveryEnabled = options.failureRecoveryPolicy === 'evidence-loop-v1';
   const recoveryActions = [], workerInputs = new Set(), recoveryAttempts = new Set();
-  const inferredPolicy = ['public-inferred-owner-v1', 'public-inferred-owner-v2'].includes(options.repairScopePolicy);
+  const inferredPolicy = INFERRED_SCOPE_POLICIES.includes(options.repairScopePolicy);
   const ownerInputPolicy = inferredPolicy ? options.artifactRepairPolicy : undefined;
   const causalPolicy = inferredPolicy || options.repairScopePolicy === 'public-causal-v1';
   let repairHistory = causalPolicy ? buildCausalRepairHistory({planning, artifactBindings: bindings}) : null;
@@ -882,7 +885,7 @@ export async function runAdaptiveDagExecution(options) {
       if (status === 'completed' || status === 'uncertain' || status === 'blocked' || round.fatal || roundIndex === maxRepairRounds ||
           !knownFailure.has(workflow?.execution?.failure?.code)) break;
       let candidates;
-      if (['minimal-public-v1', 'public-causal-v1', 'public-inferred-owner-v1', 'public-inferred-owner-v2'].includes(options.repairScopePolicy)) {
+      if (['minimal-public-v1', 'public-causal-v1', ...INFERRED_SCOPE_POLICIES].includes(options.repairScopePolicy)) {
         try {
           const buildScope = causalPolicy ? buildAdaptiveCausalRepairScope : buildAdaptiveRepairScope;
           const scoped = await buildScope({plan, failure, publicChecks, testRequirements,
