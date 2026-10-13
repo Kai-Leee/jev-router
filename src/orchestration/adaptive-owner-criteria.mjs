@@ -4,6 +4,7 @@ import {prepareDecision} from '../client.mjs';
 
 // D077: label opaque owner options (A01..A22) with their inline path and description; keys stay artifact IDs.
 const CONTRACT_PATH = 'docs/orchestration/contracts/adaptive-owner-criteria.v1.json';
+const RAW_OWNER_SCHEMA = 'adaptive-inferred-repair-owners/v1';
 const fail = code => { throw Object.assign(new Error(code), {code, outcome_uncertain: false}); };
 
 export function loadOwnerCriteriaContract(path = CONTRACT_PATH) {
@@ -14,6 +15,8 @@ export function loadOwnerCriteriaContract(path = CONTRACT_PATH) {
 
 /** Return a new request whose null artifact options carry inline labels. v2 falls back to shorter labels, then none, to fit max_question_bytes. */
 export function describeOwnerCriteria(request, contract = loadOwnerCriteriaContract()) {
+  // The raw owner fallback (sent since repair-budget-v2) already names each option; only the projected shape is labelled.
+  if (request?.state?.schema_version === RAW_OWNER_SCHEMA) return request;
   const artifacts = new Map((request?.state?.artifact_contracts ?? []).map(row => [row.id, row]));
   if (!artifacts.size) fail('ADAPTIVE_OWNER_CRITERIA_STATE');
   for (const question of Object.values(request.questions)) for (const [key, value] of Object.entries(question.criteria)) {

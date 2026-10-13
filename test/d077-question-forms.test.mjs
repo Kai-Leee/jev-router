@@ -19,6 +19,15 @@ test('owner criteria gain inline path labels while keys, unknown and state stay 
     criteria: {...request.questions[id].criteria, 'A-other': null}}}}), /ADAPTIVE_OWNER_CRITERIA_UNEXPECTED/);
 });
 
+test('owner criteria leave the raw owner fallback unchanged', () => {
+  const raw = {model: 'jev-latest', state: {schema_version: 'adaptive-inferred-repair-owners/v1', artifacts: [{id: 'A01', paths: ['a.py']}]},
+    questions: {'owner.1': {type: 'choice', instructions: 'Which artifact?', criteria: {A01: 'Existing A01; read its inline artifact contract.', unknown: 'None.'}}}};
+  assert.equal(describeOwnerCriteria(raw), raw);
+  // Same schema name the v2 budget packs and inferred-v3 sends for check-level errors (raw_request_fallback).
+  const budget = JSON.parse(readFileSync(new URL('../docs/orchestration/contracts/adaptive-repair-budget.v2.json', import.meta.url), 'utf8'));
+  assert.equal(budget.raw_owner_schema, raw.state.schema_version);
+});
+
 function profileRequest() {
   const {base_instructions: base} = loadProfileSplitContract();
   const price = (input, output) => ({prompt_tiers: [{rates: {input, output}}]});
