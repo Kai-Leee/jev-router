@@ -1,3 +1,7 @@
+# D082 — 클라우드 세션 유료 실행 준비 완료, 유료 실행 0
+
+[준비·조건·점검](../orchestration/D082_CLOUD_RUNS.md) · [결정](../decisions/D082.md). 원장·`benchmark-runs/`·`.benchmarks/`를 Mac에서 클라우드로 이전(charged 20,566,398 · settled 1,067 · pending 0, 원장은 클라우드에서만 사용). Claude 인증 확인이 manifest `claude_auth_methods`를 읽도록 변경, `d082-cloud-defaults.json`(D081과 동일 + `oauth_token` 허용). 전송 정책 v9 pin 불변. `--probe` ready·막힘0. 실행에는 Docker `containerd-snapshotter:false`, `NODE_USE_ENV_PROXY=1`, Mac 경로 bind mount가 필요하다. 회귀 1346/1351(실패2: root 전용 refund, d079 mock leaf 순서 비결정). 아래는 과거 기록이다.
+
 # D081 — 수리 경로 보강 완료, 기본 설정 순차 실측 1/5 완료
 
 [결과·남길 것·다시 할 것](../orchestration/D081_REPAIR_PATH_AND_RESULTS.md) · [결정](../decisions/D081.md). 읽기 범위 확대(D076-03 공개79→93·독립63/63), repair-budget-v2(압축·분할), inferred-v3(check_error 질문), ledger_op lock·live 예약 수정, GET 재시도, 전송 정책 v9. D081 기본 01 완료(63/63), 02 독립62/63, 03 credits GET 502, 04 Jev 다운, 05 사용자 중단. 분할·check_error·작업자 진단·GET 재시도는 미측정. 회귀 1348/1348.

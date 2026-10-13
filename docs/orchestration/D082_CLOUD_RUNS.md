@@ -1,0 +1,39 @@
+# D082 — 클라우드 세션에서 유료 실행 준비
+
+사용자는 Mac 대신 Claude Code 클라우드 세션에서 유료 실행을 하도록 지시했다. 이 기록은 무과금 점검과 실행 조건이다. 유료 실행은 아직 없다.
+
+## 코드 변경
+
+- `src/benchmark/dag-runner.mjs`: preflight의 Claude 인증 확인이 manifest의 `claude_auth_methods`를 읽는다. 값이 없으면 과거와 같이 `claude.ai`만 허용한다. 허용 값은 `claude.ai`, `oauth_token`뿐이며 잘못된 값은 `DAG_INVALID_RUN_MANIFEST`다. probe 결과의 `auth.accepted_methods`에 허용 목록을 남긴다.
+- `benchmarks/e2e-swe/manifests/d082-cloud-defaults.json`: `d081-defaults.json`과 같고 `claude_auth_methods: ["claude.ai", "oauth_token"]`와 `session_semantics`만 다르다.
+- 전송 정책 v9의 고정 소스 17개는 바뀌지 않았다(`dag-runner.mjs`는 v9 pin 대상이 아니다). D081/D082 manifest는 D075 전송 gate를 쓰지 않는다. `dag-runner.mjs`는 D066 catalog 재사용 허용 변경 목록에 있다. 새 고정 정책 파일은 만들지 않았다.
+
+## 왜 `oauth_token`인가
+
+클라우드의 Claude CLI(2.1.296)는 호스트가 넣은 세션 토큰 파일을 저장된 claude.ai 로그인보다 먼저 쓴다. 환경변수를 비우거나 HOME을 바꿔도 `claude auth status`는 `authMethod: "oauth_token"`이다. 별도 HOME에 Max 구독으로 로그인해도 같았다. `claude --print`는 실행기의 제한된 환경에서 동작했다.
+
+## 실행 조건 (Mac 대비 차이)
+
+| 항목 | 클라우드 |
+|---|---|
+| Claude 인증 | 호스트 세션 토큰(`oauth_token`). 사용량 한도가 제어 세션과 공유될 수 있다(미확인). |
+| Claude CLI | 2.1.296 (manifest `profile_policy.cli_version` 2.1.293은 기록값이며 실행기가 강제하지 않는다) |
+| 저장소 경로 | `/Users/lee/workspace/plugins/jev-router`에 bind mount. catalog `result.json`의 절대경로 비교 때문이다. |
+| Docker | `containerd-snapshotter: false`. 기본 설정은 image ID가 manifest digest로 나와 pin과 다르다. 고정 image ID `sha256:b47cc887…`과 일치. |
+| Jev 연결 | `NODE_USE_ENV_PROXY=1`. 없으면 Node fetch가 프록시를 쓰지 않아 `TRANSPORT_ERROR`. |
+| 원장 | Mac에서 이전. charged 20,566,398 · settled 1,067 · pending 0. 한 곳에서만 사용한다. |
+
+daemon과 bind mount는 컨테이너 재시작 때 사라진다. 파일·이미지·원장은 재시작 뒤에도 남았다(1회 확인).
+
+## 무과금 점검 결과
+
+- `--manifest benchmarks/e2e-swe/manifests/d082-cloud-defaults.json --probe`: `ready`, 막힘 0, `live_ready: true`, paid_calls 0, 공개 대조 통과, 고정 대조 증거 확인, Jev `jev-latest` 조회(추론 0).
+- 같은 probe를 `d081-defaults.json`으로 하면 `CLAUDE_AUTH_REQUIRED`다(과거 규칙 유지).
+- 회귀: Mac 경로 mount에서 1351개 중 통과1346·실패2·건너뜀3. 신규 D082 테스트 3/3.
+  - root 실행이라 읽기 전용 디렉터리 검사가 무효인 refund 테스트 1개.
+  - `d079-runner-mock-arm`의 leaf 순서(n5/n6)가 실행마다 달라지는 비결정성. 단독 3회 중 2회 실패. 변경 전 전체 실행에서는 `d080-defaults-mock-arm`도 같은 이유로 1회 실패했다.
+
+## 미확인
+
+- 클라우드 호스트 토큰의 사용량 한도와 과금 경로.
+- 클라우드에서 실제 유료 실행 결과. Mac 결과와의 차이는 n=1 비교로 단정하지 않는다.
