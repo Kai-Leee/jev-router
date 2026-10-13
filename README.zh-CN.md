@@ -1,8 +1,12 @@
-# Jev Router
+<p align="center"><img src="docs/brand/pointsman-256.png" width="160" height="160" alt="Pointsman 吉祥物：用舌头拉动道岔扳手的青蛙"></p>
+
+<h1 align="center">Pointsman</h1>
+
+<p align="center"><em>我会遵从 Jev 的判断。</em><br><sub>原名 Jev Router</sub></p>
 
 [English](README.md) | [한국어](README.ko.md) | **简体中文**
 
-Jev Router 通过向 [Jev AI](https://jev-ai.pro) 提出固定的结构化问题，辅助主编码智能体进行模型选择和
+Pointsman 通过向 [Jev AI](https://jev-ai.pro) 提出固定的结构化问题，辅助主编码智能体进行模型选择和
 任务中的判断。本仓库包含服务端 Jev 客户端、离线评估 CLI、隔离的基准测试运行器和本地用量仪表盘。
 这是一个研究项目。实测结果很少，每项结果都附有证据记录。
 
@@ -26,7 +30,7 @@ Jev Router 通过向 [Jev AI](https://jev-ai.pro) 提出固定的结构化问题
 ## 为什么需要
 
 主智能体在工作中要做许多小判断：使用哪个模型和 effort、是否拆分任务、证据是否充分。
-Jev Router 验证这些重复判断能否以固定英文问题和结构化答案（`choice`、`score`、`noul`）
+Pointsman 验证这些重复判断能否以固定英文问题和结构化答案（`choice`、`score`、`noul`）
 交给 Jev AI。
 
 ```text
@@ -74,7 +78,7 @@ npm run demo -- --spend  # 1 次付费 POST；消耗 Jev 余额
 
 ## 局限
 
-如果需要以下任何一项，请不要使用 Jev Router：
+如果需要以下任何一项，请不要使用 Pointsman：
 
 - **生产环境路由器。** 尚未进行任何部署。没有分布式限流器。
 - **自动恢复。** 调用从不自动重试。结果不确定的付费 POST 不会重新发送，应先核对用量

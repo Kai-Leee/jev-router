@@ -21,7 +21,7 @@ no default weighted total or inferred pass for an unexecuted criterion.
 
 ## Local commands
 
-From the Jev Router root, with Python 3.10 or newer (standard library only):
+From the Pointsman root, with Python 3.10 or newer (standard library only):
 
 ```sh
 python3 benchmarks/personal-os/evaluator/selftest.py

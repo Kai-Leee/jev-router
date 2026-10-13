@@ -1,9 +1,9 @@
 {
-  "name": "jev-router",
-  "version": "0.2.0",
+  "name": "pointsman",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
-  "description": "Server-side Jev AI connection for routing experiments",
+  "description": "Jev 판단을 따르겠습니다.",
   "license": "Apache-2.0",
   "engines": {
     "node": ">=22"

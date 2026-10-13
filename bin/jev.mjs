@@ -4,7 +4,7 @@ import { createJevClient, JevError } from '../src/client.mjs';
 import { ask, openBrowser, readHidden, writeEnvKey } from '../src/login.mjs';
 
 const FLAGS = { config: [], models: [], demo: ['--spend'], login: ['--no-browser'], 'login-check': [] };
-const SIGN_IN_HINT = `Jev AI is not signed in for jev-router: no JEV_AI_API_KEY in the environment or the key file. `
+const SIGN_IN_HINT = `Jev AI is not signed in for Pointsman: no JEV_AI_API_KEY in the environment or the key file. `
   + `Live Jev calls and the jev-ai MCP server fail until the user signs in. Show the sign-in now: `
   + `(1) open ${KEY_PAGE_URL} in the browser pane so the user can sign in to Jev AI and create a key; `
   + `(2) open a terminal tab in this project running \`npm run login -- --no-browser\`, where the user accepts `
