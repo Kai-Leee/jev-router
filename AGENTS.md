@@ -1,3 +1,5 @@
+D081: [수리 경로 보강과 실측](docs/orchestration/D081_REPAIR_PATH_AND_RESULTS.md)을 먼저 읽는다. 현재 전송 정책 기본은 v9(prompt policy v3)이며 과거 v1–v8 파일은 재현용이다. v12에서 check_error 질문은 `adaptive-inferred-repair.v3.json`+`public-inferred-owner-v3`, 큰 owner 요청은 `repair-budget-v2`로 opt-in한다(`d081-defaults.json`). 전체 개발은 순차로만 실행하고 불확실 종료(D081-05)는 재실행하지 않는다.
+
 D080: [기본 설정 실측](docs/orchestration/D080_DEFAULTS.md)을 먼저 읽는다. v12 기본 manifest는 `d080-defaults.json`(보류 끔·임계 경로 우선·공개 명세 검토)이다. 명세 검토는 공개 검사 통과 뒤에만 실행되고 숨김 검사 경로를 거부한다. 병렬 시작은 다른 실행의 Jev 호출이 없을 때만 한다.
 
 D079: [평가 결과](docs/orchestration/D079_EVALUATION.md)를 먼저 읽는다. 전체 개발은 preflight 원장 잠금 수정 전까지 순차로만 실행한다. 보류 없는 `d079-no-deferral.json`이 공개93/93·독립63/63을 1회 달성했고, 공개 명세 검토 수리는 후보 3/3에서 독립 실패를 고쳤다. 숨김 검사 내용을 계획·수리·검토에 넣지 않는다.

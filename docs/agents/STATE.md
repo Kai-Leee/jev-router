@@ -1,3 +1,7 @@
+# D081 — 수리 경로 보강 완료, 기본 설정 순차 실측 1/5 완료
+
+[결과·남길 것·다시 할 것](../orchestration/D081_REPAIR_PATH_AND_RESULTS.md) · [결정](../decisions/D081.md). 읽기 범위 확대(D076-03 공개79→93·독립63/63), repair-budget-v2(압축·분할), inferred-v3(check_error 질문), ledger_op lock·live 예약 수정, GET 재시도, 전송 정책 v9. D081 기본 01 완료(63/63), 02 독립62/63, 03 credits GET 502, 04 Jev 다운, 05 사용자 중단. 분할·check_error·작업자 진단·GET 재시도는 미측정. 회귀 1348/1348.
+
 # D080 — 기본 설정(보류 끔·임계 경로 우선·공개 명세 검토) 실측
 
 [결과](../orchestration/D080_DEFAULTS.md) · [결정](../decisions/D080.md). `d080-defaults.json`(v12): 보류 없음, `schedule_policy`, `spec_review`(공개 통과 후보 복사본 검토, 공개 93/93 유지 시에만 채택, 저장소 밖 임시 폴더·거부 규칙, 격리 probe 확인), D076 수리 옵션. 병렬 부하 2회: 01 공개83→93(수리1)·검토 채택·독립63/63·1,594초·$8.84, 03 공개54/93·owner 요청 61,736추정토큰으로 budget 초과 전송 전 중단·독립60/63, 02 시작 점검 BUDGET_OUTSTANDING(지불0). 공개 명세 검토 누적 4/4 독립63. 원장19,781,431·정산1,039·pending0. runner hook으로 전송 정책 v5 drift(D076 세션 재고정 대기), 테스트1326/1335. 아래는 과거 기록이다.
