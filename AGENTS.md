@@ -1,6 +1,6 @@
 # Pointsman 작업 지침
 
-이 지침은 `jev-router/`에만 적용한다. 상위 EDA 프로젝트와 목적·결정 기록을 섞지 않는다.
+이 지침은 이 저장소에만 적용한다. 상위 EDA 프로젝트와 목적·결정 기록을 섞지 않는다.
 
 ## 브랜치
 
@@ -16,10 +16,10 @@
 ## 진입점
 
 1. [기술 명세](docs/TECHNICAL_SPEC.md)를 읽는다.
-2. [결정 기록](https://github.com/Kai-Leee/jev-router/blob/research/docs/DECISIONS.md)에서 확정 사항과 제안·가설·미결정을 확인한다.
-3. [작업 기록](https://github.com/Kai-Leee/jev-router/blob/research/docs/WORK_LOG.md)과 [검증 기록](https://github.com/Kai-Leee/jev-router/blob/research/VERIFICATION.md)에서 실제 구현·검증 수준을 확인한다.
-4. 평가 조사·지표 구현이면 [평가 방법 조사](https://github.com/Kai-Leee/jev-router/blob/research/docs/EVALUATION_RESEARCH.md)의 출처·산식·제외 조건을 확인한다.
-5. 분업 개발/문맥 인계는 [개발 에이전트 운영](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/README.md), 본인 역할, [현재 상태](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md)를 읽는다.
+2. [결정 기록](https://github.com/Kai-Leee/pointsman/blob/research/docs/DECISIONS.md)에서 확정 사항과 제안·가설·미결정을 확인한다.
+3. [작업 기록](https://github.com/Kai-Leee/pointsman/blob/research/docs/WORK_LOG.md)과 [검증 기록](https://github.com/Kai-Leee/pointsman/blob/research/VERIFICATION.md)에서 실제 구현·검증 수준을 확인한다.
+4. 평가 조사·지표 구현이면 [평가 방법 조사](https://github.com/Kai-Leee/pointsman/blob/research/docs/EVALUATION_RESEARCH.md)의 출처·산식·제외 조건을 확인한다.
+5. 분업 개발/문맥 인계는 [개발 에이전트 운영](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/README.md), 본인 역할, [현재 상태](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md)를 읽는다.
 
 ## 유지할 경계
 

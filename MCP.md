@@ -81,4 +81,4 @@ At initial integration, authenticated model discovery and inference were pending
 During the 2026-10-08 status check in this chat, configuration reported `keyConfigured=true` and both
 `npm run models` and `npm run mcp:models` completed authenticated model discovery. `npm test` passed
 22/22 checks. No live decision POST, deployment, or native-host E2E was performed by those checks.
-See [verification history](https://github.com/Kai-Leee/jev-router/blob/research/VERIFICATION.md) for the distinction between initial and current evidence.
+See [verification history](https://github.com/Kai-Leee/pointsman/blob/research/VERIFICATION.md) for the distinction between initial and current evidence.

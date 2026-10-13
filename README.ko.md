@@ -6,7 +6,7 @@
 
 [English](README.md) | **한국어** | [简体中文](README.zh-CN.md)
 
-> 연구·분석 기록은 [`research` 브랜치](https://github.com/Kai-Leee/jev-router/tree/research)에 있습니다.
+> 연구·분석 기록은 [`research` 브랜치](https://github.com/Kai-Leee/pointsman/tree/research)에 있습니다.
 
 Pointsman은 메인 코딩 에이전트의 모델 선택과 작업 중 판단을 지원합니다. 방법은
 [Jev AI](https://jev-ai.pro)에 고정된 구조화 질문을 보내는 것입니다. 이 저장소에는 서버 전용
@@ -22,11 +22,11 @@ Jev 클라이언트, 오프라인 평가 CLI, 격리 벤치마크 실행기, 로
 |---|---|---|
 | Jev 연결 (`GET /v1/models`, `POST /v1/systemone`) | 구현. 2026-10-08 키 설정과 인증 모델 목록 조회 확인 | [사용 안내](docs/USAGE.md#로컬-키-설정) |
 | 오프라인 평가 CLI | 구현. 포함된 예제는 합성 데이터 | [평가 CLI](docs/EVALUATION_USAGE.md) |
-| 실제 단일/분할 E2E 실행 (D029) | 조건별 1회. 독립 채점 둘 다 30/30. 분할: 단계시간 합계 22.829% 감소, 비용 추정 64.112% 증가 | [D029 결과](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/D029_RESULTS.md) |
-| 입력 투영 v3 (D031) | 오프라인 재생만 수행, 새 유료 호출 없음, 회귀 테스트 390/390 | [D031 구현](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/D031_IMPLEMENTATION.md) |
-| 자동 라우팅 효과, 제품 완성도 | 미검증 | [STATE](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md) |
+| 실제 단일/분할 E2E 실행 (D029) | 조건별 1회. 독립 채점 둘 다 30/30. 분할: 단계시간 합계 22.829% 감소, 비용 추정 64.112% 증가 | [D029 결과](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D029_RESULTS.md) |
+| 입력 투영 v3 (D031) | 오프라인 재생만 수행, 새 유료 호출 없음, 회귀 테스트 390/390 | [D031 구현](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D031_IMPLEMENTATION.md) |
+| 자동 라우팅 효과, 제품 완성도 | 미검증 | [STATE](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md) |
 
-최신 체크포인트는 항상 [research 브랜치의 STATE](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md)입니다. 이 표는 그보다 늦게 갱신될 수 있습니다.
+최신 체크포인트는 항상 [research 브랜치의 STATE](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md)입니다. 이 표는 그보다 늦게 갱신될 수 있습니다.
 
 ## 왜 필요한가
 
@@ -53,8 +53,8 @@ Jev 클라이언트, 오프라인 평가 CLI, 격리 벤치마크 실행기, 로
 Node.js 22 이상이 필요합니다. 외부 패키지는 없습니다.
 
 ```sh
-git clone https://github.com/Kai-Leee/jev-router.git
-cd jev-router
+git clone https://github.com/Kai-Leee/pointsman.git
+cd pointsman
 npm run mcp:fetch   # MCP 테스트용 고정 jev-mcp 바이너리. 체크섬 확인
 npm test            # 가짜 키와 모의 HTTP만 사용. 추론·잔액 사용 없음
 npm run check:links # 상대 링크, 제목 앵커, research 브랜치 링크 검사
@@ -93,23 +93,23 @@ npm run demo -- --spend  # 유료 POST 1회. Jev 잔액 사용
 ## 문서
 
 `main`에는 코드, 실행 계약, 사용 문서를 둡니다. 실험·결정·작업 기록은
-[`research` 브랜치](https://github.com/Kai-Leee/jev-router/tree/research)에 있습니다.
+[`research` 브랜치](https://github.com/Kai-Leee/pointsman/tree/research)에 있습니다.
 
 - **시작:** [기술 명세](docs/TECHNICAL_SPEC.md) · [실행 계약](docs/orchestration/contracts/README.md)
 - **사용:** [사용 안내](docs/USAGE.md) · [평가 CLI](docs/EVALUATION_USAGE.md)와
   [입력 계약](docs/EVALUATION_CONTRACT.md) · [대시보드](docs/DASHBOARD.md) ·
   [개발 연결과 별도 Opus 모니터](docs/PAIRED_RUN.md) · [벤치마크](benchmarks/README.md) ·
   [MCP](MCP.md)
-- **research 브랜치:** [현재 상태](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md) ·
-  [문서 찾아보기](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/README.md) · [결정 기록](https://github.com/Kai-Leee/jev-router/blob/research/docs/DECISIONS.md) ·
-  [작업 기록](https://github.com/Kai-Leee/jev-router/blob/research/docs/WORK_LOG.md) · [검증 기록](https://github.com/Kai-Leee/jev-router/blob/research/VERIFICATION.md) ·
-  [평가 방법](https://github.com/Kai-Leee/jev-router/blob/research/docs/EVALUATION_RESEARCH.md) ·
-  [실제 구현 평가 가능성](https://github.com/Kai-Leee/jev-router/blob/research/docs/LIVE_EXPERIMENT_FEASIBILITY.md) ·
-  [실시간 실패 표시](https://github.com/Kai-Leee/jev-router/blob/research/docs/REALTIME_FAILURE_RESEARCH.md)
+- **research 브랜치:** [현재 상태](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md) ·
+  [문서 찾아보기](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/README.md) · [결정 기록](https://github.com/Kai-Leee/pointsman/blob/research/docs/DECISIONS.md) ·
+  [작업 기록](https://github.com/Kai-Leee/pointsman/blob/research/docs/WORK_LOG.md) · [검증 기록](https://github.com/Kai-Leee/pointsman/blob/research/VERIFICATION.md) ·
+  [평가 방법](https://github.com/Kai-Leee/pointsman/blob/research/docs/EVALUATION_RESEARCH.md) ·
+  [실제 구현 평가 가능성](https://github.com/Kai-Leee/pointsman/blob/research/docs/LIVE_EXPERIMENT_FEASIBILITY.md) ·
+  [실시간 실패 표시](https://github.com/Kai-Leee/pointsman/blob/research/docs/REALTIME_FAILURE_RESEARCH.md)
 - **릴리스:** [변경 기록](CHANGELOG.md)
 - **기여자·에이전트:** [AGENTS.md](AGENTS.md) (Codex 진입점) ·
   [CLAUDE.md](CLAUDE.md) (Claude 진입점, AGENTS.md import) ·
-  [개발 에이전트 역할·인계](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/README.md)
+  [개발 에이전트 역할·인계](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/README.md)
 
 ## 보안
 

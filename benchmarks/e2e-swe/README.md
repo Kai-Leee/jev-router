@@ -117,7 +117,7 @@ Offline adapter checks:
 python3.14 -m unittest discover -s benchmarks/e2e-swe -p 'test_*.py' -v
 ```
 
-Current execution evidence is in [the role status](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/benchmark-bootstrap-STATUS.md).
+Current execution evidence is in [the role status](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/benchmark-bootstrap-STATUS.md).
 
 ## Observed control checks, 2026-10-08
 

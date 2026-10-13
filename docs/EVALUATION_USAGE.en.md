@@ -8,7 +8,7 @@ The exact input fields and status combinations are in the [evaluation input cont
 
 ## Run
 
-From `jev-router/`:
+From `pointsman/`:
 
 ```sh
 node bin/evaluate.mjs --help
@@ -59,7 +59,7 @@ do not read `observed_subtotal` as the complete cost.
 
 `classification` and `probability` provide metrics that use only single-gold cases, together with the excluded count.
 The accuracy of the actually selected answer and the reliability based on the probability argmax are separate. For detailed formulas, tie policy and exceptions,
-read the report `conventions` together with the [contract](EVALUATION_CONTRACT.en.md) and the [evaluation research](https://github.com/Kai-Leee/jev-router/blob/research/docs/EVALUATION_RESEARCH.md).
+read the report `conventions` together with the [contract](EVALUATION_CONTRACT.en.md) and the [evaluation research](https://github.com/Kai-Leee/pointsman/blob/research/docs/EVALUATION_RESEARCH.md).
 The CLI serializes the report returned by the calculator as is. It does not add judgments on thresholds, quality pass/fail or savings effects.
 
 ## Errors and exit codes
@@ -76,4 +76,4 @@ or raw exceptions/stacks. Example: `{"error":"OUTPUT_EXISTS","message":"The outp
 | 4 | Output conflict or write failure | `OUTPUT_EXISTS`, `OUTPUT_WRITE_FAILED` |
 
 This is the first offline implementation, and it processes all input and output in memory. It does not do large-scale streaming evaluation, real request collection,
-model comparison, network connection or automatic routing. The direct verification scope is in the [CLI status record](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/cli-STATUS.md).
+model comparison, network connection or automatic routing. The direct verification scope is in the [CLI status record](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/cli-STATUS.md).

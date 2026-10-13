@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, normalize, relative } from 'node:path';
 
-const RESEARCH = /^https:\/\/github\.com\/Kai-Leee\/jev-router\/(?:blob|tree)\/research\/([^#?]+)/;
+const RESEARCH = /^https:\/\/github\.com\/Kai-Leee\/pointsman\/(?:blob|tree)\/research\/([^#?]+)/;
 const git = (...args) => execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
 const withoutCode = (text) => text.replace(/^(```|~~~)[\s\S]*?^\1/gm, '').replace(/`[^`\n]*`/g, '');
 

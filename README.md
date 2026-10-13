@@ -12,7 +12,7 @@ Jev client, an offline evaluation CLI, isolated benchmark runners and a local us
 It is a research project. Live results are few, and each one is recorded with its evidence.
 
 > Korean documents have English versions (`*.en.md`). Research and analysis records live on the
-> [`research` branch](https://github.com/Kai-Leee/jev-router/tree/research) and are in Korean.
+> [`research` branch](https://github.com/Kai-Leee/pointsman/tree/research) and are in Korean.
 
 [Status](#status) · [Why](#why) · [Quick start](#quick-start) · [Limitations](#limitations) ·
 [Documentation](#documentation) · [Security](#security) · [License](#license)
@@ -23,11 +23,11 @@ It is a research project. Live results are few, and each one is recorded with it
 |---|---|---|
 | Jev connection (`GET /v1/models`, `POST /v1/systemone`) | Implemented. Key setup and authenticated model listing confirmed on 2026-10-08 | [usage guide](docs/USAGE.en.md#local-key-setup) |
 | Offline evaluation CLI | Implemented. Bundled examples are synthetic | [evaluation CLI](docs/EVALUATION_USAGE.en.md) |
-| Live single vs. split E2E run (D029) | One run per arm. Both 30/30 on independent grading. Split: stage-time sum 22.829% lower, estimated cost 64.112% higher | [D029 results](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/D029_RESULTS.md) |
-| Input projection v3 (D031) | Offline replay only, no new paid calls, 390/390 regression tests | [D031 implementation](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/D031_IMPLEMENTATION.md) |
-| Automatic routing benefit, product completeness | Not verified | [STATE](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md) |
+| Live single vs. split E2E run (D029) | One run per arm. Both 30/30 on independent grading. Split: stage-time sum 22.829% lower, estimated cost 64.112% higher | [D029 results](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D029_RESULTS.md) |
+| Input projection v3 (D031) | Offline replay only, no new paid calls, 390/390 regression tests | [D031 implementation](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D031_IMPLEMENTATION.md) |
+| Automatic routing benefit, product completeness | Not verified | [STATE](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md) |
 
-The latest checkpoint is always [STATE on the research branch](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md). This table can lag behind it.
+The latest checkpoint is always [STATE on the research branch](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md). This table can lag behind it.
 
 ## Why
 
@@ -54,8 +54,8 @@ is not a task success rate. Details: [technical spec](docs/TECHNICAL_SPEC.en.md)
 Requires Node.js 22 or later. There are no external packages.
 
 ```sh
-git clone https://github.com/Kai-Leee/jev-router.git
-cd jev-router
+git clone https://github.com/Kai-Leee/pointsman.git
+cd pointsman
 npm run mcp:fetch   # pinned jev-mcp binary for the MCP tests, checksum-verified
 npm test            # fake key and mock HTTP only; no inference, no balance use
 npm run check:links # relative links, heading anchors and research-branch links
@@ -95,7 +95,7 @@ Do not use Pointsman if you need any of these:
 ## Documentation
 
 `main` holds code, run contracts and usage documents. Experiments, decisions and logs live on the
-[`research` branch](https://github.com/Kai-Leee/jev-router/tree/research).
+[`research` branch](https://github.com/Kai-Leee/pointsman/tree/research).
 
 - **Start here:** [technical spec](docs/TECHNICAL_SPEC.en.md) ·
   [run contracts](docs/orchestration/contracts/README.en.md)
@@ -103,16 +103,16 @@ Do not use Pointsman if you need any of these:
   [input contract](docs/EVALUATION_CONTRACT.en.md) · [dashboard](docs/DASHBOARD.en.md) ·
   [paired run and separate Opus monitor](docs/PAIRED_RUN.md) · [benchmarks](benchmarks/README.md) ·
   [MCP](MCP.md)
-- **Research branch (Korean):** [current state](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md) ·
-  [document index](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/README.md) · [decisions](https://github.com/Kai-Leee/jev-router/blob/research/docs/DECISIONS.md) ·
-  [work log](https://github.com/Kai-Leee/jev-router/blob/research/docs/WORK_LOG.md) · [verification](https://github.com/Kai-Leee/jev-router/blob/research/VERIFICATION.md) ·
-  [evaluation methods](https://github.com/Kai-Leee/jev-router/blob/research/docs/EVALUATION_RESEARCH.md) ·
-  [live experiment feasibility](https://github.com/Kai-Leee/jev-router/blob/research/docs/LIVE_EXPERIMENT_FEASIBILITY.md) ·
-  [real-time failure reporting](https://github.com/Kai-Leee/jev-router/blob/research/docs/REALTIME_FAILURE_RESEARCH.md)
+- **Research branch (Korean):** [current state](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md) ·
+  [document index](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/README.md) · [decisions](https://github.com/Kai-Leee/pointsman/blob/research/docs/DECISIONS.md) ·
+  [work log](https://github.com/Kai-Leee/pointsman/blob/research/docs/WORK_LOG.md) · [verification](https://github.com/Kai-Leee/pointsman/blob/research/VERIFICATION.md) ·
+  [evaluation methods](https://github.com/Kai-Leee/pointsman/blob/research/docs/EVALUATION_RESEARCH.md) ·
+  [live experiment feasibility](https://github.com/Kai-Leee/pointsman/blob/research/docs/LIVE_EXPERIMENT_FEASIBILITY.md) ·
+  [real-time failure reporting](https://github.com/Kai-Leee/pointsman/blob/research/docs/REALTIME_FAILURE_RESEARCH.md)
 - **Releases:** [changelog](CHANGELOG.md)
 - **Contributors and agents:** [AGENTS.md](AGENTS.md) (Codex entry) ·
   [CLAUDE.md](CLAUDE.md) (Claude entry, imports AGENTS.md) ·
-  [agent roles and handoff](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/README.md)
+  [agent roles and handoff](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/README.md)
 
 ## Security
 
