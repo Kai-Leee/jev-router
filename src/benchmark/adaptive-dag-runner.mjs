@@ -956,7 +956,7 @@ export async function runAdaptiveArm({rootDir = ROOT, manifest = loadAdaptiveRun
   if (!Object.hasOwn(ADAPTIVE_ARMS, arm) || !manifest.arms.includes(arm)) fail('ADAPTIVE_ARM_INVALID');
   const context = createRunContext({rootDir, runDir, manifest, abortSignal: adapters.abortSignal});
   let session, execution = null, planning = null, prepared = null, stopCode = null, unknown = false, budgetBefore = null, budgetAfter = null,
-    terminalCause = null, budgetObservationError = null;
+    terminalCause = null, budgetObservationError = null, specReview = null;
   try {
     budgetBefore = await withAdaptiveSettledBudget({rootDir, manifest, remaining: context.remaining, record: context.record,
       abortSignal: context.signal, adapters, purpose: 'arm_start'}, snapshot =>
@@ -1042,6 +1042,12 @@ export async function runAdaptiveArm({rootDir = ROOT, manifest = loadAdaptiveRun
     if (execution.status !== 'completed') stopCode = execution.stop_code ?? execution.code ?? execution.rounds?.at(-1)?.fatal?.code
       ?? execution.rounds?.at(-1)?.workflow?.execution?.failure?.code ?? 'ADAPTIVE_EXECUTION_INCOMPLETE';
     if (execution.status === 'completed') context.remaining();
+    // v12 spec review after a passed public gate; it never fails the run (adaptive-spec-review.mjs).
+    if (forms?.afterPublicGate && execution.status === 'completed') {
+      specReview = await forms.afterPublicGate({rootDir, runDirectory: context.directory, execution, input, catalog: prepared.catalog,
+        runCommand: adapters.runCommand});
+      if (specReview) context.save('spec-review-result.json', specReview);
+    }
   } catch (error) {
     stopCode = codeOf(error); unknown ||= adaptiveOutcomeUncertain(error);
     terminalCause = adaptiveTerminalCause(error, {stage: 'execution', outcome_uncertain: unknown});
@@ -1070,7 +1076,8 @@ export async function runAdaptiveArm({rootDir = ROOT, manifest = loadAdaptiveRun
     shared_preparation_wall_ms: prepWall, full_preparation_inclusive_wall_ms: prepWall === null ? null : armWall + prepWall,
     amortized_preparation_inclusive_wall_ms: prepWall === null ? null : armWall + prepWall / manifest.arms.length,
     completion_wall_ms: null, product_success: null, independent_grade: 'not_run_root_owned',
-    candidate_path: execution?.candidate_path ?? null, artifact_revisions: execution?.artifact_revisions ?? null,
+    candidate_path: specReview?.adopted ? specReview.candidate_path : execution?.candidate_path ?? null, artifact_revisions: execution?.artifact_revisions ?? null,
+    ...(specReview ? {spec_review: specReview} : {}),
     public_status: execution?.status === 'completed' && !stopCode && !unknown ? 'passed' : 'not_passed',
     planning_stats: planning?.stats ?? null, decision_callbacks: session?.decision_count() ?? 0,
     operations: execution?.operations ?? null, repair_rounds_used: execution?.repair_rounds_used ?? 0,

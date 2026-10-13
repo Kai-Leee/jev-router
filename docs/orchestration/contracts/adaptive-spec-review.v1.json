@@ -1,0 +1,28 @@
+{
+  "schema_version": "adaptive-spec-review/v1",
+  "policy": "spec-review-v1",
+  "version": "D080.1",
+  "basis": "D079 evaluation: this exact review fixed every independent failure in 3/3 public-passing candidates (58->63, 60->63, 60->63) while all 93 public cases kept passing; 234-293 s review, USD 1.68-2.05 API-equivalent each. Hidden test contents are never read or sent.",
+  "stage": "After the public gate passes, on a copy of the final candidate. Never before or instead of the public gate.",
+  "model": "claude-opus-5-5",
+  "effort": "high",
+  "tools": [
+    "Read",
+    "Edit",
+    "Write",
+    "Glob",
+    "Grep"
+  ],
+  "permission_mode": "acceptEdits",
+  "timeout_ms": 2700000,
+  "system": "You review a generated Python project against its public specification and fix deviations. Inspect files in the current directory with Read, Glob and Grep and change them with Edit or Write. No shell, code execution, network or test runner is available. Do not add tests. Never weaken behavior the specification requires and keep behavior the public checks already accept. Final response: a concise list of each deviation found, the requirement ID it violates and the files changed; never paste source bodies.",
+  "task": "Compare the implementation in this directory with every requirement in `public_source` and `requirement_descriptions`. The listed public checks already pass, but each requirement is exercised by only a few public test IDs. Look for behavior described in the specification that those tests do not appear to exercise (optional features, alternative inputs, edge cases and error paths), confirm each deviation by reading the relevant code and templates, and fix it with the smallest change that satisfies the specification. Do not restructure working code.",
+  "inputs": [
+    "public_source",
+    "requirement_descriptions",
+    "interface_catalog (id, title, interface)",
+    "public_checks (id, requirement_ids, test_ids)"
+  ],
+  "adoption": "Adopt the reviewed copy only when the review completed and every registered public check reruns with status passed and every case passed. Otherwise keep the gated candidate and record why.",
+  "automatic_retries": 0
+}

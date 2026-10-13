@@ -8,6 +8,7 @@ import {splitProfileRequest, combineProfileAnswers} from '../orchestration/adapt
 import {selectInferredOwnerScope} from '../orchestration/adaptive-inferred-scope.mjs';
 import {createDeferringDecider} from '../orchestration/jev-confidence-deferral.mjs';
 import {applyWorkloadEstimates, loadScheduleContract, SCHEDULE_CONTRACT} from '../orchestration/adaptive-critical-path-schedule.mjs';
+import {specReviewAfterPublicGate, SPEC_REVIEW_CONTRACT} from './adaptive-spec-review.mjs';
 
 // Manifest v12: question-form changes behind one dispatch hook; v1-v11 never reach this module.
 // D077 bound all five forms; D078 selects forms per manifest and adds the layered decomposition and owner labels v2.
@@ -31,7 +32,7 @@ export const QUESTION_FORM_SOURCES = Object.freeze(['src/benchmark/adaptive-ques
   'src/orchestration/adaptive-cohesion.mjs', 'src/orchestration/adaptive-layered-decomposition.mjs',
   'src/orchestration/adaptive-owner-criteria.mjs', 'src/orchestration/adaptive-profile-split.mjs',
   'src/orchestration/adaptive-inferred-scope.mjs', 'src/orchestration/jev-confidence-deferral.mjs',
-  'src/orchestration/adaptive-critical-path-schedule.mjs', SCHEDULE_CONTRACT,
+  'src/orchestration/adaptive-critical-path-schedule.mjs', SCHEDULE_CONTRACT, 'src/benchmark/adaptive-spec-review.mjs', SPEC_REVIEW_CONTRACT,
   ...Object.values(QUESTION_FORM_OPTIONS).flatMap(Object.keys)]);
 const fail = code => { throw Object.assign(new Error(code), {code, outcome_uncertain: false}); };
 const sha = value => createHash('sha256').update(value).digest('hex');
@@ -49,6 +50,9 @@ export function validateQuestionFormManifest(value, rootDir) {
   const schedule = value.schedule_policy;
   if (schedule !== undefined && (schedule?.policy !== 'critical-path-v1' || schedule.contract !== SCHEDULE_CONTRACT
     || schedule.sha256 !== sha(readFileSync(join(rootDir, schedule.contract))))) fail('ADAPTIVE_SCHEDULE_POLICY_BINDING');
+  const review = value.spec_review;
+  if (review !== undefined && (review?.policy !== 'spec-review-v1' || review.contract !== SPEC_REVIEW_CONTRACT
+    || review.sha256 !== sha(readFileSync(join(rootDir, review.contract))))) fail('ADAPTIVE_SPEC_REVIEW_BINDING');
   if (JSON.stringify(value.decomposition_policy) !== JSON.stringify({id: decomposition, contract: forms.decomposition.contract})) fail('ADAPTIVE_QUESTION_FORMS_DECOMPOSITION');
   const v4 = value.jev_budget?.schema_version === 'jev-token-budget/v4';
   if (!speed || !['per_call', 'per_session'].includes(speed.model_lookup) || speed.budget_lock !== (v4 ? 'ledger_op' : 'call')
@@ -88,5 +92,7 @@ export function createQuestionFormHooks({session, record, manifest}) {
     } : decide,
     decideRepairOwners: ownerContract ? (request, metadata) => decide(describeOwnerCriteria(request, ownerContract), metadata) : decide,
     decideRepair: forms.inferred_scope ? request => selectInferredOwnerScope(request) : undefined,
+    afterPublicGate: manifest?.spec_review ? ({rootDir, runDirectory, execution, input, catalog, runCommand}) =>
+      specReviewAfterPublicGate({rootDir, manifest, runDirectory, execution, input, catalog, record, runCommand}) : undefined,
   };
 }
