@@ -18,6 +18,18 @@ behavior bumps the minor version, and a fix-only goal bumps the patch version.
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-10-13
+
+Goal: move the public repository to its new name, Kai-Leee/pointsman.
+
+### Changed
+
+- The GitHub repository is now https://github.com/Kai-Leee/pointsman. READMEs, usage guides, the technical
+  specification and the link checker point at the new URL and clone directory `pointsman`. The old
+  jev-router URL redirects.
+- Identifiers that existing records depend on stay unchanged: Docker labels `org.jev-router.*` and the adapter
+  ID `jev-router-standalone-docker-v1`.
+
 ## [0.3.0] - 2026-10-13
 
 Goal: rename the product from Jev Router to Pointsman and give it a logo.

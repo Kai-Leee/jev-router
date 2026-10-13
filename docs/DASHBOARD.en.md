@@ -77,8 +77,8 @@ node scripts/check-dashboard-browser.mjs http://127.0.0.1:8788
 The command creates its own new browser profile and does not call a real model.
 It leaves `output/playwright/browser-check.json`, desktop/mobile PNGs and an accessibility snapshot.
 Sample values such as 2 times/205·420 tokens/$0.1234 are synthetic values, not real usage results.
-For final measurements and failure history, see the [verification record](https://github.com/Kai-Leee/jev-router/blob/research/VERIFICATION.md). For official meanings, see the
-[research](https://github.com/Kai-Leee/jev-router/blob/research/docs/DASHBOARD_RESEARCH.md). For the field contract, see the [contract](DASHBOARD_CONTRACT.md).
+For final measurements and failure history, see the [verification record](https://github.com/Kai-Leee/pointsman/blob/research/VERIFICATION.md). For official meanings, see the
+[research](https://github.com/Kai-Leee/pointsman/blob/research/docs/DASHBOARD_RESEARCH.md). For the field contract, see the [contract](DASHBOARD_CONTRACT.md).
 
 Whether current model calls and tokens actually enter this instrumentation, and whether they match provider billing, will be checked in the next experiment.
 Real comparisons between models, Codex instrumentation, a long-term storage DB and remote deployment with user authentication are outside this implementation's scope.

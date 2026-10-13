@@ -6,7 +6,7 @@ Version: 0.1-draft · Updated: 2026-10-09 (Asia/Seoul).
 Status: design document that reflects user agreement. The connection module and the offline evaluation calculation/CLI are implemented.
 Question generation and actual model comparison runs are not verified. The D-014 candidate selection→isolated execution gate/runner,
 the preparation of two benchmarks and their no-charge verification are recorded in [current implementation](../benchmarks/README.md).
-Requirement evidence is in the [decision record](https://github.com/Kai-Leee/jev-router/blob/research/docs/DECISIONS.md). Execution evidence is in the [verification record](https://github.com/Kai-Leee/jev-router/blob/research/VERIFICATION.md).
+Requirement evidence is in the [decision record](https://github.com/Kai-Leee/pointsman/blob/research/docs/DECISIONS.md). Execution evidence is in the [verification record](https://github.com/Kai-Leee/pointsman/blob/research/VERIFICATION.md).
 
 D-017 implementation: [usage dashboard](DASHBOARD.en.md) and [display contract](DASHBOARD_CONTRACT.md).
 It shows the Jev transmission boundary, Claude stream and final tokens, per-unit cost, and observation completeness.
@@ -193,13 +193,13 @@ Verification conditions:
 
 ## 9. Evaluation plan / offline calculation implemented, actual model evaluation not run
 
-The D-013 goal/spec-based implementation experiment is recorded in the [feasibility study](https://github.com/Kai-Leee/jev-router/blob/research/docs/LIVE_EXPERIMENT_FEASIBILITY.md).
+The D-013 goal/spec-based implementation experiment is recorded in the [feasibility study](https://github.com/Kai-Leee/pointsman/blob/research/docs/LIVE_EXPERIMENT_FEASIBILITY.md).
 P-005 proposed Opus 5.5 implementation + Jev structured judgment, the existing harness/benchmark, independent grading and
 action-link verification. Later, D-014 implemented the restricted candidate selection gate, Docker execution, raw journal and Claude
 launch code, and verified them without charges. The actual paid Opus/Jev loop has not been run yet.
 
 Methods from existing research and practice, and proposals for per-metric denominators, missing values and cost aggregation, are recorded in
-[evaluation method research and implementation proposal](https://github.com/Kai-Leee/jev-router/blob/research/docs/EVALUATION_RESEARCH.md) [D-011].
+[evaluation method research and implementation proposal](https://github.com/Kai-Leee/pointsman/blob/research/docs/EVALUATION_RESEARCH.md) [D-011].
 After the research, the [input contract](EVALUATION_CONTRACT.en.md) and the
 [offline evaluation CLI](EVALUATION_USAGE.en.md) were implemented under D-012. They validate and recompute stored results.
 They do not run actual comparison models or automatically collect raw API responses.
@@ -265,8 +265,8 @@ This update supersedes earlier unresolved monetary-approval status; it does not 
 ## D-021 current implementation supplement (2026-10-09)
 
 The earlier not-run descriptions up to D-019 are records of that time. Later, actual Opus/Jev runs and the independent monitor
-were done in D-020. For the latest run status and failure boundaries, follow [STATE](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md)
-and [failure analysis](https://github.com/Kai-Leee/jev-router/blob/research/docs/research/D020_FAILURE_ANALYSIS.md). Per-token official price conversion is
+were done in D-020. For the latest run status and failure boundaries, follow [STATE](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md)
+and [failure analysis](https://github.com/Kai-Leee/pointsman/blob/research/docs/research/D020_FAILURE_ANALYSIS.md). Per-token official price conversion is
 implemented with the [pricing contract](DASHBOARD_PRICING.md) and an independent pricing module, kept separate from the run budget policy.
 
 ## D-024 judgment replacement structure
@@ -285,4 +285,4 @@ The host must actually enforce permissions. The workspace wording in a rule is n
 
 With workflow='checkpoint-v1' in the run config, it uses route(role candidates without code)→act(a single command of the selected role, no additional model)→finish. baseline/jev share the same schema and completion evidence collection; only the provider of selected_id differs. When workflow is omitted, the past gate stays as it was. The server passes the original brief and the actual command/output/evidence_id to the judgment. A nonzero command releases the role. A repeated completion question with the same action_version is rejected. But this is not a change check based on the actual artifact hash, so any new command can increase the version. This is not a security policy that enforces the semantic command scope of a role description. The Docker boundary enforces permissions.
 
-The roles in this pilot are work scopes within the same Claude session. They are not presented as equivalent to native subagent creation. The cost and performance of the D024 actual subagent rule lifecycle are separate. Measurement and judgment documents are managed with [D025](https://github.com/Kai-Leee/jev-router/blob/research/docs/decisions/D025.md) and the jev-decision-records skill.
+The roles in this pilot are work scopes within the same Claude session. They are not presented as equivalent to native subagent creation. The cost and performance of the D024 actual subagent rule lifecycle are separate. Measurement and judgment documents are managed with [D025](https://github.com/Kai-Leee/pointsman/blob/research/docs/decisions/D025.md) and the jev-decision-records skill.

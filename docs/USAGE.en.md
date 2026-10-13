@@ -3,7 +3,7 @@
 > English translation of [USAGE.md](USAGE.md). The Korean original is authoritative if they differ.
 
 This document moves the run, connection and operation guide from the README without changes.
-Its original location is [README.md @ 80eb79a](https://github.com/Kai-Leee/jev-router/blob/80eb79ae43ac5ba05c181447f25bd8112aed1aad/README.md).
+Its original location is [README.md @ 80eb79a](https://github.com/Kai-Leee/pointsman/blob/80eb79ae43ac5ba05c181447f25bd8112aed1aad/README.md).
 Run all commands from the repository root. To change the key file path, use `JEV_AI_ENV_FILE`.
 
 ## Evaluating saved records

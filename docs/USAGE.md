@@ -1,7 +1,7 @@
 # 사용 안내
 
 README에 있던 실행·연결·운영 안내를 그대로 옮긴 문서다.
-원래 위치는 [README.md @ 80eb79a](https://github.com/Kai-Leee/jev-router/blob/80eb79ae43ac5ba05c181447f25bd8112aed1aad/README.md)다.
+원래 위치는 [README.md @ 80eb79a](https://github.com/Kai-Leee/pointsman/blob/80eb79ae43ac5ba05c181447f25bd8112aed1aad/README.md)다.
 모든 명령은 저장소 루트에서 실행한다. 키 파일 경로를 바꾸려면 `JEV_AI_ENV_FILE`을 사용한다.
 
 ## 저장된 기록 평가

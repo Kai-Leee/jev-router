@@ -10,7 +10,7 @@ Pointsman 通过向 [Jev AI](https://jev-ai.pro) 提出固定的结构化问题�
 任务中的判断。本仓库包含服务端 Jev 客户端、离线评估 CLI、隔离的基准测试运行器和本地用量仪表盘。
 这是一个研究项目。实测结果很少，每项结果都附有证据记录。
 
-> 韩语文档附有英文版本（`*.en.md`）。研究与分析记录位于 [`research` 分支](https://github.com/Kai-Leee/jev-router/tree/research)，使用韩语编写。
+> 韩语文档附有英文版本（`*.en.md`）。研究与分析记录位于 [`research` 分支](https://github.com/Kai-Leee/pointsman/tree/research)，使用韩语编写。
 
 [现状](#现状) · [为什么需要](#为什么需要) · [快速开始](#快速开始) · [局限](#局限) ·
 [文档](#文档) · [安全](#安全) · [许可证](#许可证)
@@ -21,11 +21,11 @@ Pointsman 通过向 [Jev AI](https://jev-ai.pro) 提出固定的结构化问题�
 |---|---|---|
 | Jev 连接（`GET /v1/models`、`POST /v1/systemone`） | 已实现。2026-10-08 确认密钥配置和已认证的模型列表查询 | [使用说明](docs/USAGE.en.md#local-key-setup) |
 | 离线评估 CLI | 已实现。附带示例为合成数据 | [评估 CLI](docs/EVALUATION_USAGE.en.md) |
-| 实际单任务/拆分 E2E 运行（D029） | 每个条件各 1 次。独立评分均为 30/30。拆分：各阶段耗时合计降低 22.829%，估算成本增加 64.112% | [D029 结果](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/D029_RESULTS.md) |
-| 输入投影 v3（D031） | 仅离线重放，无新的付费调用，回归测试 390/390 | [D031 实现](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/D031_IMPLEMENTATION.md) |
-| 自动路由效果、产品完成度 | 未验证 | [STATE](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md) |
+| 实际单任务/拆分 E2E 运行（D029） | 每个条件各 1 次。独立评分均为 30/30。拆分：各阶段耗时合计降低 22.829%，估算成本增加 64.112% | [D029 结果](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D029_RESULTS.md) |
+| 输入投影 v3（D031） | 仅离线重放，无新的付费调用，回归测试 390/390 | [D031 实现](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D031_IMPLEMENTATION.md) |
+| 自动路由效果、产品完成度 | 未验证 | [STATE](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md) |
 
-最新检查点始终以 [research 分支的 STATE](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md) 为准。本表可能滞后于该文件。
+最新检查点始终以 [research 分支的 STATE](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md) 为准。本表可能滞后于该文件。
 
 ## 为什么需要
 
@@ -52,8 +52,8 @@ Pointsman 验证这些重复判断能否以固定英文问题和结构化答案�
 需要 Node.js 22 或更高版本。没有外部依赖包。
 
 ```sh
-git clone https://github.com/Kai-Leee/jev-router.git
-cd jev-router
+git clone https://github.com/Kai-Leee/pointsman.git
+cd pointsman
 npm run mcp:fetch   # 为 MCP 测试安装固定版本的 jev-mcp 二进制文件，校验 SHA-256
 npm test            # 仅使用假密钥和模拟 HTTP；不推理，不消耗余额
 npm run check:links # 检查相对链接、标题锚点和 research 分支链接
@@ -90,23 +90,23 @@ npm run demo -- --spend  # 1 次付费 POST；消耗 Jev 余额
 ## 文档
 
 `main` 保存代码、运行契约和使用文档。实验、决策和工作记录位于
-[`research` 分支](https://github.com/Kai-Leee/jev-router/tree/research)。
+[`research` 分支](https://github.com/Kai-Leee/pointsman/tree/research)。
 
 - **入门：** [技术规格](docs/TECHNICAL_SPEC.en.md) · [运行契约](docs/orchestration/contracts/README.en.md)
 - **使用：** [使用说明](docs/USAGE.en.md) · [评估 CLI](docs/EVALUATION_USAGE.en.md) 和
   [输入契约](docs/EVALUATION_CONTRACT.en.md) · [仪表盘](docs/DASHBOARD.en.md) ·
   [开发联动与独立 Opus 监控](docs/PAIRED_RUN.md) · [基准测试](benchmarks/README.md) ·
   [MCP](MCP.md)
-- **research 分支（韩语）：** [当前状态](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md) ·
-  [文档索引](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/README.md) · [决策记录](https://github.com/Kai-Leee/jev-router/blob/research/docs/DECISIONS.md) ·
-  [工作记录](https://github.com/Kai-Leee/jev-router/blob/research/docs/WORK_LOG.md) · [验证记录](https://github.com/Kai-Leee/jev-router/blob/research/VERIFICATION.md) ·
-  [评估方法](https://github.com/Kai-Leee/jev-router/blob/research/docs/EVALUATION_RESEARCH.md) ·
-  [实际实验可行性](https://github.com/Kai-Leee/jev-router/blob/research/docs/LIVE_EXPERIMENT_FEASIBILITY.md) ·
-  [实时失败报告](https://github.com/Kai-Leee/jev-router/blob/research/docs/REALTIME_FAILURE_RESEARCH.md)
+- **research 分支（韩语）：** [当前状态](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md) ·
+  [文档索引](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/README.md) · [决策记录](https://github.com/Kai-Leee/pointsman/blob/research/docs/DECISIONS.md) ·
+  [工作记录](https://github.com/Kai-Leee/pointsman/blob/research/docs/WORK_LOG.md) · [验证记录](https://github.com/Kai-Leee/pointsman/blob/research/VERIFICATION.md) ·
+  [评估方法](https://github.com/Kai-Leee/pointsman/blob/research/docs/EVALUATION_RESEARCH.md) ·
+  [实际实验可行性](https://github.com/Kai-Leee/pointsman/blob/research/docs/LIVE_EXPERIMENT_FEASIBILITY.md) ·
+  [实时失败报告](https://github.com/Kai-Leee/pointsman/blob/research/docs/REALTIME_FAILURE_RESEARCH.md)
 - **发布：** [变更日志](CHANGELOG.md)
 - **贡献者与智能体：** [AGENTS.md](AGENTS.md)（Codex 入口）·
   [CLAUDE.md](CLAUDE.md)（Claude 入口，导入 AGENTS.md）·
-  [开发智能体角色与交接](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/README.md)
+  [开发智能体角色与交接](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/README.md)
 
 ## 安全
 

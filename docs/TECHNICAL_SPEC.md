@@ -4,7 +4,7 @@
 상태: 사용자 합의를 반영한 설계 문서. 연결 모듈과 오프라인 평가 계산/CLI를 구현했다.
 질문 생성·실제 모델 비교 실행은 미검증이다. D-014의 후보 선택→격리 실행 gate/runner와
 두 benchmark 준비·무과금 검증은 [현재 구현](../benchmarks/README.md)에 기록한다.
-요구 근거는 [결정 기록](https://github.com/Kai-Leee/jev-router/blob/research/docs/DECISIONS.md), 실행 근거는 [검증 기록](https://github.com/Kai-Leee/jev-router/blob/research/VERIFICATION.md)에 둔다.
+요구 근거는 [결정 기록](https://github.com/Kai-Leee/pointsman/blob/research/docs/DECISIONS.md), 실행 근거는 [검증 기록](https://github.com/Kai-Leee/pointsman/blob/research/VERIFICATION.md)에 둔다.
 
 D-017 구현: [사용량 대시보드](DASHBOARD.md)와 [표시 계약](DASHBOARD_CONTRACT.md).
 Jev 전송 경계, Claude 스트림·최종 토큰, 단위별 비용과 관측 완전성을 표시한다.
@@ -191,13 +191,13 @@ handoff도 요약으로만 만들면 같은 손실이 생길 수 있다. 제안�
 
 ## 9. 평가 계획 / 오프라인 계산 구현, 실제 모델 평가 미실행
 
-D-013의 목표·명세 기반 구현 실험은 [실행 가능성 조사](https://github.com/Kai-Leee/jev-router/blob/research/docs/LIVE_EXPERIMENT_FEASIBILITY.md)에 기록한다.
+D-013의 목표·명세 기반 구현 실험은 [실행 가능성 조사](https://github.com/Kai-Leee/pointsman/blob/research/docs/LIVE_EXPERIMENT_FEASIBILITY.md)에 기록한다.
 Opus 5.5 구현 + Jev 구조화 판단, 기존 harness/benchmark, 독립 채점과 행동 연결 검증을
 P-005로 제안했다. 이후 D-014에서 제한된 후보 선택 gate·Docker 실행·원시 journal·Claude
 launch 코드를 구현하고 무과금 검증했다. 실제 Opus/Jev 유료 loop는 아직 실행하지 않았다.
 
 기존 연구·실무의 방법과 지표별 분모·결측·비용 집계 제안은
-[평가 방법 조사와 구현 제안](https://github.com/Kai-Leee/jev-router/blob/research/docs/EVALUATION_RESEARCH.md)에 기록했다 [D-011].
+[평가 방법 조사와 구현 제안](https://github.com/Kai-Leee/pointsman/blob/research/docs/EVALUATION_RESEARCH.md)에 기록했다 [D-011].
 조사 후 D-012에 따라 [입력 계약](EVALUATION_CONTRACT.md)과
 [오프라인 평가 CLI](EVALUATION_USAGE.md)를 구현했다. 저장된 결과를 검증·재계산하며
 실제 비교 모델을 실행하거나 원시 API 응답을 자동 수집하지는 않는다.
@@ -263,8 +263,8 @@ This update supersedes earlier unresolved monetary-approval status; it does not 
 ## D-021 현재 구현 보충 (2026-10-09)
 
 D-019까지의 앞선 미실행 설명은 해당 시점 기록이다. 이후 실제 Opus/Jev 실행과 독립 모니터를
-D-020에서 수행했다. 최신 실행 상태/실패 경계는 [STATE](https://github.com/Kai-Leee/jev-router/blob/research/docs/agents/STATE.md),
-[실패 분석](https://github.com/Kai-Leee/jev-router/blob/research/docs/research/D020_FAILURE_ANALYSIS.md)을 따른다. 토큰별 공식 가격 환산은
+D-020에서 수행했다. 최신 실행 상태/실패 경계는 [STATE](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md),
+[실패 분석](https://github.com/Kai-Leee/pointsman/blob/research/docs/research/D020_FAILURE_ANALYSIS.md)을 따른다. 토큰별 공식 가격 환산은
 [가격 계약](DASHBOARD_PRICING.md)과 독립 pricing 모듈로 구현하며 실행 예산 정책과 분리한다.
 
 ## D-024 판단 대체 구조
@@ -283,4 +283,4 @@ D-020에서 수행했다. 최신 실행 상태/실패 경계는 [STATE](https://
 
 run config의 workflow='checkpoint-v1'에서 route(코드 없는 역할 후보)→act(선택 역할의 단일 명령, 추가모델없음)→finish를 사용한다. baseline/jev는 같은 schema와 완료 근거 수집을 공유하고 selected_id의 제공자만 다르다. 기존 workflow 생략 시 과거 gate 그대로다. 서버가 원 brief와 실제명령/출력/evidence_id를 판단에 전달한다. nonzero 명령은 role을해제한다. 동일 action_version 완료 재질문은 거부하지만 실제 artifact hash 기반 변경검사는 아니므로 아무 새 명령이든 version을 늘릴 수 있다. 역할 설명의 의미적 명령범위를 강제하는 보안정책이 아니며 Docker 경계가 권한을 강제한다.
 
-이 pilot의 역할은 같은 Claude 세션의 작업범위이며 native subagent 생성과 동일하다고 표시하지 않는다. D024 실제 subagent 규칙 수명주기의 비용과 성능은 별도다. 측정과 판단 문서는 [D025](https://github.com/Kai-Leee/jev-router/blob/research/docs/decisions/D025.md)와 jev-decision-records 스킬로 관리한다.
+이 pilot의 역할은 같은 Claude 세션의 작업범위이며 native subagent 생성과 동일하다고 표시하지 않는다. D024 실제 subagent 규칙 수명주기의 비용과 성능은 별도다. 측정과 판단 문서는 [D025](https://github.com/Kai-Leee/pointsman/blob/research/docs/decisions/D025.md)와 jev-decision-records 스킬로 관리한다.

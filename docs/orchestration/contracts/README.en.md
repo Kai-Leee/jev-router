@@ -32,8 +32,8 @@ New experiments use `models.v2.json` (Opus/Fable/Sonnet/Haiku × 5 effort) and `
 - Model selection validation: `src/orchestration/model-catalog.mjs`; it checks both the documented combination and that run's allowlist. unverified in the catalog is different from confirming the actually called model.
 - Current E2E pilot: `scripts/tree-e2e-pilot.mjs`. At first, the work model on both sides is fixed to Opus5.5 medium, to compare only the split effect. Other models are in the list, but this experiment does not call them.
 
-[Research sources](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/D029_MODEL_HOST_RESEARCH.md) · [Pre-experiment conditions](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/D029_EXPERIMENT_PLAN.md)
+[Research sources](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D029_MODEL_HOST_RESEARCH.md) · [Pre-experiment conditions](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D029_EXPERIMENT_PLAN.md)
 
 ## D031 current worker
 
-The new pilot uses `worker-task.v3.json` and projected input by default. Only `--input-mode legacy` uses v2. questions.v1/models.v2 are kept. `node bin/show-routing-contracts.mjs` currently shows v3. The full specification is kept once, and only dependent evidence is selected. Actual token/cost effects are not measured. [Implementation and options](https://github.com/Kai-Leee/jev-router/blob/research/docs/orchestration/D031_IMPLEMENTATION.md).
+The new pilot uses `worker-task.v3.json` and projected input by default. Only `--input-mode legacy` uses v2. questions.v1/models.v2 are kept. `node bin/show-routing-contracts.mjs` currently shows v3. The full specification is kept once, and only dependent evidence is selected. Actual token/cost effects are not measured. [Implementation and options](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D031_IMPLEMENTATION.md).
