@@ -1,10 +1,14 @@
-# Jev Router
+<p align="center"><img src="docs/brand/pointsman-256.png" width="160" height="160" alt="Pointsman 마스코트: 혀로 선로 전환 레버를 당기는 개구리"></p>
+
+<h1 align="center">Pointsman</h1>
+
+<p align="center"><em>Jev 판단을 따르겠습니다.</em><br><sub>이전 이름 Jev Router</sub></p>
 
 [English](README.md) | **한국어** | [简体中文](README.zh-CN.md)
 
 > 연구·분석 기록은 [`research` 브랜치](https://github.com/Kai-Leee/jev-router/tree/research)에 있습니다.
 
-Jev Router는 메인 코딩 에이전트의 모델 선택과 작업 중 판단을 지원합니다. 방법은
+Pointsman은 메인 코딩 에이전트의 모델 선택과 작업 중 판단을 지원합니다. 방법은
 [Jev AI](https://jev-ai.pro)에 고정된 구조화 질문을 보내는 것입니다. 이 저장소에는 서버 전용
 Jev 클라이언트, 오프라인 평가 CLI, 격리 벤치마크 실행기, 로컬 사용량 대시보드가 있습니다.
 연구 프로젝트입니다. 실측 결과는 적으며, 각 결과는 근거와 함께 기록합니다.
@@ -27,7 +31,7 @@ Jev 클라이언트, 오프라인 평가 CLI, 격리 벤치마크 실행기, 로
 ## 왜 필요한가
 
 메인 에이전트는 작업 중 작은 판단을 많이 합니다. 어떤 모델과 effort를 쓸지, 작업을 나눌지,
-근거가 충분한지 등입니다. Jev Router는 이런 반복 판단을 고정 영어 질문과 구조화 답
+근거가 충분한지 등입니다. Pointsman은 이런 반복 판단을 고정 영어 질문과 구조화 답
 (`choice`, `score`, `noul`)으로 Jev AI에 맡길 수 있는지 검증합니다.
 
 ```text
@@ -75,7 +79,7 @@ npm run demo -- --spend  # 유료 POST 1회. Jev 잔액 사용
 
 ## 한계
 
-다음이 필요하면 Jev Router를 쓰지 마세요.
+다음이 필요하면 Pointsman을 쓰지 마세요.
 
 - **운영용 라우터.** 실제 배포를 하지 않았습니다. 분산 호출 제한기가 없습니다.
 - **자동 복구.** 호출을 자동 재시도하지 않습니다. 결과가 불확실한 유료 POST는 다시 보내지 않고

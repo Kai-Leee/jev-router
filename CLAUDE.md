@@ -1,4 +1,4 @@
-# Jev Router — Claude entry point
+# Pointsman — Claude entry point
 
 @AGENTS.md
 

@@ -1,4 +1,4 @@
-# Jev Router Technical Specification Draft
+# Pointsman Technical Specification Draft
 
 > English translation of [TECHNICAL_SPEC.md](TECHNICAL_SPEC.md). The Korean original is authoritative if they differ.
 
@@ -19,7 +19,7 @@ because the automatic approval review separately required approval for Jev monet
 
 ## 1. Purpose and current execution scope
 
-Jev Router supports model selection and intermediate judgments for work done by the main agent [D-001, D-002].
+Pointsman supports model selection and intermediate judgments for work done by the main agent [D-001, D-002].
 The main session keeps the goal and performs the next action. The question-builder role converts the goal, state and evidence
 into a request Jev can judge, and records the result. The return value is not an execution permission or evidence that tests passed.
 

@@ -1,8 +1,12 @@
-# Jev Router
+<p align="center"><img src="docs/brand/pointsman-256.png" width="160" height="160" alt="Pointsman mascot: a frog pulling a rail switch lever with its tongue"></p>
+
+<h1 align="center">Pointsman</h1>
+
+<p align="center"><em>I'll follow Jev's judgment.</em><br><sub>formerly Jev Router</sub></p>
 
 **English** | [한국어](README.ko.md) | [简体中文](README.zh-CN.md)
 
-Jev Router helps a main coding agent with model selection and in-task decisions by asking
+Pointsman helps a main coding agent with model selection and in-task decisions by asking
 [Jev AI](https://jev-ai.pro) fixed, structured questions. This repository contains a server-side
 Jev client, an offline evaluation CLI, isolated benchmark runners and a local usage dashboard.
 It is a research project. Live results are few, and each one is recorded with its evidence.
@@ -28,7 +32,7 @@ The latest checkpoint is always [STATE on the research branch](https://github.co
 ## Why
 
 A main agent makes many small judgments while it works: which model and effort to use, whether to
-split a task, whether the evidence is sufficient. Jev Router tests whether these repeated judgments
+split a task, whether the evidence is sufficient. Pointsman tests whether these repeated judgments
 can go to Jev AI as fixed English questions with structured answers (`choice`, `score`, `noul`).
 
 ```text
@@ -77,7 +81,7 @@ More: [all usage, failure handling and deployment](docs/USAGE.en.md) ·
 
 ## Limitations
 
-Do not use Jev Router if you need any of these:
+Do not use Pointsman if you need any of these:
 
 - **A production router.** No deployment has been done. There is no distributed rate limiter.
 - **Automatic recovery.** Calls are never retried automatically. A paid POST with an uncertain

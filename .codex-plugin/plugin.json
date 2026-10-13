@@ -1,6 +1,6 @@
 {
   "name": "jev-ai",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Use the pinned freepik-company Jev MCP with the Jev AI compatible endpoint.",
   "mcpServers": "./.mcp.json",
   "interface": {

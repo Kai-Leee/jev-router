@@ -1,6 +1,6 @@
 ---
 name: jev-decision-records
-description: Maintain evidence-linked Jev Router decision, experiment, cost, and handoff records when routing rules change or Claude/Jev runs are evaluated.
+description: Maintain evidence-linked Pointsman decision, experiment, cost, and handoff records when routing rules change or Claude/Jev runs are evaluated.
 ---
 
 # Jev decision records

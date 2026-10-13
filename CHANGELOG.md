@@ -18,6 +18,24 @@ behavior bumps the minor version, and a fix-only goal bumps the patch version.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-13
+
+Goal: rename the product from Jev Router to Pointsman and give it a logo.
+
+### Changed
+
+- The product name is now Pointsman. The package name is `pointsman` and its description is
+  "Jev 판단을 따르겠습니다." ("I'll follow Jev's judgment.").
+- README, agent entry files, technical specification, benchmark guides, dashboard title and sign-in hint use the new name.
+- Kept unchanged so existing records and links still work: the GitHub repository URL and clone directory
+  `jev-router`, Docker labels `org.jev-router.*`, the adapter ID `jev-router-standalone-docker-v1`, and
+  Jev-specific names (`jev-ai` MCP plugin, `bin/jev.mjs`, `jev-*` skills).
+
+### Added
+
+- Pixel-art logo in `docs/brand/` (SVG, and PNG at 512, 256 and 64 px) shown at the top of each README:
+  a frog seen from behind, glancing back, pulling a rail switch lever with its tongue.
+
 ## [0.2.0] - 2026-10-13
 
 Goal: a public release branch with its own docs, license, sign-in, versioning and CI.

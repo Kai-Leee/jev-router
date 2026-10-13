@@ -1,6 +1,6 @@
 # E2E-SWE single-task evaluator bootstrap
 
-This is Jev Router's standalone Docker adapter for a real E2E-SWE task. It is **not**
+This is Pointsman's standalone Docker adapter for a real E2E-SWE task. It is **not**
 the upstream Harbor harness or a reproduction of the published leaderboard. It makes no model
 calls. Agent performance is unmeasured until an independently generated candidate is graded.
 
@@ -58,7 +58,7 @@ check validates the plumbing, not model quality.
 
 ## Coordinator commands
 
-From the Jev Router root, use Python 3.14 at `/opt/homebrew/bin/python3.14` (standard library only).
+From the Pointsman root, use Python 3.14 at `/opt/homebrew/bin/python3.14` (standard library only).
 Create the `benchmark-runs/` parent first. Individual output folders and image-lock files must not
 already exist. Docker and network provisioning are
 coordinator-owned; the adapter never pulls images or clones repositories.
