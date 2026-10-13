@@ -660,3 +660,7 @@ Read current contracts and official Jev question-type docs. Added D055 design an
 Jev입력229,540·출력823,공식토큰팩환산$0.137724. Claude구현API환산$9.6346728,별도Opus모니터$0.63698. 월구독실제청구액은null이며개발대화/보조에이전트비용은미계측이다. 누적장부7,633,742/10M입력·pending0. 기존PersonalOS/Vault·설치스킬·Git원격은유지하고로컬소스/문서/모든실패와후속진단을보존했다. 성공속도개선은아직측정되지않았다.
 
 최종 고정 완료: 공개 v3 정상85/85·결함81/81, 전체 회귀1,009/1,009 통과. 최초 최종 회귀의 sandbox listener EPERM 12건은 보존하고 같은 소스의 권한 있는 재실행을 분리했다. 삭제 대상4개 파일의 최종 감소는16개 정의·199줄·10,071바이트다. D065 기록 해시34개/주장13개, D064 보존 기록, tracked diff 검사와 문서21개/링크341개를 확인했다. 실제 후보 실패와 별개로 검증기 R1–R8은 독립 검토에서 수정 확인됐다. 원본 후보를 고치거나 유료 모델을 재호출하지 않았다. [종료 도구 출력](../benchmark-runs/d065-local/closeout-tool-checks.json), [검증 정본](../VERIFICATION.md).
+
+## 2026-10-13 — 사용하지 않던 jev-mcp 래퍼 제거
+
+Jev 호출은 모두 `src/client.mjs`의 HTTP 클라이언트(`createJevClient`)로 직접 한다. `freepik-company/jev-mcp` v0.3.1 래퍼는 runner에서 쓰이지 않았고, 이 저장소의 Claude 세션 기록에서도 `mcp__jev-ai__*` 도구 호출이 0건이었다. `.mcp.json`, `.codex-plugin/`, `bin/mcp-server.mjs`, `bin/mcp-check.mjs`, `test/mcp.test.mjs`, `MCP.md`, `vendor/jev-mcp/`, `npm run mcp*`를 제거했다. `src/mcp.mjs`에는 `bin/benchmark-smoke.mjs`가 쓰는 범용 `connectMcp`만 남겼다. 검증: `npm test` 1345/1345. 과거 기록(VERIFICATION, D034)은 수정하지 않았다.

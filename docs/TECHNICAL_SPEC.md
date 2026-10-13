@@ -292,7 +292,7 @@ launch 코드를 구현하고 무과금 검증했다. 실제 Opus/Jev 유료 loo
 - 미측정: Jev 추론 품질, 전체 비용·속도 개선, 영어 우위, 문맥 보존 개선.
 
 외부 출처는 [Jev AI API 문서](https://jev-ai.pro/docs), 로컬 구현 근거는
-[client.mjs](../src/client.mjs), [MCP 안내](../MCP.md)이다.
+[client.mjs](../src/client.mjs)이다.
 API 문서는 2026-10-08 대화에서 읽은 요청/응답·오류 규칙을 사용했다. 로컬 설계 제안을
 공급자 기능으로 표현하지 않는다.
 # D-020 update: shared Jev monetary allowance

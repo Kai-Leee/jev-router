@@ -180,6 +180,6 @@ npm test
 [오류 처리](https://jev-ai.pro/docs#errors), [모델과 제한](https://jev-ai.pro/docs#models).
 문서 확인일: 2026-10-07 (Asia/Seoul).
 
-## 기존 MCP 재사용
+## Jev 연결 방식
 
-공개 Jev MCP를 재사용하는 실행 연결을 추가했습니다. 설정·호스트 연결·검증 범위는 [MCP 안내](MCP.md)를 확인합니다.
+Jev는 [src/client.mjs](src/client.mjs)의 HTTP 클라이언트로 직접 호출합니다. 2026-10-13에 사용하지 않던 `freepik-company/jev-mcp` 래퍼(`.mcp.json`, `.codex-plugin`, `bin/mcp-*.mjs`, `MCP.md`)를 제거했습니다.

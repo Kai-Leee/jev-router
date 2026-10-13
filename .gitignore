@@ -13,5 +13,3 @@ __pycache__/
 *.pyc
 output/playwright/
 
-# Local pinned runtime binary; provenance remains trackable.
-vendor/jev-mcp/*/

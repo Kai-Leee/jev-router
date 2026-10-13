@@ -16,11 +16,6 @@
     "validate:jev-prompt": "node scripts/validate-jev-prompt.mjs",
     "config": "node bin/jev.mjs config",
     "models": "node bin/jev.mjs models",
-    "demo": "node bin/jev.mjs demo",
-    "mcp": "node bin/mcp-server.mjs",
-    "mcp:config": "node bin/mcp-check.mjs config",
-    "mcp:tools": "node bin/mcp-check.mjs tools",
-    "mcp:models": "node bin/mcp-check.mjs models",
-    "mcp:demo": "node bin/mcp-check.mjs demo"
+    "demo": "node bin/jev.mjs demo"
   }
 }
