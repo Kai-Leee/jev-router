@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
-import {join, resolve} from 'node:path';
+import {join, resolve, dirname} from 'node:path';
 import {runSpecReview, specReviewAfterPublicGate, loadSpecReviewContract} from '../src/benchmark/adaptive-spec-review.mjs';
 
 const root = resolve(import.meta.dirname, '..');
@@ -11,6 +11,7 @@ const registry = JSON.parse(readFileSync(join(root, manifest.public_registry), '
 const raw = (stdout, exit_code = 0) => ({stdout, stderr: '', exit_code, outcome_uncertain: false});
 const input = {source: 'Public spec.', requirement_descriptions: [{id: 'R1', text: 'Do it.', source_refs: ['p']}]};
 const catalog = {units: [{id: 'U1', title: 'One', interface: 'f()'}]};
+const workspaces = [];
 
 function fixture(t) {
   const dir = mkdtempSync(join(tmpdir(), 'spec-review-')); t.after(() => rmSync(dir, {recursive: true, force: true}));
@@ -23,7 +24,8 @@ const adapter = ({edit = true, failCheck = null} = {}) => { const containers = n
     assert.ok(!options.input.includes('verifier') && JSON.parse(options.input).public_checks.length === registry.length);
     assert.ok(!options.cwd.startsWith(root), 'reviewer works outside the repository');
     const denied = args.slice(args.indexOf('--disallowedTools') + 1);
-    assert.ok(['Read', 'Edit', 'Write'].every(tool => denied.includes(`${tool}(/${root}/**)`)), JSON.stringify(denied));
+    assert.ok(['Read', 'Edit', 'Write', 'Glob', 'Grep'].every(tool => denied.includes(`${tool}(/${root}/**)`)), JSON.stringify(denied));
+    workspaces.push(dirname(options.cwd));
     if (edit) writeFileSync(join(options.cwd, 'module.py'), 'x = 2\n');
     return raw(JSON.stringify({type: 'result', subtype: 'success', is_error: false, modelUsage: {'claude-opus-5-5': {}},
       usage: {input_tokens: 5, output_tokens: 5}, total_cost_usd: 0.5, result: 'Fixed one deviation.'}) + '\n');
@@ -51,6 +53,11 @@ test('a reviewed candidate is adopted only when every public check still passes'
   const none = await runSpecReview({rootDir: root, manifest, candidatePath: candidate, pinnedDirectory: join(dir, 'runtime/pinned'),
     outDirectory: join(dir, 'review-none'), input, catalog, runCommand: adapter({edit: false})});
   assert.equal(none.adopted, false); assert.equal(none.reason, 'REVIEW_NO_CHANGE');
+  const thrown = await runSpecReview({rootDir: root, manifest, candidatePath: candidate, pinnedDirectory: join(dir, 'runtime/pinned'),
+    outDirectory: join(dir, 'review-throw'), input, catalog, runCommand: async (command, args, options) => {
+      workspaces.push(dirname(options.cwd)); throw Object.assign(new Error('TIMEOUT'), {code: 'TIMEOUT'}); }}).catch(error => error);
+  assert.equal(thrown.code, 'TIMEOUT');
+  assert.ok(workspaces.length >= 4 && workspaces.every(path => !existsSync(path)), 'temp workspaces are removed, including on throw');
 });
 
 test('the runner hook runs only after a completed public gate and never throws', async t => {

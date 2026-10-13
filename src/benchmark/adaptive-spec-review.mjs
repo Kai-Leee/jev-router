@@ -43,7 +43,8 @@ export async function runSpecReview({rootDir, manifest, candidatePath, pinnedDir
   const workspace = mkdtempSync(join(tmpdir(), 'jev-spec-review-')), reviewDir = join(workspace, 'candidate');
   cpSync(candidatePath, reviewDir, {recursive: true}); writable(reviewDir);
   const before = snapshot(reviewDir), repository = resolve(rootDir);
-  const denied = ['Read', 'Edit', 'Write'].map(tool => `${tool}(/${repository}/**)`);
+  // Read rules already cover Glob/Grep (d080-isolation-probe-02); they are named too so the intent is explicit.
+  const denied = ['Read', 'Edit', 'Write', 'Glob', 'Grep'].map(tool => `${tool}(/${repository}/**)`);
   const prompt = JSON.stringify({task: contract.task, public_source: input.source, requirement_descriptions: input.requirement_descriptions,
     interface_catalog: catalog.units.map(({id, title, interface: text}) => ({id, title, interface: text})),
     public_checks: registry.map(check => ({id: check.id, requirement_ids: check.requirement_ids, test_ids: check.test_ids}))});
@@ -55,12 +56,15 @@ export async function runSpecReview({rootDir, manifest, candidatePath, pinnedDir
   await record({event: 'adaptive_spec_review_started', contract_source: contract.source, candidate_source: candidatePath});
   let began = performance.now();
   let raw;
+  const candidate = join(outDirectory, 'candidate');
   try {
     raw = await runCommand('claude', args, {cwd: reviewDir, env: claudeEnvironment(process.env), input: prompt,
       timeoutMs: Math.min(contract.timeout_ms, remaining()), maxBytes: 64 * 1024 * 1024, killProcessTree: true});
-  } finally { writeFileSync(join(outDirectory, 'review.stream.jsonl'), raw?.stdout ?? ''); }
-  const candidate = join(outDirectory, 'candidate');
-  cpSync(reviewDir, candidate, {recursive: true}); rmSync(workspace, {recursive: true, force: true});
+    cpSync(reviewDir, candidate, {recursive: true});
+  } finally {
+    writeFileSync(join(outDirectory, 'review.stream.jsonl'), raw?.stdout ?? '');
+    rmSync(workspace, {recursive: true, force: true}); // never leak the temp copy on throw or timeout
+  }
   const outcome = providerOutcome(raw, contract.model), after = snapshot(candidate);
   const digest = files => sha(JSON.stringify(Object.entries(files).sort()));
   const review = {status: outcome.status, code: outcome.code, wall_ms: performance.now() - began, usage: outcome.completion?.usage ?? null,
