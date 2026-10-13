@@ -632,10 +632,17 @@ async function withAdaptiveSettledBudget({rootDir, manifest, remaining = () => m
 }
 
 async function adaptivePreflight({rootDir, manifest, probe, adapters = {}, record, remaining, abortSignal}) {
-  return withAdaptiveSettledBudget({rootDir, manifest, adapters, record, remaining, abortSignal, purpose: 'preflight'}, async snapshot => {
+  const budget = {rootDir, manifest, adapters, record, remaining, abortSignal, purpose: 'preflight'};
+  const dockerPreflight = () => (adapters.preflight ?? preflightDagRun)({rootDir, manifest, probe, runCommand: adapters.runCommand, record, abortSignal});
+  // ledger_op reserves wait at most 30 s for the lock, so only the settled snapshot and
+  // capacity check hold it; a Docker preflight under the lock failed concurrent cohorts (D079).
+  if (adaptiveRuntimeSpeed(manifest).budget_lock === 'ledger_op') {
+    const capacity = await withAdaptiveSettledBudget(budget, async snapshot => assertAdaptiveCohortCapacity({manifest, rootDir, snapshot}));
+    return {...await dockerPreflight(), cohort_capacity: capacity};
+  }
+  return withAdaptiveSettledBudget(budget, async snapshot => {
     const capacity = assertAdaptiveCohortCapacity({manifest, rootDir, snapshot});
-    const preflight = await (adapters.preflight ?? preflightDagRun)({rootDir, manifest, probe, runCommand: adapters.runCommand, record, abortSignal});
-    return {...preflight, cohort_capacity: capacity};
+    return {...await dockerPreflight(), cohort_capacity: capacity};
   });
 }
 
