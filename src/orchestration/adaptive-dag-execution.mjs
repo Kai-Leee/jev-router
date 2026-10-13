@@ -15,7 +15,7 @@ import {buildAdaptiveCausalRepairScope, buildCausalRepairHistory,
   buildCausalRepairWorkerContext} from './adaptive-causal-repair.mjs';
 import {inferAdaptiveRepairOwners, applyInferredRepairOwners,
   buildInferredRepairWorkerContext} from './adaptive-inferred-repair.mjs';
-import {packRepairOwnerRequest, ADAPTIVE_REPAIR_BUDGET_EXCEEDED} from './adaptive-repair-budget.mjs';
+import {packRepairOwnerRequest, planRepairOwnerRequest, ADAPTIVE_REPAIR_BUDGET_EXCEEDED, ADAPTIVE_REPAIR_BUDGET_POLICIES} from './adaptive-repair-budget.mjs';
 import {assessAdaptiveFailureRecovery, acceptAdaptiveRecoveryEvidence, adaptiveWorkerRecoveryIdentity,
   validateAdaptiveRecoveryRequest, loadAdaptiveFailureRecoveryPolicy, recoveryDigest} from './adaptive-failure-recovery.mjs';
 
@@ -326,7 +326,7 @@ export async function runAdaptiveDagExecution(options) {
       (options.publicCheckConcurrency !== undefined && (!Number.isSafeInteger(options.publicCheckConcurrency) || options.publicCheckConcurrency < 1)) ||
       (options.batchChecks !== undefined && typeof options.batchChecks !== 'function') ||
       (options.repairBudget !== undefined && (!['inferred-v1', 'inferred-v2'].includes(options.artifactRepairPolicy)
-        || options.repairBudget?.policy !== 'repair-budget-v1' || Object.keys(options.repairBudget).length !== 1)) ||
+        || !ADAPTIVE_REPAIR_BUDGET_POLICIES.includes(options.repairBudget?.policy) || Object.keys(options.repairBudget).length !== 1)) ||
       (options.repairFeedback !== undefined && (!['inferred-v1', 'inferred-v2'].includes(options.artifactRepairPolicy)
         || !options.repairFeedback || typeof options.repairFeedback !== 'object' || !Object.keys(options.repairFeedback).length
         || Object.entries(options.repairFeedback).some(([key, value]) => ({read_scope: 'candidate-v1', worker_diagnostics: 'report-v1'})[key] !== value)))) {
@@ -942,11 +942,32 @@ export async function runAdaptiveDagExecution(options) {
                   await record({event: 'adaptive_worker_diagnostics_attached', round_index: roundIndex, stage: 'repair_owners', diagnostics});
                 }
                 // Opt-in D076 budget: lossy owner packing after the canonical projections; over budget stops before any POST.
-                if (options.repairBudget && !requestOverride) {
+                if (options.repairBudget?.policy === 'repair-budget-v1' && !requestOverride) {
                   const packed = packRepairOwnerRequest(sent, {policy: options.repairBudget.policy});
                   await record({event: 'adaptive_repair_budget_applied', round_index: roundIndex, stage: 'repair_owners', report: packed.report});
                   if (!packed.report.within_budget) fail(ADAPTIVE_REPAIR_BUDGET_EXCEEDED, {estimated_tokens: packed.report.after.estimated_tokens});
                   sent = packed.request;
+                } else if (options.repairBudget && !requestOverride) {
+                  // v2 may split one owner decision into focused parts; their answers merge into one response
+                  // for the unchanged inference check. A failed or uncertain part stops; earlier parts are never resent.
+                  const plan = planRepairOwnerRequest(sent, {policy: options.repairBudget.policy});
+                  await record({event: 'adaptive_repair_budget_applied', round_index: roundIndex, stage: 'repair_owners', report: plan.report});
+                  if (!plan.report.within_budget) fail(ADAPTIVE_REPAIR_BUDGET_EXCEEDED, {reason: plan.report.reason,
+                    estimated_tokens: plan.report.after?.estimated_tokens ?? null});
+                  if (plan.parts.length > 1) {
+                    const answers = {}, parts = [];
+                    for (const part of plan.parts) {
+                      const response = await options.decideRepairOwners(part.request,
+                        {...metadata, owner_split: {part: part.report.part, parts: plan.parts.length}});
+                      await record({event: 'adaptive_repair_owner_part_completed', round_index: roundIndex, stage: 'repair_owners',
+                        part: part.report.part, parts: plan.parts.length, question_ids: part.question_ids, answered: !!response?.answers});
+                      if (!response || typeof response.answers !== 'object' || response.answers === null) return response;
+                      for (const id of part.question_ids) answers[id] = response.answers[id];
+                      parts.push({part: part.report.part, question_ids: part.question_ids, response});
+                    }
+                    return {answers, owner_split: {policy: options.repairBudget.policy, parts}};
+                  }
+                  sent = plan.parts[0].request;
                 }
                 return options.decideRepairOwners(sent, {...metadata, ...(requestOverride ? {recovery: clone(requestOverride.recovery)} : {})});
               }, record});

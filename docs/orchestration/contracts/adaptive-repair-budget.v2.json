@@ -1,0 +1,89 @@
+{
+  "schema_version": "adaptive-repair-budget-contract/v2",
+  "policy": "repair-budget-v2",
+  "decision_id": "D081",
+  "stage": "repair_owners",
+  "supersedes": {
+    "path": "docs/orchestration/contracts/adaptive-repair-budget.v1.json",
+    "reason": "d080-defaults-03 stopped before POST: an errored public check made the v2 owner projection fall back to the raw owner state (175,456 wire bytes), which v1 measures but never packs. Offline, even a v2 projection of the same 22 failed cases would be about 36.3k estimated tokens against the 28.8k target. v2 adds raw-state steps and splits an oversized owner request into several focused requests. v1 is unchanged."
+  },
+  "owner_schema": "adaptive-inferred-owner-input/v2",
+  "raw_owner_schema": "adaptive-inferred-repair-owners/v1",
+  "limit": {
+    "state_plus_longest_question_tokens": 32000,
+    "source": "Jev 1.13 model guide: request 64k, state plus longest question 32k (docs/orchestration/D072_INPUT_VALIDATION.md:29). Provider rejections carry no token counts."
+  },
+  "target_fraction": 0.9,
+  "bytes_per_token": 2.25,
+  "bytes_per_token_basis": "Lowest observed wire bytes per provider input token among accepted large owner and repair-choice requests was 2.338 (D073 focused-new-02 owner); 2.25 adds margin. This is not an exact tokenizer and does not guarantee provider acceptance.",
+  "reserved_question_bytes": 3000,
+  "reserved_question_bytes_basis": "Question-side additions after packing, such as D077 owner criteria labels (about 2.3 KB per question for 22 artifacts).",
+  "steps": [
+    {
+      "id": "history_delta",
+      "schema": "owner_schema",
+      "same_as": "repair-budget-v1"
+    },
+    {
+      "id": "drop_passed_observations",
+      "schema": "owner_schema",
+      "same_as": "repair-budget-v1"
+    },
+    {
+      "id": "dedupe_evidence_relations",
+      "schema": "owner_schema",
+      "same_as": "repair-budget-v1"
+    },
+    {
+      "id": "compact_unfocused_interfaces",
+      "schema": "owner_schema",
+      "max_chars": 160,
+      "same_as": "repair-budget-v1"
+    },
+    {
+      "id": "compact_unfocused_quotes",
+      "schema": "owner_schema",
+      "max_chars": 60,
+      "same_as": "repair-budget-v1"
+    },
+    {
+      "id": "raw_drop_local_evidence_refs",
+      "schema": "raw_owner_schema",
+      "description": "Local readiness rows that resolve to executed and passed carry only receipt and process references the model cannot open. They are removed; any other local row stays inline."
+    },
+    {
+      "id": "raw_drop_passed_public_cases",
+      "schema": "raw_owner_schema",
+      "description": "Passed public cases are removed from each public check's cases. Check status, error, unexecuted test IDs and every failed case stay inline."
+    },
+    {
+      "id": "raw_scope_requirements",
+      "schema": "raw_owner_schema",
+      "description": "Only original requirements named by the failed cases in this request and by explicit causal paths stay inline."
+    },
+    {
+      "id": "raw_compact_unfocused_interfaces",
+      "schema": "raw_owner_schema",
+      "max_chars": 160,
+      "description": "Unit interfaces stay complete for units owning a failing requirement in this request and the direct inputs of their tasks. Other interfaces keep only their first sentence."
+    },
+    {
+      "id": "raw_compact_unfocused_quotes",
+      "schema": "raw_owner_schema",
+      "max_chars": 60,
+      "description": "Evidence quotes linked to focused artifacts or units stay complete. Other quotes are shortened."
+    }
+  ],
+  "split": {
+    "trigger": "The whole request is still over the target after every applicable step.",
+    "grouping": "Failed cases keep their public-check order; cases of one check stay together unless that check alone is over the target. Each part takes as many next cases as fit after packing.",
+    "part_scope": "A part keeps artifact contracts, task dependencies, causal paths and the public gate. In the projected owner shape the public gate summary stays complete. In the raw owner shape every public check keeps its status, error and unexecuted test IDs; checks without cases in this part show their failed cases as IDs only. Detailed failed cases, failed-check contexts, requirements and questions cover only the part's own cases; the steps then run on the part with its own focus.",
+    "dispatch": "Parts are sent one after another. Their answers are merged into one response for the unchanged owner-inference check. An uncertain or failed part stops the decision; earlier parts are never resent.",
+    "single_case_over_target": "ADAPTIVE_REPAIR_BUDGET_EXCEEDED",
+    "cost_note": "Shared contracts repeat in every part, so a split decision sends more total input tokens than one request would. Offline on the d080-defaults-03 owner request: 5 parts of 7, 5, 1, 1 and 8 questions, each 27,590-28,716 estimated tokens."
+  },
+  "state_note": "This request was shortened to fit the model input limit. state.repair_budget.applied_steps lists what was summarized; summarized values remain in the controller proof and are not retrievable by the model. All failed cases in this request, the public gate summary, artifact contracts, task dependencies and the interfaces of focused units are complete. Return unknown when a summarized value would be needed.",
+  "split_note": "This request covers only the failed cases listed in state.owner_split.question_ids. The other failed cases of the same public gate are answered in sibling requests; they appear only as IDs in the public gate summary.",
+  "over_budget_code": "ADAPTIVE_REPAIR_BUDGET_EXCEEDED",
+  "boundary": "Opt-in via manifest repair_budget. Applied in the execution's owner decide wrapper after the canonical owner and evidence-v1 projections, so prompt policy v2 sources stay unchanged. Lossy: each part's controller report keeps every removed value with its pointer and SHA-256. A split request is not a v2 fixed-template request; the D075 transmission gate (v10/v11) blocks it before any reservation."
+}

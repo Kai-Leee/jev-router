@@ -304,3 +304,61 @@ test('D076 repair feedback: the failed candidate is readable but not writable an
       repairFeedback: value}), {code: 'ADAPTIVE_EXECUTION_INVALID_CONFIG'});
   }
 });
+
+// Two failing public cases whose messages make one owner request exceed the budget target.
+async function twoLargeFailures(state, size) {
+  const holder = state.options.assertionContract, [first] = holder.contract.assertions;
+  holder.contract.assertions.push({...structuredClone(first), id: 'assert-description-2', test_id: 'test-description-2'});
+  holder.source_text = JSON.stringify(holder.contract); holder.sha256 = hash(holder.source_text);
+  await writeFile(join(state.root, 'assertions.v2.json'), holder.source_text);
+  state.options.testRequirements['test-description-2'] = ['requirement-ui'];
+  const check = state.options.checkTask;
+  state.options.checkTask = async (item, ctx) => {
+    const report = await check(item, ctx);
+    if (item.id !== 'public-description' || report.status !== 'failed') return report;
+    report.cases[0].message = 'a'.repeat(size);
+    report.cases.push({test_id: 'test-description-2', status: 'failed', assertions: 1, error_type: 'AssertionError',
+      message: 'b'.repeat(size), failed_assertion_id: 'assert-description-2',
+      assertion_results: [{assertion_id: 'assert-description-2', status: 'failed'}]});
+    report.assertions = 2;
+    return {...report, evidence: report};
+  };
+}
+
+test('D081 repair budget v2 splits an oversized owner decision into parts and merges their answers', async t => {
+  const state = await fixture(t);
+  state.options.repairScopePolicy = 'public-inferred-owner-v2'; state.options.artifactRepairPolicy = 'inferred-v2';
+  state.options.repairBudget = {policy: 'repair-budget-v2'};
+  await twoLargeFailures(state, 9000);
+  const owner = state.options.decideRepairOwners, seen = [];
+  state.options.decideRepairOwners = async (request, meta) => { seen.push({request: structuredClone(request), meta}); return owner(request); };
+  const result = await runAdaptiveDagExecution(state.options);
+  assert.equal(result.status, 'completed', JSON.stringify(result.terminal_cause));
+  assert.equal(seen.length, 2);
+  const [one, two] = seen.map(row => Object.keys(row.request.questions));
+  assert.equal(one.length, 1); assert.equal(two.length, 1); assert.notDeepEqual(one, two);
+  assert.deepEqual(seen.map(row => row.meta.owner_split), [{part: 1, parts: 2}, {part: 2, parts: 2}]);
+  assert.deepEqual(seen.map(row => row.request.state.owner_split.part), [1, 2]);
+  const inference = result.rounds[0].owner_inference;
+  assert.equal(inference.status, 'inferred'); assert.equal(inference.assignments.length, 2);
+  assert.equal(inference.response.owner_split.parts.length, 2);
+  assert.equal(state.events.filter(event => event.event === 'adaptive_repair_owner_part_completed').length, 2);
+  const applied = state.events.find(event => event.event === 'adaptive_repair_budget_applied').report;
+  assert.equal(applied.split, true); assert.equal(applied.before.within_budget, false);
+});
+
+test('D081 an uncertain owner part stops the decision without resending earlier parts', async t => {
+  const state = await fixture(t);
+  state.options.repairScopePolicy = 'public-inferred-owner-v2'; state.options.artifactRepairPolicy = 'inferred-v2';
+  state.options.repairBudget = {policy: 'repair-budget-v2'};
+  await twoLargeFailures(state, 9000);
+  const owner = state.options.decideRepairOwners; let calls = 0;
+  state.options.decideRepairOwners = async request => {
+    if (++calls === 2) throw Object.assign(new Error('PROVIDER_TIMEOUT'), {code: 'PROVIDER_TIMEOUT', outcome_uncertain: true});
+    return owner(request);
+  };
+  const result = await runAdaptiveDagExecution(state.options);
+  assert.equal(calls, 2);
+  assert.equal(result.rounds[0].owner_inference.status, 'uncertain');
+  assert.equal(result.status, 'uncertain'); assert.equal(result.outcome_uncertain, true);
+});
