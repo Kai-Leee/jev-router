@@ -17,7 +17,7 @@ export const jevTransmissionPolicySchema = path => {
   const match = typeof path === 'string' ? POLICY_FILE.exec(path) : null;
   return match ? `jev-transmission-preflight-policy/v${match[1]}` : null;
 };
-export const JEV_TRANSMISSION_POLICY_PATH = 'docs/orchestration/contracts/jev-transmission-preflight.v9.json';
+export const JEV_TRANSMISSION_POLICY_PATH = 'docs/orchestration/contracts/jev-transmission-preflight.v10.json';
 const BASE_SOURCE_PATHS = Object.freeze([
   'src/orchestration/jev-transmission-preflight.mjs', 'src/benchmark/adaptive-dag-runner.mjs',
   'src/benchmark/telemetry.mjs', 'src/orchestration/jev-prompt-preflight.mjs',

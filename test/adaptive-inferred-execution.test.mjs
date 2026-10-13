@@ -8,6 +8,7 @@ import {tmpdir} from 'node:os';
 import {runAdaptiveDagExecution} from '../src/orchestration/adaptive-dag-execution.mjs';
 import {createArtifactSession} from '../src/orchestration/artifact-transport.mjs';
 import {validateInferredRepairCandidate, buildInferredRepairDecisionContext} from '../src/orchestration/adaptive-inferred-repair.mjs';
+import {selectInferredOwnerScope} from '../src/orchestration/adaptive-inferred-scope.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
 const base = JSON.parse(await readFile(new URL('../examples/dag/contract-fixture.json', import.meta.url)));
@@ -303,6 +304,48 @@ test('D076 repair feedback: the failed candidate is readable but not writable an
     await assert.rejects(runAdaptiveDagExecution({...state.options, runDirectory: join(state.root, `bad-${JSON.stringify(value).length}`),
       repairFeedback: value}), {code: 'ADAPTIVE_EXECUTION_INVALID_CONFIG'});
   }
+});
+
+test('D083 scope expansion: an artifact the repair worker named joins the next write scope after a persisting failure', async t => {
+  const state = await fixture(t, {repeat: true});
+  state.options.repairScopePolicy = 'public-inferred-owner-v2'; state.options.artifactRepairPolicy = 'inferred-v2';
+  state.options.repairFeedback = {read_scope: 'candidate-v1', worker_diagnostics: 'report-v1', scope_expansion: 'worker-mentioned-v1'};
+  // v12 manifests choose the repair scope with the code rule, not the fixture's fixed union choice.
+  state.options.decideRepair = async request => selectInferredOwnerScope(request);
+  // The shared fixture expects a one-artifact union; the expanded round names every repaired worker's profile instead.
+  state.options.prepareRoundPlan = async ({plan, round_index, selected_task_ids}) => {
+    for (const task of plan.tasks.filter(task => selected_task_ids.includes(task.id))) {
+      plan.workers.find(worker => worker.id === task.worker_id).profile_id = `fixture-repair-${round_index}`;
+    }
+    return {plan};
+  };
+  const execute = state.options.executeTask, scopes = [];
+  state.options.executeTask = async (task, context) => {
+    if (context.operation !== 'repair') return execute(task, context);
+    scopes.push({round: context.round_index, write_scope: [...task.write_scope]});
+    const overlays = new Set(context.additional_read_sources.map(source => source.path));
+    const transport = createArtifactSession({root: context.stageDirectory, allowedPaths: task.write_scope,
+      readablePaths: task.read_scope.filter(path => !overlays.has(path)), readSources: context.additional_read_sources,
+      journalPath: join(state.root, `expansion-${context.round_index}-${task.id}.jsonl`)});
+    try {
+      if (task.write_scope.includes('producer.py')) {
+        transport.writeFile({path: 'producer.py', content: context.round_index === 1 ? 'description = "STILL_WRONG"\n' : 'description = "REQUEST"\n'});
+      }
+    } finally { transport.close(); }
+    return {status: 'completed', outcome_uncertain: false, worker_report: {denied_read_paths: [],
+      final_response: 'Changed producer.py. The remaining cause is probably in `unrelated.py` (not writable here).'}};
+  };
+  const result = await runAdaptiveDagExecution(state.options);
+  assert.equal(result.status, 'completed', JSON.stringify({cause: result.terminal_cause, stop: result.stop_code, scopes,
+    rounds: result.rounds.map(round => [round.round_index, round.status, round.fatal?.code ?? null])}));
+  const expanded = state.events.filter(event => event.event === 'adaptive_repair_scope_expanded');
+  assert.equal(expanded.length, 1);
+  assert.deepEqual(expanded[0].expansion.added_artifact_ids, ['artifact-unrelated']);
+  assert.equal(expanded[0].expansion.basis, 'unverified_worker_statements_not_fault_proof');
+  assert(scopes.some(row => row.round === 2 && row.write_scope.includes('unrelated.py')), JSON.stringify(scopes));
+  assert(!scopes.some(row => row.round === 1 && row.write_scope.includes('unrelated.py')), JSON.stringify(scopes));
+  await assert.rejects(runAdaptiveDagExecution({...state.options, runDirectory: join(state.root, 'bad-expansion'),
+    repairFeedback: {read_scope: 'candidate-v1', scope_expansion: 'worker-mentioned-v1'}}), {code: 'ADAPTIVE_EXECUTION_INVALID_CONFIG'});
 });
 
 // Two failing public cases whose messages make one owner request exceed the budget target.

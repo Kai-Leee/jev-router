@@ -1,4 +1,4 @@
-D083: [클라우드 실패 2건 원인과 수정 방향](docs/orchestration/D083_REPAIR_DIRECTION.md)을 먼저 읽는다(설계만, 미구현). 반복 측정은 조건당 3회만 한다. D082-08은 사용자 중단이며 재실행하지 않는다. 클라우드는 `scripts/cloud-env-up.sh`로 준비하고 완료 arm은 `scripts/grade-adaptive-arm.mjs`로 채점한다.
+D083: [클라우드 실패 2건 원인과 수정](docs/orchestration/D083_REPAIR_DIRECTION.md)을 먼저 읽는다. `d083-repair-fixes.json`(D082 + repair-budget-v3 + scope_expansion worker-mentioned-v1)이 opt-in이며 전송 정책 기본은 v10이다(v1–v9는 재현용). 반복 측정은 조건당 3회만 한다. D082-08은 사용자 중단이며 재실행하지 않는다. 클라우드는 `scripts/cloud-env-up.sh`로 준비하고 완료 arm은 `scripts/grade-adaptive-arm.mjs`로 채점한다.
 
 D082: [클라우드 실행 준비](docs/orchestration/D082_CLOUD_RUNS.md)를 먼저 읽는다. 클라우드 세션 유료 실행은 `d082-cloud-defaults.json`(D081 기본 + Claude `oauth_token` 인증 허용)을 쓰고, Docker `containerd-snapshotter:false`·`NODE_USE_ENV_PROXY=1`·`/Users/lee/workspace/plugins/jev-router` bind mount에서 실행한다. 원장은 클라우드 한 곳에서만 쓰며 Mac은 유료 실행을 멈춘다.
 

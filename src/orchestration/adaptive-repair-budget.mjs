@@ -184,6 +184,22 @@ need(contractV2.schema_version === 'adaptive-repair-budget-contract/v2' && contr
   && ['limit', 'target_fraction', 'bytes_per_token', 'reserved_question_bytes', 'over_budget_code'].every(key => same(contractV2[key], contract[key])),
 'ADAPTIVE_REPAIR_BUDGET_CONTRACT');
 const stepV2 = id => contractV2.steps.find(row => row.id === id);
+
+// D083 repair-budget-v3: v2 plus raw steps for worker diagnostics and repair history, and no step may grow its part.
+const CONTRACT_V3_PATH = 'docs/orchestration/contracts/adaptive-repair-budget.v3.json';
+const contractV3Bytes = readFileSync(new URL(`../../${CONTRACT_V3_PATH}`, import.meta.url));
+const contractV3 = JSON.parse(contractV3Bytes);
+export const ADAPTIVE_REPAIR_BUDGET_V3_SOURCE = Object.freeze({path: CONTRACT_V3_PATH, sha256: hash(contractV3Bytes)});
+const RAW_STEP_IDS_V3 = [...RAW_STEP_IDS, 'raw_compact_worker_diagnostics', 'raw_compact_repair_history'];
+need(contractV3.schema_version === 'adaptive-repair-budget-contract/v3' && contractV3.policy === 'repair-budget-v3'
+  && same(contractV3.steps.map(row => row.id), [...STEP_IDS, ...RAW_STEP_IDS_V3])
+  && ['owner_schema', 'raw_owner_schema', 'limit', 'target_fraction', 'bytes_per_token', 'reserved_question_bytes', 'over_budget_code', 'split_note']
+    .every(key => same(contractV3[key], contractV2[key])), 'ADAPTIVE_REPAIR_BUDGET_CONTRACT');
+const stepV3 = id => contractV3.steps.find(row => row.id === id);
+const PACKERS = {
+  'repair-budget-v2': {contract: contractV2, source: ADAPTIVE_REPAIR_BUDGET_V2_SOURCE, raw: RAW_STEP_IDS, noGrowth: false},
+  'repair-budget-v3': {contract: contractV3, source: ADAPTIVE_REPAIR_BUDGET_V3_SOURCE, raw: RAW_STEP_IDS_V3, noGrowth: true},
+};
 const ownerQuestionId = row => `owner.${hash(JSON.stringify({assertion_id: row.testcase?.failed_assertion_id ?? null,
   check_id: row.check_id, test_id: row.testcase?.test_id ?? row.testcase?.id})).slice(0, 20)}`;
 
@@ -262,6 +278,27 @@ function rawSteps(state, omit) {
       });
       return changed;
     },
+    raw_compact_worker_diagnostics() {
+      const max = stepV3('raw_compact_worker_diagnostics').max_chars;
+      let changed = false;
+      (Array.isArray(state.worker_diagnostics?.entries) ? state.worker_diagnostics.entries : []).forEach((entry, index) => {
+        if (!object(entry) || typeof entry.final_response_excerpt !== 'string' || entry.final_response_excerpt.length <= max) return;
+        omit(`/worker_diagnostics/entries/${index}/final_response_excerpt`, entry.final_response_excerpt);
+        entry.final_response_excerpt = `${entry.final_response_excerpt.slice(0, max - 1)}…`; changed = true;
+      });
+      return changed;
+    },
+    raw_compact_repair_history() {
+      let changed = false;
+      (Array.isArray(state.repair_history?.entries) ? state.repair_history.entries : []).forEach((entry, index) => {
+        if (!object(entry)) return;
+        for (const key of ['failures_before', 'failures_after', 'relevant_revisions']) {
+          if (!Object.hasOwn(entry, key)) continue;
+          omit(`/repair_history/entries/${index}/${key}`, entry[key]); delete entry[key]; changed = true;
+        }
+      });
+      return changed;
+    },
   };
 }
 
@@ -305,18 +342,25 @@ function focusPart(output, ids, part, parts, omit) {
   state.owner_split = {part, parts, question_ids: [...ids], note: contractV2.split_note};
 }
 
-function packPart(request, {ids = null, part = 1, parts = 1} = {}) {
+function packPart(request, {ids = null, part = 1, parts = 1, packer = PACKERS['repair-budget-v2']} = {}) {
   const output = copy(request), state = output.state, omissions = [], applied = [];
   const omit = (pointer, value) => omissions.push({pointer, sha256: digest(value), value: copy(value)});
   if (ids) focusPart(output, ids, part, parts, omit);
   const raw = state.schema_version === contractV2.raw_owner_schema;
-  const steps = raw ? rawSteps(state, omit) : ownerSteps(state, omit), order = raw ? RAW_STEP_IDS : STEP_IDS;
+  const steps = raw ? rawSteps(state, omit) : ownerSteps(state, omit), order = raw ? packer.raw : STEP_IDS;
   if (!measureRepairBudget(output).within_budget) {
-    state.repair_budget = {policy: contractV2.policy, applied_steps: [], note: contractV2.state_note};
+    state.repair_budget = {policy: packer.contract.policy, applied_steps: [], note: packer.contract.state_note};
     for (const id of order) {
+      const before = packer.noGrowth ? {state: copy(state), omissions: omissions.length, tokens: measureRepairBudget(output).estimated_tokens} : null;
       if (!steps[id]()) continue;
       state.repair_budget.applied_steps.push(id);
-      applied.push({id, ...measureRepairBudget(output)});
+      const measured = measureRepairBudget(output);
+      if (before && measured.estimated_tokens > before.tokens) {
+        for (const key of Object.keys(state)) delete state[key];
+        Object.assign(state, before.state); omissions.length = before.omissions;
+        continue;
+      }
+      applied.push({id, ...measured});
       if (applied.at(-1).within_budget) break;
     }
     if (!applied.length) delete state.repair_budget;
@@ -326,14 +370,15 @@ function packPart(request, {ids = null, part = 1, parts = 1} = {}) {
     applied_steps: applied, after, within_budget: after.within_budget, omissions}};
 }
 
-/** v2: pack the whole owner request, or split it into focused parts that each fit. Removed values stay in the report. */
+/** v2/v3: pack the whole owner request, or split it into focused parts that each fit. Removed values stay in the report. */
 export function planRepairOwnerRequest(request, {policy} = {}) {
-  need(policy === contractV2.policy, 'ADAPTIVE_REPAIR_BUDGET_POLICY');
+  need(Object.hasOwn(PACKERS, policy), 'ADAPTIVE_REPAIR_BUDGET_POLICY');
+  const packer = PACKERS[policy];
   need(object(request?.state) && object(request.questions), 'ADAPTIVE_REPAIR_BUDGET_INPUT');
   need(!Object.hasOwn(request.state, 'repair_budget') && !Object.hasOwn(request.state, 'owner_split'), 'ADAPTIVE_REPAIR_BUDGET_ALREADY_APPLIED');
   const before = measureRepairBudget(request), cases = ownerCases(request);
   const finish = (parts, reason = null) => {
-    const report = {schema_version: 'adaptive-repair-budget-plan/v1', policy: contractV2.policy, contract_source: {...ADAPTIVE_REPAIR_BUDGET_V2_SOURCE},
+    const report = {schema_version: 'adaptive-repair-budget-plan/v1', policy: packer.contract.policy, contract_source: {...packer.source},
       input_request_sha256: digest(request), packable: cases !== null, before, split: parts.length > 1, reason,
       parts: parts.map(row => row.report), within_budget: parts.length > 0 && parts.every(row => row.report.within_budget),
       lossless: parts.length === 1 && !parts[0].report.omissions.length, original_request: copy(request),
@@ -347,7 +392,7 @@ export function planRepairOwnerRequest(request, {policy} = {}) {
   if (!cases) return finish([{request: copy(request), question_ids: Object.keys(request.questions), report: {part: 1, parts: 1,
     output_request_sha256: digest(request), applied_steps: [], after: before, within_budget: before.within_budget, omissions: []}}],
   before.within_budget ? null : 'UNPACKABLE_STATE');
-  const whole = packPart(request);
+  const whole = packPart(request, {packer});
   if (whole.report.within_budget) return finish([whole]);
   // Check blocks in first-appearance order; a block that alone is over the target is split case by case.
   const blocks = [];
@@ -355,7 +400,7 @@ export function planRepairOwnerRequest(request, {policy} = {}) {
     const last = blocks.at(-1);
     if (last?.check_id === row.check_id) last.ids.push(row.question_id); else blocks.push({check_id: row.check_id, ids: [row.question_id]});
   }
-  const fits = ids => packPart(request, {ids, part: 99, parts: 99}).report.within_budget;
+  const fits = ids => packPart(request, {ids, part: 99, parts: 99, packer}).report.within_budget;
   const groups = []; let current = [];
   const add = id => {
     if (fits([...current, id])) { current.push(id); return true; }
@@ -369,7 +414,7 @@ export function planRepairOwnerRequest(request, {policy} = {}) {
     for (const id of block.ids) if (!add(id)) return finish([], 'SINGLE_CASE_OVER_TARGET');
   }
   if (current.length) groups.push(current);
-  return finish(groups.map((ids, index) => packPart(request, {ids, part: index + 1, parts: groups.length})));
+  return finish(groups.map((ids, index) => packPart(request, {ids, part: index + 1, parts: groups.length, packer})));
 }
 
-export const ADAPTIVE_REPAIR_BUDGET_POLICIES = Object.freeze(['repair-budget-v1', 'repair-budget-v2']);
+export const ADAPTIVE_REPAIR_BUDGET_POLICIES = Object.freeze(['repair-budget-v1', 'repair-budget-v2', 'repair-budget-v3']);
