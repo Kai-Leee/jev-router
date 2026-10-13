@@ -1,6 +1,6 @@
-# D082 — 클라우드 세션 유료 실행 진행 중 (6회: 완료4·실패2)
+# D082 — 클라우드 세션 유료 실행 진행 중 (7회: 완료5·실패2)
 
-[준비·조건·점검](../orchestration/D082_CLOUD_RUNS.md) · [결정](../decisions/D082.md). 원장·`benchmark-runs/`·`.benchmarks/`를 Mac에서 클라우드로 이전(charged 20,566,398 · settled 1,067 · pending 0, 원장은 클라우드에서만 사용). Claude 인증 확인이 manifest `claude_auth_methods`를 읽도록 변경, `d082-cloud-defaults.json`(D081과 동일 + `oauth_token` 허용). 전송 정책 v9 pin 불변. `--probe` ready·막힘0. 실행에는 Docker `containerd-snapshotter:false`, `NODE_USE_ENV_PROXY=1`, Mac 경로 bind mount가 필요하다. 회귀 1346/1351(실패2: root 전용 refund, d079 mock leaf 순서 비결정). 순차 실측 01·03·04·05 공개93/93·독립63/63(CPU4 채점), 02 `ADAPTIVE_REPAIR_BUDGET_EXCEEDED`, 06 수리2회 뒤 `ARTIFACT_CHECK_NOT_PASSED`. 원장 22,465,583·정산1,135·pending0. 아래는 과거 기록이다.
+[준비·조건·점검](../orchestration/D082_CLOUD_RUNS.md) · [결정](../decisions/D082.md). 원장·`benchmark-runs/`·`.benchmarks/`를 Mac에서 클라우드로 이전(charged 20,566,398 · settled 1,067 · pending 0, 원장은 클라우드에서만 사용). Claude 인증 확인이 manifest `claude_auth_methods`를 읽도록 변경, `d082-cloud-defaults.json`(D081과 동일 + `oauth_token` 허용). 전송 정책 v9 pin 불변. `--probe` ready·막힘0. 실행에는 Docker `containerd-snapshotter:false`, `NODE_USE_ENV_PROXY=1`, Mac 경로 bind mount가 필요하다. 회귀 1346/1351(실패2: root 전용 refund, d079 mock leaf 순서 비결정). 순차 실측 01·03·04·05·07 공개93/93·독립63/63(CPU4 채점), 02 `ADAPTIVE_REPAIR_BUDGET_EXCEEDED`, 06 수리2회 뒤 `ARTIFACT_CHECK_NOT_PASSED`. 원장 22,663,488·정산1,142·pending0. 아래는 과거 기록이다.
 
 # D081 — 수리 경로 보강 완료, 기본 설정 순차 실측 1/5 완료
 
