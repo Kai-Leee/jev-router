@@ -47,7 +47,8 @@ export const adaptiveSpeedSessionOptions = manifest => {
   const speed = adaptiveRuntimeSpeed(manifest);
   return {modelLookup: speed.model_lookup, budgetLock: speed.budget_lock};
 };
-const REPAIR_BUDGET_CONTRACT = 'docs/orchestration/contracts/adaptive-repair-budget.v1.json';
+const REPAIR_BUDGET_CONTRACTS = {'repair-budget-v1': 'docs/orchestration/contracts/adaptive-repair-budget.v1.json',
+  'repair-budget-v2': 'docs/orchestration/contracts/adaptive-repair-budget.v2.json'};
 /** D076 opt-in owner-request budget (v11/v12 manifests with repair_budget only). */
 export const adaptiveRepairBudgetOption = manifest => manifest.repair_budget ? {repairBudget: {policy: manifest.repair_budget.policy}} : {};
 const REPAIR_FEEDBACK_VALUES = {read_scope: 'candidate-v1', worker_diagnostics: 'report-v1'};
@@ -151,7 +152,7 @@ export function loadAdaptiveRunManifest(path = join(ROOT, 'benchmarks/e2e-swe/ma
   if (value.repair_budget !== undefined) {
     const budget = value.repair_budget;
     if (!(v11 || v12) || !object(budget) || !equal(Object.keys(budget).sort(), ['contract', 'policy', 'sha256'])
-      || budget.policy !== 'repair-budget-v1' || budget.contract !== REPAIR_BUDGET_CONTRACT
+      || !Object.hasOwn(REPAIR_BUDGET_CONTRACTS, budget.policy) || budget.contract !== REPAIR_BUDGET_CONTRACTS[budget.policy]
       || sha(readFileSync(join(rootDir, budget.contract))) !== budget.sha256) fail('ADAPTIVE_REPAIR_BUDGET_BINDING');
   }
   if (value.repair_feedback !== undefined && ((!v11 && !v12) || !object(value.repair_feedback) || !Object.keys(value.repair_feedback).length
