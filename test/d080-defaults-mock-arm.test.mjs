@@ -105,6 +105,8 @@ test('d080 default arm runs without deferral, schedules producers first and adop
     assert.equal(result.spec_review.adopted, true, JSON.stringify(result.spec_review.reason));
     assert.ok(result.candidate_path.endsWith('spec-review/candidate'));
     assert.ok(existsSync(join(result.candidate_path, 'REVIEWED.txt')));
+    assert.equal(result.artifact_revisions_basis, 'pre_spec_review');
+    assert.ok(result.usage_including_spec_review.claude.calls === result.usage.claude.calls + 1);
     const events = readFileSync(join(parent, 'jev_profile/events.jsonl'), 'utf8');
     assert.ok(!events.includes('jev_confidence_deferral'));
   } finally { if (!process.env.D078_KEEP) cleanup(parent); }

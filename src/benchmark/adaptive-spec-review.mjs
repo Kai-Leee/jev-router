@@ -1,6 +1,7 @@
-import {cpSync, chmodSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync} from 'node:fs';
+import {cpSync, chmodSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
-import {dirname, join, relative} from 'node:path';
+import {dirname, join, relative, resolve} from 'node:path';
 import {processResult} from './docker.mjs';
 import {providerOutcome} from './runner.mjs';
 import {claudeEnvironment} from './claude-env.mjs';
@@ -37,29 +38,39 @@ export async function runSpecReview({rootDir, manifest, candidatePath, pinnedDir
   const registry = json(join(rootDir, manifest.public_registry)), image = json(join(rootDir, manifest.image_lock));
   mkdirSync(outDirectory, {recursive: true});
   const save = (name, data) => writeFileSync(join(outDirectory, name), JSON.stringify(data, null, 2) + '\n', {flag: 'wx'});
-  const candidate = join(outDirectory, 'candidate');
-  cpSync(candidatePath, candidate, {recursive: true}); writable(candidate);
-  const before = snapshot(candidate);
+  // Isolation: the reviewer works in a temp copy outside the repository (hidden tests live under the repo root),
+  // with explicit deny rules for the repository; only the reviewed copy is brought back into the run directory.
+  const workspace = mkdtempSync(join(tmpdir(), 'jev-spec-review-')), reviewDir = join(workspace, 'candidate');
+  cpSync(candidatePath, reviewDir, {recursive: true}); writable(reviewDir);
+  const before = snapshot(reviewDir), repository = resolve(rootDir);
+  const denied = ['Read', 'Edit', 'Write'].map(tool => `${tool}(/${repository}/**)`);
   const prompt = JSON.stringify({task: contract.task, public_source: input.source, requirement_descriptions: input.requirement_descriptions,
     interface_catalog: catalog.units.map(({id, title, interface: text}) => ({id, title, interface: text})),
     public_checks: registry.map(check => ({id: check.id, requirement_ids: check.requirement_ids, test_ids: check.test_ids}))});
   const mcp = join(outDirectory, 'mcp.json'); writeFileSync(mcp, JSON.stringify({mcpServers: {}}));
   const args = ['--print', '--model', contract.model, '--effort', contract.effort, '--tools', contract.tools.join(','), '--strict-mcp-config',
     '--mcp-config', mcp, '--setting-sources', '', '--disable-slash-commands', '--no-chrome', '--permission-mode', contract.permission_mode,
-    '--permission-prompts', 'none', '--no-session-persistence', '--output-format', 'stream-json', '--verbose', '--system-prompt', contract.system];
+    '--permission-prompts', 'none', '--no-session-persistence', '--output-format', 'stream-json', '--verbose', '--system-prompt', contract.system,
+    '--disallowedTools', ...denied];
   await record({event: 'adaptive_spec_review_started', contract_source: contract.source, candidate_source: candidatePath});
   let began = performance.now();
-  const raw = await runCommand('claude', args, {cwd: candidate, env: claudeEnvironment(process.env), input: prompt,
-    timeoutMs: Math.min(contract.timeout_ms, remaining()), maxBytes: 64 * 1024 * 1024, killProcessTree: true});
-  writeFileSync(join(outDirectory, 'review.stream.jsonl'), raw.stdout ?? '');
+  let raw;
+  try {
+    raw = await runCommand('claude', args, {cwd: reviewDir, env: claudeEnvironment(process.env), input: prompt,
+      timeoutMs: Math.min(contract.timeout_ms, remaining()), maxBytes: 64 * 1024 * 1024, killProcessTree: true});
+  } finally { writeFileSync(join(outDirectory, 'review.stream.jsonl'), raw?.stdout ?? ''); }
+  const candidate = join(outDirectory, 'candidate');
+  cpSync(reviewDir, candidate, {recursive: true}); rmSync(workspace, {recursive: true, force: true});
   const outcome = providerOutcome(raw, contract.model), after = snapshot(candidate);
+  const digest = files => sha(JSON.stringify(Object.entries(files).sort()));
   const review = {status: outcome.status, code: outcome.code, wall_ms: performance.now() - began, usage: outcome.completion?.usage ?? null,
     api_equivalent_usd: outcome.completion?.total_cost_usd ?? null, models: outcome.models, final_text: outcome.completion?.result ?? null,
-    changed_files: Object.keys({...before, ...after}).filter(path => before[path] !== after[path]).sort()};
+    changed_files: Object.keys({...before, ...after}).filter(path => before[path] !== after[path]).sort(),
+    denied_paths: denied, files_before: before, files_after: after};
   save('review.json', review);
   const summary = {schema_version: 'adaptive-spec-review-result/v1', contract_source: contract.source, review_status: review.status,
     review_wall_ms: review.wall_ms, review_usage: review.usage, review_api_equivalent_usd: review.api_equivalent_usd,
-    changed_files: review.changed_files, public_wall_ms: null, public: null, adopted: false, candidate_path: candidatePath,
+    changed_files: review.changed_files, files_before_sha256: digest(before), files_after_sha256: digest(after), public_wall_ms: null, public: null, adopted: false, candidate_path: candidatePath,
     reason: null, outcome_uncertain: outcome.status === 'uncertain', automatic_retries: 0};
   if (outcome.status !== 'completed') summary.reason = `REVIEW_${outcome.status.toUpperCase()}`;
   else if (!review.changed_files.length) summary.reason = 'REVIEW_NO_CHANGE';
@@ -90,12 +101,12 @@ export async function runSpecReview({rootDir, manifest, candidatePath, pinnedDir
 }
 
 /** Runner hook: only after a completed public gate; any review failure keeps the gated candidate. */
-export async function specReviewAfterPublicGate({rootDir, manifest, runDirectory, execution, input, catalog, record, runCommand}) {
+export async function specReviewAfterPublicGate({rootDir, manifest, runDirectory, execution, input, catalog, record, runCommand, remaining}) {
   if (execution?.status !== 'completed' || !execution.candidate_path) return null;
   try {
     return await runSpecReview({rootDir, manifest, candidatePath: execution.candidate_path, pinnedDirectory: join(dirname(execution.candidate_path), 'pinned'),
       outDirectory: join(runDirectory, 'spec-review'), input, catalog, contract: loadSpecReviewContract(rootDir, manifest.spec_review.contract), record,
-      ...(runCommand ? {runCommand} : {})});
+      ...(runCommand ? {runCommand} : {}), ...(remaining ? {remaining} : {})});
   } catch (error) {
     // The public gate already passed; a failed review never fails the run, it only keeps the gated candidate.
     const result = {schema_version: 'adaptive-spec-review-result/v1', adopted: false, candidate_path: execution.candidate_path,

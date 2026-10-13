@@ -1,3 +1,5 @@
+D080: [기본 설정 실측](docs/orchestration/D080_DEFAULTS.md)을 먼저 읽는다. v12 기본 manifest는 `d080-defaults.json`(보류 끔·임계 경로 우선·공개 명세 검토)이다. 명세 검토는 공개 검사 통과 뒤에만 실행되고 숨김 검사 경로를 거부한다. 병렬 시작은 다른 실행의 Jev 호출이 없을 때만 한다.
+
 D079: [평가 결과](docs/orchestration/D079_EVALUATION.md)를 먼저 읽는다. 전체 개발은 preflight 원장 잠금 수정 전까지 순차로만 실행한다. 보류 없는 `d079-no-deferral.json`이 공개93/93·독립63/63을 1회 달성했고, 공개 명세 검토 수리는 후보 3/3에서 독립 실패를 고쳤다. 숨김 검사 내용을 계획·수리·검토에 넣지 않는다.
 
 D078: [직렬 의존 수리·통합 결과](docs/orchestration/D078_LAYERED_INTEGRATION.md)를 먼저 읽는다. manifest `d078-layered.json`(v12)은 layered-v2 분해·owner 설명 v2·수리 범위 코드·보류와 D076 수리 옵션을 묶는다. 통합 1회는 공개93/93·독립60/63으로 미완료다. 종료 원본을 자동 재개하지 않는다.

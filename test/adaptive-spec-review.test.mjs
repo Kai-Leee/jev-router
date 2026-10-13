@@ -21,6 +21,9 @@ function fixture(t) {
 const adapter = ({edit = true, failCheck = null} = {}) => { const containers = new Map(); return async (command, args, options) => {
   if (command === 'claude') {
     assert.ok(!options.input.includes('verifier') && JSON.parse(options.input).public_checks.length === registry.length);
+    assert.ok(!options.cwd.startsWith(root), 'reviewer works outside the repository');
+    const denied = args.slice(args.indexOf('--disallowedTools') + 1);
+    assert.ok(['Read', 'Edit', 'Write'].every(tool => denied.includes(`${tool}(/${root}/**)`)), JSON.stringify(denied));
     if (edit) writeFileSync(join(options.cwd, 'module.py'), 'x = 2\n');
     return raw(JSON.stringify({type: 'result', subtype: 'success', is_error: false, modelUsage: {'claude-opus-5-5': {}},
       usage: {input_tokens: 5, output_tokens: 5}, total_cost_usd: 0.5, result: 'Fixed one deviation.'}) + '\n');
@@ -38,6 +41,8 @@ test('a reviewed candidate is adopted only when every public check still passes'
   const ok = await runSpecReview({rootDir: root, manifest, candidatePath: candidate, pinnedDirectory: join(dir, 'runtime/pinned'),
     outDirectory: join(dir, 'review-ok'), input, catalog, runCommand: adapter()});
   assert.equal(ok.adopted, true, JSON.stringify(ok.reason)); assert.deepEqual(ok.changed_files, ['module.py']);
+  assert.notEqual(ok.files_before_sha256, ok.files_after_sha256);
+  assert.ok(ok.candidate_path.startsWith(join(dir, 'review-ok')), 'the adopted copy lives in the run directory');
   assert.equal(readFileSync(join(ok.candidate_path, 'module.py'), 'utf8'), 'x = 2\n');
   assert.equal(readFileSync(join(candidate, 'module.py'), 'utf8'), 'x = 1\n', 'the gated candidate stays unchanged');
   const bad = await runSpecReview({rootDir: root, manifest, candidatePath: candidate, pinnedDirectory: join(dir, 'runtime/pinned'),

@@ -92,7 +92,7 @@ export function createQuestionFormHooks({session, record, manifest}) {
     } : decide,
     decideRepairOwners: ownerContract ? (request, metadata) => decide(describeOwnerCriteria(request, ownerContract), metadata) : decide,
     decideRepair: forms.inferred_scope ? request => selectInferredOwnerScope(request) : undefined,
-    afterPublicGate: manifest?.spec_review ? ({rootDir, runDirectory, execution, input, catalog, runCommand}) =>
-      specReviewAfterPublicGate({rootDir, manifest, runDirectory, execution, input, catalog, record, runCommand}) : undefined,
+    afterPublicGate: manifest?.spec_review ? ({rootDir, runDirectory, execution, input, catalog, runCommand, remaining}) =>
+      specReviewAfterPublicGate({rootDir, manifest, runDirectory, execution, input, catalog, record, runCommand, remaining}) : undefined,
   };
 }

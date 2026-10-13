@@ -1045,7 +1045,7 @@ export async function runAdaptiveArm({rootDir = ROOT, manifest = loadAdaptiveRun
     // v12 spec review after a passed public gate; it never fails the run (adaptive-spec-review.mjs).
     if (forms?.afterPublicGate && execution.status === 'completed') {
       specReview = await forms.afterPublicGate({rootDir, runDirectory: context.directory, execution, input, catalog: prepared.catalog,
-        runCommand: adapters.runCommand});
+        runCommand: adapters.runCommand, remaining: context.remaining});
       if (specReview) context.save('spec-review-result.json', specReview);
     }
   } catch (error) {
@@ -1077,7 +1077,10 @@ export async function runAdaptiveArm({rootDir = ROOT, manifest = loadAdaptiveRun
     amortized_preparation_inclusive_wall_ms: prepWall === null ? null : armWall + prepWall / manifest.arms.length,
     completion_wall_ms: null, product_success: null, independent_grade: 'not_run_root_owned',
     candidate_path: specReview?.adopted ? specReview.candidate_path : execution?.candidate_path ?? null, artifact_revisions: execution?.artifact_revisions ?? null,
-    ...(specReview ? {spec_review: specReview} : {}),
+    // artifact_revisions describe the gated candidate; an adopted review copy is identified by spec_review.files_after_sha256.
+    ...(specReview ? {spec_review: specReview, artifact_revisions_basis: specReview.adopted ? 'pre_spec_review' : 'final_candidate',
+      usage_including_spec_review: specReview.review_usage ? combinedUsage([adaptiveUsageSummary(receipts), adaptiveUsageSummary([{provider: 'claude',
+        inference_started: true, usage: specReview.review_usage, api_equivalent_usd: specReview.review_api_equivalent_usd}])]) : null} : {}),
     public_status: execution?.status === 'completed' && !stopCode && !unknown ? 'passed' : 'not_passed',
     planning_stats: planning?.stats ?? null, decision_callbacks: session?.decision_count() ?? 0,
     operations: execution?.operations ?? null, repair_rounds_used: execution?.repair_rounds_used ?? 0,
