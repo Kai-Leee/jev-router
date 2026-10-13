@@ -9,7 +9,7 @@ import {loadConfig} from '../config.mjs';
 import {processResult} from './docker.mjs';
 import {providerOutcome, writePrivateJson} from './runner.mjs';
 import {claudeEnvironment} from './claude-env.mjs';
-import {createMeasuredDecider} from './telemetry.mjs';
+import {createMeasuredDecider, JEV_GET_RETRY_V1} from './telemetry.mjs';
 import {createTokenBudget, validateBudgetConfig, readTokenBudgetSnapshot} from './budget.mjs';
 import {acquireTokenBudget, createConcurrentTokenBudget} from './budget-acquire.mjs';
 import {preflightDagRun, runDagDockerCheck, validateDagPublicReport} from './dag-runner.mjs';
@@ -45,7 +45,9 @@ export const adaptiveRuntimeSpeed = manifest => speedManifest(manifest) || isQue
   : {model_lookup: 'per_call', budget_lock: 'call', public_check_concurrency: 1, readiness_batch: false};
 export const adaptiveSpeedSessionOptions = manifest => {
   const speed = adaptiveRuntimeSpeed(manifest);
-  return {modelLookup: speed.model_lookup, budgetLock: speed.budget_lock};
+  // v11/v12 sessions retry the inference-free GETs on a confirmed 429/5xx; older manifests keep a single attempt.
+  return {modelLookup: speed.model_lookup, budgetLock: speed.budget_lock,
+    ...(speedManifest(manifest) || isQuestionFormManifest(manifest) ? {getRetry: JEV_GET_RETRY_V1} : {})};
 };
 const REPAIR_BUDGET_CONTRACTS = {'repair-budget-v1': 'docs/orchestration/contracts/adaptive-repair-budget.v1.json',
   'repair-budget-v2': 'docs/orchestration/contracts/adaptive-repair-budget.v2.json'};
@@ -293,7 +295,7 @@ function combinedUsage(summaries) {
  * modelLookup 'per_session' reuses one model GET until a non-completed call or unaccepted model;
  * budgetLock 'ledger_op' (v4 ledger only) holds the ledger lock per mutation, not across provider I/O. */
 export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirectory, manifest, remaining,
-  record = async () => {}, abortSignal, adapters = {}, modelLookup = 'per_call', budgetLock = 'call'}) {
+  record = async () => {}, abortSignal, adapters = {}, modelLookup = 'per_call', budgetLock = 'call', getRetry = null}) {
   const runCommand = adapters.runCommand ?? processResult, receipts = [];
   const config = adapters.jevConfig ?? loadConfig(), secret = config.apiKey ?? '';
   const save = (name, value) => writePrivateJson(join(runDirectory, name), JSON.parse(JSON.stringify(value).replaceAll(secret || '\u0000', secret ? '[REDACTED]' : '\u0000')));
@@ -462,7 +464,8 @@ export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirect
           listCredits:(...args) => client.listCredits(...args), decide:body => {
             checkTransmission('before_post', body); providerDecideCalled = true; return client.decide(body);
           }} : client;
-        const measured = createMeasuredDecider({client:measuredClient, budget:measuredBudget, modelLookupCache, record: async event => {
+        const measured = createMeasuredDecider({client:measuredClient, budget:measuredBudget, modelLookupCache, getRetry,
+          ...(adapters.sleep ? {sleep: adapters.sleep} : {}), record: async event => {
           if (event.event === 'inference_started') submitted = true;
           lookupSource = event.model_lookup_source ?? lookupSource; balanceSource = event.balance_source ?? balanceSource;
           if (transmission) await drainTransmissionEvents();

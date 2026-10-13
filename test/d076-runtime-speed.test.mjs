@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {join, resolve} from 'node:path';
 import {loadAdaptiveRunManifest, loadAdaptivePublicInput, loadAdaptiveSharedPreparation, loadAdaptiveTestRequirements,
   buildAdaptiveChecks, adaptiveRuntimeSpeed, adaptiveSpeedSessionOptions} from '../src/benchmark/adaptive-dag-runner.mjs';
+import {JEV_GET_RETRY_V1} from '../src/benchmark/telemetry.mjs';
 import {loadPublicAuditInputs} from '../scripts/audit-dag-public-checks.mjs';
 
 const root = resolve(import.meta.dirname, '..');
@@ -32,7 +33,7 @@ test('runtime speed options come only from v11; older manifests keep the serial 
   const v11 = loadAdaptiveRunManifest(v11Path, root);
   assert.deepEqual(adaptiveRuntimeSpeed(v11), {model_lookup: 'per_session', budget_lock: 'ledger_op',
     public_check_concurrency: 2, readiness_batch: true});
-  assert.deepEqual(adaptiveSpeedSessionOptions(v11), {modelLookup: 'per_session', budgetLock: 'ledger_op'});
+  assert.deepEqual(adaptiveSpeedSessionOptions(v11), {modelLookup: 'per_session', budgetLock: 'ledger_op', getRetry: JEV_GET_RETRY_V1});
   const v10 = loadAdaptiveRunManifest(join(root, 'benchmarks/e2e-swe/manifests/d075-preserved-repair.json'), root);
   assert.deepEqual(adaptiveRuntimeSpeed(v10), {model_lookup: 'per_call', budget_lock: 'call',
     public_check_concurrency: 1, readiness_batch: false});

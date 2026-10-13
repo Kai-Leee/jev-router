@@ -119,8 +119,17 @@ export function createGateStateWriter(path, { now = () => new Date().toISOString
 // deciders: the model GET repeats only after a non-completed call or an
 // unaccepted response model. Credits are always fetched: billing headers carry
 // no tokensReserved/tokenDebt/spending_frozen, so reserve balances cannot be derived.
+// Opt-in bounded retry for the inference-free GETs (models, credits) on a confirmed rate or upstream
+// failure. POSTs are never retried here. d081-defaults-03 ended on one credits 502 before reservation.
+const GET_RETRY_STATUSES = [429, 502, 503, 504];
+export const JEV_GET_RETRY_V1 = Object.freeze({ policy: 'confirmed-get-5xx-v1', delays_ms: Object.freeze([5000, 20000]), max_wait_ms: 60000 });
+const validGetRetry = value => value === null || (object(value) && value.policy === JEV_GET_RETRY_V1.policy
+  && Array.isArray(value.delays_ms) && value.delays_ms.length <= 4 && value.delays_ms.every(ms => Number.isSafeInteger(ms) && ms >= 0 && ms <= 60000)
+  && Number.isSafeInteger(value.max_wait_ms) && value.max_wait_ms >= 0 && value.max_wait_ms <= 60000);
+
 export function createMeasuredDecider({ client, record, identifiers: suppliedIdentifiers, budget, clock = () => performance.now(),
-  modelLookupCache = null }) {
+  modelLookupCache = null, getRetry = null, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)) }) {
+  if (!validGetRetry(getRetry) || typeof sleep !== 'function') fail('INVALID_GET_RETRY');
   const identifiers = validateIdentifiers(suppliedIdentifiers);
   let modelsChecked = false;
   let sequence = 0;
@@ -147,6 +156,19 @@ export function createMeasuredDecider({ client, record, identifiers: suppliedIde
       try { await record({ ...event, ...linkage }); }
       catch { stopped = true; await unresolved(); fail('RECORD_FAILED'); }
     };
+    const get = async (call, run) => {
+      for (let attempt = 1; ; attempt++) {
+        try { return await run(); }
+        catch (error) {
+          const details = httpFailureDetails(error, error?.code === 'HTTP_ERROR' ? 'HTTP_ERROR' : '');
+          if (!getRetry || attempt > getRetry.delays_ms.length || !GET_RETRY_STATUSES.includes(details.http_status)) throw error;
+          const wait_ms = Math.min(getRetry.max_wait_ms, Math.max(getRetry.delays_ms[attempt - 1], details.retry_after_ms ?? 0));
+          await persist({ event: 'provider_get_retry', provider: 'jev', call, attempt, http_status: details.http_status,
+            retry_after_ms: details.retry_after_ms, wait_ms, policy: getRetry.policy });
+          await sleep(wait_ms);
+        }
+      }
+    };
     const cached = modelLookupCache?.models_checked === true;
     if (modelLookupCache) modelLookupCache.models_checked = false; // re-armed only by a completed, accepted call
     const sources = modelLookupCache ? { model_lookup_source: cached ? 'session_cache' : 'get' } : {};
@@ -154,7 +176,7 @@ export function createMeasuredDecider({ client, record, identifiers: suppliedIde
       await persist({ event: 'model_lookup_started', provider: 'jev', phase: 'model_lookup' });
       let result;
       try {
-        result = await client.listModels();
+        result = await get('models', () => client.listModels());
         if (!result.models.some(model => model.name === 'jev-latest')) fail('MODEL_UNAVAILABLE');
       } catch (error) {
         stopped = true;
@@ -170,7 +192,7 @@ export function createMeasuredDecider({ client, record, identifiers: suppliedIde
     if (budget) {
       try {
         if (prepared.body.model !== 'jev-latest') fail('BUDGET_MODEL_UNSUPPORTED');
-        const balances = await client.listCredits();
+        const balances = await get('credits', () => client.listCredits());
         reservation = await budget.reserve({ ...linkage, request_id: requestId }, balances);
         reservationOpen = true;
       } catch (error) {
