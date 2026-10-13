@@ -46,8 +46,15 @@ daemon과 bind mount는 컨테이너 재시작 때 사라진다. 파일·이미�
 | 05 | 완료 | 93/93 (검토 채택) | 63/63 | 1 | 27분19초 | 7 · $9.07 | 9 · 254,320 |
 | 06 | 실패 `ARTIFACT_CHECK_NOT_PASSED` (수리 2회 소진, 불확실 아님) | 미통과 | 미실행 | 2 | 21분23초 | 9 · $7.35 | 12 · 352,096 |
 | 07 | 완료 | 93/93 (검토 채택) | 63/63 | 0 | 31분23초 | 7 · $10.79 | 7 · 197,905 |
+| 08 | 사용자 중단(SIGINT, 0회차 작업자 실행 중). arm 결과 없음, Jev 예약 pending 0, 재실행 금지(`user-stop.json`) | — | — | — | — | — | 계획 단계 정산 196,540 토큰 |
 
-원장(07 뒤): charged 22,663,488 · settled 1,142 · pending 0. 각 실행 n=1이며 Mac 결과와의 차이를 분산 통제 비교로 해석하지 않는다.
+원장(08 중단 뒤): charged 22,860,028 · settled 1,149 · pending 0. 사용자 지시로 반복 측정은 여기서 끝낸다(앞으로 조건당 3회만). 실패 2건의 원인·수정 방향은 [D083](D083_REPAIR_DIRECTION.md). 각 실행 n=1이며 Mac 결과와의 차이를 분산 통제 비교로 해석하지 않는다.
+
+## 클라우드 도구
+
+- `scripts/cloud-env-up.sh`: Docker 설정·시작, 고정 이미지 확인/다운로드, Mac 경로 bind mount. 재시작마다 다시 실행한다.
+- `scripts/grade-adaptive-arm.mjs <arm> [--grade-manifest <path>]`: 완료된 arm의 root 독립 채점. 클라우드는 `--grade-manifest benchmarks/e2e-swe/manifests/openapi_python_client.cloud-4cpu.json`.
+- 회귀 테스트 `benchmark-budget-refund.test.mjs`의 refund 영속 실패 사례는 root에서 chmod가 무효라 실패한다. 비root에서는 통과한다.
 
 ## 미확인
 

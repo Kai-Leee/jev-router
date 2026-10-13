@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "adapter": "jev-router-standalone-docker-v1",
+  "upstream_url": "https://github.com/facebookresearch/E2E-SWE.git",
+  "upstream_commit": "b11ac067b1dfe8ce8b6db245d88756f426007797",
+  "upstream_license": "CC-BY-NC-4.0",
+  "task_id": "openapi_python_client",
+  "image_tag": "ghcr.io/facebookresearch/e2e-swe:openapi_python_client",
+  "image_digest": "ghcr.io/facebookresearch/e2e-swe@sha256:6fff26a8c24b60f855046bc61e657af2112217addbb7d4ac553eb5d449a7dab5",
+  "language": "Python",
+  "resources": {
+    "cpus": 4,
+    "memory_mb": 8192,
+    "storage_mb_declared_not_enforced": 51200
+  },
+  "agent_timeout_sec": 14400,
+  "verifier_timeout_sec": 1200,
+  "test_case_count": 63,
+  "network_mode": "none",
+  "artifact_path": "/app",
+  "oracle_repository": "https://github.com/openapi-generators/openapi-python-client.git",
+  "oracle_commit": "7939364adafa2b1d32164e67a77853daa85aa4b3",
+  "upstream_sha256": {
+    "README.md": "cc5031f964216b8f6c2e0591cfba7b23fa9198c2bc6c3f573298673c0ca905c3",
+    "LICENSE": "41003d4a74749c0220e33dd415042164b5a1093ed401f36277234f772d22d3d0",
+    "tasks/openapi_python_client/task.toml": "fd49d3bdf6e139791721a7daaec7fa37fbab0d0ac11e56490e3736125d67fdee",
+    "tasks/openapi_python_client/instruction.md": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+    "tasks/openapi_python_client/environment/Dockerfile": "05954972c5e2a257cfdfcb65133059c0b9380c7451073f6485bfc91014e2ec0a",
+    "tasks/openapi_python_client/solution/solve.sh": "95e6b03701401ea950aa5d2b90169ea65cefca48116414370f4da4a40eb65da4",
+    "tasks/openapi_python_client/tests/test.sh": "01e9c4384ed1e81ff472715ec9aa00938f7c371c67131bab8f34200ce4424b82",
+    "tasks/openapi_python_client/tests/test_openapi_python_client.py": "01cb2a28cb53652d08eb9449d2fc35ccbc942c99767144bab766617c2b820cba"
+  },
+  "oracle_console_script_rename": [
+    "openapi-python-client",
+    "pyclientgen"
+  ],
+  "resources_deviation": "D082 cloud: grader --cpus 4 instead of upstream 6 (container has 4 CPUs). Memory, image, tests and timeouts unchanged."
+}

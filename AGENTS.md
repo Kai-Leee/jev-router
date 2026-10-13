@@ -1,3 +1,5 @@
+D083: [클라우드 실패 2건 원인과 수정 방향](docs/orchestration/D083_REPAIR_DIRECTION.md)을 먼저 읽는다(설계만, 미구현). 반복 측정은 조건당 3회만 한다. D082-08은 사용자 중단이며 재실행하지 않는다. 클라우드는 `scripts/cloud-env-up.sh`로 준비하고 완료 arm은 `scripts/grade-adaptive-arm.mjs`로 채점한다.
+
 D082: [클라우드 실행 준비](docs/orchestration/D082_CLOUD_RUNS.md)를 먼저 읽는다. 클라우드 세션 유료 실행은 `d082-cloud-defaults.json`(D081 기본 + Claude `oauth_token` 인증 허용)을 쓰고, Docker `containerd-snapshotter:false`·`NODE_USE_ENV_PROXY=1`·`/Users/lee/workspace/plugins/jev-router` bind mount에서 실행한다. 원장은 클라우드 한 곳에서만 쓰며 Mac은 유료 실행을 멈춘다.
 
 D081: [수리 경로 보강과 실측](docs/orchestration/D081_REPAIR_PATH_AND_RESULTS.md)을 먼저 읽는다. 현재 전송 정책 기본은 v9(prompt policy v3)이며 과거 v1–v8 파일은 재현용이다. v12에서 check_error 질문은 `adaptive-inferred-repair.v3.json`+`public-inferred-owner-v3`, 큰 owner 요청은 `repair-budget-v2`로 opt-in한다(`d081-defaults.json`). 전체 개발은 순차로만 실행하고 불확실 종료(D081-05)는 재실행하지 않는다.
