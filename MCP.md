@@ -41,10 +41,10 @@ Do not infer authentication success from `mcp:tools`. Only a successful authenti
 
 ## Connect a host without global configuration changes
 
-The local `.mcp.json` contains a secret-free Claude MCP entry. To select it explicitly:
+The project-scoped `.mcp.json` was removed on 2026-10-13: Claude sessions in this repository made 0 `mcp__jev-ai__*` tool calls, and the benchmark runners call the Jev HTTP API directly. To attach the server for one session only:
 
 ```sh
-claude --mcp-config /Users/lee/workspace/plugins/jev-router/.mcp.json
+claude --mcp-config '{"mcpServers":{"jev-ai":{"command":"node","args":["/Users/lee/workspace/plugins/jev-router/bin/mcp-server.mjs"]}}}'
 ```
 
 For Codex, use per-launch overrides:
