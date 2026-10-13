@@ -42,3 +42,22 @@ test('call-lock manifests keep the historical whole-preflight ledger hold', asyn
   assert.equal(freeDuringPreflight, false);
   assert.equal(ledgerLockFree(), true);
 });
+
+const ids = request_id => ({request_id, run_id: 'other-cohort', attempt_id: 'attempt', group_id: 'group'});
+const balances = {paidInputTokensRemaining: 60000000, tokensReserved: 0, tokenDebt: 0, spending_frozen: false};
+
+test('D080 regression: a ledger_op start admits another cohort\'s live reservation but not a blocked one', async t => {
+  const {manifest} = setup(t, 'ledger_op'), config = validateBudgetConfig(manifest.jev_budget, root);
+  const other = createTokenBudget(config, {requireExisting: true});
+  const live = other.reserve(ids('live'), balances, {leaseMs: 600000}); other.close();
+  const preflight = () => preflightAdaptiveRun({rootDir: root, manifest, probe: true, record: async () => {},
+    adapters: {preflight: async () => ({schema_version: 'fixture-preflight'})}});
+  assert.equal((await preflight()).cohort_capacity.snapshot.reservations_in_flight, 1);
+  const call = setup(t, 'call'), callConfig = validateBudgetConfig(call.manifest.jev_budget, root);
+  const callOther = createTokenBudget(callConfig, {requireExisting: true});
+  callOther.reserve(ids('live'), balances, {leaseMs: 600000}); callOther.close();
+  await assert.rejects(preflightAdaptiveRun({rootDir: root, manifest: call.manifest, probe: true, record: async () => {},
+    adapters: {preflight: async () => ({schema_version: 'fixture-preflight'})}}), {code: 'BUDGET_OUTSTANDING'});
+  const reopened = createTokenBudget(config, {requireExisting: true}); reopened.markUnresolved(live); reopened.close();
+  await assert.rejects(preflight(), {code: 'BUDGET_OUTSTANDING'});
+});

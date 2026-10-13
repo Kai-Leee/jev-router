@@ -597,6 +597,11 @@ function loadPublicInput(rootDir, manifest) {
   return input;
 }
 
+// ledger_op (v4): a live, leased reservation of another cohort is admitted exactly as reserve() admits it;
+// blocked or lease-expired entries surface as blocked_code and still stop the start (D080-defaults-02).
+const unsettledReservations = (manifest, snapshot) => snapshot.reservations_pending > 0
+  && !(adaptiveRuntimeSpeed(manifest).budget_lock === 'ledger_op' && snapshot.reservations_in_flight === snapshot.reservations_pending);
+
 export function assertAdaptiveCohortCapacity({manifest, rootDir = ROOT, armIndex = 0, snapshot}) {
   const state = snapshot ?? readTokenBudgetSnapshot(validateBudgetConfig(manifest.jev_budget, rootDir));
   const remainingArms = manifest.arms.slice(armIndex).filter(arm => Object.values(ADAPTIVE_ARMS[arm]).includes('jev')).length;
@@ -605,7 +610,7 @@ export function assertAdaptiveCohortCapacity({manifest, rootDir = ROOT, armIndex
         || !['jev-token-budget-snapshot/v3', 'jev-token-budget-snapshot/v4'].includes(state.schema_version)
         || state.schema_version !== manifest.jev_budget.schema_version.replace('jev-token-budget/', 'jev-token-budget-snapshot/')
         || state.unlimited !== true
-        || state.token_limit !== null || state.remaining_input_tokens !== null || state.blocked_code || state.reservations_pending) {
+        || state.token_limit !== null || state.remaining_input_tokens !== null || state.blocked_code || unsettledReservations(manifest, state)) {
       fail('ADAPTIVE_COHORT_BUDGET_INSUFFICIENT');
     }
     return {snapshot: state, remaining_jev_arms: remainingArms, required_input_tokens: null, token_capacity_unlimited: true};
@@ -625,7 +630,7 @@ async function withAdaptiveSettledBudget({rootDir, manifest, remaining = () => m
     held = await acquireTokenBudget(config, {open: adapters.openBudget ?? (cfg => createTokenBudget(cfg, {requireExisting: true})),
       signal: abortSignal, timeoutMs: remaining(), onAcquired: value => { lockWait = value; }});
     const snapshot = held.snapshot();
-    if (!allowBlockedSnapshot && (snapshot.blocked_code || snapshot.reservations_pending)) fail(snapshot.blocked_code ?? 'BUDGET_OUTSTANDING');
+    if (!allowBlockedSnapshot && (snapshot.blocked_code || unsettledReservations(manifest, snapshot))) fail(snapshot.blocked_code ?? 'BUDGET_OUTSTANDING');
     await record({event: 'adaptive_budget_lock_acquired', purpose, ...lockWait, basis: 'local_lock_acquisition_before_settled_snapshot'});
     return await action(snapshot);
   } finally { held?.close(); }
