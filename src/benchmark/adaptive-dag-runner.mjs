@@ -50,10 +50,11 @@ export const adaptiveSpeedSessionOptions = manifest => {
     ...(speedManifest(manifest) || isQuestionFormManifest(manifest) ? {getRetry: JEV_GET_RETRY_V1} : {})};
 };
 const REPAIR_BUDGET_CONTRACTS = {'repair-budget-v1': 'docs/orchestration/contracts/adaptive-repair-budget.v1.json',
-  'repair-budget-v2': 'docs/orchestration/contracts/adaptive-repair-budget.v2.json'};
+  'repair-budget-v2': 'docs/orchestration/contracts/adaptive-repair-budget.v2.json',
+  'repair-budget-v3': 'docs/orchestration/contracts/adaptive-repair-budget.v3.json'};
 /** D076 opt-in owner-request budget (v11/v12 manifests with repair_budget only). */
 export const adaptiveRepairBudgetOption = manifest => manifest.repair_budget ? {repairBudget: {policy: manifest.repair_budget.policy}} : {};
-const REPAIR_FEEDBACK_VALUES = {read_scope: 'candidate-v1', worker_diagnostics: 'report-v1'};
+const REPAIR_FEEDBACK_VALUES = {read_scope: 'candidate-v1', worker_diagnostics: 'report-v1', scope_expansion: 'worker-mentioned-v1'};
 /** D076 opt-in repair feedback (v11/v12 manifests with repair_feedback only). */
 export const adaptiveRepairFeedbackOption = manifest => manifest.repair_feedback ? {repairFeedback: {...manifest.repair_feedback}} : {};
 
@@ -161,7 +162,8 @@ export function loadAdaptiveRunManifest(path = join(ROOT, 'benchmarks/e2e-swe/ma
       || sha(readFileSync(join(rootDir, budget.contract))) !== budget.sha256) fail('ADAPTIVE_REPAIR_BUDGET_BINDING');
   }
   if (value.repair_feedback !== undefined && ((!v11 && !v12) || !object(value.repair_feedback) || !Object.keys(value.repair_feedback).length
-    || Object.entries(value.repair_feedback).some(([key, item]) => REPAIR_FEEDBACK_VALUES[key] !== item))) fail('ADAPTIVE_REPAIR_FEEDBACK_BINDING');
+    || Object.entries(value.repair_feedback).some(([key, item]) => REPAIR_FEEDBACK_VALUES[key] !== item)
+    || (value.repair_feedback.scope_expansion && !value.repair_feedback.worker_diagnostics))) fail('ADAPTIVE_REPAIR_FEEDBACK_BINDING');
   if (v10) {
     const gate = validateJevTransmissionBinding(value.transmission_preflight);
     // v10 keeps policy v1; v11 binds a later frozen policy (v2+).

@@ -18,6 +18,7 @@ import {inferAdaptiveRepairOwners, applyInferredRepairOwners,
 import {packRepairOwnerRequest, planRepairOwnerRequest, ADAPTIVE_REPAIR_BUDGET_EXCEEDED, ADAPTIVE_REPAIR_BUDGET_POLICIES} from './adaptive-repair-budget.mjs';
 import {assessAdaptiveFailureRecovery, acceptAdaptiveRecoveryEvidence, adaptiveWorkerRecoveryIdentity,
   validateAdaptiveRecoveryRequest, loadAdaptiveFailureRecoveryPolicy, recoveryDigest} from './adaptive-failure-recovery.mjs';
+import {workerMentionedExpansion, EXPANDED_UNION_ID} from './adaptive-inferred-scope.mjs';
 
 const clone = value => structuredClone(value);
 const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object'
@@ -187,6 +188,33 @@ function workerDiagnostics(reports, snapshots) {
       final_response_excerpt: report.final_response.slice(0, 1000)}))};
 }
 
+// D083 scope_expansion worker-mentioned-v1. The owner-inference module stays byte-identical (prompt policies pin it), so
+// the expanded union is added here before any repair decision and both scope seals are re-issued with the expansion in the proof.
+function withWorkerMentionedScope({candidates, analysis}, {plan, diagnostics, persistent_failure_keys}) {
+  const index = candidates.findIndex(candidate => candidate.id === 'repair-inferred-owners');
+  if (index < 0) return {candidates, analysis};
+  const union = candidates[index];
+  const expansion = workerMentionedExpansion({baseArtifactIds: union.artifact_ids, plan, diagnostics, persistentFailureKeys: persistent_failure_keys});
+  if (!expansion) return {candidates, analysis};
+  const order = plan.artifacts.map(row => row.id), artifact_ids = expansion.artifact_ids;
+  const reads = new Set(analysis.causal.chains.filter(chain => chain.nodes.some(node => artifact_ids.includes(node.artifact_id)))
+    .flatMap(chain => chain.nodes.map(node => node.artifact_id)));
+  const expanded = {...clone(union), id: EXPANDED_UNION_ID, artifact_ids,
+    task_ids: plan.tasks.filter(task => task.kind === 'implementation' && task.output_artifact_ids.some(id => artifact_ids.includes(id))).map(task => task.id),
+    read_artifact_ids: order.filter(id => reads.has(id)),
+    reason: 'Repair the inferred union plus artifacts that the previous repair workers named while its failures persisted; preserve unknown failures and all other artifacts.',
+    scope_expansion: expansion.info};
+  const {sha256: priorOwnership, ...ownership} = analysis.inferred_ownership;
+  ownership.choice_bindings = {...ownership.choice_bindings, [EXPANDED_UNION_ID]: digest(expanded)};
+  ownership.scope_expansion = {policy: expansion.info.policy, prior_sha256: priorOwnership, candidate_id: EXPANDED_UNION_ID};
+  const inferredOwnership = {...ownership, sha256: digest(ownership)};
+  const {sha256: _priorCausal, ...causal} = analysis.causal;
+  causal.inferred_owner_scope_sha256 = inferredOwnership.sha256;
+  causal.choice_bindings = {...causal.choice_bindings, [EXPANDED_UNION_ID]: digest(expanded)};
+  return {candidates: [...candidates.slice(0, index + 1), expanded, ...candidates.slice(index + 1)],
+    analysis: {...analysis, inferred_ownership: inferredOwnership, causal: {...causal, sha256: digest(causal)}}};
+}
+
 function repairFileChanges(before, after, plan) {
   const changes = [];
   for (const artifact of plan.artifacts) {
@@ -332,7 +360,9 @@ export async function runAdaptiveDagExecution(options) {
         || !ADAPTIVE_REPAIR_BUDGET_POLICIES.includes(options.repairBudget?.policy) || Object.keys(options.repairBudget).length !== 1)) ||
       (options.repairFeedback !== undefined && (!INFERRED_ARTIFACT_POLICIES.includes(options.artifactRepairPolicy)
         || !options.repairFeedback || typeof options.repairFeedback !== 'object' || !Object.keys(options.repairFeedback).length
-        || Object.entries(options.repairFeedback).some(([key, value]) => ({read_scope: 'candidate-v1', worker_diagnostics: 'report-v1'})[key] !== value)))) {
+        || Object.entries(options.repairFeedback).some(([key, value]) => ({read_scope: 'candidate-v1', worker_diagnostics: 'report-v1',
+          scope_expansion: 'worker-mentioned-v1'})[key] !== value)
+        || (options.repairFeedback.scope_expansion && !options.repairFeedback.worker_diagnostics)))) {
     fail('ADAPTIVE_EXECUTION_INVALID_CONFIG');
   }
   const bindings = clone(options.artifactBindings), planning = clone(options.planning ?? {plan: options.plan, artifactBindings: bindings});
@@ -992,9 +1022,13 @@ export async function runAdaptiveDagExecution(options) {
             }
             break;
           }
-          const inferred = applyInferredRepairOwners({planning, failure, candidates, artifactBindings: bindings, ownerInputPolicy, inference,
+          const scopeExpansion = options.repairFeedback?.scope_expansion && workerReports.length
+            ? {diagnostics: workerDiagnostics(workerReports, snapshots), persistent_failure_keys: clone(repairHistory?.entries?.at(-1)?.persistent_failure_keys ?? [])}
+            : null;
+          let inferred = applyInferredRepairOwners({planning, failure, candidates, artifactBindings: bindings, ownerInputPolicy, inference,
             ...(options.repairInputPolicy ? {repairInputPolicy: options.repairInputPolicy,
               ...(repairInputContext ? {repairInputContext} : {})} : {}), ...(requestOverride ? {requestOverride} : {})});
+          if (scopeExpansion) inferred = withWorkerMentionedScope(inferred, {plan: planning.plan, ...scopeExpansion});
           candidates = inferred.candidates;
           failure.repair_scope = clone(inferred.analysis);
           round.repair_scope = clone(inferred.analysis);
@@ -1058,6 +1092,8 @@ export async function runAdaptiveDagExecution(options) {
         round.fatal = {code: 'ADAPTIVE_EXECUTION_INVALID_REPAIR_SELECTION', outcome_uncertain: false};
         round.terminal_cause = adaptiveTerminalCause(round.fatal, {stage: 'repair', outcome_uncertain: false}); break;
       }
+      if (chosen.scope_expansion) await record({event: 'adaptive_repair_scope_expanded', round_index: roundIndex,
+        expansion: clone(chosen.scope_expansion), artifact_ids: clone(chosen.artifact_ids), task_ids: clone(chosen.task_ids)});
       selectedAction = clone(chosen); selected = new Set(chosen.task_ids); previousFailure = failure;
       previousRepairInputContext = clone(repairInputContext);
       actions.push({round_index: roundIndex, ...clone(decision), candidate: clone(chosen)});

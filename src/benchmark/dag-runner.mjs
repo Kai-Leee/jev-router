@@ -29,6 +29,21 @@ const PATH = /^[A-Za-z0-9_.-]+(?:\/[A-Za-z0-9_.-]+)*$/;
 const safeRelative = path => typeof path === 'string' && PATH.test(path) && !path.split('/').some(part => ['.', '..'].includes(part));
 const ROOT = resolve(import.meta.dirname, '../..');
 const CHECK_TMPFS = '/tmp:rw,exec,size=2g';
+// claude.ai is a saved subscription login; oauth_token is a host-injected token (e.g. a Claude Code cloud session).
+const CLAUDE_AUTH_METHODS = Object.freeze(['claude.ai', 'oauth_token']);
+
+/** Auth methods a manifest accepts; manifests without claude_auth_methods keep the historical claude.ai-only rule. */
+export function claudeAuthMethods(manifest) {
+  const value = manifest?.claude_auth_methods;
+  if (value === undefined) return ['claude.ai'];
+  if (!Array.isArray(value) || !value.length || unique(value).length !== value.length
+      || value.some(method => !CLAUDE_AUTH_METHODS.includes(method))) fail('DAG_INVALID_RUN_MANIFEST');
+  return [...value];
+}
+
+export function claudeAuthAccepted(manifest, status) {
+  return status?.loggedIn === true && claudeAuthMethods(manifest).includes(status.authMethod);
+}
 const READINESS_SOURCE = `import ast,json,pathlib,subprocess,sys
 p=pathlib.Path(sys.argv[1])
 assert p.is_file()
@@ -132,6 +147,7 @@ export async function preflightDagRun({rootDir = ROOT, manifest, probe = false, 
   record = async () => {}, abortSignal} = {}) {
   manifest ??= loadDagRunManifest(undefined, rootDir);
   if (manifest.public_controls_evidence !== undefined && !safeRelative(manifest.public_controls_evidence)) fail('DAG_INVALID_PUBLIC_EVIDENCE_PATH');
+  const authMethods = claudeAuthMethods(manifest);
   const publicAuditOptions = {registryPath: manifest.public_registry, runnerPath: manifest.public_runner};
   const audit = auditPublicChecks({root: rootDir, controls: false, ...publicAuditOptions});
   const budget = readTokenBudgetSnapshot(validateBudgetConfig(manifest.jev_budget, rootDir));
@@ -160,8 +176,8 @@ export async function preflightDagRun({rootDir = ROOT, manifest, probe = false, 
     const rawAuth = await checkedProcess('claude', ['auth', 'status'],
       {env: claudeEnvironment(process.env), timeoutMs: 15000, killProcessTree: true, abortSignal}, runCommand);
     const parsed = JSON.parse(rawAuth.stdout);
-    auth = {logged_in: parsed.loggedIn === true, auth_method: parsed.authMethod ?? null};
-    if (!auth.logged_in || auth.auth_method !== 'claude.ai') blockers.push('CLAUDE_AUTH_REQUIRED');
+    auth = {logged_in: parsed.loggedIn === true, auth_method: parsed.authMethod ?? null, accepted_methods: authMethods};
+    if (!claudeAuthAccepted(manifest, parsed)) blockers.push('CLAUDE_AUTH_REQUIRED');
     const probeBegan = performance.now();
     environment = await probeDagEnvironment({image, runCommand, remaining: () => Math.max(1, 30000 - Math.floor(performance.now() - probeBegan)), record, abortSignal});
     if (Object.values(environment.modules).some(module => !module.available)) blockers.push('DAG_DEPENDENCY_UNAVAILABLE');
