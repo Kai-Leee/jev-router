@@ -1,3 +1,7 @@
+# D085 — 복수 owner(C)·import/문법 오류 직접 수리 구현, 오프라인 재현 (유료 호출 없음)
+
+[구현·재현·분석](../orchestration/D085_MULTI_OWNER_AND_DIRECT_REPAIR.md) · [결정](../decisions/D085.md). `d085-direct-repair.json` = d083 + `owner_alternatives: owner-probability-v1` + `check_error_repair: generation-direct-v1`. 전송 정책 v11 고정(runner·기본 경로 pin만 변경). `--probe` ready·막힘0·과금0. 회귀 1364/1368(실패1 root 전용 refund, 건너뜀3). 진단 스크립트로 과거 막힌 검사 3건 모두 재현, 원인 artifact는 모두 직접 범위(A16–A21) 안. C는 과거 owner 결정 12개 중 필요한 artifact를 한 회차 일찍 넣은 것 2, 불필요 추가 6. 유료 측정은 미실행(조건당 3회 이하). 아래는 과거 기록이다.
+
 # D084 — 구조·문제 발생 위치 분석 (유료 호출 없음)
 
 [분석](../orchestration/D084_STRUCTURE_AND_FAILURE_ORIGINS.md). 실행 15개 기준: 공개+독립 통과 9. 최다 원인은 artifact 간 통합(9), 특히 요청 본문 설명 R10.02가 회차0 13개 중 7개에서 실패(owner는 늘 A14, 여러 artifact 동시 수정 필요). D083 v3 raw 단계는 과거 19개 owner 결정 중 1회만 결과를 바꿈, 확장 규칙은 2회 기준 충족. 다음 후보 A–D는 제안. 아래는 과거 기록이다.

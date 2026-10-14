@@ -1,3 +1,5 @@
+D085: [복수 owner와 import·문법 오류 직접 수리](docs/orchestration/D085_MULTI_OWNER_AND_DIRECT_REPAIR.md)를 먼저 읽는다. `d085-direct-repair.json`(D083 + owner_alternatives owner-probability-v1 + check_error_repair generation-direct-v1)이 opt-in이며 전송 정책 기본은 v11이다(v1–v10은 재현용). 직접 수리 회차는 owner 추론을 건너뛰고 수리 2회와 별도로 1회 더한다. 진단 재현은 검사 증거가 아니다. 유료 측정은 조건당 3회 이하이며 아직 실행하지 않았다.
+
 D084: [구조와 문제 발생 위치](docs/orchestration/D084_STRUCTURE_AND_FAILURE_ORIGINS.md)를 먼저 읽는다. 분석 문서이며 런타임 변경은 없다. 다음 후보(A 통합 artifact 배치, B 막힌 검사 owner 질문, C 복수 owner, D 공개↔독립 차이)는 미결정이다.
 
 D083: [클라우드 실패 2건 원인과 수정](docs/orchestration/D083_REPAIR_DIRECTION.md)을 먼저 읽는다. `d083-repair-fixes.json`(D082 + repair-budget-v3 + scope_expansion worker-mentioned-v1)이 opt-in이며 전송 정책 기본은 v10이다(v1–v9는 재현용). 반복 측정은 조건당 3회만 한다. D082-08은 사용자 중단이며 재실행하지 않는다. 클라우드는 `scripts/cloud-env-up.sh`로 준비하고 완료 arm은 `scripts/grade-adaptive-arm.mjs`로 채점한다.
