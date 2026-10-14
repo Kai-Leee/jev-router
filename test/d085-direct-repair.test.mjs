@@ -70,7 +70,7 @@ test('d085 manifest differs from d083 only in the three new repair_feedback valu
   const {repair_feedback: feedback83, session_semantics: _b, ...rest83} = raw('d083-repair-fixes.json');
   assert.deepEqual(rest85, rest83);
   assert.deepEqual(feedback, {...feedback83, owner_alternatives: 'owner-probability-v1', check_error_repair: 'generation-direct-v1',
-    owner_tiebreak: 'flat-reask-v1'});
+    owner_tiebreak: 'flat-reask-v2'});
   assert.equal(loadAdaptiveRunManifest(join(manifests, 'd085-direct-repair.json'), root).repair_feedback.check_error_repair, 'generation-direct-v1');
 });
 

@@ -3,17 +3,22 @@ import {readFileSync} from 'node:fs';
 
 // D085 owner_tiebreak flat-reask-v1. A flat inferred owner answer is asked once more with the tied artifacts' source text;
 // an answer that stays flat leaves the choice among the tied artifacts to the repair worker.
-const CONTRACT_PATH = 'docs/orchestration/contracts/adaptive-owner-tiebreak.v1.json';
+const CONTRACTS = {'flat-reask-v1': 'docs/orchestration/contracts/adaptive-owner-tiebreak.v1.json',
+  'flat-reask-v2': 'docs/orchestration/contracts/adaptive-owner-tiebreak.v2.json'};
+export const OWNER_TIEBREAK_POLICIES = Object.keys(CONTRACTS);
 export {TIEBREAK_UNION_ID} from './adaptive-inferred-scope.mjs';
 
 const fail = code => { const error = new Error(code); error.code = code; throw error; };
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const fill = (template, values) => template.replace(/\{(\w+)\}/g, (_, key) => String(values[key] ?? 'none'));
 
-export function loadOwnerTiebreakContract() {
-  const raw = readFileSync(new URL(`../../${CONTRACT_PATH}`, import.meta.url), 'utf8'), contract = JSON.parse(raw);
-  if (contract.schema_version !== 'adaptive-owner-tiebreak/v1' || contract.policy !== 'flat-reask-v1') fail('ADAPTIVE_OWNER_TIEBREAK_CONTRACT');
-  return {contract, source: {path: CONTRACT_PATH, sha256: createHash('sha256').update(raw).digest('hex'), version: contract.schema_version}};
+// v2 keeps the v1 request text and only changes how the second answer is resolved and what the worker is told.
+export function loadOwnerTiebreakContract(policy = 'flat-reask-v2') {
+  const path = CONTRACTS[policy];
+  if (!path) fail('ADAPTIVE_OWNER_TIEBREAK_CONTRACT');
+  const raw = readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8'), contract = JSON.parse(raw);
+  if (contract.policy !== policy || contract.schema_version !== `adaptive-owner-tiebreak/${policy.slice(-2)}`) fail('ADAPTIVE_OWNER_TIEBREAK_CONTRACT');
+  return {contract, source: {path, sha256: createHash('sha256').update(raw).digest('hex'), version: contract.schema_version}};
 }
 
 /** The tied artifacts of one answer, or null when the answer is not flat under the contract rule. */
@@ -39,8 +44,8 @@ export function flatAssignments({assignments, answers, contract = loadOwnerTiebr
 }
 
 /** One request for every flat failure of the round; questions keep the first decision's question IDs. */
-export function buildOwnerTiebreakRequest({flat, planning, artifactBindings, sources}) {
-  const {contract, source} = loadOwnerTiebreakContract();
+export function buildOwnerTiebreakRequest({flat, planning, artifactBindings, sources, policy}) {
+  const {contract, source} = loadOwnerTiebreakContract(policy);
   if (!flat.length) fail('ADAPTIVE_OWNER_TIEBREAK_EMPTY');
   const ids = [...new Set(flat.flatMap(row => row.tied))];
   let budget = contract.source_excerpt.max_total_chars;
@@ -65,8 +70,8 @@ export function buildOwnerTiebreakRequest({flat, planning, artifactBindings, sou
 }
 
 /** Validates the second answer and resolves each flat failure, or leaves its tied set to the repair worker. */
-export function resolveOwnerTiebreak({flat, request, response}) {
-  const {contract} = loadOwnerTiebreakContract();
+export function resolveOwnerTiebreak({flat, request, response, policy}) {
+  const {contract} = loadOwnerTiebreakContract(policy);
   if (!object(response?.answers)) fail('ADAPTIVE_OWNER_TIEBREAK_RESPONSE');
   return flat.map(row => {
     const answer = response.answers[row.question_id], criteria = request.questions[row.question_id].criteria;
@@ -74,8 +79,19 @@ export function resolveOwnerTiebreak({flat, request, response}) {
       || (answer.probabilities !== undefined && (!object(answer.probabilities)
         || Object.values(answer.probabilities).some(value => !Number.isFinite(value) || value < 0 || value > 1)))) fail('ADAPTIVE_OWNER_TIEBREAK_RESPONSE');
     const stillFlat = answer.choice === 'unknown' || tiedArtifacts(answer, answer.choice, contract.flat_rule) !== null;
+    // v2: a switch to a different artifact must carry enough confidence; otherwise the worker chooses.
+    const confidence = Number.isFinite(answer.confidence) ? answer.confidence : answer.probabilities?.[answer.choice] ?? null;
+    const weakSwitch = !stillFlat && contract.resolution && answer.choice !== row.choice
+      && !(confidence >= contract.resolution.min_confidence_to_change_owner);
+    const unresolved = stillFlat || weakSwitch;
+    const ranking = contract.worker_ranking && unresolved && object(answer.probabilities)
+      ? [...row.tied].sort((a, b) => (answer.probabilities[b] ?? 0) - (answer.probabilities[a] ?? 0))
+        .map(id => ({artifact_id: id, probability: answer.probabilities[id] ?? null})) : null;
     return {question_id: row.question_id, failure_id: row.failure_id, tied: structuredClone(row.tied),
-      second_choice: answer.choice, second_probabilities: structuredClone(answer.probabilities ?? null),
-      status: stillFlat ? 'unresolved_worker_chooses' : 'resolved', artifact_ids: stillFlat ? structuredClone(row.tied) : [answer.choice]};
+      second_choice: answer.choice, second_confidence: confidence, second_probabilities: structuredClone(answer.probabilities ?? null),
+      status: unresolved ? 'unresolved_worker_chooses' : 'resolved',
+      ...(unresolved ? {unresolved_reason: answer.choice === 'unknown' ? 'unknown' : stillFlat ? 'still_flat' : 'low_confidence_switch'} : {}),
+      ...(ranking ? {worker_ranking: ranking} : {}),
+      artifact_ids: unresolved ? structuredClone(row.tied) : [answer.choice]};
   });
 }

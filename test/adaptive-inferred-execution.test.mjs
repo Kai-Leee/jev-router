@@ -548,7 +548,7 @@ test('D085 owner tie-break: a flat answer is asked once more with source text; s
   const run = async (tiebreak) => {
     const state = await fixture(t);
     Object.assign(state.options, {repairScopePolicy: 'public-inferred-owner-v2', artifactRepairPolicy: 'inferred-v2',
-      repairFeedback: {owner_tiebreak: 'flat-reask-v1', owner_alternatives: 'owner-probability-v1'},
+      repairFeedback: {owner_tiebreak: 'flat-reask-v2', owner_alternatives: 'owner-probability-v1'},
       decideRepair: async request => selectInferredOwnerScope(request), prepareRoundPlan: everySelectedProfile,
       decideRepairOwners: probabilityOwner('artifact-core', 'artifact-generator', 0.36, 0.34), decideOwnerTiebreak: tiebreak});
     const execute = state.options.executeTask, scopes = [];
@@ -582,6 +582,14 @@ test('D085 owner tie-break: a flat answer is asked once more with source text; s
   assert.equal(flat.result.rounds[0].owner_tiebreak.status, 'partly_unresolved');
   assert.match(flat.result.repair_actions[0].candidate.reason, /could not separate these owners/);
   assert.deepEqual(flat.scopes.map(scope => scope.sort()), [['producer.py'], ['generator.py']]);
+  // v2: a switch to another artifact with confidence below 0.3 is not a resolution; the worker gets the second answer's order.
+  const weak = await run(async request => ({answers: Object.fromEntries(Object.keys(request.questions).map(id => [id, {type: 'choice',
+    choice: 'artifact-generator', confidence: 0.2, probabilities: {'artifact-core': 0.1, 'artifact-generator': 0.45, unknown: 0.45}}]))}));
+  const [weakRow] = weak.result.rounds[0].owner_tiebreak.resolutions;
+  assert.equal(weakRow.status, 'unresolved_worker_chooses'); assert.equal(weakRow.unresolved_reason, 'low_confidence_switch');
+  assert.deepEqual(weakRow.worker_ranking.map(item => item.artifact_id), ['artifact-generator', 'artifact-core']);
+  assert.match(weak.result.repair_actions[0].candidate.reason, /Second-answer order of the tied artifacts \(a hint, not proof\): failure-[0-9a-f]+: artifact-generator 0.45 > artifact-core 0.10/);
+  assert.deepEqual(weak.scopes.map(scope => scope.sort()), [['producer.py'], ['generator.py']]);
   // A known failure of the second question also leaves the choice to the worker; an unknown outcome stops the round.
   const failed = await run(async () => { throw Object.assign(new Error('HTTP400'), {code: 'PROVIDER_REJECTED', outcome_uncertain: false}); });
   assert.equal(failed.result.rounds[0].owner_tiebreak.status, 'failed_worker_chooses');

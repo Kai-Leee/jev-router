@@ -74,7 +74,7 @@
   },
   "preparation_accounting": "Reuse the exact completed D066 source-only catalog with pinned result, source snapshots and identical generation prompt/schema. There are no new catalog calls or preparation charges in this cohort. Current-run arm wall time and usage are primary; historical full-preparation inclusive references are recorded separately and never added to current-cohort physical spend.",
   "deadline_basis": "Retain the existing 14400-second total deadline and no separate worker cap. Cumulative and per-arm token spending caps are null. v4 input estimates are observational; official 256000-byte body, structural and uncertainty checks can block.",
-  "session_semantics": "D085 owner alternatives and direct check-error repair: identical to d083-repair-fixes except repair_feedback.owner_alternatives owner-probability-v1 (for each inferred failure, a non-chosen artifact with Jev probability >= 0.2 and >= 0.4 x the chosen probability joins the union scope; at most 2 added), repair_feedback.owner_tiebreak flat-reask-v1 (an inferred answer whose choice is below 0.4 with another artifact within 0.1 is asked once more with the tied artifacts source text; if it stays flat the tied artifacts all join the scope and the repair worker chooses; owner_alternatives skips those answers) and repair_feedback.check_error_repair generation-direct-v1 (a public check blocked by SyntaxError/IndentationError/TabError/ImportError/ModuleNotFoundError skips owner inference once and sends the generator and template artifacts a repair worker with the reported errors and a controller reproduction of the generated files; this direct round is added to the two normal repair rounds). Same D066 catalog, public93, independent63, two execution slots. No D075 transmission gate.",
+  "session_semantics": "D085 owner alternatives and direct check-error repair: identical to d083-repair-fixes except repair_feedback.owner_alternatives owner-probability-v1 (for each inferred failure, a non-chosen artifact with Jev probability >= 0.2 and >= 0.4 x the chosen probability joins the union scope; at most 2 added), repair_feedback.owner_tiebreak flat-reask-v2 (an inferred answer whose choice is below 0.4 with another artifact within 0.1 is asked once more with the tied artifacts source text; if it stays flat, is unknown, or switches to another artifact with confidence below 0.3, the tied artifacts all join the scope and the repair worker chooses, given the second answer's order as a hint; owner_alternatives skips those answers) and repair_feedback.check_error_repair generation-direct-v1 (a public check blocked by SyntaxError/IndentationError/TabError/ImportError/ModuleNotFoundError skips owner inference once and sends the generator and template artifacts a repair worker with the reported errors and a controller reproduction of the generated files; this direct round is added to the two normal repair rounds). Same D066 catalog, public93, independent63, two execution slots. No D075 transmission gate.",
   "claude_auth_methods": [
     "claude.ai",
     "oauth_token"
@@ -155,7 +155,7 @@
     "scope_expansion": "worker-mentioned-v1",
     "owner_alternatives": "owner-probability-v1",
     "check_error_repair": "generation-direct-v1",
-    "owner_tiebreak": "flat-reask-v1"
+    "owner_tiebreak": "flat-reask-v2"
   },
   "schedule_policy": {
     "policy": "critical-path-v1",

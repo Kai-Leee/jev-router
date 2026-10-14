@@ -138,7 +138,7 @@
   "transmission_preflight": {
     "mode": "required",
     "contract": "docs/orchestration/contracts/jev-transmission-preflight.v11.json",
-    "sha256": "56dae744d3509da962c65a9e529d1b1f5cc01e3716d27c66996b22d13b99416c"
+    "sha256": "abcd121fd01e7639d3dc658a1ef0fced5a6ffc1fda01dab0d85a959a21560fb6"
   },
   "failure_recovery": {
     "mode": "required",
