@@ -1,9 +1,9 @@
 {
   "name": "pointsman",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "private": true,
   "type": "module",
-  "description": "Jev 판단을 따르겠습니다.",
+  "description": "Fast task routing with Jev and dependency DAGs.",
   "license": "Apache-2.0",
   "engines": {
     "node": ">=22"

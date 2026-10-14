@@ -3,52 +3,60 @@
 
 <h1 align="center">Pointsman</h1>
 
-<p align="center"><em>I'll follow Jev's judgment.</em><br><sub>formerly Jev Router</sub></p>
+<p align="center"><em>Fast task routing with Jev and dependency DAGs.</em><br><sub>formerly Jev Router</sub></p>
 
 **English** | [한국어](README.ko.md) | [简体中文](README.zh-CN.md)
 
-Pointsman helps a main coding agent with model selection and in-task decisions by asking
-[Jev AI](https://jev-ai.pro) fixed, structured questions. This repository contains a server-side
-Jev client, an offline evaluation CLI, isolated benchmark runners and a local usage dashboard.
-It is a research project. Live results are few, and each one is recorded with its evidence.
+Pointsman is a Jev-powered task routing project for coding agents. It turns structured decisions
+into dependency DAGs: divide work, connect prerequisites, and dispatch ready tasks to coding workers.
+The research runner connects routing decisions to scoped artifacts, public checks and recorded outcomes.
 
-> Korean documents have English versions (`*.en.md`). Research and analysis records live on the
-> [`research` branch](https://github.com/Kai-Leee/pointsman/tree/research) and are in Korean.
+This release provides the Jev client, evaluation tools, run contracts and usage dashboard.
+The advanced DAG experiments are documented on the [research branch](https://github.com/Kai-Leee/pointsman/tree/research).
 
-[Status](#status) · [Why](#why) · [Quick start](#quick-start) · [Limitations](#limitations) ·
-[Documentation](#documentation) · [Security](#security) · [License](#license)
+[Measured results](#measured-results) · [How routing works](#how-routing-works) ·
+[Quick start](#quick-start) · [Documentation](#documentation) · [Security](#security)
 
-## Status
+## Measured results
 
-| Area | State | Evidence |
-|---|---|---|
-| Jev connection (`GET /v1/models`, `POST /v1/systemone`) | Implemented. Key setup and authenticated model listing confirmed on 2026-10-08 | [usage guide](docs/USAGE.en.md#local-key-setup) |
-| Offline evaluation CLI | Implemented. Bundled examples are synthetic | [evaluation CLI](docs/EVALUATION_USAGE.en.md) |
-| Live single vs. split E2E run (D029) | One run per arm. Both 30/30 on independent grading. Split: stage-time sum 22.829% lower, estimated cost 64.112% higher | [D029 results](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D029_RESULTS.md) |
-| Input projection v3 (D031) | Offline replay only, no new paid calls, 390/390 regression tests | [D031 implementation](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D031_IMPLEMENTATION.md) |
-| Automatic routing benefit, product completeness | Not verified | [STATE](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md) |
+**21.84% less development-stage time and 58.52% lower API-rate-equivalent cost** in one completed
+D067 benchmark observation, with all **85 public and 63 independent checks passing** in both conditions.
 
-The latest checkpoint is always [STATE on the research branch](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md). This table can lag behind it.
+| OpenAPI Python client generator | Development-stage time | Historical API-rate-equivalent cost |
+|---|---:|---:|
+| Claude structured decisions + Claude workers | 36m 20.704s | $21.135172 |
+| Jev decomposition and dependency decisions + Claude workers | 28m 24.540s | $8.766580 |
 
-## Why
+One run per condition in a concurrent cohort; identical Opus 5.5 medium worker profile and two worker slots
+per condition. Time includes decisions, implementation, repairs and public validation, excluding shared
+preparation and independent grading. Costs use recorded usage and the rates captured for that experiment,
+not subscription bills. Reductions use the Claude row as the denominator.
+[Measurement method and arithmetic](docs/MEASURED_ROUTING.en.md) ·
+[Complete experiment record](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D067_RESULTS.md).
 
-A main agent makes many small judgments while it works: which model and effort to use, whether to
-split a task, whether the evidence is sufficient. Pointsman tests whether these repeated judgments
-can go to Jev AI as fixed English questions with structured answers (`choice`, `score`, `noul`).
+## How routing works
+
+The main agent supplies the goal, public specification and artifact contracts. Fixed English questions
+let Jev judge work decomposition and dependencies. The research runner turns validated decisions into
+an executable DAG, then dispatches ready work within each worker's file scope.
 
 ```text
-decision point in the main task
-→ check goal, evidence and required output
-→ build candidates (when needed)
-→ write the English question and validate the API input
-→ call Jev
-→ validate the answer, record decision state and usage
-→ main session takes the next action
+Goal + specification + artifact contracts
+→ structured Jev questions and input validation
+→ decomposition and dependency decisions
+→ dependency DAG and ready-task queue
+→ scoped coding workers
+→ public checks tied to artifact revisions
+→ recorded outcomes and evidence-driven repair routing
 ```
 
-The main session keeps the goal and acts. A Jev answer is not permission to act and not proof that
-tests pass. Accuracy, speed, token and cost gains are hypotheses until measured. A Jev probability
-is not a task success rate. Details: [technical spec](docs/TECHNICAL_SPEC.en.md).
+- **Dependencies guide dispatch.** Ready tasks can run concurrently; downstream work consumes validated upstream artifacts.
+- **Decisions reach execution.** Structured answers connect to worker scopes and execution handlers.
+- **Evidence follows each decision.** Questions, accepted answers, usage, artifact revisions and checks stay connected.
+
+The controller enforces permissions and validation. Jev selects within that contract; tests establish
+whether the resulting artifacts meet the task requirements. See the
+[technical specification](docs/TECHNICAL_SPEC.en.md) and [research state](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md).
 
 ## Quick start
 
@@ -79,19 +87,6 @@ npm run demo -- --spend  # one paid POST; uses your Jev balance
 More: [all usage, failure handling and deployment](docs/USAGE.en.md) ·
 [MCP launcher](MCP.md) · [dashboard](docs/DASHBOARD.en.md) (`npm run dashboard`) ·
 [benchmarks](benchmarks/README.md).
-
-## Limitations
-
-Do not use Pointsman if you need any of these:
-
-- **A production router.** No deployment has been done. There is no distributed rate limiter.
-- **Automatic recovery.** Calls are never retried automatically. A paid POST with an uncertain
-  result is not resent; check usage first ([failure handling](docs/USAGE.en.md#failure-handling-and-limits)).
-- **Strong evidence.** The only live split comparison (D029) has one run per arm. Thresholds are
-  uncalibrated, and the operating threshold is `null`.
-- **Host integration.** Automatic plugin loading in hosts, Claude/Codex executor selection and load
-  balancing are not verified.
-- **Live decisions without a paid key.** Only the offline tools and tests work without a Jev AI key.
 
 ## Documentation
 

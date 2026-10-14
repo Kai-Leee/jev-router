@@ -1,11 +1,11 @@
 {
   "name": "jev-ai",
-  "version": "0.3.2",
-  "description": "Use the pinned freepik-company Jev MCP with the Jev AI compatible endpoint.",
+  "version": "0.3.3",
+  "description": "Typed Jev decisions for Pointsman task routing, using the pinned Jev MCP and compatible endpoint.",
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Jev AI MCP",
-    "shortDescription": "Typed Jev decisions through an existing MCP server",
+    "shortDescription": "Typed decisions for Jev-powered task routing",
     "capabilities": [
       "Read"
     ]
