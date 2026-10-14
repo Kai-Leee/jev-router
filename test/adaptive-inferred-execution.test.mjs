@@ -543,3 +543,50 @@ test('D085 check-error repair: a blocked check goes straight to the generation a
   assert.equal(degraded.rounds[0].check_error_repair.diagnoses[0].status, 'unavailable');
   assert.equal(degraded.status, 'completed', JSON.stringify(degraded.terminal_cause));
 });
+
+test('D085 owner tie-break: a flat answer is asked once more with source text; still flat leaves the tied owners to the worker', async t => {
+  const run = async (tiebreak) => {
+    const state = await fixture(t);
+    Object.assign(state.options, {repairScopePolicy: 'public-inferred-owner-v2', artifactRepairPolicy: 'inferred-v2',
+      repairFeedback: {owner_tiebreak: 'flat-reask-v1', owner_alternatives: 'owner-probability-v1'},
+      decideRepair: async request => selectInferredOwnerScope(request), prepareRoundPlan: everySelectedProfile,
+      decideRepairOwners: probabilityOwner('artifact-core', 'artifact-generator', 0.36, 0.34), decideOwnerTiebreak: tiebreak});
+    const execute = state.options.executeTask, scopes = [];
+    state.options.executeTask = async (task, context) => {
+      if (context.operation !== 'repair') return execute(task, context);
+      scopes.push([...task.write_scope]);
+      if (task.write_scope.includes('producer.py')) await writeFile(join(context.stageDirectory, 'producer.py'), 'description = "REQUEST"\n');
+      return {status: 'completed', outcome_uncertain: false};
+    };
+    const result = await runAdaptiveDagExecution(state.options);
+    return {result, scopes, events: state.events};
+  };
+  const asked = [];
+  const answer = (choice, probabilities) => async request => {
+    asked.push(request);
+    return {answers: Object.fromEntries(Object.keys(request.questions).map(id => [id, {type: 'choice', choice, probabilities}]))};
+  };
+  // Resolved: the second answer separates the tie, so the chosen owner joins and C does not use the flat answer.
+  const resolved = await run(answer('artifact-generator', {'artifact-core': 0.15, 'artifact-generator': 0.8, unknown: 0.05}));
+  assert.equal(resolved.result.status, 'completed', JSON.stringify(resolved.result.terminal_cause));
+  const [request] = asked;
+  assert.equal(request.state.schema_version, 'adaptive-owner-tiebreak-request/v1');
+  assert.deepEqual(request.state.candidates.map(row => row.artifact_id), ['artifact-core', 'artifact-generator']);
+  assert.deepEqual(request.state.candidates[0].files.map(file => [file.path, file.content]), [['producer.py', 'description = "SCHEMA"\n']]);
+  assert.deepEqual(Object.keys(Object.values(request.questions)[0].criteria), ['artifact-core', 'artifact-generator', 'unknown']);
+  assert.equal(resolved.result.rounds[0].owner_tiebreak.status, 'resolved');
+  assert.equal(resolved.result.repair_actions[0].candidate.id, 'repair-inferred-owners+tiebreak');
+  assert.deepEqual(resolved.result.repair_actions[0].candidate.artifact_ids, ['artifact-core', 'artifact-generator']);
+  // Still flat: the tied set goes to the worker with the unresolved instruction.
+  const flat = await run(answer('artifact-core', {'artifact-core': 0.38, 'artifact-generator': 0.37, unknown: 0.25}));
+  assert.equal(flat.result.rounds[0].owner_tiebreak.status, 'partly_unresolved');
+  assert.match(flat.result.repair_actions[0].candidate.reason, /could not separate these owners/);
+  assert.deepEqual(flat.scopes.map(scope => scope.sort()), [['producer.py'], ['generator.py']]);
+  // A known failure of the second question also leaves the choice to the worker; an unknown outcome stops the round.
+  const failed = await run(async () => { throw Object.assign(new Error('HTTP400'), {code: 'PROVIDER_REJECTED', outcome_uncertain: false}); });
+  assert.equal(failed.result.rounds[0].owner_tiebreak.status, 'failed_worker_chooses');
+  assert.equal(failed.result.status, 'completed', JSON.stringify(failed.result.terminal_cause));
+  const unknown = await run(async () => { throw Object.assign(new Error('timeout'), {code: 'PROVIDER_TIMEOUT', outcome_uncertain: true}); });
+  assert.equal(unknown.result.status, 'uncertain');
+  assert.equal(unknown.result.repair_actions.length, 0);
+});

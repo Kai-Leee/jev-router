@@ -3,7 +3,7 @@
   "policy_id": "d085-required-pre-send-v11",
   "supersedes": {
     "path": "docs/orchestration/contracts/jev-transmission-preflight.v10.json",
-    "reason": "D085 adds repair_feedback.owner_alternatives owner-probability-v1 and check_error_repair generation-direct-v1 (with its local diagnosis callback) as opt-in manifest bindings in adaptive-dag-runner.mjs, and points the gate default at v11. The Jev request format, prompt policy and connection rules are unchanged. Pins frozen on 2026-10-14. v1-v10 are unchanged."
+    "reason": "D085 adds repair_feedback.owner_alternatives owner-probability-v1 check_error_repair generation-direct-v1 and owner_tiebreak flat-reask-v1 (its second owner question) (with its local diagnosis callback) as opt-in manifest bindings in adaptive-dag-runner.mjs, and points the gate default at v11. The Jev request format, prompt policy and connection rules are unchanged. Pins frozen on 2026-10-14. v1-v10 are unchanged."
   },
   "enforcement": "required",
   "input_policy": "v4",
@@ -57,7 +57,7 @@
     },
     {
       "path": "src/benchmark/adaptive-dag-runner.mjs",
-      "sha256": "2da2c3a72554c4ebad9607b64849129f47d2217e8d10af55e42bec86e2b33b49"
+      "sha256": "d9ea727be7a97669433b84d830d13c935316c855aa2edf2c6ed712ae5879f986"
     },
     {
       "path": "src/benchmark/telemetry.mjs",

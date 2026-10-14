@@ -55,7 +55,7 @@ const REPAIR_BUDGET_CONTRACTS = {'repair-budget-v1': 'docs/orchestration/contrac
 /** D076 opt-in owner-request budget (v11/v12 manifests with repair_budget only). */
 export const adaptiveRepairBudgetOption = manifest => manifest.repair_budget ? {repairBudget: {policy: manifest.repair_budget.policy}} : {};
 const REPAIR_FEEDBACK_VALUES = {read_scope: 'candidate-v1', worker_diagnostics: 'report-v1', scope_expansion: 'worker-mentioned-v1',
-  owner_alternatives: 'owner-probability-v1', check_error_repair: 'generation-direct-v1'};
+  owner_alternatives: 'owner-probability-v1', check_error_repair: 'generation-direct-v1', owner_tiebreak: 'flat-reask-v1'};
 const CHECK_ERROR_DIAGNOSIS_SCRIPT = 'scripts/diagnose-check-error.py';
 /** D076 opt-in repair feedback (v11/v12 manifests with repair_feedback only). */
 export const adaptiveRepairFeedbackOption = manifest => manifest.repair_feedback ? {repairFeedback: {...manifest.repair_feedback}} : {};
@@ -1067,6 +1067,8 @@ export async function runAdaptiveArm({rootDir = ROOT, manifest = loadAdaptiveRun
       publicCheckConcurrency: adaptiveRuntimeSpeed(manifest).public_check_concurrency, ...adaptiveRepairBudgetOption(manifest), ...adaptiveRepairFeedbackOption(manifest),
       ...(arm === 'jev_profile' ? {prepareRoundPlan: selectProfiles} : {}),
       ...(inferredManifest(manifest) ? {decideRepairOwners: forms?.decideRepairOwners ?? ((request, metadata) => session.decide('jev', request, metadata))} : {}),
+      // D085 owner_tiebreak: the second owner question has its own shape, so it bypasses the owner-criteria labelling.
+      ...(manifest.repair_feedback?.owner_tiebreak ? {decideOwnerTiebreak: (request, metadata) => session.decide('jev', request, metadata)} : {}),
       ...(repairManifest(manifest) ? {repairScopePolicy: inferredManifest(manifest) ? `public-inferred-owner-${inferredPolicy(manifest).slice(-2)}` : causalManifest(manifest) ? 'public-causal-v1' : 'minimal-public-v1', projectRepairFailure: repairProjection.projectAdaptiveRepairFailure} : {}),
       ...(artifactRepair ? {artifactRepairPolicy: inferredManifest(manifest) ? inferredPolicy(manifest) : causalManifest(manifest) ? 'causal-v1' : compactRepairManifest(manifest) ? 'artifact-v2' : 'artifact-v1', assertionContract} : {}),
       decideRepair: forms?.decideRepair ?? (request => planner.chooseAdaptiveRepair({source: input.source, ...request,

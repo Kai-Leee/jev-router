@@ -6,16 +6,18 @@ const CONTRACT_PATH = 'docs/orchestration/contracts/adaptive-inferred-scope.v1.j
 const UNION_ID = 'repair-inferred-owners';
 export const EXPANDED_UNION_ID = `${UNION_ID}+worker-mentioned`;
 export const ALTERNATIVES_UNION_ID = `${UNION_ID}+owner-alternatives`;
+export const TIEBREAK_UNION_ID = `${UNION_ID}+tiebreak`;
 const EXPANSION_MAX = 2;
 const ALTERNATIVE_MIN_PROBABILITY = 0.2, ALTERNATIVE_MIN_RATIO = 0.4;
 
 /** D085 owner-probability-v1 (multi-owner from one choice answer): for each inferred failure, a non-chosen artifact whose
  * Jev probability is at least 0.2 and at least 0.4 x the chosen artifact's probability is a secondary owner. Up to 2 such
  * artifacts outside the union join it, ordered by the number of failures naming them, then their summed probability. */
-export function ownerProbabilityAlternatives({baseArtifactIds, plan, assignments, answers}) {
+export function ownerProbabilityAlternatives({baseArtifactIds, plan, assignments, answers, skipQuestionIds = []}) {
   const counts = new Map(), sums = new Map();
   for (const row of assignments ?? []) {
-    if (row.status !== 'inferred') continue;
+    // A flat answer that went through the owner tie-break is settled there, not by this ratio rule.
+    if (row.status !== 'inferred' || skipQuestionIds.includes(row.question_id)) continue;
     const probabilities = answers?.[row.question_id]?.probabilities;
     if (!probabilities || !Number.isFinite(probabilities[row.artifact_id])) continue;
     const top = probabilities[row.artifact_id];
@@ -60,8 +62,8 @@ export function selectInferredOwnerScope({candidates}) {
   const raw = readFileSync(new URL(`../../${CONTRACT_PATH}`, import.meta.url), 'utf8');
   const basis = {contract: CONTRACT_PATH, sha256: createHash('sha256').update(raw).digest('hex')};
   // An expanded union exists only when the manifest opts into an expansion and its rule added artifacts; the
-  // worker-mentioned union is built on the owner-alternatives union when both apply.
-  const union = [EXPANDED_UNION_ID, ALTERNATIVES_UNION_ID, UNION_ID].map(id => candidates.find(candidate => candidate.id === id)).find(Boolean);
+  // worker-mentioned union is built on the owner-alternatives union, which is built on the tie-break union.
+  const union = [EXPANDED_UNION_ID, ALTERNATIVES_UNION_ID, TIEBREAK_UNION_ID, UNION_ID].map(id => candidates.find(candidate => candidate.id === id)).find(Boolean);
   const common = {outcome_uncertain: false, dispatch_allowed: false, automatic_retries: 0, selection_basis: basis,
     stats: {provider_calls: 0, provider_questions: 0, local_questions: 1}};
   if (!union) return {...common, status: 'stopped', reason: 'ADAPTIVE_REPAIR_NO_INFERRED_OWNER', candidate: null, candidate_id: null};

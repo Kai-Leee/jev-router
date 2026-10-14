@@ -64,12 +64,13 @@ test('check-error repair selects the generator and template artifacts of the D06
   assert.equal(checkErrorCandidate({plan: catalogPlan, artifactBindings: bindings, errors: []}), null);
 });
 
-test('d085 manifest differs from d083 only in the two new repair_feedback values and semantics', () => {
+test('d085 manifest differs from d083 only in the three new repair_feedback values and semantics', () => {
   const raw = name => JSON.parse(readFileSync(join(manifests, name), 'utf8'));
   const {repair_feedback: feedback, session_semantics: _a, ...rest85} = raw('d085-direct-repair.json');
   const {repair_feedback: feedback83, session_semantics: _b, ...rest83} = raw('d083-repair-fixes.json');
   assert.deepEqual(rest85, rest83);
-  assert.deepEqual(feedback, {...feedback83, owner_alternatives: 'owner-probability-v1', check_error_repair: 'generation-direct-v1'});
+  assert.deepEqual(feedback, {...feedback83, owner_alternatives: 'owner-probability-v1', check_error_repair: 'generation-direct-v1',
+    owner_tiebreak: 'flat-reask-v1'});
   assert.equal(loadAdaptiveRunManifest(join(manifests, 'd085-direct-repair.json'), root).repair_feedback.check_error_repair, 'generation-direct-v1');
 });
 
@@ -84,4 +85,18 @@ test('an unknown repair_feedback value is rejected', t => {
 
 test('the diagnosis script compiles', () => {
   execFileSync('python3', ['-m', 'py_compile', join(root, 'scripts/diagnose-check-error.py')]);
+});
+
+test('flat-reask-v1 marks the recorded flat answers and leaves clear or near-boundary ones alone', async () => {
+  const {tiedArtifacts} = await import('../src/orchestration/adaptive-owner-tiebreak.mjs');
+  const flat = (choice, rest) => tiedArtifacts(answer(choice, rest), choice);
+  // d080-defaults-01 r0 owner.df6930db: A14 0.23, A09 0.22, A11 0.20, A13 0.14.
+  assert.deepEqual(flat('A14', {A14: 0.23, A09: 0.22, A11: 0.20, A13: 0.14}), ['A14', 'A09', 'A11']);
+  // d082-cloud-06 r1 owner.c3bd77c5: A07 0.36, A21 0.36.
+  assert.deepEqual(flat('A07', {A07: 0.36, A21: 0.36, A14: 0.15, A19: 0.11}), ['A07', 'A21']);
+  // d082-cloud-02 r0 owner.d56eec11: A02 0.36, A03 0.26 (gap exactly 0.10) is not flat; unknown never counts as a tied artifact.
+  assert.equal(flat('A02', {A02: 0.36, A03: 0.26, unknown: 0.26}), null);
+  assert.equal(flat('A19', {A19: 0.39, unknown: 0.29, A18: 0.14}), null);
+  // d082-cloud-04 r1 owner.df6930db: A14 0.42 is at or above 0.4.
+  assert.equal(flat('A14', {A14: 0.42, A19: 0.39}), null);
 });

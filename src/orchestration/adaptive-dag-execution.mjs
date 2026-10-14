@@ -20,7 +20,8 @@ import {assessAdaptiveFailureRecovery, acceptAdaptiveRecoveryEvidence, adaptiveW
   validateAdaptiveRecoveryRequest, loadAdaptiveFailureRecoveryPolicy, recoveryDigest} from './adaptive-failure-recovery.mjs';
 import {CHECK_ERROR_CANDIDATE_ID, blockedCheckErrors, checkErrorCandidate, withCheckErrorScope, buildCheckErrorWorkerContext,
   loadCheckErrorRepairContract} from './adaptive-check-error-repair.mjs';
-import {workerMentionedExpansion, ownerProbabilityAlternatives, EXPANDED_UNION_ID, ALTERNATIVES_UNION_ID} from './adaptive-inferred-scope.mjs';
+import {workerMentionedExpansion, ownerProbabilityAlternatives, EXPANDED_UNION_ID, ALTERNATIVES_UNION_ID, TIEBREAK_UNION_ID} from './adaptive-inferred-scope.mjs';
+import {flatAssignments, buildOwnerTiebreakRequest, resolveOwnerTiebreak, loadOwnerTiebreakContract} from './adaptive-owner-tiebreak.mjs';
 
 const clone = value => structuredClone(value);
 const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object'
@@ -219,16 +220,32 @@ function withExpandedScope({candidates, analysis}, {plan, baseIds, id, expand, r
 }
 
 function withWorkerMentionedScope(inferred, {plan, diagnostics, persistent_failure_keys}) {
-  return withExpandedScope(inferred, {plan, baseIds: [ALTERNATIVES_UNION_ID, 'repair-inferred-owners'], id: EXPANDED_UNION_ID,
+  return withExpandedScope(inferred, {plan, baseIds: [ALTERNATIVES_UNION_ID, TIEBREAK_UNION_ID, 'repair-inferred-owners'], id: EXPANDED_UNION_ID,
     expand: baseArtifactIds => workerMentionedExpansion({baseArtifactIds, plan, diagnostics, persistentFailureKeys: persistent_failure_keys}),
     reason: 'Repair the inferred union plus artifacts that the previous repair workers named while its failures persisted; preserve unknown failures and all other artifacts.'});
 }
 
+// D085 owner_tiebreak flat-reask-v1: owners settled by the second question (or the tied sets left to the worker) join the union.
+function withTiebreakScope(inferred, {plan, tiebreak}) {
+  const {contract} = loadOwnerTiebreakContract(), order = plan.artifacts.map(row => row.id);
+  const unresolved = tiebreak.resolutions.some(row => row.status !== 'resolved');
+  return withExpandedScope(inferred, {plan, baseIds: ['repair-inferred-owners'], id: TIEBREAK_UNION_ID,
+    expand: baseArtifactIds => {
+      const added = order.filter(id => !baseArtifactIds.includes(id) && tiebreak.resolutions.some(row => row.artifact_ids.includes(id)));
+      return added.length ? {artifact_ids: order.filter(id => baseArtifactIds.includes(id) || added.includes(id)),
+        info: {policy: 'flat-reask-v1', added_artifact_ids: added, status: tiebreak.status, request_sha256: tiebreak.request_sha256,
+          response_sha256: tiebreak.response_sha256, resolutions: clone(tiebreak.resolutions), basis: 'jev_second_answer_or_worker_choice_not_fault_proof'}} : null;
+    },
+    reason: unresolved ? `Repair the inferred union plus tied owners of flat answers. ${contract.unresolved_reason}`
+      : 'Repair the inferred union plus the owners chosen when flat answers were asked again with source text; preserve unknown failures and all other artifacts.'});
+}
+
 // D085 owner_alternatives owner-probability-v1: secondary owners come from the sealed answers of this same inference.
-function withOwnerAlternativesScope(inferred, {plan}) {
+function withOwnerAlternativesScope(inferred, {plan, skipQuestionIds = []}) {
   const info = inferred.analysis.inferred_ownership;
-  return withExpandedScope(inferred, {plan, baseIds: ['repair-inferred-owners'], id: ALTERNATIVES_UNION_ID,
-    expand: baseArtifactIds => ownerProbabilityAlternatives({baseArtifactIds, plan, assignments: info.assignments, answers: info.proof.answers}),
+  return withExpandedScope(inferred, {plan, baseIds: [TIEBREAK_UNION_ID, 'repair-inferred-owners'], id: ALTERNATIVES_UNION_ID,
+    expand: baseArtifactIds => ownerProbabilityAlternatives({baseArtifactIds, plan, assignments: info.assignments, answers: info.proof.answers,
+      skipQuestionIds}),
     reason: 'Repair the inferred union plus secondary owners that Jev rated close to a chosen owner for the same failure; preserve unknown failures and all other artifacts.'});
 }
 
@@ -374,12 +391,13 @@ export async function runAdaptiveDagExecution(options) {
       (options.publicCheckConcurrency !== undefined && (!Number.isSafeInteger(options.publicCheckConcurrency) || options.publicCheckConcurrency < 1)) ||
       (options.batchChecks !== undefined && typeof options.batchChecks !== 'function') ||
       (options.diagnoseCheckError !== undefined && typeof options.diagnoseCheckError !== 'function') ||
+      (options.repairFeedback?.owner_tiebreak && typeof options.decideOwnerTiebreak !== 'function') ||
       (options.repairBudget !== undefined && (!INFERRED_ARTIFACT_POLICIES.includes(options.artifactRepairPolicy)
         || !ADAPTIVE_REPAIR_BUDGET_POLICIES.includes(options.repairBudget?.policy) || Object.keys(options.repairBudget).length !== 1)) ||
       (options.repairFeedback !== undefined && (!INFERRED_ARTIFACT_POLICIES.includes(options.artifactRepairPolicy)
         || !options.repairFeedback || typeof options.repairFeedback !== 'object' || !Object.keys(options.repairFeedback).length
         || Object.entries(options.repairFeedback).some(([key, value]) => ({read_scope: 'candidate-v1', worker_diagnostics: 'report-v1',
-          scope_expansion: 'worker-mentioned-v1', owner_alternatives: 'owner-probability-v1',
+          scope_expansion: 'worker-mentioned-v1', owner_alternatives: 'owner-probability-v1', owner_tiebreak: 'flat-reask-v1',
           check_error_repair: 'generation-direct-v1'})[key] !== value)
         || (options.repairFeedback.scope_expansion && !options.repairFeedback.worker_diagnostics)))) {
     fail('ADAPTIVE_EXECUTION_INVALID_CONFIG');
@@ -1089,7 +1107,38 @@ export async function runAdaptiveDagExecution(options) {
           let inferred = applyInferredRepairOwners({planning, failure, candidates, artifactBindings: bindings, ownerInputPolicy, inference,
             ...(options.repairInputPolicy ? {repairInputPolicy: options.repairInputPolicy,
               ...(repairInputContext ? {repairInputContext} : {})} : {}), ...(requestOverride ? {requestOverride} : {})});
-          if (options.repairFeedback?.owner_alternatives) inferred = withOwnerAlternativesScope(inferred, {plan: planning.plan});
+          let flat = [];
+          if (options.repairFeedback?.owner_tiebreak) {
+            const info = inferred.analysis.inferred_ownership;
+            flat = flatAssignments({assignments: info.assignments, answers: info.proof.answers});
+            if (flat.length) {
+              const request = buildOwnerTiebreakRequest({flat, planning, artifactBindings: bindings,
+                sources: await repairSourceFiles(exported, bindings, plan, {recovery: true})});
+              await record({event: 'adaptive_owner_tiebreak_requested', round_index: roundIndex,
+                flat: flat.map(row => ({question_id: row.question_id, tied: row.tied, first_probabilities: row.first_probabilities})),
+                request_sha256: digest(request), request_bytes: Buffer.byteLength(JSON.stringify(request))});
+              let tiebreak;
+              try {
+                const response = await options.decideOwnerTiebreak(clone(request), {stage: 'repair_owners', round_index: roundIndex,
+                  decision_id: `owner-tiebreak-${digest(request).slice(0, 24)}`});
+                if (uncertain(response)) fail('ADAPTIVE_OWNER_TIEBREAK_UNCERTAIN', {outcome_uncertain: true});
+                const resolutions = resolveOwnerTiebreak({flat, request, response});
+                tiebreak = {status: resolutions.every(row => row.status === 'resolved') ? 'resolved' : 'partly_unresolved',
+                  request_sha256: digest(request), response_sha256: digest(response), resolutions};
+              } catch (error) {
+                // An unknown outcome stops like any owner decision; a known failure leaves every tied set to the worker.
+                if (adaptiveOutcomeUncertain(error, {fallback: false})) throw error;
+                tiebreak = {status: 'failed_worker_chooses', code: error?.code ?? 'ADAPTIVE_OWNER_TIEBREAK_FAILED', request_sha256: digest(request),
+                  response_sha256: null, resolutions: flat.map(row => ({question_id: row.question_id, failure_id: row.failure_id, tied: clone(row.tied),
+                    second_choice: null, second_probabilities: null, status: 'unresolved_worker_chooses', artifact_ids: clone(row.tied)}))};
+              }
+              round.owner_tiebreak = clone(tiebreak);
+              await record({event: 'adaptive_owner_tiebreak_completed', round_index: roundIndex, ...clone(tiebreak)});
+              inferred = withTiebreakScope(inferred, {plan: planning.plan, tiebreak});
+            }
+          }
+          if (options.repairFeedback?.owner_alternatives) inferred = withOwnerAlternativesScope(inferred, {plan: planning.plan,
+            skipQuestionIds: flat.map(row => row.question_id)});
           if (scopeExpansion) inferred = withWorkerMentionedScope(inferred, {plan: planning.plan, ...scopeExpansion});
           candidates = inferred.candidates;
           failure.repair_scope = clone(inferred.analysis);
