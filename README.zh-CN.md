@@ -3,50 +3,57 @@
 
 <h1 align="center">Pointsman</h1>
 
-<p align="center"><em>我会遵从 Jev 的判断。</em><br><sub>原名 Jev Router</sub></p>
+<p align="center"><em>通过 Jev 与依赖 DAG 实现快速任务路由。</em><br><sub>原名 Jev Router</sub></p>
 
 [English](README.md) | [한국어](README.ko.md) | **简体中文**
 
-Pointsman 通过向 [Jev AI](https://jev-ai.pro) 提出固定的结构化问题，辅助主编码智能体进行模型选择和
-任务中的判断。本仓库包含服务端 Jev 客户端、离线评估 CLI、隔离的基准测试运行器和本地用量仪表盘。
-这是一个研究项目。实测结果很少，每项结果都附有证据记录。
+Pointsman 是一个结合 Jev 与依赖 DAG 的编码智能体任务路由项目。
+它把结构化判断连接到任务拆分、前置依赖和执行顺序，并将就绪任务分派给编码工作智能体。
+研究运行器将路由结果与产物范围、公开检查和执行记录相连接。
 
-> 韩语文档附有英文版本（`*.en.md`）。研究与分析记录位于 [`research` 分支](https://github.com/Kai-Leee/pointsman/tree/research)，使用韩语编写。
+本次发布提供 Jev 客户端、评估工具、运行契约和用量仪表盘。
+高级 DAG 实验记录位于 [research 分支](https://github.com/Kai-Leee/pointsman/tree/research)。
 
-[现状](#现状) · [为什么需要](#为什么需要) · [快速开始](#快速开始) · [局限](#局限) ·
-[文档](#文档) · [安全](#安全) · [许可证](#许可证)
+[实测结果](#实测结果) · [路由流程](#路由流程) · [快速开始](#快速开始) ·
+[文档](#文档) · [安全](#安全)
 
-## 现状
+## 实测结果
 
-| 项目 | 状态 | 证据 |
-|---|---|---|
-| Jev 连接（`GET /v1/models`、`POST /v1/systemone`） | 已实现。2026-10-08 确认密钥配置和已认证的模型列表查询 | [使用说明](docs/USAGE.en.md#local-key-setup) |
-| 离线评估 CLI | 已实现。附带示例为合成数据 | [评估 CLI](docs/EVALUATION_USAGE.en.md) |
-| 实际单任务/拆分 E2E 运行（D029） | 每个条件各 1 次。独立评分均为 30/30。拆分：各阶段耗时合计降低 22.829%，估算成本增加 64.112% | [D029 结果](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D029_RESULTS.md) |
-| 输入投影 v3（D031） | 仅离线重放，无新的付费调用，回归测试 390/390 | [D031 实现](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D031_IMPLEMENTATION.md) |
-| 自动路由效果、产品完成度 | 未验证 | [STATE](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md) |
+在一次完成的 D067 基准测试观测中，**开发阶段耗时减少 21.84%，按 API 费率折算的成本减少 58.52%**。
+两组均通过全部 **85 项公开检查和 63 项独立检查**。
 
-最新检查点始终以 [research 分支的 STATE](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md) 为准。本表可能滞后于该文件。
+| OpenAPI Python 客户端生成器条件 | 开发阶段耗时 | 实验时 API 费率折算成本 |
+|---|---:|---:|
+| Claude 结构化判断 + Claude 工作智能体 | 36分 20.704秒 | $21.135172 |
+| Jev 拆分与依赖判断 + Claude 工作智能体 | 28分 24.540秒 | $8.766580 |
 
-## 为什么需要
+每个条件运行一次，各条件在同一批次并发执行。两组均使用 Opus 5.5 medium 工作智能体，每组两个并发工作槽。
+耗时包括判断、实现、修复和公开验证，不包括共享准备和独立评分。
+成本根据实验时记录的费率和调用用量折算，并非订阅账单。降幅以 Claude 基线为分母。
+[测量方法与计算式（英文）](docs/MEASURED_ROUTING.en.md) ·
+[完整实验记录](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D067_RESULTS.md)。
 
-主智能体在工作中要做许多小判断：使用哪个模型和 effort、是否拆分任务、证据是否充分。
-Pointsman 验证这些重复判断能否以固定英文问题和结构化答案（`choice`、`score`、`noul`）
-交给 Jev AI。
+## 路由流程
+
+主智能体提供目标、公开规格和产物契约。Jev 通过固定英文问题判断任务拆分与依赖关系。
+研究运行器将验证后的答案连接到可执行 DAG，并在每个工作智能体允许的文件范围内执行就绪任务。
 
 ```text
-主任务中的判断点
-→ 确认目标、证据和所需输出
-→ 构建候选项（如有需要）
-→ 编写英文问题并校验 API 输入
-→ 调用 Jev
-→ 校验回答，记录判断状态和用量
-→ 主会话执行后续行动
+目标 + 规格 + 产物契约
+→ 结构化 Jev 问题与输入验证
+→ 拆分与依赖判断
+→ 依赖 DAG 与就绪任务队列
+→ 限定文件范围的编码工作智能体
+→ 与产物版本绑定的公开检查
+→ 结果记录与基于失败证据的修复路由
 ```
 
-主会话保持目标并执行行动。Jev 的回答不是执行许可，也不是测试通过的证据。
-准确率、速度、token 和成本的改进在实测之前都是假设。Jev 的概率不是任务成功率。
-详见：[技术规格](docs/TECHNICAL_SPEC.en.md)。
+- **按依赖关系调度。** 就绪任务可并行执行，下游任务接收经验证的上游产物。
+- **判断连接到执行。** 结构化答案连接到工作范围与执行处理程序。
+- **每个判断保留证据。** 问题、答案、用量、产物版本与检查结果保持关联。
+
+控制器实施权限与验证，Jev 在契约范围内选择。测试确认产物是否满足任务要求。
+参见[技术规格](docs/TECHNICAL_SPEC.en.md)与[研究状态](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md)。
 
 ## 快速开始
 
@@ -76,17 +83,6 @@ npm run demo -- --spend  # 1 次付费 POST；消耗 Jev 余额
 更多：[完整使用、失败处理和部署说明](docs/USAGE.en.md) ·
 [MCP 启动器](MCP.md) · [仪表盘](docs/DASHBOARD.en.md)（`npm run dashboard`）·
 [基准测试](benchmarks/README.md)。
-
-## 局限
-
-如果需要以下任何一项，请不要使用 Pointsman：
-
-- **生产环境路由器。** 尚未进行任何部署。没有分布式限流器。
-- **自动恢复。** 调用从不自动重试。结果不确定的付费 POST 不会重新发送，应先核对用量
-  （[失败处理](docs/USAGE.en.md#failure-handling-and-limits)）。
-- **强证据。** 唯一的实际拆分对比（D029）每个条件只运行 1 次。阈值未校准，运行阈值为 `null`。
-- **宿主集成。** 宿主中的插件自动加载、Claude/Codex 执行者选择和负载均衡均未验证。
-- **无付费密钥的实际判断。** 没有 Jev AI 密钥时，只有离线工具和测试可以运行。
 
 ## 文档
 

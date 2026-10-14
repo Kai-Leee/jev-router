@@ -18,6 +18,24 @@ behavior bumps the minor version, and a fix-only goal bumps the patch version.
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-10-15
+
+Goal: describe Pointsman as Jev + DAG task routing and publish a scoped, completed benchmark result.
+
+### Changed
+
+- English, Korean and Chinese READMEs explain dependency-based task routing and distinguish the
+  released client/tools from the advanced DAG research runner.
+- Updated the package tagline and MCP plugin description while preserving plugin identity and configuration.
+- Replaced the old status/limitations summary with measured highlights and direct research links.
+
+### Added
+
+- Korean and English measurement notes for D067: the selected successful Jev decomposition/dependency
+  condition used 21.84% less development-stage time and 58.52% less historical API-rate-equivalent cost
+  than the structured Claude baseline. Both passed 85 public and 63 independent checks. The notes
+  specify one observation per condition, measurement boundaries, cost basis and reproduction commands.
+
 ## [0.3.2] - 2026-10-14
 
 Goal: show the M8ven score badge at the top of the READMEs.
