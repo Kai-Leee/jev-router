@@ -1,4 +1,4 @@
-D085: [복수 owner와 import·문법 오류 직접 수리](docs/orchestration/D085_MULTI_OWNER_AND_DIRECT_REPAIR.md)를 먼저 읽는다. `d085-direct-repair.json`(D083 + owner_alternatives owner-probability-v1 + owner_tiebreak flat-reask-v1 + check_error_repair generation-direct-v1)이 opt-in이며 전송 정책 기본은 v11이다(v1–v10은 재현용). 직접 수리 회차는 owner 추론을 건너뛰고 수리 2회와 별도로 1회 더한다. 평평한 owner 답은 1회 재질문 뒤에도 평평하면 수리 작업자가 고른다. 진단 재현과 정적 생성 smoke는 검사 증거가 아니며 smoke는 런타임에 연결하지 않았다. 유료 측정은 조건당 3회 이하이며 아직 실행하지 않았다.
+D085: [복수 owner와 import·문법 오류 직접 수리](docs/orchestration/D085_MULTI_OWNER_AND_DIRECT_REPAIR.md)를 먼저 읽는다. `d085-direct-repair.json`(D083 + owner_alternatives owner-probability-v1 + owner_tiebreak flat-reask-v2 + check_error_repair generation-direct-v1)이 opt-in이며 전송 정책 기본은 v11이다(v1–v10은 재현용). 직접 수리 회차는 owner 추론을 건너뛰고 수리 2회와 별도로 1회 더한다. 평평한 owner 답은 1회 재질문 뒤에도 평평하면 수리 작업자가 고른다. 진단 재현과 정적 생성 smoke는 검사 증거가 아니며 smoke는 런타임에 연결하지 않았다. 유료 3회(조건 한도 소진): 제품 성공 2/3, 01은 공개93·독립62.
 
 D084: [구조와 문제 발생 위치](docs/orchestration/D084_STRUCTURE_AND_FAILURE_ORIGINS.md)를 먼저 읽는다. 분석 문서이며 런타임 변경은 없다. 다음 후보(A 통합 artifact 배치, B 막힌 검사 owner 질문, C 복수 owner, D 공개↔독립 차이)는 미결정이다.
 
