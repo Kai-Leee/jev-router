@@ -1,4 +1,5 @@
 <p align="center"><img src="docs/brand/pointsman-256.png" width="160" height="160" alt="Pointsman 吉祥物：用舌头拉动道岔扳手的青蛙"></p>
+<p align="center"><a href="https://m8ven.ai/mcp/kai-leee-jev-router-1k0heh?s=readme"><img src="https://m8ven.ai/badge/mcp/kai-leee-jev-router-1k0heh?v=048f027e982892c5acfd612cc732a9bb" alt="M8ven Score"></a></p>
 
 <h1 align="center">Pointsman</h1>
 

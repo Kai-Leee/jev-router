@@ -18,6 +18,15 @@ behavior bumps the minor version, and a fix-only goal bumps the patch version.
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-10-14
+
+Goal: show the M8ven score badge at the top of the READMEs.
+
+### Added
+
+- The English, Korean and Chinese READMEs show the M8ven score badge below the mascot, linking to the
+  M8ven listing for this repository.
+
 ## [0.3.1] - 2026-10-13
 
 Goal: move the public repository to its new name, Kai-Leee/pointsman.

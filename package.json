@@ -1,6 +1,6 @@
 {
   "name": "pointsman",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "type": "module",
   "description": "Jev 판단을 따르겠습니다.",
