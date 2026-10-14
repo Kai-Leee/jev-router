@@ -1,3 +1,7 @@
+D085: [복수 owner와 import·문법 오류 직접 수리](docs/orchestration/D085_MULTI_OWNER_AND_DIRECT_REPAIR.md)를 먼저 읽는다. `d085-direct-repair.json`(D083 + owner_alternatives owner-probability-v1 + owner_tiebreak flat-reask-v2 + check_error_repair generation-direct-v1)이 opt-in이며 전송 정책 기본은 v11이다(v1–v10은 재현용). 직접 수리 회차는 owner 추론을 건너뛰고 수리 2회와 별도로 1회 더한다. 평평한 owner 답은 1회 재질문 뒤에도 평평하면 수리 작업자가 고른다. 진단 재현과 정적 생성 smoke는 검사 증거가 아니며 smoke는 런타임에 연결하지 않았다. 유료 3회(조건 한도 소진): 제품 성공 2/3, 01은 공개93·독립62.
+
+D084: [구조와 문제 발생 위치](docs/orchestration/D084_STRUCTURE_AND_FAILURE_ORIGINS.md)를 먼저 읽는다. 분석 문서이며 런타임 변경은 없다. 다음 후보(A 통합 artifact 배치, B 막힌 검사 owner 질문, C 복수 owner, D 공개↔독립 차이)는 미결정이다.
+
 D083: [클라우드 실패 2건 원인과 수정](docs/orchestration/D083_REPAIR_DIRECTION.md)을 먼저 읽는다. `d083-repair-fixes.json`(D082 + repair-budget-v3 + scope_expansion worker-mentioned-v1)이 opt-in이며 전송 정책 기본은 v10이다(v1–v9는 재현용). 반복 측정은 조건당 3회만 한다. D082-08은 사용자 중단이며 재실행하지 않는다. 클라우드는 `scripts/cloud-env-up.sh`로 준비하고 완료 arm은 `scripts/grade-adaptive-arm.mjs`로 채점한다.
 
 D082: [클라우드 실행 준비](docs/orchestration/D082_CLOUD_RUNS.md)를 먼저 읽는다. 클라우드 세션 유료 실행은 `d082-cloud-defaults.json`(D081 기본 + Claude `oauth_token` 인증 허용)을 쓰고, Docker `containerd-snapshotter:false`·`NODE_USE_ENV_PROXY=1`·`/Users/lee/workspace/plugins/jev-router` bind mount에서 실행한다. 원장은 클라우드 한 곳에서만 쓰며 Mac은 유료 실행을 멈춘다.

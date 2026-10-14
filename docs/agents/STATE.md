@@ -1,3 +1,13 @@
+# D085 — 복수 owner(C)·평평한 답 재질문(v2)·import/문법 오류 직접 수리, 유료 3회: 제품 성공 2/3
+
+`d085-direct-repair.json`(tie-break `flat-reask-v2`) 순차 3회: 01 공개93/93·독립62/63(D085 규칙 미발동), 02 공개93·독립63(tie-break 1·C +A19, 실제 변경 A14만), 03 공개93·독립63(직접 수리가 `ModuleNotFoundError`에서 A21을 고쳐 막힘 해소, 다음 회차 C +A19·worker-mentioned +A13·A21 첫 발동). 회당 26.6–27.7분, Claude $7.75–8.31. 원장 24,661,912·정산1,223·pending0. 조건당 3회 소진. 남은 문제는 공개↔독립 차이(01): `naming.py` 정규식 `[0-9]+`가 숫자+소문자를 나눠(`3value`→`3_value`) field_prefix 독립 검사 1건 실패, 공개 검사는 접두사 시작만 확인해 놓침. 한 줄 규모, 수정하지 않고 백로그. 아래는 같은 D085의 이전 기록이다.
+
+[구현·재현·분석](../orchestration/D085_MULTI_OWNER_AND_DIRECT_REPAIR.md) · [결정](../decisions/D085.md). `d085-direct-repair.json` = d083 + `owner_alternatives: owner-probability-v1` + `owner_tiebreak: flat-reask-v1` + `check_error_repair: generation-direct-v1`. 전송 정책 v11 고정(runner·기본 경로 pin만 변경). `--probe` ready·막힘0·과금0. 회귀(1차) 1364/1368(실패1 root 전용 refund, 건너뜀3). 진단 스크립트로 과거 막힌 검사 3건 모두 재현, 원인 artifact는 모두 직접 범위(A16–A21) 안. C는 과거 owner 결정 11개(처음 12로 잘못 셈) 중 필요한 artifact를 한 회차 일찍 넣은 것 2, 불필요 추가 6. 후속: 평평한 owner 답(선택<0.4, 0.1 안 동점)은 소스 원문과 함께 1회 재질문, 다시 평평하면 동점 artifact를 모두 넣어 수리 작업자가 선택(`owner_tiebreak: flat-reask-v1`, 과거 답 105개 중 3개 해당). 정적 생성 smoke(`scripts/static-generation-smoke.py`)는 과거 후보 26개에서 막힘 4건 중 3건을 오탐 없이 잡았고(없는 모듈 1건 놓침), 런타임 gate는 넣지 않기로 사용자 확정. 회귀 1366/1370. 재질문 유료 소규모 측정(평평한 과거 요청 2개 × 5회 = Jev POST 10회, 입력 63,500): d080-01은 5/5 A09(실제로는 불필요), d082-06은 10/10 unknown이고 A21 > A07이라 A07·A21을 작업자가 선택. 원장 23,724,962·정산1,187·pending0. 전체 개발 유료 실행은 미실행. 아래는 과거 기록이다.
+
+# D084 — 구조·문제 발생 위치 분석 (유료 호출 없음)
+
+[분석](../orchestration/D084_STRUCTURE_AND_FAILURE_ORIGINS.md). 실행 15개 기준: 공개+독립 통과 9. 최다 원인은 artifact 간 통합(9), 특히 요청 본문 설명 R10.02가 회차0 13개 중 7개에서 실패(owner는 늘 A14, 여러 artifact 동시 수정 필요). D083 v3 raw 단계는 과거 19개 owner 결정 중 1회만 결과를 바꿈, 확장 규칙은 2회 기준 충족. 다음 후보 A–D는 제안. 아래는 과거 기록이다.
+
 # D083 — 실패 2건 수정(repair-budget-v3·scope_expansion), 유료 3회: 성공2·독립실패1, 두 수정 미발동
 
 [원인·수정·측정](../orchestration/D083_REPAIR_DIRECTION.md) · [결정](../decisions/D083.md). `d083-repair-fixes.json` 순차 3회: 01·03 공개93/93·독립63/63, 02 공개93/93·독립61/63. owner 요청이 모두 projected라 v3 새 단계 0회, 범위 확장 0회 → 효과 미측정. PR #10은 research에 머지(098199b). 원장 23,661,462·정산1,177·pending0. 아래는 과거 기록이다.

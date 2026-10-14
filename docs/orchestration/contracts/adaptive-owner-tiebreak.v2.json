@@ -1,0 +1,34 @@
+{
+  "schema_version": "adaptive-owner-tiebreak/v2",
+  "policy": "flat-reask-v2",
+  "basis": "D085 follow-up after the paid tie-break probe (10 Jev answers): the user asked to apply both improvement candidates. v1 resolved d080-01 to A09 with confidence 0.15-0.28 although that run did not need A09, and left d082-cloud-06 unresolved while ranking A21 above A07 every time. The request text is unchanged from v1.",
+  "stage": "repair_owners",
+  "model": "jev-latest",
+  "flat_rule": {
+    "max_choice_probability": 0.4,
+    "max_gap": 0.1,
+    "rounding_decimals": 6,
+    "max_tied_artifacts": 3,
+    "definition": "An inferred owner answer is flat when the chosen artifact's probability is below 0.4 and at least one other artifact (not unknown) is within 0.1 of it. The tied set is the chosen artifact plus every other artifact within 0.1, at most 3, ordered by probability."
+  },
+  "max_reasks_per_round": 1,
+  "source_excerpt": {
+    "max_chars_per_file": 8000,
+    "max_total_chars": 48000
+  },
+  "state_instructions": "An earlier owner decision for each failure below could not separate a few existing artifacts: their probabilities were nearly equal. state.failures gives each such failure exactly as it was observed, its original requirements, and the first decision's probabilities for the tied artifacts. state.candidates gives each tied artifact's paths, its interface from the shared catalog, and the current source text of its files at the failed revision (long files are truncated and marked). Use this source text as the additional evidence the first decision did not have.",
+  "question": {
+    "type": "choice",
+    "target_template": "For failure {failure_id}, public check {check_id}, case {test_id}, assertion {assertion_id}: ",
+    "instructions": "Read this failure in state.failures and the source text of the tied artifacts in state.candidates. Choose the one artifact whose current source most directly produces the observed failure and should be repaired first, or unknown if the source text still does not separate them. This is a repair hypothesis, not proof of a defect.",
+    "criterion_template": "Existing {artifact_id} ({paths}); read its source in state.candidates.",
+    "unknown_description": "The supplied source text does not separate the tied artifacts."
+  },
+  "unresolved_reason": "Jev could not separate these owners even with their source text. The repair worker sees every tied artifact as writable and decides which of them, if any, to change; it should leave unchanged any tied artifact it does not judge responsible.",
+  "resolution": {
+    "min_confidence_to_change_owner": 0.3,
+    "confidence_source": "answer.confidence, else the probability of the chosen option",
+    "rule": "The second answer resolves the failure only when it is not flat, is not unknown, and either keeps the first choice or names a different artifact with confidence at least 0.3. A different artifact with lower confidence leaves the tied set to the repair worker."
+  },
+  "worker_ranking": "For every failure left to the repair worker, the tied artifacts are listed in the order of the second answer probabilities (unknown excluded) as a hint, not proof."
+}

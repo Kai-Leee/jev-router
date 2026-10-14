@@ -18,7 +18,10 @@ import {inferAdaptiveRepairOwners, applyInferredRepairOwners,
 import {packRepairOwnerRequest, planRepairOwnerRequest, ADAPTIVE_REPAIR_BUDGET_EXCEEDED, ADAPTIVE_REPAIR_BUDGET_POLICIES} from './adaptive-repair-budget.mjs';
 import {assessAdaptiveFailureRecovery, acceptAdaptiveRecoveryEvidence, adaptiveWorkerRecoveryIdentity,
   validateAdaptiveRecoveryRequest, loadAdaptiveFailureRecoveryPolicy, recoveryDigest} from './adaptive-failure-recovery.mjs';
-import {workerMentionedExpansion, EXPANDED_UNION_ID} from './adaptive-inferred-scope.mjs';
+import {CHECK_ERROR_CANDIDATE_ID, blockedCheckErrors, checkErrorCandidate, withCheckErrorScope, buildCheckErrorWorkerContext,
+  loadCheckErrorRepairContract} from './adaptive-check-error-repair.mjs';
+import {workerMentionedExpansion, ownerProbabilityAlternatives, EXPANDED_UNION_ID, ALTERNATIVES_UNION_ID, TIEBREAK_UNION_ID} from './adaptive-inferred-scope.mjs';
+import {flatAssignments, buildOwnerTiebreakRequest, resolveOwnerTiebreak, loadOwnerTiebreakContract} from './adaptive-owner-tiebreak.mjs';
 
 const clone = value => structuredClone(value);
 const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object'
@@ -190,29 +193,64 @@ function workerDiagnostics(reports, snapshots) {
 
 // D083 scope_expansion worker-mentioned-v1. The owner-inference module stays byte-identical (prompt policies pin it), so
 // the expanded union is added here before any repair decision and both scope seals are re-issued with the expansion in the proof.
-function withWorkerMentionedScope({candidates, analysis}, {plan, diagnostics, persistent_failure_keys}) {
-  const index = candidates.findIndex(candidate => candidate.id === 'repair-inferred-owners');
+function withExpandedScope({candidates, analysis}, {plan, baseIds, id, expand, reason}) {
+  const index = candidates.findIndex(candidate => candidate.id === baseIds.find(base => candidates.some(row => row.id === base)));
   if (index < 0) return {candidates, analysis};
   const union = candidates[index];
-  const expansion = workerMentionedExpansion({baseArtifactIds: union.artifact_ids, plan, diagnostics, persistentFailureKeys: persistent_failure_keys});
+  const expansion = expand(union.artifact_ids);
   if (!expansion) return {candidates, analysis};
   const order = plan.artifacts.map(row => row.id), artifact_ids = expansion.artifact_ids;
   const reads = new Set(analysis.causal.chains.filter(chain => chain.nodes.some(node => artifact_ids.includes(node.artifact_id)))
     .flatMap(chain => chain.nodes.map(node => node.artifact_id)));
-  const expanded = {...clone(union), id: EXPANDED_UNION_ID, artifact_ids,
-    task_ids: plan.tasks.filter(task => task.kind === 'implementation' && task.output_artifact_ids.some(id => artifact_ids.includes(id))).map(task => task.id),
-    read_artifact_ids: order.filter(id => reads.has(id)),
-    reason: 'Repair the inferred union plus artifacts that the previous repair workers named while its failures persisted; preserve unknown failures and all other artifacts.',
-    scope_expansion: expansion.info};
+  const info = {...expansion.info, base_candidate_id: union.id};
+  const expanded = {...clone(union), id, artifact_ids,
+    task_ids: plan.tasks.filter(task => task.kind === 'implementation' && task.output_artifact_ids.some(artifact => artifact_ids.includes(artifact))).map(task => task.id),
+    read_artifact_ids: order.filter(artifact => reads.has(artifact)), reason,
+    scope_expansion: union.scope_expansion ? [...[union.scope_expansion].flat(), info] : info};
   const {sha256: priorOwnership, ...ownership} = analysis.inferred_ownership;
-  ownership.choice_bindings = {...ownership.choice_bindings, [EXPANDED_UNION_ID]: digest(expanded)};
-  ownership.scope_expansion = {policy: expansion.info.policy, prior_sha256: priorOwnership, candidate_id: EXPANDED_UNION_ID};
+  ownership.choice_bindings = {...ownership.choice_bindings, [id]: digest(expanded)};
+  const record = {policy: info.policy, prior_sha256: priorOwnership, candidate_id: id};
+  ownership.scope_expansion = ownership.scope_expansion ? [...[ownership.scope_expansion].flat(), record] : record;
   const inferredOwnership = {...ownership, sha256: digest(ownership)};
   const {sha256: _priorCausal, ...causal} = analysis.causal;
   causal.inferred_owner_scope_sha256 = inferredOwnership.sha256;
-  causal.choice_bindings = {...causal.choice_bindings, [EXPANDED_UNION_ID]: digest(expanded)};
+  causal.choice_bindings = {...causal.choice_bindings, [id]: digest(expanded)};
   return {candidates: [...candidates.slice(0, index + 1), expanded, ...candidates.slice(index + 1)],
     analysis: {...analysis, inferred_ownership: inferredOwnership, causal: {...causal, sha256: digest(causal)}}};
+}
+
+function withWorkerMentionedScope(inferred, {plan, diagnostics, persistent_failure_keys}) {
+  return withExpandedScope(inferred, {plan, baseIds: [ALTERNATIVES_UNION_ID, TIEBREAK_UNION_ID, 'repair-inferred-owners'], id: EXPANDED_UNION_ID,
+    expand: baseArtifactIds => workerMentionedExpansion({baseArtifactIds, plan, diagnostics, persistentFailureKeys: persistent_failure_keys}),
+    reason: 'Repair the inferred union plus artifacts that the previous repair workers named while its failures persisted; preserve unknown failures and all other artifacts.'});
+}
+
+// D085 owner_tiebreak flat-reask-v1: owners settled by the second question (or the tied sets left to the worker) join the union.
+function withTiebreakScope(inferred, {plan, tiebreak, policy}) {
+  const {contract} = loadOwnerTiebreakContract(policy), order = plan.artifacts.map(row => row.id);
+  const unresolved = tiebreak.resolutions.some(row => row.status !== 'resolved');
+  // v2: the second answer's order of the tied artifacts reaches the worker as a hint in the selected action's reason.
+  const ranking = tiebreak.resolutions.filter(row => row.worker_ranking).map(row => `${row.failure_id}: ${row.worker_ranking
+    .map(item => `${item.artifact_id} ${Number.isFinite(item.probability) ? item.probability.toFixed(2) : 'n/a'}`).join(' > ')}`);
+  return withExpandedScope(inferred, {plan, baseIds: ['repair-inferred-owners'], id: TIEBREAK_UNION_ID,
+    expand: baseArtifactIds => {
+      const added = order.filter(id => !baseArtifactIds.includes(id) && tiebreak.resolutions.some(row => row.artifact_ids.includes(id)));
+      return added.length ? {artifact_ids: order.filter(id => baseArtifactIds.includes(id) || added.includes(id)),
+        info: {policy, added_artifact_ids: added, status: tiebreak.status, request_sha256: tiebreak.request_sha256,
+          response_sha256: tiebreak.response_sha256, resolutions: clone(tiebreak.resolutions), basis: 'jev_second_answer_or_worker_choice_not_fault_proof'}} : null;
+    },
+    reason: unresolved ? `Repair the inferred union plus tied owners of flat answers. ${contract.unresolved_reason}${ranking.length
+      ? ` Second-answer order of the tied artifacts (a hint, not proof): ${ranking.join('; ')}.` : ''}`
+      : 'Repair the inferred union plus the owners chosen when flat answers were asked again with source text; preserve unknown failures and all other artifacts.'});
+}
+
+// D085 owner_alternatives owner-probability-v1: secondary owners come from the sealed answers of this same inference.
+function withOwnerAlternativesScope(inferred, {plan, skipQuestionIds = []}) {
+  const info = inferred.analysis.inferred_ownership;
+  return withExpandedScope(inferred, {plan, baseIds: [TIEBREAK_UNION_ID, 'repair-inferred-owners'], id: ALTERNATIVES_UNION_ID,
+    expand: baseArtifactIds => ownerProbabilityAlternatives({baseArtifactIds, plan, assignments: info.assignments, answers: info.proof.answers,
+      skipQuestionIds}),
+    reason: 'Repair the inferred union plus secondary owners that Jev rated close to a chosen owner for the same failure; preserve unknown failures and all other artifacts.'});
 }
 
 function repairFileChanges(before, after, plan) {
@@ -356,12 +394,15 @@ export async function runAdaptiveDagExecution(options) {
       (options.record !== undefined && typeof options.record !== 'function') || options.planning?.dispatch_allowed === false ||
       (options.publicCheckConcurrency !== undefined && (!Number.isSafeInteger(options.publicCheckConcurrency) || options.publicCheckConcurrency < 1)) ||
       (options.batchChecks !== undefined && typeof options.batchChecks !== 'function') ||
+      (options.diagnoseCheckError !== undefined && typeof options.diagnoseCheckError !== 'function') ||
+      (options.repairFeedback?.owner_tiebreak && typeof options.decideOwnerTiebreak !== 'function') ||
       (options.repairBudget !== undefined && (!INFERRED_ARTIFACT_POLICIES.includes(options.artifactRepairPolicy)
         || !ADAPTIVE_REPAIR_BUDGET_POLICIES.includes(options.repairBudget?.policy) || Object.keys(options.repairBudget).length !== 1)) ||
       (options.repairFeedback !== undefined && (!INFERRED_ARTIFACT_POLICIES.includes(options.artifactRepairPolicy)
         || !options.repairFeedback || typeof options.repairFeedback !== 'object' || !Object.keys(options.repairFeedback).length
         || Object.entries(options.repairFeedback).some(([key, value]) => ({read_scope: 'candidate-v1', worker_diagnostics: 'report-v1',
-          scope_expansion: 'worker-mentioned-v1'})[key] !== value)
+          scope_expansion: 'worker-mentioned-v1', owner_alternatives: 'owner-probability-v1', owner_tiebreak: 'flat-reask-v2',
+          check_error_repair: 'generation-direct-v1'})[key] !== value)
         || (options.repairFeedback.scope_expansion && !options.repairFeedback.worker_diagnostics)))) {
     fail('ADAPTIVE_EXECUTION_INVALID_CONFIG');
   }
@@ -404,6 +445,8 @@ export async function runAdaptiveDagExecution(options) {
   let profilePlan = clone(original);
   const operations = {implementation: 0, repair: 0, carry_forward: 0};
   let selected = new Set(), selectedAction = null, previousFailure = null, previousRepairInputContext = null, result;
+  // D085 check_error_repair: one direct round, added to the repair-round limit; its packet extras live only here.
+  let extraRounds = 0, checkErrorContext = null;
   async function recoveryAssessment(round, failure, extras = {}) {
     const previousAction = selectedAction ? {...clone(selectedAction), artifact_ids: selectedAction.artifact_ids
       ?? round.plan.tasks.filter(task => selectedAction.task_ids.includes(task.id)).flatMap(task => task.output_artifact_ids)} : null;
@@ -495,7 +538,7 @@ export async function runAdaptiveDagExecution(options) {
   try {
     await record({event: 'adaptive_execution_started', phase: 'started', max_repair_rounds: maxRepairRounds,
       plan_sha256: digest(options.plan), artifact_bindings_sha256: digest(bindings)});
-    for (let roundIndex = 0; roundIndex <= maxRepairRounds; roundIndex++) {
+    for (let roundIndex = 0; roundIndex <= maxRepairRounds + extraRounds; roundIndex++) {
       let plan = clone(profilePlan);
       plan.graph_revision = `${original.graph_revision}:adaptive-round-${roundIndex}`;
       const roundDirectory = join(directory, `round-${roundIndex}`), roundRunId = `${run_id}:round-${roundIndex}`;
@@ -595,6 +638,11 @@ export async function runAdaptiveDagExecution(options) {
           const unready = plan.tasks.filter(task => task.kind === 'implementation' && !selected.has(task.id) && !snapshots.get(task.id)?.verified);
           if (unready.length) fail('ADAPTIVE_ARTIFACT_REPAIR_UNREADY_UNSELECTED_TASK', {task_ids: unready.map(task => task.id)});
           for (const id of selected) {
+            if (selectedAction?.id === CHECK_ERROR_CANDIDATE_ID && checkErrorContext) {
+              artifactWorkers.set(id, buildCheckErrorWorkerContext({planning, failure: previousFailure, candidate: selectedAction,
+                task: plan.tasks.find(task => task.id === id), artifactBindings: bindings, checkError: checkErrorContext}));
+              continue;
+            }
             const buildWorkerContext = inferredPolicy ? buildInferredRepairWorkerContext : causalPolicy ? buildCausalRepairWorkerContext
               : options.artifactRepairPolicy === 'artifact-v2' ? buildArtifactRepairWorkerContextV2 : buildArtifactRepairWorkerContext;
             artifactWorkers.set(id, buildWorkerContext({planning, failure: previousFailure,
@@ -912,7 +960,7 @@ export async function runAdaptiveDagExecution(options) {
           await recover(round, failure, [], assessment); break;
         }
       }
-      if (status === 'completed' || status === 'uncertain' || status === 'blocked' || round.fatal || roundIndex === maxRepairRounds ||
+      if (status === 'completed' || status === 'uncertain' || status === 'blocked' || round.fatal || roundIndex === maxRepairRounds + extraRounds ||
           !knownFailure.has(workflow?.execution?.failure?.code)) break;
       let candidates;
       if (['minimal-public-v1', 'public-causal-v1', ...INFERRED_SCOPE_POLICIES].includes(options.repairScopePolicy)) {
@@ -946,6 +994,41 @@ export async function runAdaptiveDagExecution(options) {
       if (recoveryEnabled && assessment?.status !== 'continue') {
         const recovered = await recover(round, failure, candidates, assessment, {stage: inferredPolicy ? 'repair_owners' : 'repair'});
         if (!recovered.ready) break;
+      }
+      // D085: a check blocked by an import/syntax error is repaired first by the generation artifacts, chosen by code.
+      const blockedErrors = options.repairFeedback?.check_error_repair && !extraRounds && failure.repair_scope?.causal
+        ? blockedCheckErrors(failure) : [];
+      const directCandidate = blockedErrors.length ? checkErrorCandidate({plan, artifactBindings: bindings, errors: blockedErrors}) : null;
+      if (directCandidate) {
+        const {contract} = loadCheckErrorRepairContract(), diagnoses = [], seen = new Set();
+        for (const error of blockedErrors) {
+          const key = `${error.code}\n${error.message}`;
+          if (!options.diagnoseCheckError || seen.has(key) || diagnoses.length >= contract.max_diagnosed_errors) continue;
+          seen.add(key);
+          let diagnosis;
+          try {
+            diagnosis = await options.diagnoseCheckError({check: clone(plan.checks.find(check => check.id === error.check_id)),
+              candidate_directory: round.exported?.candidateDirectory ?? null, pinned_directory: round.initialization?.pinnedDirectory ?? null,
+              round_index: roundIndex});
+          } catch (diagnosisError) {
+            // A local diagnostic never stops the run; the worker then gets the reported errors only.
+            diagnosis = {status: 'unavailable', code: diagnosisError?.code ?? 'ADAPTIVE_CHECK_ERROR_DIAGNOSIS_FAILED'};
+          }
+          diagnoses.push({check_id: error.check_id, ...clone(diagnosis)});
+        }
+        failure.repair_scope = withCheckErrorScope({analysis: failure.repair_scope, candidate: directCandidate, errors: blockedErrors, diagnoses});
+        round.repair_scope = clone(failure.repair_scope); round.prior_public_failure = clone(failure);
+        round.check_error_repair = {policy: 'generation-direct-v1', errors: clone(blockedErrors), candidate: clone(directCandidate),
+          diagnoses: diagnoses.map(row => ({check_id: row.check_id, status: row.status ?? (row.reproduced ? 'reproduced' : 'not_reproduced'),
+            files: (row.files ?? []).map(file => file.path)}))};
+        await record({event: 'adaptive_check_error_repair_selected', round_index: roundIndex, ...clone(round.check_error_repair),
+          owner_inference: 'skipped', repair_decision: 'skipped'});
+        checkErrorContext = {errors: clone(blockedErrors), diagnoses}; extraRounds = 1;
+        selectedAction = clone(directCandidate); selected = new Set(directCandidate.task_ids); previousFailure = failure;
+        previousRepairInputContext = null;
+        actions.push({round_index: roundIndex, status: 'selected', candidate_id: directCandidate.id, candidate: clone(directCandidate),
+          selection_basis: 'check_error_direct_no_owner_inference'});
+        continue;
       }
       // Preserved-candidate authorization must precede both paid inference and
       // repair selection. A known failed gate is not a provider uncertainty.
@@ -1028,6 +1111,40 @@ export async function runAdaptiveDagExecution(options) {
           let inferred = applyInferredRepairOwners({planning, failure, candidates, artifactBindings: bindings, ownerInputPolicy, inference,
             ...(options.repairInputPolicy ? {repairInputPolicy: options.repairInputPolicy,
               ...(repairInputContext ? {repairInputContext} : {})} : {}), ...(requestOverride ? {requestOverride} : {})});
+          let flat = [];
+          if (options.repairFeedback?.owner_tiebreak) {
+            const info = inferred.analysis.inferred_ownership;
+            const tiebreakPolicy = options.repairFeedback.owner_tiebreak;
+            flat = flatAssignments({assignments: info.assignments, answers: info.proof.answers,
+              contract: loadOwnerTiebreakContract(tiebreakPolicy).contract});
+            if (flat.length) {
+              const request = buildOwnerTiebreakRequest({flat, planning, artifactBindings: bindings, policy: tiebreakPolicy,
+                sources: await repairSourceFiles(exported, bindings, plan, {recovery: true})});
+              await record({event: 'adaptive_owner_tiebreak_requested', round_index: roundIndex,
+                flat: flat.map(row => ({question_id: row.question_id, tied: row.tied, first_probabilities: row.first_probabilities})),
+                request_sha256: digest(request), request_bytes: Buffer.byteLength(JSON.stringify(request))});
+              let tiebreak;
+              try {
+                const response = await options.decideOwnerTiebreak(clone(request), {stage: 'repair_owners', round_index: roundIndex,
+                  decision_id: `owner-tiebreak-${digest(request).slice(0, 24)}`});
+                if (uncertain(response)) fail('ADAPTIVE_OWNER_TIEBREAK_UNCERTAIN', {outcome_uncertain: true});
+                const resolutions = resolveOwnerTiebreak({flat, request, response, policy: tiebreakPolicy});
+                tiebreak = {status: resolutions.every(row => row.status === 'resolved') ? 'resolved' : 'partly_unresolved',
+                  request_sha256: digest(request), response_sha256: digest(response), resolutions};
+              } catch (error) {
+                // An unknown outcome stops like any owner decision; a known failure leaves every tied set to the worker.
+                if (adaptiveOutcomeUncertain(error, {fallback: false})) throw error;
+                tiebreak = {status: 'failed_worker_chooses', code: error?.code ?? 'ADAPTIVE_OWNER_TIEBREAK_FAILED', request_sha256: digest(request),
+                  response_sha256: null, resolutions: flat.map(row => ({question_id: row.question_id, failure_id: row.failure_id, tied: clone(row.tied),
+                    second_choice: null, second_probabilities: null, status: 'unresolved_worker_chooses', artifact_ids: clone(row.tied)}))};
+              }
+              round.owner_tiebreak = clone(tiebreak);
+              await record({event: 'adaptive_owner_tiebreak_completed', round_index: roundIndex, ...clone(tiebreak)});
+              inferred = withTiebreakScope(inferred, {plan: planning.plan, tiebreak, policy: tiebreakPolicy});
+            }
+          }
+          if (options.repairFeedback?.owner_alternatives) inferred = withOwnerAlternativesScope(inferred, {plan: planning.plan,
+            skipQuestionIds: flat.map(row => row.question_id)});
           if (scopeExpansion) inferred = withWorkerMentionedScope(inferred, {plan: planning.plan, ...scopeExpansion});
           candidates = inferred.candidates;
           failure.repair_scope = clone(inferred.analysis);
@@ -1056,7 +1173,7 @@ export async function runAdaptiveDagExecution(options) {
           decision = await decideRepair({planning: clone(planning), failure: clone(failure), candidates: clone(candidates),
             ...(options.repairInputPolicy ? {repairInputPolicy: options.repairInputPolicy,
               ...(repairInputContext ? {repairInputContext} : {})} : {}),
-            limits: {max_repair_attempts: maxRepairRounds, repair_attempts_used: roundIndex}},
+            limits: {max_repair_attempts: maxRepairRounds, repair_attempts_used: roundIndex - extraRounds}},
           {stage: 'repair', round_index: roundIndex, ...(recoveryEnabled ? {on_request: body => { failedRequest = clone(body); }} : {}),
             ...(requestOverride ? {recovery: clone(requestOverride.recovery), request_override: clone(requestOverride)} : {})});
         } catch (error) {
@@ -1107,6 +1224,7 @@ export async function runAdaptiveDagExecution(options) {
       stop_code: last.terminal_cause?.code ?? last.fatal?.code ?? last.workflow?.execution?.failure?.code ?? null,
       prior_public_failure: clone(last.prior_public_failure ?? null),
       rounds, repair_actions: actions, repair_rounds_used: rounds.filter(round => round.round_index > 0 && !round.preparation_failure).length, operations,
+      ...(extraRounds ? {check_error_repair_rounds: extraRounds} : {}),
       ...(causalPolicy ? {repair_history: clone(repairHistory)} : {}),
       ...(recoveryEnabled ? {failure_recovery: {policy: loadAdaptiveFailureRecoveryPolicy(), actions: clone(recoveryActions),
         terminal: clone(last.recovery_state ?? last.recovery_assessment ?? null), historical_repair_history: clone(options.historicalRepairHistory ?? null)}} : {}),

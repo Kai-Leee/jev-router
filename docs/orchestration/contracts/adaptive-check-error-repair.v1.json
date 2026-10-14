@@ -1,0 +1,22 @@
+{
+  "schema_version": "adaptive-check-error-repair/v1",
+  "policy": "generation-direct-v1",
+  "basis": "D085: the user chose to send a repair worker directly when a public check is blocked by an import or syntax error, without Jev owner inference.",
+  "error_codes": ["SyntaxError", "IndentationError", "TabError", "ImportError", "ModuleNotFoundError"],
+  "generation_paths": {
+    "basenames": ["generator.py"],
+    "directory_segments": ["templates"]
+  },
+  "max_direct_rounds": 1,
+  "max_diagnosed_errors": 3,
+  "round_accounting": "The direct round is added to max_repair_rounds; it does not consume a normal owner-inferred repair round.",
+  "candidate_reason": "A public check stopped before its tests ran because the generated client failed to import or compile. Repair the code generator and its templates so every generated module compiles and imports; preserve all other artifacts.",
+  "worker_instructions": "This repair round exists because generated code failed to import or compile, which blocked whole public checks before any test ran. check_error_repair.errors lists each blocking error exactly as the public check reported it. check_error_repair.diagnoses, when present, are controller reproductions of the same public suite on the same candidate: they give the full traceback, the generated tree and the contents of the generated files that the error names or that fail to compile. Paths beginning with <scratch> are generated output, not repository files. Find which generator or template statement produced the broken output and fix it in your writable files only. Fix the root cause in the generator or template; do not special-case the fixture names. Other public failures may remain and are handled by later rounds.",
+  "diagnosis": {
+    "script": "scripts/diagnose-check-error.py",
+    "max_file_chars": 12000,
+    "max_files": 4,
+    "max_tree_entries": 200,
+    "basis": "controller_reproduction_of_public_suite_not_a_check_result"
+  }
+}

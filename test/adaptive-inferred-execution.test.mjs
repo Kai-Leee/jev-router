@@ -451,3 +451,150 @@ test('D081 inferred-v3 asks one owner question for a check-level error and repai
   const stopped = await runAdaptiveDagExecution(v2.options);
   assert.equal(v2Calls, 0); assert.notEqual(stopped.status, 'completed');
 });
+
+// Owner answers with full probabilities: the chosen artifact first, one close secondary artifact, the rest near zero.
+const probabilityOwner = (choice, secondary, p = 0.6, q = 0.3) => async request => ({answers: Object.fromEntries(Object.entries(request.questions)
+  .map(([id, question]) => [id, {type: 'choice', choice, confidence: p, probabilities: Object.fromEntries(Object.keys(question.criteria)
+    .map(key => [key, key === choice ? p : key === secondary ? q : (1 - p - q) / (Object.keys(question.criteria).length - 2)]))}]))});
+const everySelectedProfile = async ({plan, round_index, selected_task_ids}) => {
+  for (const task of plan.tasks.filter(task => selected_task_ids.includes(task.id))) {
+    plan.workers.find(worker => worker.id === task.worker_id).profile_id = `fixture-repair-${round_index}`;
+  }
+  return {plan};
+};
+
+test('D085 owner alternatives: a secondary owner Jev rated close to the choice joins the same repair round', async t => {
+  const state = await fixture(t);
+  state.options.repairScopePolicy = 'public-inferred-owner-v2'; state.options.artifactRepairPolicy = 'inferred-v2';
+  state.options.repairFeedback = {owner_alternatives: 'owner-probability-v1'};
+  state.options.decideRepair = async request => selectInferredOwnerScope(request);
+  state.options.prepareRoundPlan = everySelectedProfile;
+  state.options.decideRepairOwners = probabilityOwner('artifact-core', 'artifact-generator');
+  const execute = state.options.executeTask, scopes = [];
+  state.options.executeTask = async (task, context) => {
+    if (context.operation !== 'repair') return execute(task, context);
+    scopes.push([...task.write_scope]);
+    if (task.write_scope.includes('producer.py')) await writeFile(join(context.stageDirectory, 'producer.py'), 'description = "REQUEST"\n');
+    return {status: 'completed', outcome_uncertain: false};
+  };
+  const result = await runAdaptiveDagExecution(state.options);
+  assert.equal(result.status, 'completed', JSON.stringify(result.terminal_cause));
+  const [expanded] = state.events.filter(event => event.event === 'adaptive_repair_scope_expanded');
+  assert.equal(expanded.expansion.policy, 'owner-probability-v1');
+  assert.deepEqual(expanded.expansion.added_artifact_ids, ['artifact-generator']);
+  assert.deepEqual(expanded.artifact_ids, ['artifact-core', 'artifact-generator']);
+  assert.equal(result.repair_actions[0].candidate.id, 'repair-inferred-owners+owner-alternatives');
+  assert.deepEqual(scopes.map(scope => scope.sort()), [['producer.py'], ['generator.py']]);
+  // A secondary below 0.4 x the choice is not added.
+  const low = await fixture(t);
+  Object.assign(low.options, {repairScopePolicy: 'public-inferred-owner-v2', artifactRepairPolicy: 'inferred-v2',
+    repairFeedback: {owner_alternatives: 'owner-probability-v1'}, decideRepair: async request => selectInferredOwnerScope(request),
+    prepareRoundPlan: everySelectedProfile, decideRepairOwners: probabilityOwner('artifact-core', 'artifact-generator', 0.7, 0.21)});
+  const plain = await runAdaptiveDagExecution(low.options);
+  assert.equal(plain.repair_actions[0].candidate.id, 'repair-inferred-owners');
+});
+
+test('D085 check-error repair: a blocked check goes straight to the generation artifacts with the diagnosis, then the normal round runs', async t => {
+  const state = await fixture(t);
+  state.options.repairScopePolicy = 'public-inferred-owner-v3'; state.options.artifactRepairPolicy = 'inferred-v3';
+  state.options.repairFeedback = {check_error_repair: 'generation-direct-v1'};
+  state.options.decideRepair = async request => selectInferredOwnerScope(request);
+  state.options.prepareRoundPlan = everySelectedProfile;
+  erroredPublicCheck(state);
+  const diagnoses = [];
+  state.options.diagnoseCheckError = async input => {
+    diagnoses.push(input);
+    assert(input.candidate_directory && input.pinned_directory);
+    return {schema_version: 'adaptive-check-error-diagnosis/v1', status: 'completed', reproduced: true,
+      error: {code: 'SyntaxError', message: 'named arguments must follow bare * (generated.py, line 4)'},
+      files: [{path: '<scratch>/pkg/generated.py', reason: 'named_by_error', content: 'def f(*,):\n', syntax_error: {lineno: 4}}]};
+  };
+  const owner = state.options.decideRepairOwners, ownerRounds = [];
+  state.options.decideRepairOwners = async (request, meta) => { ownerRounds.push(meta.round_index); return owner(request); };
+  const execute = state.options.executeTask, repairs = [];
+  state.options.executeTask = async (task, context) => {
+    if (context.operation !== 'repair') return execute(task, context);
+    const packet = context.repair_context.artifact_repair;
+    repairs.push({round: context.round_index, write_scope: [...task.write_scope], check_error: packet.check_error_repair ?? null});
+    for (const path of task.write_scope) {
+      await writeFile(join(context.stageDirectory, path), path === 'producer.py' ? 'description = "REQUEST"\n' : 'value = "fixed"\n');
+    }
+    return {status: 'completed', outcome_uncertain: false};
+  };
+  const result = await runAdaptiveDagExecution(state.options);
+  assert.equal(result.status, 'completed', JSON.stringify(result.terminal_cause));
+  assert.equal(diagnoses.length, 1); assert.equal(diagnoses[0].check.id, 'public-description');
+  assert.deepEqual(ownerRounds, [1]);
+  assert.equal(result.check_error_repair_rounds, 1);
+  assert.deepEqual(repairs.map(row => [row.round, row.write_scope]), [[1, ['generator.py']], [2, ['producer.py']]]);
+  assert.equal(repairs[0].check_error.errors[0].code, 'SyntaxError');
+  assert.equal(repairs[0].check_error.diagnoses[0].files[0].content, 'def f(*,):\n');
+  assert.equal(repairs[1].check_error, null);
+  assert.equal(result.repair_actions[0].selection_basis, 'check_error_direct_no_owner_inference');
+  assert.equal(state.events.filter(event => event.event === 'adaptive_check_error_repair_selected').length, 1);
+  // A diagnosis failure is recorded and the direct round still runs with the reported errors.
+  const failing = await fixture(t);
+  Object.assign(failing.options, {repairScopePolicy: 'public-inferred-owner-v3', artifactRepairPolicy: 'inferred-v3',
+    repairFeedback: {check_error_repair: 'generation-direct-v1'}, decideRepair: async request => selectInferredOwnerScope(request),
+    prepareRoundPlan: everySelectedProfile, executeTask: state.options.executeTask,
+    diagnoseCheckError: async () => { throw Object.assign(new Error('x'), {code: 'DAG_CONTAINER_PROCESS_UNCERTAIN'}); }});
+  erroredPublicCheck(failing);
+  const degraded = await runAdaptiveDagExecution(failing.options);
+  assert.equal(degraded.rounds[0].check_error_repair.diagnoses[0].status, 'unavailable');
+  assert.equal(degraded.status, 'completed', JSON.stringify(degraded.terminal_cause));
+});
+
+test('D085 owner tie-break: a flat answer is asked once more with source text; still flat leaves the tied owners to the worker', async t => {
+  const run = async (tiebreak) => {
+    const state = await fixture(t);
+    Object.assign(state.options, {repairScopePolicy: 'public-inferred-owner-v2', artifactRepairPolicy: 'inferred-v2',
+      repairFeedback: {owner_tiebreak: 'flat-reask-v2', owner_alternatives: 'owner-probability-v1'},
+      decideRepair: async request => selectInferredOwnerScope(request), prepareRoundPlan: everySelectedProfile,
+      decideRepairOwners: probabilityOwner('artifact-core', 'artifact-generator', 0.36, 0.34), decideOwnerTiebreak: tiebreak});
+    const execute = state.options.executeTask, scopes = [];
+    state.options.executeTask = async (task, context) => {
+      if (context.operation !== 'repair') return execute(task, context);
+      scopes.push([...task.write_scope]);
+      if (task.write_scope.includes('producer.py')) await writeFile(join(context.stageDirectory, 'producer.py'), 'description = "REQUEST"\n');
+      return {status: 'completed', outcome_uncertain: false};
+    };
+    const result = await runAdaptiveDagExecution(state.options);
+    return {result, scopes, events: state.events};
+  };
+  const asked = [];
+  const answer = (choice, probabilities) => async request => {
+    asked.push(request);
+    return {answers: Object.fromEntries(Object.keys(request.questions).map(id => [id, {type: 'choice', choice, probabilities}]))};
+  };
+  // Resolved: the second answer separates the tie, so the chosen owner joins and C does not use the flat answer.
+  const resolved = await run(answer('artifact-generator', {'artifact-core': 0.15, 'artifact-generator': 0.8, unknown: 0.05}));
+  assert.equal(resolved.result.status, 'completed', JSON.stringify(resolved.result.terminal_cause));
+  const [request] = asked;
+  assert.equal(request.state.schema_version, 'adaptive-owner-tiebreak-request/v1');
+  assert.deepEqual(request.state.candidates.map(row => row.artifact_id), ['artifact-core', 'artifact-generator']);
+  assert.deepEqual(request.state.candidates[0].files.map(file => [file.path, file.content]), [['producer.py', 'description = "SCHEMA"\n']]);
+  assert.deepEqual(Object.keys(Object.values(request.questions)[0].criteria), ['artifact-core', 'artifact-generator', 'unknown']);
+  assert.equal(resolved.result.rounds[0].owner_tiebreak.status, 'resolved');
+  assert.equal(resolved.result.repair_actions[0].candidate.id, 'repair-inferred-owners+tiebreak');
+  assert.deepEqual(resolved.result.repair_actions[0].candidate.artifact_ids, ['artifact-core', 'artifact-generator']);
+  // Still flat: the tied set goes to the worker with the unresolved instruction.
+  const flat = await run(answer('artifact-core', {'artifact-core': 0.38, 'artifact-generator': 0.37, unknown: 0.25}));
+  assert.equal(flat.result.rounds[0].owner_tiebreak.status, 'partly_unresolved');
+  assert.match(flat.result.repair_actions[0].candidate.reason, /could not separate these owners/);
+  assert.deepEqual(flat.scopes.map(scope => scope.sort()), [['producer.py'], ['generator.py']]);
+  // v2: a switch to another artifact with confidence below 0.3 is not a resolution; the worker gets the second answer's order.
+  const weak = await run(async request => ({answers: Object.fromEntries(Object.keys(request.questions).map(id => [id, {type: 'choice',
+    choice: 'artifact-generator', confidence: 0.2, probabilities: {'artifact-core': 0.1, 'artifact-generator': 0.45, unknown: 0.45}}]))}));
+  const [weakRow] = weak.result.rounds[0].owner_tiebreak.resolutions;
+  assert.equal(weakRow.status, 'unresolved_worker_chooses'); assert.equal(weakRow.unresolved_reason, 'low_confidence_switch');
+  assert.deepEqual(weakRow.worker_ranking.map(item => item.artifact_id), ['artifact-generator', 'artifact-core']);
+  assert.match(weak.result.repair_actions[0].candidate.reason, /Second-answer order of the tied artifacts \(a hint, not proof\): failure-[0-9a-f]+: artifact-generator 0.45 > artifact-core 0.10/);
+  assert.deepEqual(weak.scopes.map(scope => scope.sort()), [['producer.py'], ['generator.py']]);
+  // A known failure of the second question also leaves the choice to the worker; an unknown outcome stops the round.
+  const failed = await run(async () => { throw Object.assign(new Error('HTTP400'), {code: 'PROVIDER_REJECTED', outcome_uncertain: false}); });
+  assert.equal(failed.result.rounds[0].owner_tiebreak.status, 'failed_worker_chooses');
+  assert.equal(failed.result.status, 'completed', JSON.stringify(failed.result.terminal_cause));
+  const unknown = await run(async () => { throw Object.assign(new Error('timeout'), {code: 'PROVIDER_TIMEOUT', outcome_uncertain: true}); });
+  assert.equal(unknown.result.status, 'uncertain');
+  assert.equal(unknown.result.repair_actions.length, 0);
+});

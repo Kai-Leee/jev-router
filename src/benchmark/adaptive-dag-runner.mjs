@@ -54,7 +54,9 @@ const REPAIR_BUDGET_CONTRACTS = {'repair-budget-v1': 'docs/orchestration/contrac
   'repair-budget-v3': 'docs/orchestration/contracts/adaptive-repair-budget.v3.json'};
 /** D076 opt-in owner-request budget (v11/v12 manifests with repair_budget only). */
 export const adaptiveRepairBudgetOption = manifest => manifest.repair_budget ? {repairBudget: {policy: manifest.repair_budget.policy}} : {};
-const REPAIR_FEEDBACK_VALUES = {read_scope: 'candidate-v1', worker_diagnostics: 'report-v1', scope_expansion: 'worker-mentioned-v1'};
+const REPAIR_FEEDBACK_VALUES = {read_scope: 'candidate-v1', worker_diagnostics: 'report-v1', scope_expansion: 'worker-mentioned-v1',
+  owner_alternatives: 'owner-probability-v1', check_error_repair: 'generation-direct-v1', owner_tiebreak: 'flat-reask-v2'};
+const CHECK_ERROR_DIAGNOSIS_SCRIPT = 'scripts/diagnose-check-error.py';
 /** D076 opt-in repair feedback (v11/v12 manifests with repair_feedback only). */
 export const adaptiveRepairFeedbackOption = manifest => manifest.repair_feedback ? {repairFeedback: {...manifest.repair_feedback}} : {};
 
@@ -928,7 +930,29 @@ function createWorkerAndChecks({rootDir, manifest, context, session, input, cata
     await context.record({event: 'adaptive_environment_identity_checked', image_id: image.image_id});
     return {...preflight.environment, image_id: image.image_id, dependency_versions_basis: 'preflight_probe_of_identical_immutable_image'};
   };
-  return {executeTask, checkTask, probeEnvironment, ...(readinessBatch ? {batchChecks} : {})};
+  // D085 check_error_repair: rerun one blocked public suite on the same candidate and pinned runner to capture the
+  // generated files its import/syntax error names. A diagnosis, not a check; the controller never uses it as evidence.
+  const diagnoseCheckError = async ({check, candidate_directory, pinned_directory, round_index}) => {
+    context.remaining();
+    const suite = check?.argv?.[check.argv.indexOf('--suite') + 1];
+    if (!candidate_directory || !pinned_directory || check?.phase !== 'integration' || !/^[a-z0-9-]+$/.test(suite ?? '')) fail('ADAPTIVE_CHECK_ERROR_DIAGNOSIS_INPUT');
+    const id = `diagnosis-${randomUUID()}`, bindingDirectory = join(context.directory, 'check-bindings', id);
+    mkdirSync(bindingDirectory, {mode: 0o700});
+    const script = readFileSync(join(rootDir, CHECK_ERROR_DIAGNOSIS_SCRIPT));
+    writeFileSync(join(bindingDirectory, 'diagnose_check_error.py'), script, {mode: 0o600, flag: 'wx'});
+    const processRef = `calls/${id}.process.json`, reportRef = `receipts/${id}.json`;
+    const {raw, report} = await runDagDockerCheck({image, check: {...check, argv: ['python3', '/run/diagnose_check_error.py',
+      '--runner', check.argv[1], '--suite', suite, '--binding', '/run/binding.json']}, candidateDirectory: candidate_directory,
+    pinnedDirectory: pinned_directory, bindingDirectory, runCommand, remaining: context.remaining, record: context.record,
+    attemptId: id, abortSignal: context.signal, saveProcess: async value => context.save(processRef, value)});
+    if (raw.exit_code !== 0 || report?.schema_version !== 'adaptive-check-error-diagnosis/v1') fail('ADAPTIVE_CHECK_ERROR_DIAGNOSIS_INVALID');
+    const diagnosis = {...report, status: 'completed', report_ref: reportRef, process_ref: processRef,
+      script: {path: CHECK_ERROR_DIAGNOSIS_SCRIPT, sha256: sha(script)}};
+    context.save(reportRef, {round_index, check_id: check.id, diagnosis});
+    return diagnosis;
+  };
+  return {executeTask, checkTask, probeEnvironment, ...(readinessBatch ? {batchChecks} : {}),
+    ...(manifest.repair_feedback?.check_error_repair ? {diagnoseCheckError} : {})};
 }
 
 /** Shared profile decision/commit path for fresh development and preserved-candidate repair. */
@@ -1043,6 +1067,8 @@ export async function runAdaptiveArm({rootDir = ROOT, manifest = loadAdaptiveRun
       publicCheckConcurrency: adaptiveRuntimeSpeed(manifest).public_check_concurrency, ...adaptiveRepairBudgetOption(manifest), ...adaptiveRepairFeedbackOption(manifest),
       ...(arm === 'jev_profile' ? {prepareRoundPlan: selectProfiles} : {}),
       ...(inferredManifest(manifest) ? {decideRepairOwners: forms?.decideRepairOwners ?? ((request, metadata) => session.decide('jev', request, metadata))} : {}),
+      // D085 owner_tiebreak: the second owner question has its own shape, so it bypasses the owner-criteria labelling.
+      ...(manifest.repair_feedback?.owner_tiebreak ? {decideOwnerTiebreak: (request, metadata) => session.decide('jev', request, metadata)} : {}),
       ...(repairManifest(manifest) ? {repairScopePolicy: inferredManifest(manifest) ? `public-inferred-owner-${inferredPolicy(manifest).slice(-2)}` : causalManifest(manifest) ? 'public-causal-v1' : 'minimal-public-v1', projectRepairFailure: repairProjection.projectAdaptiveRepairFailure} : {}),
       ...(artifactRepair ? {artifactRepairPolicy: inferredManifest(manifest) ? inferredPolicy(manifest) : causalManifest(manifest) ? 'causal-v1' : compactRepairManifest(manifest) ? 'artifact-v2' : 'artifact-v1', assertionContract} : {}),
       decideRepair: forms?.decideRepair ?? (request => planner.chooseAdaptiveRepair({source: input.source, ...request,
