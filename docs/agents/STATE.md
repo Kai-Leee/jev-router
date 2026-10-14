@@ -1,6 +1,6 @@
-# D083 — 실패 2건 수정 구현(repair-budget-v3·scope_expansion), 전송 정책 v10, 유료 실행 전
+# D083 — 실패 2건 수정(repair-budget-v3·scope_expansion), 유료 3회: 성공2·독립실패1, 두 수정 미발동
 
-[원인·수정·검증](../orchestration/D083_REPAIR_DIRECTION.md) · [결정](../decisions/D083.md). manifest `d083-repair-fixes.json`. 오프라인: d082-02 요청이 v3로 4part 모두 목표 이하, d082-06 진단으로 A21 추가. mock 전체 실행에서 확장 후보가 봉인 검증 통과. `--probe` ready·과금0. 측정은 순차 3회만 한다. 아래는 과거 기록이다.
+[원인·수정·측정](../orchestration/D083_REPAIR_DIRECTION.md) · [결정](../decisions/D083.md). `d083-repair-fixes.json` 순차 3회: 01·03 공개93/93·독립63/63, 02 공개93/93·독립61/63. owner 요청이 모두 projected라 v3 새 단계 0회, 범위 확장 0회 → 효과 미측정. PR #10은 research에 머지(098199b). 원장 23,661,462·정산1,177·pending0. 아래는 과거 기록이다.
 
 # D082 — 클라우드 유료 실행 종료 (7회: 완료5·실패2, 08 사용자 중단), D083 수정 방향
 
