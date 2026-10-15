@@ -1,5 +1,7 @@
 # Pointsman Technical Specification Draft
 
+> For current released/research/local status, read the [2026-10-15 capability audit](CAPABILITIES.en.md). The 2026-10-09 text below is a historical design snapshot, not the current implementation inventory.
+
 > English translation of [TECHNICAL_SPEC.md](TECHNICAL_SPEC.md). The Korean original is authoritative if they differ.
 
 Version: 0.1-draft · Updated: 2026-10-09 (Asia/Seoul).

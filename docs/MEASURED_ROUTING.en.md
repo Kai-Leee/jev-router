@@ -14,6 +14,7 @@ historical API-rate-equivalent cost** than the baseline. Both passed **85/85 pub
 |---|---:|---:|
 | Condition ID | `claude_all` | `jev_split_relations` |
 | Successful development-stage wall time, ms | 2,180,703.603375 | 1,704,539.968833 |
+| Reported token sum | 6,772,666 | 3,623,150 |
 | Historical API-rate-equivalent cost, USD | 21.1351716 | 8.7665802 |
 | Public checks passed | 85/85 | 85/85 |
 | Independent checks passed | 63/63 | 63/63 |
@@ -76,3 +77,55 @@ The advanced DAG runner belongs to the research implementation. The main release
 Jev client, run contracts, evaluation tools and dashboard; see the
 [research checkpoint](https://github.com/Kai-Leee/pointsman/blob/research/docs/agents/STATE.md)
 for the current experiment implementation.
+
+
+## Three completed conditions: time and tokens
+
+On 2026-10-15 we reanalyzed saved receipts. All632 historical source hashes match; the fresh D067 analysis equals the preserved analysis except its generation timestamp. The [redacted public aggregate JSON](evidence/measured-results-20261015.json) contains values, denominators and provenance hashes, without prompts/responses, user paths, credentials or hidden test contents.
+
+| Completed condition | Workflow ms | Claude tokens | Jev input + output | Reported token sum | Time reduction | Token reduction |
+|---|---:|---:|---:|---:|---:|---:|
+| Claude decisions | 2,180,703.603375 | 6,772,666 | 0 | 6,772,666 | reference | reference |
+| Jev decomposition | 1,554,036.054042 | 3,136,810 | 828,104 + 2,375 | 3,967,289 | 28.74% | 41.42% |
+| Jev decomposition + relations | 1,704,539.968833 | 2,720,901 | 897,398 + 4,851 | 3,623,150 | 21.84% | 46.50% |
+
+All three passed85/85 public and63/63 independent tests, one run per condition. These are the completed three rows in a four-condition concurrent cohort; not every condition succeeded. Full outcomes remain in the linked research record. Plans, repair needs, caching and host contention differed, so this is descriptive workflow evidence rather than an isolated causal effect or general performance guarantee.
+
+### Cache-aware token accounting
+
+| Condition | Claude ordinary input | Output | Cache creation | Cache read |
+|---|---:|---:|---:|---:|
+| Claude decisions | 254 | 240,722 | 1,924,792 | 4,606,898 |
+| Jev decomposition | 102 | 187,629 | 644,256 | 2,304,823 |
+| Jev decomposition + relations | 102 | 231,453 | 397,539 | 2,091,807 |
+
+`Reported token sum = Claude ordinary input + output + cache creation + cache read + Jev input + output`. Do not add cache TTL sub-buckets again. Free Jev output is included; unreported Jev cache fields remain null. Provider tokenizers differ, so this is not unique source text measured with one tokenizer.
+
+```text
+Decomposition token reduction = (6,772,666 − 3,967,289) / 6,772,666 × 100 = 41.422049%
+Decomposition+relations token reduction = (6,772,666 − 3,623,150) / 6,772,666 × 100 = 46.503342%
+Decomposition time reduction = (2,180,703.603375 − 1,554,036.054042) / 2,180,703.603375 × 100 = 28.736943%
+```
+
+Claude/Jev invocation counts were57/0,12/45 and10/47: all57 external adapter calls. Some repeated Claude calls moved to Jev; fewer total calls were not established. CLI receipts do not independently measure internal HTTP retries.
+
+## Separate observation: Codex/Jev initial decomposition
+
+The local2026-10-15 comparison matched only the initial decomposition stage: canonical210questions,4calls per condition, equal input hashes and environment/source fingerprints. All40 source hashes referenced by the full comparison summary were checked again.
+
+| Initial decomposition | Sum of adapter attempt time | Input + output tokens |
+|---|---:|---:|
+| Codex | 245,919.542166ms | 182,215 |
+| Jev | 6,497.730124ms | 167,726 |
+
+`245919.542166 / 6497.730124 = 37.846992x`; reported tokens reduced `(182215−167726)/182215×100=7.951596%`. This compares the Codex CLI path with Jev preflight/ledger/HTTP adapter time, not HTTP-only latency. Requested Codex profile was gpt-5.6-sol/high; actual model identity was not returned. One sequential pair; later decisions and development outcomes differed. **This does not establish whole-development speedup or equal final product quality.** Final Jev grading is on user hold after Docker shutdown; it was not resumed.
+
+## Recompute published arithmetic
+
+From the repository root, this reads only the aggregate JSON: no key, network, Docker or inference.
+
+```sh
+node --input-type=module -e 'import fs from "node:fs"; const d=JSON.parse(fs.readFileSync("docs/evidence/measured-results-20261015.json")); const rows=d.measurements[0].rows; const b=rows[0]; for (const r of rows) console.log(r.condition, {tokens:r.tokens.reported_token_sum, time_reduction:100*(b.workflow_wall_ms-r.workflow_wall_ms)/b.workflow_wall_ms, token_reduction:100*(b.tokens.reported_token_sum-r.tokens.reported_token_sum)/b.tokens.reported_token_sum});'
+```
+
+This reproduces aggregate arithmetic. Auditing every raw receipt requires the preserved research workspace and analyzer linked above. Skill responsibility separation itself has no measured savings claim. See [current capabilities and decomposition](CAPABILITIES.en.md).

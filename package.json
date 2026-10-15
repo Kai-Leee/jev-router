@@ -1,6 +1,6 @@
 {
   "name": "pointsman",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "private": true,
   "type": "module",
   "description": "Fast task routing with Jev and dependency DAGs.",

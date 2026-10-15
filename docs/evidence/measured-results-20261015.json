@@ -1,0 +1,276 @@
+{
+  "schema_version": "pointsman-measured-aggregate/v1",
+  "generated_at": "2026-10-15T11:54:25.539Z",
+  "measurements": [
+    {
+      "experiment": "D067",
+      "task": "OpenAPI Python client generator",
+      "worker_model": "claude-opus-5-5",
+      "worker_effort": "medium",
+      "implementation_concurrency_per_condition": 2,
+      "cohort_concurrency": 4,
+      "rows": [
+        {
+          "condition": "claude_all",
+          "sample_size": 1,
+          "completed": true,
+          "workflow_wall_ms": 2180703.6033750004,
+          "planning_wall_ms": 315756.69908399996,
+          "independent_grade_wall_ms": 28931.922959,
+          "public": {
+            "passed": 85,
+            "total": 85,
+            "unexecuted": 0
+          },
+          "independent": {
+            "passed": 63,
+            "total": 63,
+            "skipped": 0
+          },
+          "calls": {
+            "claude_cli": 57,
+            "jev_post": 0,
+            "total": 57
+          },
+          "tokens": {
+            "claude": {
+              "ordinary_input": 254,
+              "output": 240722,
+              "cache_creation": 1924792,
+              "cache_read": 4606898
+            },
+            "claude_total": 6772666,
+            "jev": {
+              "input": 0,
+              "output": 0,
+              "cache_creation": null,
+              "cache_read": null
+            },
+            "jev_total": 0,
+            "reported_token_sum": 6772666
+          },
+          "historical_api_rate_equivalent_usd": 21.135171600000003,
+          "actual_billed_usd": null,
+          "monthly_subscription_allocation_usd": null,
+          "reduction_vs_claude_all": {
+            "wall_ms": 0,
+            "wall_percent": 0,
+            "reported_tokens": 0,
+            "reported_tokens_percent": 0,
+            "historical_rate_equivalent_percent": 0,
+            "denominators": {
+              "wall_ms": 2180703.6033750004,
+              "reported_tokens": 6772666,
+              "historical_rate_equivalent_usd": 21.135171600000003
+            }
+          }
+        },
+        {
+          "condition": "jev_split",
+          "sample_size": 1,
+          "completed": true,
+          "workflow_wall_ms": 1554036.054042,
+          "planning_wall_ms": 104072.332375,
+          "independent_grade_wall_ms": 31260.647249999998,
+          "public": {
+            "passed": 85,
+            "total": 85,
+            "unexecuted": 0
+          },
+          "independent": {
+            "passed": 63,
+            "total": 63,
+            "skipped": 0
+          },
+          "calls": {
+            "claude_cli": 12,
+            "jev_post": 45,
+            "total": 57
+          },
+          "tokens": {
+            "claude": {
+              "ordinary_input": 102,
+              "output": 187629,
+              "cache_creation": 644256,
+              "cache_read": 2304823
+            },
+            "claude_total": 3136810,
+            "jev": {
+              "input": 828104,
+              "output": 2375,
+              "cache_creation": null,
+              "cache_read": null
+            },
+            "jev_total": 830479,
+            "reported_token_sum": 3967289
+          },
+          "historical_api_rate_equivalent_usd": 9.86486299999998,
+          "actual_billed_usd": null,
+          "monthly_subscription_allocation_usd": null,
+          "reduction_vs_claude_all": {
+            "wall_ms": 626667.5493330003,
+            "wall_percent": 28.73694290059082,
+            "reported_tokens": 2805377,
+            "reported_tokens_percent": 41.42204856994277,
+            "historical_rate_equivalent_percent": 53.324897537146185,
+            "denominators": {
+              "wall_ms": 2180703.6033750004,
+              "reported_tokens": 6772666,
+              "historical_rate_equivalent_usd": 21.135171600000003
+            }
+          }
+        },
+        {
+          "condition": "jev_split_relations",
+          "sample_size": 1,
+          "completed": true,
+          "workflow_wall_ms": 1704539.9688330002,
+          "planning_wall_ms": 77377.5505,
+          "independent_grade_wall_ms": 33157.908082999995,
+          "public": {
+            "passed": 85,
+            "total": 85,
+            "unexecuted": 0
+          },
+          "independent": {
+            "passed": 63,
+            "total": 63,
+            "skipped": 0
+          },
+          "calls": {
+            "claude_cli": 10,
+            "jev_post": 47,
+            "total": 57
+          },
+          "tokens": {
+            "claude": {
+              "ordinary_input": 102,
+              "output": 231453,
+              "cache_creation": 397539,
+              "cache_read": 2091807
+            },
+            "claude_total": 2720901,
+            "jev": {
+              "input": 897398,
+              "output": 4851,
+              "cache_creation": null,
+              "cache_read": null
+            },
+            "jev_total": 902249,
+            "reported_token_sum": 3623150
+          },
+          "historical_api_rate_equivalent_usd": 8.76658019999998,
+          "actual_billed_usd": null,
+          "monthly_subscription_allocation_usd": null,
+          "reduction_vs_claude_all": {
+            "wall_ms": 476163.63454200025,
+            "wall_percent": 21.83532112319428,
+            "reported_tokens": 3149516,
+            "reported_tokens_percent": 46.50334152016355,
+            "historical_rate_equivalent_percent": 58.5213672928022,
+            "denominators": {
+              "wall_ms": 2180703.6033750004,
+              "reported_tokens": 6772666,
+              "historical_rate_equivalent_usd": 21.135171600000003
+            }
+          }
+        }
+      ],
+      "accounting": {
+        "time": "Per-condition workflow wall includes planning, implementation, public checks, repair and in-condition waits. Excludes shared preflight, reused historical preparation, independent grading and post-run monitor.",
+        "tokens": "Sum of provider-reported input/output. Claude ordinary input, cache creation and cache read are disjoint buckets; cache TTL sub-buckets are not added again. Jev input/output both counted, including zero-priced output; unreported Jev caches are null and not invented.",
+        "token_comparability": "Provider tokenizers differ. This is a reported usage sum, not a common-tokenizer count, bill or measure of unique prompt text.",
+        "sample": "One run per condition in a concurrent cohort; plans differ and host/provider/cache effects are not isolated. Not a statistical superiority or causal effect claim.",
+        "rates": "Historical 2026-10-11 informational API/token-pack equivalent; actual monthly subscription allocation remains unknown."
+      },
+      "provenance": [
+        {
+          "path": "benchmark-runs/d067-analysis-02.json",
+          "sha256": "75cd0b53a34447fffbaac5584b2e6136e4425e9a7c83cfbb78ffc93a1914fd05",
+          "visibility": "private raw-linked analysis; publish only this aggregate"
+        },
+        {
+          "path": "docs/orchestration/D067_RESULTS.md",
+          "sha256": "f9095e95f4c0b522ddf7b4503711a23d08938d1cf2d8cfa1172611095fa489d1",
+          "visibility": "public research branch"
+        },
+        {
+          "path": "benchmark-runs/d067-preflight/analyze.mjs",
+          "sha256": "17e8a82245a350c12f20be7f6e8f4ad228ad072f060a5fc0248dcd29fd2782bf",
+          "visibility": "private original analyzer"
+        }
+      ],
+      "verified_source_files": 632
+    },
+    {
+      "experiment": "Codex repair 2026-10-15 initial split only",
+      "sample_size_per_condition": 1,
+      "canonical_question_bodies_identical": true,
+      "cli_environment_fingerprints_equal": true,
+      "rows": [
+        {
+          "decision_provider": "codex",
+          "requested_codex_profile": {
+            "model": "gpt-5.6-sol",
+            "effort": "high",
+            "transport": "structured-artifact-output-v1"
+          },
+          "calls": 4,
+          "questions": 210,
+          "adapter_wall_ms": 245919.542166,
+          "input_tokens": 168324,
+          "output_tokens": 13891,
+          "reported_token_sum": 182215,
+          "cached_input_tokens_included_in_input": 0,
+          "actual_model_identity_verified": false
+        },
+        {
+          "decision_provider": "jev",
+          "requested_codex_profile": {
+            "model": "gpt-5.6-sol",
+            "effort": "high",
+            "transport": "structured-artifact-output-v1"
+          },
+          "calls": 4,
+          "questions": 210,
+          "adapter_wall_ms": 6497.730124000227,
+          "input_tokens": 149852,
+          "output_tokens": 17874,
+          "reported_token_sum": 167726,
+          "cached_input_tokens_included_in_input": null,
+          "actual_model_identity_verified": null
+        }
+      ],
+      "comparison": {
+        "codex_wall_divided_by_jev_wall": 37.84699233008518,
+        "adapter_wall_reduction_percent": 97.35778211574005,
+        "reported_token_reduction_percent": 7.951595642510221,
+        "denominators": {
+          "codex_adapter_wall_ms": 245919.542166,
+          "codex_reported_tokens": 182215
+        }
+      },
+      "boundary": "Sum of four provider adapter attempt durations: Codex CLI path versus Jev preflight/ledger/HTTP path, not HTTP-only latency or whole-development completion speed.",
+      "completion_result": "No completed-pair claim: Codex did not pass all checks; Jev final grading was interrupted by user Docker shutdown and regrading is on hold.",
+      "provenance": [
+        {
+          "path": "benchmark-runs/codex-repair-20261015-01/summary.json",
+          "sha256": "38addda32f4e4b3651c2ea766b25da25cdc70f4c8114c5de05f87d75b62dfe3b",
+          "visibility": "private; no raw request/response publication"
+        }
+      ],
+      "verified_source_files": 40
+    }
+  ],
+  "reproduction": {
+    "d067": "node benchmark-runs/d067-preflight/analyze.mjs NEW_OUTPUT_PATH",
+    "arithmetic": "Token total = Claude ordinary input + output + cache creation + cache read + Jev input + output. Reduction percent = (Claude baseline - Jev condition) / Claude baseline * 100."
+  },
+  "not_published": [
+    "raw prompts",
+    "raw provider responses",
+    "credentials",
+    "local usernames",
+    "hidden grader details"
+  ]
+}
