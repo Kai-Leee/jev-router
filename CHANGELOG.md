@@ -18,6 +18,23 @@ behavior bumps the minor version, and a fix-only goal bumps the patch version.
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-10-15
+
+Goal: make released/research/local capabilities explicit and publish reproducible measured token and time aggregates.
+
+### Changed
+
+- Added bilingual capability and skill/decomposition guidance distinguishing main, public research and local development.
+- Expanded the three README measurement tables with reported token sums and the completed Jev-decomposition condition.
+- Linked the historical technical draft to the dated capability audit.
+
+### Added
+
+- Public redacted aggregate evidence with cache-aware token accounting and source hashes.
+- D067 completed workflow reductions: 28.74% time / 41.42% reported tokens for Jev decomposition;
+  21.84% time / 46.50% reported tokens for Jev decomposition plus relations, each one observation.
+- Separately scoped Codex/Jev decomposition-adapter observation; no new completed-development claim.
+
 ## [0.3.3] - 2026-10-15
 
 Goal: describe Pointsman as Jev + DAG task routing and publish a scoped, completed benchmark result.

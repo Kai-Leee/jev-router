@@ -1,6 +1,6 @@
 {
   "name": "jev-ai",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Typed Jev decisions for Pointsman task routing, using the pinned Jev MCP and compatible endpoint.",
   "mcpServers": "./.mcp.json",
   "interface": {

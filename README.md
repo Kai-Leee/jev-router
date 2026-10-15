@@ -12,6 +12,7 @@ into dependency DAGs: divide work, connect prerequisites, and dispatch ready tas
 The research runner connects routing decisions to scoped artifacts, public checks and recorded outcomes.
 
 This release provides the Jev client, evaluation tools, run contracts and usage dashboard.
+See [released/research/local capabilities and skill decomposition](docs/CAPABILITIES.en.md).
 The advanced DAG experiments are documented on the [research branch](https://github.com/Kai-Leee/pointsman/tree/research).
 
 [Measured results](#measured-results) · [How routing works](#how-routing-works) ·
@@ -19,19 +20,21 @@ The advanced DAG experiments are documented on the [research branch](https://git
 
 ## Measured results
 
-**21.84% less development-stage time and 58.52% lower API-rate-equivalent cost** in one completed
-D067 benchmark observation, with all **85 public and 63 independent checks passing** in both conditions.
+In the completed D067 comparison, Jev decomposition plus dependency decisions used **21.84% less development-stage time and 46.50% fewer reported tokens** than the structured Claude baseline. Jev decomposition alone used **28.74% less time and 41.42% fewer tokens**. All three conditions passed **85 public and 63 independent checks**.
 
-| OpenAPI Python client generator | Development-stage time | Historical API-rate-equivalent cost |
-|---|---:|---:|
-| Claude structured decisions + Claude workers | 36m 20.704s | $21.135172 |
-| Jev decomposition and dependency decisions + Claude workers | 28m 24.540s | $8.766580 |
+| OpenAPI Python client generator | Development-stage time | Reported token sum | Historical API-rate-equivalent cost |
+|---|---:|---:|---:|
+| Claude structured decisions + Claude workers | 36m 20.704s | 6,772,666 | $21.135172 |
+| Jev decomposition decisions + Claude workers | 25m 54.036s | 3,967,289 | $9.864863 |
+| Jev decomposition and dependency decisions + Claude workers | 28m 24.540s | 3,623,150 | $8.766580 |
 
-One run per condition in a concurrent cohort; identical Opus 5.5 medium worker profile and two worker slots
-per condition. Time includes decisions, implementation, repairs and public validation, excluding shared
-preparation and independent grading. Costs use recorded usage and the rates captured for that experiment,
-not subscription bills. Reductions use the Claude row as the denominator.
-[Measurement method and arithmetic](docs/MEASURED_ROUTING.en.md) ·
+One run per condition in a concurrent cohort; identical Opus 5.5 medium workers and two worker slots per condition.
+Time includes decisions, implementation, repairs and public validation, excluding shared preparation and independent grading.
+Token sums include Claude input/output/cache creation/cache reads and Jev input/output; provider tokenizers differ.
+All three conditions had 57 external adapter calls. Reductions use the Claude row as denominator.
+The decomposition-plus-relations condition also used 58.52% less historical API-rate-equivalent cost; this is not a subscription bill.
+[Methods, token breakdown and separate decision-stage observation](docs/MEASURED_ROUTING.en.md) ·
+[Public aggregate JSON](docs/evidence/measured-results-20261015.json) ·
 [Complete experiment record](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D067_RESULTS.md).
 
 ## How routing works
