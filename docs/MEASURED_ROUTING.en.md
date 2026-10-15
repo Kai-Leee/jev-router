@@ -1,5 +1,7 @@
 # Measured Jev + DAG routing
 
+> Completed, failed, repair and repeated experiments continued after D067. See the [D068–D085 follow-up results](POST_D067_RESULTS.en.md).
+
 [한국어](MEASURED_ROUTING.md) · [README](../README.md)
 
 ## Completed D067 comparison

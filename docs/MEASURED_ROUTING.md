@@ -1,5 +1,7 @@
 # Jev + DAG 라우팅 실측
 
+> D067 이후에도 완료·실패·수리·반복 실험이 있다. [D068–D085 후속 결과 연혁](POST_D067_RESULTS.md)을 함께 확인한다.
+
 [English](MEASURED_ROUTING.en.md) · [README](../README.ko.md)
 
 ## 완료된 D067 비교

@@ -37,6 +37,8 @@ Pointsman은 Jev와 의존성 DAG를 활용하는 코딩 에이전트 작업 라
 [공개 집계 JSON](docs/evidence/measured-results-20261015.json) ·
 [전체 실험 기록](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D067_RESULTS.md).
 
+[D068–D085 후속 결과·실제 수리·반복 실행](docs/POST_D067_RESULTS.md).
+
 ## 라우팅 과정
 
 메인 에이전트가 목표·공개 명세·산출물 계약을 제공합니다. 고정된 영어 질문으로 Jev가 작업 분해와
