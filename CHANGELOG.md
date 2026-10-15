@@ -18,6 +18,20 @@ behavior bumps the minor version, and a fix-only goal bumps the patch version.
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-10-16
+
+Goal: restore visibility of post-D067 experiments without implying a newer controlled efficiency result.
+
+### Added
+
+- Korean/English D068–D085 results timeline with source links, completed development and preserved-repair observations,
+  repeated-run denominators, feature activation limits and local Codex status.
+
+### Changed
+
+- README and measurement-note links now expose later results beside the highlighted completed D067 cohort.
+- Clarified that later successes exist, while changed checks, hosts and policies prevent a single pooled savings claim.
+
 ## [0.3.4] - 2026-10-15
 
 Goal: make released/research/local capabilities explicit and publish reproducible measured token and time aggregates.

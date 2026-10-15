@@ -37,6 +37,8 @@ The decomposition-plus-relations condition also used 58.52% less historical API-
 [Public aggregate JSON](docs/evidence/measured-results-20261015.json) ·
 [Complete experiment record](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D067_RESULTS.md).
 
+[D068–D085 follow-up results, actual repairs and repeated runs](docs/POST_D067_RESULTS.en.md).
+
 ## How routing works
 
 The main agent supplies the goal, public specification and artifact contracts. Fixed English questions

@@ -37,6 +37,8 @@ Token 合计包含 Claude 输入、输出、缓存创建、缓存读取，以及
 [公开汇总 JSON](docs/evidence/measured-results-20261015.json) ·
 [完整实验记录](https://github.com/Kai-Leee/pointsman/blob/research/docs/orchestration/D067_RESULTS.md)。
 
+[D068–D085 后续结果、实际修复与重复运行（英文）](docs/POST_D067_RESULTS.en.md)。
+
 ## 路由流程
 
 主智能体提供目标、公开规格和产物契约。Jev 通过固定英文问题判断任务拆分与依赖关系。
