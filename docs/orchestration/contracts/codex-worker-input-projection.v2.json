@@ -1,0 +1,12 @@
+{
+  "schema_version": "codex-worker-input-projection/v2",
+  "policy": "artifact-family-closed-v2",
+  "legacy": "dependency-closed-v1 and its contract remain unchanged",
+  "source_analysis": "python3 -I trusted helper parses stdin source with ast.parse only; candidate modules are never imported or executed. Parser/helper failure and selected-source syntax errors retain full context.",
+  "scope": "Keep current writable, declared-read, inherited same-owner, required-read and causal source bodies. Expand selected-unit and required-read interfaces, actual AST imports, selected-body class references and exact public failure source paths. A read-only packaging metadata file does not make its console entrypoint a runtime source dependency of this repair.",
+  "templates": "A dynamic get_template call can retain the entire verified source family only when its receiver has one lexical Environment assignment and a statically verified PackageLoader or __file__-relative FileSystemLoader root. Keep every currently verified template in that exact root, including all unknown choices within the family. Unknown/rebound/external loaders or missing literal targets fall back to full context.",
+  "imports": "AST distinguishes actual calls from text that will later be generated. Literal dynamic imports resolve against known source modules; unknown dynamic import expressions still fall back. Parenthesized imports and aliases use AST, not line regexes.",
+  "failure": "Keep every original requirement, interface, failure, unknown diagnostic, write permission and inherited revision. No passed-public-check evidence is deleted to claim a reduction.",
+  "instructions": "available_files contains complete UTF-8 bodies in this repair's verified artifact and dependency families. omitted_readable_files contains metadata only; those bodies are NOT inline or retrievable. No inventory entry grants write permission. Use the full original failure, requirements and interfaces. If another source body is needed, preserve valid writable bodies and report its exact path and reason in summary; do not invent unseen code. Return one complete file for every writable path.",
+  "measurement": "Record compact JSON before/after bytes and characters, retained/omitted source hashes, bounded-family proofs and fallback reasons. Model tokens and quality effects remain unknown until a separate actual run."
+}

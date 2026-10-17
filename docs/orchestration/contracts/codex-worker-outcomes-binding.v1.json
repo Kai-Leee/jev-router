@@ -1,0 +1,9 @@
+{
+  "schema_version": "codex-worker-outcomes-binding/v1",
+  "path": "benchmark-runs/d092-effort-history-20261017-01/snapshot.final.v2.json",
+  "file_sha256": "0118cbc3728d16e0d269404f1ff668d563eb57a3269f90932ff6aa33fb877e64",
+  "snapshot_sha256": "c0f1b7324056b9cd7ba48a59530dfaf8d8f1470e4382b7064a31ce6c32ae9e89",
+  "selection_input_scope": "public-worker-outcomes-only",
+  "source_manifest_sha256": "111f7a3a8e14fd981294b5200ff796639fee1f8f4a727efb0071c5254d807d05",
+  "policy_note": "Public requirement-associated observations; different tasks and environments, not a causal or calibrated success prediction. No independent/hidden feedback."
+}

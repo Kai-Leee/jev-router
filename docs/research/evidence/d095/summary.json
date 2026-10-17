@@ -1,0 +1,430 @@
+{
+  "schema_version": "d095-public-research-summary/v1",
+  "research_branch": "research-d095-final-20261017",
+  "scope": "Selected audited measurements from preserved local runs; not raw evidence or a standalone reproduction of paid runs.",
+  "conditions": [
+    {
+      "id": "D093 Claude native",
+      "public_gate": "4",
+      "complete": true,
+      "public": {
+        "total": 93,
+        "observed": 93,
+        "passed": 93,
+        "failed": 0,
+        "unexecuted": 0,
+        "basis": "Disjoint observed and explicitly unexecuted final public evidence; final artifact revision bound."
+      },
+      "independent": {
+        "tests": 63,
+        "passed": 63,
+        "failed": 0
+      },
+      "repair_rounds": 2,
+      "repair_worker_calls": 3,
+      "wall_ms": 1829325.219833,
+      "tokens": 1245707,
+      "reference_usd": 11.3186074
+    },
+    {
+      "id": "D094 Jev+Claude",
+      "public_gate": "4",
+      "complete": false,
+      "public": {
+        "passed": 93,
+        "failed": 0,
+        "unexecuted": 0,
+        "total": 93
+      },
+      "independent": {
+        "passed": 59,
+        "failed": 4,
+        "total": 63
+      },
+      "repair_rounds": 2,
+      "repair_worker_calls": 2,
+      "wall_ms": 1342232.30725,
+      "tokens": 950634,
+      "cache_read": 0,
+      "cache_creation": 393037,
+      "jev_calls": 13,
+      "claude_cli_calls": 7,
+      "reference_usd": 6.878888399999999
+    },
+    {
+      "id": "D095 Jev+Claude v16",
+      "public_gate": "5",
+      "complete": true,
+      "public": {
+        "passed": 93,
+        "failed": 0,
+        "unexecuted": 0,
+        "total": 93
+      },
+      "independent": {
+        "passed": 63,
+        "failed": 0,
+        "total": 63
+      },
+      "repair_rounds": 2,
+      "repair_worker_calls": 7,
+      "wall_ms": 2056680.403292,
+      "tokens": 2101095,
+      "cache_read": 71564,
+      "cache_creation": 1098694,
+      "jev_calls": 23,
+      "claude_cli_calls": 12,
+      "reference_usd": 14.805687899999997
+    }
+  ],
+  "comparisons": [
+    {
+      "baseline": "D093 Claude native",
+      "new": "D095 Jev+Claude v16",
+      "wall_change_percent": 12.428363256247854,
+      "token_change_percent": 68.66686949659912,
+      "reference_change_percent": 30.80838814145985,
+      "completed_speed_ratio": 0.8894552682589445,
+      "same_public_predicates": false,
+      "causal_speedup_established": false
+    },
+    {
+      "baseline": "D094 Jev+Claude",
+      "new": "D095 Jev+Claude v16",
+      "wall_change_percent": 53.228348936539874,
+      "token_change_percent": 121.02039270634126,
+      "reference_change_percent": 115.23372729814892,
+      "completed_speed_ratio": null,
+      "same_public_predicates": false,
+      "causal_speedup_established": false
+    }
+  ],
+  "failed_controller_phase": {
+    "status": "failed",
+    "stop_code": "PUBLIC_OWNER_ASSERTION_RUNTIME_DRIFT",
+    "wall_ms": 1060652.494584,
+    "tokens": 643247,
+    "reference_usd": 4.1821504,
+    "repair_worker_calls": 0
+  },
+  "physical_two_phase_totals": {
+    "benchmark_active_wall_sum_ms": 3117332.897876,
+    "total_tokens": 2744342,
+    "combined_reference_usd": 18.987838299999996,
+    "actual_invoice_usd": null,
+    "basis": "Sum of two actual benchmark phases, excludes controller-development gap/setup/main chat; not the second-condition timing.",
+    "observed_first_start_to_second_terminal_wall_ms": 3284217,
+    "observed_boundary": {
+      "first": "2026-10-17T12:08:40.473Z",
+      "last": "2026-10-17T13:03:24.690Z",
+      "basis": "Saved first arm event to saved second terminal event; includes between-phase controller fix/setup gap, excludes pre-first-arm development."
+    }
+  },
+  "latest_usage": {
+    "input_tokens": 1742292,
+    "output_tokens": 358803,
+    "total_tokens": 2101095,
+    "cache_read": 71564,
+    "cache_creation": 1098694,
+    "jev_calls": 23,
+    "claude_cli_calls": 12,
+    "initial_worker_calls": 5,
+    "repair_worker_calls": 7,
+    "repair_rounds": 2,
+    "reference_cost": {
+      "claude_short_usd": 14.462484299999996,
+      "jev_historical_input_pack_usd": 0.3432036,
+      "combined_usd": 14.805687899999997,
+      "actual_invoice_usd": null
+    },
+    "claude_terminal_aggregates": [
+      {
+        "id": "worker-105e62bb-eb08-4cac-83c1-d8d51d6d4f1a",
+        "sha256": "238c97cb43f46aa1a26125f42de352651de9ba6024f4aa3849eaa5f7a0604754",
+        "input": 56488,
+        "ordinary_input": 4,
+        "cache_read": 47725,
+        "cache_creation": 8759,
+        "output": 15415,
+        "thinking_subset": 4381,
+        "reference_short_usd": 0.1939665
+      },
+      {
+        "id": "worker-f18540e0-37ce-497d-9fa2-d5db80db5fbc",
+        "sha256": "97c9090bdff79fbf440f8edfa7f967f72d42c3ef9f31259be7332389f2cfce70",
+        "input": 24760,
+        "ordinary_input": 2,
+        "cache_read": 0,
+        "cache_creation": 24758,
+        "output": 67027,
+        "thinking_subset": 43478,
+        "reference_short_usd": 0.769306
+      },
+      {
+        "id": "worker-6e54a471-d2c8-4ee7-bd3d-2acd988f2fb8",
+        "sha256": "ffc16912fe07a835d90b535e5696f9f1f3f6cddd3f55489520bb4b0338b17daa",
+        "input": 23489,
+        "ordinary_input": 2,
+        "cache_read": 23122,
+        "cache_creation": 365,
+        "output": 53886,
+        "thinking_subset": 27868,
+        "reference_short_usd": 1.0852723999999998
+      },
+      {
+        "id": "worker-35af5961-2bbc-452b-a191-28bd6166fa61",
+        "sha256": "9bf4de13e4ac2f0147c37c3d6738665b1df61e6844d8dd72dc3b6d91a236b139",
+        "input": 52882,
+        "ordinary_input": 2,
+        "cache_read": 0,
+        "cache_creation": 52880,
+        "output": 23809,
+        "thinking_subset": 9765,
+        "reference_short_usd": 0.899228
+      },
+      {
+        "id": "worker-c1da7bf2-a43a-4438-9fc9-8d5aa5a0bc36",
+        "sha256": "a729e51454a1c7d956bd5ef2f6387596198f026a66e865752931a8a6d4b7c13c",
+        "input": 23172,
+        "ordinary_input": 2,
+        "cache_read": 0,
+        "cache_creation": 23170,
+        "output": 49031,
+        "thinking_subset": 24975,
+        "reference_short_usd": 1.165988
+      },
+      {
+        "id": "worker-c99f6407-a2ac-4b0e-a71c-184921e0a2a5",
+        "sha256": "3c25235c6e78bceeed191bd748382130fc6857ccd84f2534cab4f3925a803431",
+        "input": 124530,
+        "ordinary_input": 2,
+        "cache_read": 0,
+        "cache_creation": 124528,
+        "output": 18217,
+        "thinking_subset": 1557,
+        "reference_short_usd": 1.360572
+      },
+      {
+        "id": "worker-d6d513b4-b653-4bbd-87a6-9e3f603d8057",
+        "sha256": "13d8803812703ff415e1ca2a087340111c9fae4960672cdff302b8d3bdb8012d",
+        "input": 125570,
+        "ordinary_input": 2,
+        "cache_read": 0,
+        "cache_creation": 125568,
+        "output": 21849,
+        "thinking_subset": 12189,
+        "reference_short_usd": 1.441532
+      },
+      {
+        "id": "worker-c1e8450b-09f5-40d3-b67c-72cd26cb9a60",
+        "sha256": "c80da33170f124baa6acb706eb35659c59af632e2bb205a8a3093b553c22b346",
+        "input": 129294,
+        "ordinary_input": 2,
+        "cache_read": 0,
+        "cache_creation": 129292,
+        "output": 6792,
+        "thinking_subset": 2288,
+        "reference_short_usd": 1.170184
+      },
+      {
+        "id": "worker-9532099a-2535-490c-84ee-4ceca0d48a82",
+        "sha256": "8977262f9214956ae4c766b3b57f87cbe9f06d08de601099fa8bb8bbed429219",
+        "input": 123256,
+        "ordinary_input": 2,
+        "cache_read": 0,
+        "cache_creation": 123254,
+        "output": 26017,
+        "thinking_subset": 8492,
+        "reference_short_usd": 1.50638
+      },
+      {
+        "id": "worker-2f9eec26-b357-4cde-9947-38b003505a8a",
+        "sha256": "7025f20aa5900f09d8bb0172c1661f466f395fe9df2426d78240357dec52abd0",
+        "input": 245145,
+        "ordinary_input": 4,
+        "cache_read": 717,
+        "cache_creation": 244424,
+        "output": 40796,
+        "thinking_subset": 3883,
+        "reference_short_usd": 2.7714714
+      },
+      {
+        "id": "worker-dbe937cc-54e8-414f-aab1-c8bfba76d7f0",
+        "sha256": "9a533a9e2dc6074fb5b79717b4cefd31e2e79a113647eb57d2c03442d58a433e",
+        "input": 120346,
+        "ordinary_input": 2,
+        "cache_read": 0,
+        "cache_creation": 120344,
+        "output": 4769,
+        "thinking_subset": 2290,
+        "reference_short_usd": 1.05814
+      },
+      {
+        "id": "worker-fe908239-4ac8-49cf-be5e-139ba84d5d6d",
+        "sha256": "91ca13704bda501806a37afc6870dc3109fe7de5b40b17c0b515fc88bf7d3899",
+        "input": 121354,
+        "ordinary_input": 2,
+        "cache_read": 0,
+        "cache_creation": 121352,
+        "output": 3481,
+        "thinking_subset": 697,
+        "reference_short_usd": 1.040444
+      }
+    ],
+    "accounting": "Input includes ordinary, cache read and cache creation. Thinking is an output subset, not added again. Prices are estimates, not subscription invoices."
+  },
+  "rounds": [
+    {
+      "round": 0,
+      "status": "failed",
+      "public": {
+        "passed": 56,
+        "failed": 20,
+        "unexecuted": 17,
+        "total": 93
+      },
+      "worker_calls": 5,
+      "worker_tokens": 389959,
+      "noop_workers": 0
+    },
+    {
+      "round": 1,
+      "status": "failed",
+      "public": {
+        "passed": 90,
+        "failed": 3,
+        "unexecuted": 0,
+        "total": 93
+      },
+      "worker_calls": 5,
+      "worker_tokens": 861466,
+      "noop_workers": 1
+    },
+    {
+      "round": 2,
+      "status": "completed",
+      "public": {
+        "passed": 93,
+        "failed": 0,
+        "unexecuted": 0,
+        "total": 93
+      },
+      "worker_calls": 2,
+      "worker_tokens": 249950,
+      "noop_workers": 0
+    }
+  ],
+  "component_times": {
+    "arm_wall_ms": 2056680.403292,
+    "rows": [
+      {
+        "kind": "jev:split",
+        "calls": 4,
+        "callback_or_process_wall_sum_ms": 10494.806457,
+        "maximum_single_ms": 3908.214915999999,
+        "input_tokens": 149852,
+        "output_tokens": 17856
+      },
+      {
+        "kind": "jev:profiles",
+        "calls": 12,
+        "callback_or_process_wall_sum_ms": 30118.900495999816,
+        "maximum_single_ms": 4401.173165999993,
+        "input_tokens": 221844,
+        "output_tokens": 4092
+      },
+      {
+        "kind": "jev:repair_owners",
+        "calls": 7,
+        "callback_or_process_wall_sum_ms": 13702.819126000162,
+        "maximum_single_ms": 2538.208459000103,
+        "input_tokens": 200310,
+        "output_tokens": 5766
+      },
+      {
+        "kind": "claude:implementation",
+        "calls": 5,
+        "callback_or_process_wall_sum_ms": 1583754.554292,
+        "maximum_single_ms": 448195.44787499995,
+        "input_tokens": 180791,
+        "output_tokens": 209168
+      },
+      {
+        "kind": "claude:repair",
+        "calls": 7,
+        "callback_or_process_wall_sum_ms": 1090375.3643739999,
+        "maximum_single_ms": 430555.2166249999,
+        "input_tokens": 989495,
+        "output_tokens": 121921
+      }
+    ],
+    "boundaries": [
+      "Jev receipt wall is the decision callback, includes controller/admission/budget wrapper; not isolated server-inference time.",
+      "Claude wall is native CLI process, includes startup/thinking/output/structured return; not text-generation-only time.",
+      "Parallel worker/profile spans overlap; component sums must not be added to obtain arm wall.",
+      "Public checks/independent grade are included in arm wall; they are not new model calls."
+    ]
+  },
+  "gates": {
+    "actual_jev_posts": 23,
+    "guard_receipts": 69,
+    "missing_or_mismatched": 0
+  },
+  "verification_at_run_end": {
+    "frozen_sources": 182,
+    "source_changes": [],
+    "preserved_files": 12817,
+    "preservation_changes": [],
+    "links_checked": 20,
+    "missing_links": [],
+    "no_inference_provider_calls": 0,
+    "no_inference_blockers": [],
+    "record_check": "complete:14sources/9claims;semantic claims separately audited",
+    "relevant_tests_passed": 64,
+    "tests_skipped": 0,
+    "git_diff_check": "passed"
+  },
+  "limitations": [
+    "D095 strengthens two public predicates after diagnosing independent failures; unchanged93case IDs do not mean identical coverage.",
+    "Historical arms have different source phase and stochastic DAG/model selection/code generation; no causal speedup conclusion.",
+    "Independent63 is a regression check after4failures were observed, not an untouched holdout result.",
+    "Reference costs use pinned official Claude Standard rates and historical Jev0.6USD/Minput equivalent, not actual subscription invoices.",
+    "Main development chat and controller implementation costs excluded.",
+    "Original benchmark-runs, raw requests, streams, candidates and history snapshots remain local and are excluded by .gitignore.",
+    "Some historical integration tests need local evidence or original source snapshots; a fresh clone is not the measured host.",
+    "The default npm test includes historical source pins and is not claimed to pass in this combined research snapshot.",
+    "The separate origin/research D085 changes were not merged; this branch preserves D095 source pins."
+  ],
+  "sources": [
+    {
+      "path": "benchmark-runs/d095-public-boundaries-runtime-20261017-02/comparison.json",
+      "sha256": "238f5e0619000e59565d37eccdb647238f8b2c20e1b0bd5f05cadb39e861939e",
+      "availability": "preserved_local_only"
+    },
+    {
+      "path": "benchmark-runs/d095-public-boundaries-runtime-20261017-02/native-audit.json",
+      "sha256": "0ba08bcf20579e3887c0e4482e00a2b2f616a6fd010ef151682455ddf963373c",
+      "availability": "preserved_local_only"
+    },
+    {
+      "path": "benchmark-runs/d095-public-boundaries-runtime-20261017-02/component-times.json",
+      "sha256": "3f6655e9c2155e5a9044d1c1a23ff8a615ee5214af43bf622fff9716a8308937",
+      "availability": "preserved_local_only"
+    },
+    {
+      "path": "benchmark-runs/d095-public-boundaries-runtime-20261017-02/round-summary.json",
+      "sha256": "2bf070f3b0e38bc5fcdf6d023c9782e5f117a76700cc9c442491decfa0176825",
+      "availability": "preserved_local_only"
+    },
+    {
+      "path": "benchmark-runs/d095-public-boundaries-runtime-20261017-02/gateway-audit.json",
+      "sha256": "a792fc95a1d9957812020c0e9721ae2e028c15340d616cfd4fa90602bbde43f9",
+      "availability": "preserved_local_only"
+    },
+    {
+      "path": "benchmark-runs/d095-public-boundaries-runtime-20261017-02/final-verification.json",
+      "sha256": "f81ccb26dfb20698722171bc9269353c56b159123239b7910fbea8688382d9b5",
+      "availability": "preserved_local_only"
+    }
+  ]
+}

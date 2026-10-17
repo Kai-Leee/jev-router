@@ -1,3 +1,29 @@
+연구 마무리(2026-10-17): 사용자 요청으로 D095까지를 `research-d095-final-20261017`에 보관한다. [보관 범위·공개 요약·검증과 남긴 일](docs/research/D095_CLOSEOUT.md). 기존 원격 research의 별도 D085 변경과 측정 소스 결속을 보존하기 위해 독립 연구 브랜치를 사용한다. 추가 개발·유료 실행·자동 재개는 시작하지 않는다. 아래 commit/push 미수행 문구는 각 실험 종료 당시 기록이다.
+
+D095 종료(2026-10-17): 공개 v5 검사와 실제 담당 연결·v16 회차 결속 수정 후 공개 93/93·독립 63/63 완료. 수리 2회차/작업자 7회, 34분 16.680초, 캐시 포함 2,101,095토큰, 참고 비용 추정 $14.8056879. 과거 Claude 단독 대비 시간·토큰·비용 절감은 미달했다. 첫 실행기 실패 643,247토큰/추정 $4.1821504도 보존했다. [상세 결과](docs/orchestration/D095_PUBLIC_BOUNDARIES_RESULTS.md). 기존 결과 12,817파일 변경 0, 실제 청구 미확인, commit/push 없음.
+
+D094 종료(2026-10-17): [잠정 선택·blocked 복구 결과](docs/orchestration/D094_CLAUDE_PROVISIONAL_RESULTS.md). 새v4질문/v14계약에서실측0의모델·노력도잠정선택7회가실제Claude로연결됐다. 공개93/93·독립59/63으로미완료,수리2회차/작업자2회·22분22.232초·950634캐시포함토큰·참고6.8788884USD/실청구unknown. 실제unknown/복구발동0,복구흐름은79검사에서검증했다. 기존완료Claude보다소모는낮지만동일완료품질효율우위없음. source162/이전9941불변,컨테이너기존5동일·자체0. 추가실행/commit/push없음. 아래는각당시기록이다.
+
+D093 실제 비교 종료(2026-10-17): [결과](docs/orchestration/D093_FULL_PROVIDER_RESULTS.md) · [기록](docs/decisions/D093.md). 모델·노력도·공개 성과를 연결해 네 조건을 측정했다. Codex 판단과 Claude 판단은 공개93/93·독립63/63 완료, Jev+Codex는91/93 미완료, Jev+Claude는 unknown2로 작업자0·검사미실행이다. 전체 완료 가속 우위는 입증되지 않았다. Claude 최종 새 opt-in은 bin/claude-classifier-cohort.mjs + v13이며, 기존 기본 route/v9와 원래 v10 Codex 조건은 당시 source snapshot으로 재현해야 한다. 역사 source pin을 현재 코드에 재고정하거나 종료 출력을 재개하지 않는다. 다음 유료 실행은 시작하지 않았다. 아래는 각 당시 기록이다.
+
+D092 현재(2026-10-17): [모델·노력도·공개 성과 라우팅](docs/orchestration/D092_MODEL_EFFORT_HISTORY.md) · [기록](docs/decisions/D092.md) · [과거 실패·수리 이력](docs/orchestration/D092_FAILURE_HISTORY.md). 새 `node bin/codex-e2e.mjs route` 경로는 v9와 프로필 v2를 사용해 현재 제공 모델×노력도 23개 중 Jev가 함께 선택한다. high는 고정이 아니다. 선택 입력은 source-bound 공개 성과 85개이며 독립·숨김 결과는 제외한다. 무표본 노력도는 unknown, 인과 성공률·전체 개발 절감은 미측정이다. `check`는 새 경로의 추론 없는 점검이며 실제 개발은 명시 --spend/새 출력 경로를 요구한다. 기존 v7/v8·D091 결과는 보존하고 변경된 현재 코드에 재고정하지 않는다. 아래는 각 당시 기록이다.
+
+D091 현재(2026-10-16): [새 3조건 결과](docs/orchestration/D091_CODEX_RESULTS.md) · [기록](docs/decisions/D091.md). Codex93/93·63/63 완료, Jev고정93/93·60/63 미완료, Jev모델선택82/93·57/63 미완료. 종료시간27분44.01/26분44.74/29분59.71, 토큰529592/527950/1435202, Short참고USD1.893192/1.6005356/2.1076985. 모델선택13회는 초기Luna4+Sol1/수리Sol8로 실제 연결됐지만 효율개선 미입증이다. 기본Codex run/pair는D091 v7 고정모델, 모델선택은v8/adaptive opt-in이다. 실행중439소스·기존57143파일불변, 이후 집계소계1줄과새핀4개만수정/검증했으며원본보존. 종료원본을재개하지않는다. 아래는각당시기록이다.
+
+D090 현재(2026-10-16): 앱 실제 CLI0.162.0-alpha.17.2·gpt-6.1-sol/high 기본 연결과 모델별 참고 정산으로 새 순차1쌍을 종료했다. [결과](docs/orchestration/D090_CODEX_RESULTS.md) · [기록](docs/decisions/D090.md). 두 조건 모두 공개93/93·독립63/63으로 제품 완료2/2. Codex24분42.255초·478030토큰·참고$1.749668, Jev22분37.343초·503013토큰·참고$1.5037936: 전체시간8.4272%↓·토큰5.2262%↑·참고액14.0526%↓(Codex분모). 단가 가정/실청구unknown 구분, 초기 판단34.888배는 전체 가속률 아님. Jev실제수리1회·투영감축0B·추가문맥첨부0B. 기본Codex경로D090 manifest/gatewayv6, 역사계약·결과55178파일보존, 소스427불변. 추가자동실행/commit/push없음. 아래는각당시기록이다.
+
+D089 현재(2026-10-16): 수리 근거/작업자 입력 투영/공개 docstring 지침을 공통 적용한 새 비교·감사를 종료했다. [결과](docs/orchestration/D089_CODEX_RESULTS.md) · [기록](docs/decisions/D089.md). Codex 공개60/93(미실행10)·독립55/63, Jev90/93·59/63으로 제품 완료0/2. Jev는 D088보다 시간18.02%·전체 토큰29.89%·참고액13.63% 증가했고 실제 입력 축소0B다. 기존 T.R10.03은 두 조건 통과. 기본 Codex 실행은 D089 manifest/gateway v5이며 옛 계약은 보존했다. 남은 enum 동일성·상위 생산자 담당·수리 입력 구성 문제를 먼저 읽는다. 종료 원본을 재개하지 않는다. 아래는 각 당시 기록이다.
+
+D088 현재: 입력 검사v5와native정산을 하나의 모델 정본으로 연결한 새 Codex 비교를 종료했다. [결과](docs/orchestration/D088_CODEX_RESULTS.md): Codex공개81/93·독립57/63, Jev92/93·59/63으로 완료0/2. Jev종료시간16.46%↓·참고단가환산4.36%↓·전체토큰27.22%↑. 기본Codex실행기는pointsman-codex-d088.json/gatewayv4이며 역사적 계약은 보존했다. 새 결과를 자동 재개하지 않는다. 아래는 각 당시 기록이다.
+
+R20261014-CODEX-MAC 결과: Mac 실제 비교1쌍 종료, 두 조건 모두 제품 미완료. [전체 결과](docs/orchestration/CODEX_MAC_RESULTS.md). Codex23분1.64초/1,084,007토큰/독립57of63; Jev6분42.41초/300,500토큰/독립0of63. Jev는 부분실행 수리binding 오류로 조기종료했으므로 완료절감률 없음. 초기동일210질문 호출구간만243.81초 대9.26초. 스킬환경 변동 한계 포함. 기존결과 보존, 자동재실행 없음. 아래는 각 당시 기록이다.
+
+R20261014-CODEX-MAC: 사용자가 “이번 Codex 비교는 Mac에서 실행”으로 승인했다. 새 codex-e2e 실행기에만 `--execution-host mac` 예외를 적용한다. Codex 판단→Jev 판단 순차 각1회, 동일 Codex 작업자, 기존 결과 보존, 공유 장부 복원 금지. 실제 결과는 `benchmark-runs/codex-e2e-mac-20261014-01/`에 기록한다. 아래 내용은 각 시점의 기록이다.
+
+R20261014-CODEX-E2E: [Codex 판단 vs Jev 판단 전체 개발 비교](docs/orchestration/CODEX_E2E.md)를 먼저 읽는다. 새 `bin/codex-e2e.mjs`는 공통 Codex 작업자·D083 분해/수리·공개/독립 검사 연결이다. 실제 A/B 모델 실행은 아직 없고 유료 실행 호스트를 확인 중이다. 기존 cloud-only 정책 유지. 공유 장부는 다른 승인된 모의 서비스와 함께 사용되므로 복원하지 않는다. 아래 지침은 각각 당시 기록이다.
+
+R20261014: [D083 스킬 실행 연결과 검증](docs/orchestration/POINTSMAN_D083_GATEWAY.md)을 먼저 읽는다. 새 opt-in은 `pointsman-d083.json`(v13), 필수 gateway와 기록을 거친다. 실제 Codex 호스트 검증 통과; Claude는 인증 성공이나 주간 한도로 미완료. 기존 파일 보존 감사는 장부 1개 차이로 미해결이며 전체 보존 성공으로 보고하지 않는다. 과거 manifest/정책은 재현용이다.
+
 D083: [클라우드 실패 2건 원인과 수정](docs/orchestration/D083_REPAIR_DIRECTION.md)을 먼저 읽는다. `d083-repair-fixes.json`(D082 + repair-budget-v3 + scope_expansion worker-mentioned-v1)이 opt-in이며 전송 정책 기본은 v10이다(v1–v9는 재현용). 반복 측정은 조건당 3회만 한다. D082-08은 사용자 중단이며 재실행하지 않는다. 클라우드는 `scripts/cloud-env-up.sh`로 준비하고 완료 arm은 `scripts/grade-adaptive-arm.mjs`로 채점한다.
 
 D082: [클라우드 실행 준비](docs/orchestration/D082_CLOUD_RUNS.md)를 먼저 읽는다. 클라우드 세션 유료 실행은 `d082-cloud-defaults.json`(D081 기본 + Claude `oauth_token` 인증 허용)을 쓰고, Docker `containerd-snapshotter:false`·`NODE_USE_ENV_PROXY=1`·`/Users/lee/workspace/plugins/jev-router` bind mount에서 실행한다. 원장은 클라우드 한 곳에서만 쓰며 Mac은 유료 실행을 멈춘다.

@@ -1,0 +1,11 @@
+{
+  "schema_version": "codex-worker-input-projection/v1",
+  "policy": "dependency-closed-v1",
+  "applies_to": "repair workers only; implementation keeps its existing complete input",
+  "seeds": ["writable paths", "declared task read scope", "selected artifact and inherited same-owner paths", "required read artifacts", "causal chain paths", "exact known source paths mentioned in public failure or diagnostics", "public guidance source paths"],
+  "closure": ["known source paths and dotted Python module references in retained source/interfaces", "class definitions named by retained unit interfaces", "resolvable static Python imports", "literal Jinja include/import/extends targets"],
+  "fallback": "Keep all verified source bodies for incomplete/uncertain/unexecuted evidence, unknown ownership, missing required source, unresolved local imports/template targets, or dynamic imports/template references.",
+  "instructions": "available_files contains the complete UTF-8 bodies selected by the declared dependency closure. Other verified readable files are listed in omitted_readable_files by path, byte count and SHA-256; their bodies are NOT inline and cannot be retrieved with tools. Preserve all original requirements, interfaces, public failure evidence and write restrictions. A file in the inventory does not grant write access. If an omitted file body is needed, preserve valid writable file bodies and report the exact missing path and reason in summary; never invent unseen source or claim the repair is verified.",
+  "information_boundary": "This is a changed read-context condition, not lossless compression of all source bodies. Original packet and projection audit remain controller-side. Source references do not let the model retrieve omitted bytes.",
+  "output": "Complete file body for every writable path; unchanged output schema and validation. All public checks still run."
+}

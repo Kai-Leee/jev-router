@@ -1,0 +1,488 @@
+{
+  "schema_version": "public-assertion-contract/v1",
+  "version": "3",
+  "scope_basis": "Public interface repair candidates, not proof of implementation fault. Resolve paths through the current plan and artifact bindings; unsupported or stale evidence uses a conservative fallback. D071 causal_paths enumerate source-backed interface candidates, not an observed runtime call graph or proof of fault. Validate current source and ownership before authorizing repair.",
+  "assertions": [
+    {
+      "id": "A.integration.diagnostics.existing-output-refused",
+      "check_id": "public.cli-config-environment",
+      "test_id": "T.integration.diagnostics",
+      "requirement_ids": [
+        "R03.04"
+      ],
+      "artifact_paths": [
+        "pyclientgen/cli.py"
+      ],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 49,
+        "end_line": 50
+      }
+    },
+    {
+      "id": "A.integration.diagnostics.overwrite-accepted",
+      "check_id": "public.cli-config-environment",
+      "test_id": "T.integration.diagnostics",
+      "requirement_ids": [
+        "R03.04"
+      ],
+      "artifact_paths": [
+        "pyclientgen/cli.py"
+      ],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 49,
+        "end_line": 50
+      }
+    },
+    {
+      "id": "A.integration.diagnostics.missing-hook-exit",
+      "check_id": "public.cli-config-environment",
+      "test_id": "T.integration.diagnostics",
+      "requirement_ids": [
+        "R17.01"
+      ],
+      "artifact_paths": [
+        "pyclientgen/hooks.py"
+      ],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 319,
+        "end_line": 321
+      }
+    },
+    {
+      "id": "A.integration.diagnostics.missing-hook-diagnostic",
+      "check_id": "public.cli-config-environment",
+      "test_id": "T.integration.diagnostics",
+      "requirement_ids": [
+        "R17.01"
+      ],
+      "artifact_paths": [
+        "pyclientgen/hooks.py"
+      ],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "start_line": 319,
+        "end_line": 321
+      }
+    },
+    {
+      "id": "A.R10.02.body-description.distinct.sync",
+      "check_id": "public.description-provenance",
+      "test_id": "T.R10.02.body-description.distinct.sync",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "artifact_paths": [
+        "pyclientgen/templates/endpoint_module.py.jinja"
+      ],
+      "causal_paths": [
+        {
+          "path": "pyclientgen/schema/operations.py",
+          "role": "producer",
+          "rationale": "Candidate parser that constructs request body data; verify the source description is propagated."
+        },
+        {
+          "path": "pyclientgen/ir.py",
+          "role": "representation",
+          "rationale": "Candidate shared representation carrying request body description; inspect producer/consumer field agreement."
+        },
+        {
+          "path": "pyclientgen/generator.py",
+          "role": "renderer",
+          "rationale": "Candidate renderer/controller and possible non-template rendering path; verify which body description it consumes."
+        },
+        {
+          "path": "pyclientgen/templates/endpoint_module.py.jinja",
+          "role": "renderer",
+          "rationale": "Candidate endpoint template receiving body data; a failing emitted description alone does not prove this file caused the loss."
+        }
+      ],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+        "start_line": 188,
+        "end_line": 192
+      },
+      "observation_schema": "public-description-provenance/v1"
+    },
+    {
+      "id": "A.R10.02.body-description.distinct.sync_detailed",
+      "check_id": "public.description-provenance",
+      "test_id": "T.R10.02.body-description.distinct.sync_detailed",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "artifact_paths": [
+        "pyclientgen/templates/endpoint_module.py.jinja"
+      ],
+      "causal_paths": [
+        {
+          "path": "pyclientgen/schema/operations.py",
+          "role": "producer",
+          "rationale": "Candidate parser that constructs request body data; verify the source description is propagated."
+        },
+        {
+          "path": "pyclientgen/ir.py",
+          "role": "representation",
+          "rationale": "Candidate shared representation carrying request body description; inspect producer/consumer field agreement."
+        },
+        {
+          "path": "pyclientgen/generator.py",
+          "role": "renderer",
+          "rationale": "Candidate renderer/controller and possible non-template rendering path; verify which body description it consumes."
+        },
+        {
+          "path": "pyclientgen/templates/endpoint_module.py.jinja",
+          "role": "renderer",
+          "rationale": "Candidate endpoint template receiving body data; a failing emitted description alone does not prove this file caused the loss."
+        }
+      ],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+        "start_line": 188,
+        "end_line": 192
+      },
+      "observation_schema": "public-description-provenance/v1"
+    },
+    {
+      "id": "A.R10.02.body-description.distinct.asyncio",
+      "check_id": "public.description-provenance",
+      "test_id": "T.R10.02.body-description.distinct.asyncio",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "artifact_paths": [
+        "pyclientgen/templates/endpoint_module.py.jinja"
+      ],
+      "causal_paths": [
+        {
+          "path": "pyclientgen/schema/operations.py",
+          "role": "producer",
+          "rationale": "Candidate parser that constructs request body data; verify the source description is propagated."
+        },
+        {
+          "path": "pyclientgen/ir.py",
+          "role": "representation",
+          "rationale": "Candidate shared representation carrying request body description; inspect producer/consumer field agreement."
+        },
+        {
+          "path": "pyclientgen/generator.py",
+          "role": "renderer",
+          "rationale": "Candidate renderer/controller and possible non-template rendering path; verify which body description it consumes."
+        },
+        {
+          "path": "pyclientgen/templates/endpoint_module.py.jinja",
+          "role": "renderer",
+          "rationale": "Candidate endpoint template receiving body data; a failing emitted description alone does not prove this file caused the loss."
+        }
+      ],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+        "start_line": 188,
+        "end_line": 192
+      },
+      "observation_schema": "public-description-provenance/v1"
+    },
+    {
+      "id": "A.R10.02.body-description.distinct.asyncio_detailed",
+      "check_id": "public.description-provenance",
+      "test_id": "T.R10.02.body-description.distinct.asyncio_detailed",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "artifact_paths": [
+        "pyclientgen/templates/endpoint_module.py.jinja"
+      ],
+      "causal_paths": [
+        {
+          "path": "pyclientgen/schema/operations.py",
+          "role": "producer",
+          "rationale": "Candidate parser that constructs request body data; verify the source description is propagated."
+        },
+        {
+          "path": "pyclientgen/ir.py",
+          "role": "representation",
+          "rationale": "Candidate shared representation carrying request body description; inspect producer/consumer field agreement."
+        },
+        {
+          "path": "pyclientgen/generator.py",
+          "role": "renderer",
+          "rationale": "Candidate renderer/controller and possible non-template rendering path; verify which body description it consumes."
+        },
+        {
+          "path": "pyclientgen/templates/endpoint_module.py.jinja",
+          "role": "renderer",
+          "rationale": "Candidate endpoint template receiving body data; a failing emitted description alone does not prove this file caused the loss."
+        }
+      ],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+        "start_line": 188,
+        "end_line": 192
+      },
+      "observation_schema": "public-description-provenance/v1"
+    },
+    {
+      "id": "A.R10.02.body-description.request-only.sync",
+      "check_id": "public.description-provenance",
+      "test_id": "T.R10.02.body-description.request-only.sync",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "artifact_paths": [
+        "pyclientgen/templates/endpoint_module.py.jinja"
+      ],
+      "causal_paths": [
+        {
+          "path": "pyclientgen/schema/operations.py",
+          "role": "producer",
+          "rationale": "Candidate parser that constructs request body data; verify the source description is propagated."
+        },
+        {
+          "path": "pyclientgen/ir.py",
+          "role": "representation",
+          "rationale": "Candidate shared representation carrying request body description; inspect producer/consumer field agreement."
+        },
+        {
+          "path": "pyclientgen/generator.py",
+          "role": "renderer",
+          "rationale": "Candidate renderer/controller and possible non-template rendering path; verify which body description it consumes."
+        },
+        {
+          "path": "pyclientgen/templates/endpoint_module.py.jinja",
+          "role": "renderer",
+          "rationale": "Candidate endpoint template receiving body data; a failing emitted description alone does not prove this file caused the loss."
+        }
+      ],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+        "start_line": 188,
+        "end_line": 192
+      },
+      "observation_schema": "public-description-provenance/v1"
+    },
+    {
+      "id": "A.R10.02.body-description.request-only.sync_detailed",
+      "check_id": "public.description-provenance",
+      "test_id": "T.R10.02.body-description.request-only.sync_detailed",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "artifact_paths": [
+        "pyclientgen/templates/endpoint_module.py.jinja"
+      ],
+      "causal_paths": [
+        {
+          "path": "pyclientgen/schema/operations.py",
+          "role": "producer",
+          "rationale": "Candidate parser that constructs request body data; verify the source description is propagated."
+        },
+        {
+          "path": "pyclientgen/ir.py",
+          "role": "representation",
+          "rationale": "Candidate shared representation carrying request body description; inspect producer/consumer field agreement."
+        },
+        {
+          "path": "pyclientgen/generator.py",
+          "role": "renderer",
+          "rationale": "Candidate renderer/controller and possible non-template rendering path; verify which body description it consumes."
+        },
+        {
+          "path": "pyclientgen/templates/endpoint_module.py.jinja",
+          "role": "renderer",
+          "rationale": "Candidate endpoint template receiving body data; a failing emitted description alone does not prove this file caused the loss."
+        }
+      ],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+        "start_line": 188,
+        "end_line": 192
+      },
+      "observation_schema": "public-description-provenance/v1"
+    },
+    {
+      "id": "A.R10.02.body-description.request-only.asyncio",
+      "check_id": "public.description-provenance",
+      "test_id": "T.R10.02.body-description.request-only.asyncio",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "artifact_paths": [
+        "pyclientgen/templates/endpoint_module.py.jinja"
+      ],
+      "causal_paths": [
+        {
+          "path": "pyclientgen/schema/operations.py",
+          "role": "producer",
+          "rationale": "Candidate parser that constructs request body data; verify the source description is propagated."
+        },
+        {
+          "path": "pyclientgen/ir.py",
+          "role": "representation",
+          "rationale": "Candidate shared representation carrying request body description; inspect producer/consumer field agreement."
+        },
+        {
+          "path": "pyclientgen/generator.py",
+          "role": "renderer",
+          "rationale": "Candidate renderer/controller and possible non-template rendering path; verify which body description it consumes."
+        },
+        {
+          "path": "pyclientgen/templates/endpoint_module.py.jinja",
+          "role": "renderer",
+          "rationale": "Candidate endpoint template receiving body data; a failing emitted description alone does not prove this file caused the loss."
+        }
+      ],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+        "start_line": 188,
+        "end_line": 192
+      },
+      "observation_schema": "public-description-provenance/v1"
+    },
+    {
+      "id": "A.R10.02.body-description.request-only.asyncio_detailed",
+      "check_id": "public.description-provenance",
+      "test_id": "T.R10.02.body-description.request-only.asyncio_detailed",
+      "requirement_ids": [
+        "R10.02"
+      ],
+      "artifact_paths": [
+        "pyclientgen/templates/endpoint_module.py.jinja"
+      ],
+      "causal_paths": [
+        {
+          "path": "pyclientgen/schema/operations.py",
+          "role": "producer",
+          "rationale": "Candidate parser that constructs request body data; verify the source description is propagated."
+        },
+        {
+          "path": "pyclientgen/ir.py",
+          "role": "representation",
+          "rationale": "Candidate shared representation carrying request body description; inspect producer/consumer field agreement."
+        },
+        {
+          "path": "pyclientgen/generator.py",
+          "role": "renderer",
+          "rationale": "Candidate renderer/controller and possible non-template rendering path; verify which body description it consumes."
+        },
+        {
+          "path": "pyclientgen/templates/endpoint_module.py.jinja",
+          "role": "renderer",
+          "rationale": "Candidate endpoint template receiving body data; a failing emitted description alone does not prove this file caused the loss."
+        }
+      ],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+        "start_line": 188,
+        "end_line": 192
+      },
+      "observation_schema": "public-description-provenance/v1"
+    },
+    {
+      "id": "A.R04.05.response-imports",
+      "check_id": "public.runtime-model-core",
+      "test_id": "T.R04.05",
+      "requirement_ids": [
+        "R04.05"
+      ],
+      "artifact_paths": [
+        "pyclientgen/schema/operations.py",
+        "pyclientgen/schema/models.py",
+        "pyclientgen/schema/properties.py",
+        "pyclientgen/templates/endpoint_module.py.jinja"
+      ],
+      "causal_paths": [
+        {
+          "path": "pyclientgen/schema/operations.py",
+          "role": "producer",
+          "rationale": "Public schema boundary candidate; verify current source and interfaces, not proof of fault."
+        },
+        {
+          "path": "pyclientgen/schema/models.py",
+          "role": "producer",
+          "rationale": "Public schema boundary candidate; verify current source and interfaces, not proof of fault."
+        },
+        {
+          "path": "pyclientgen/schema/properties.py",
+          "role": "producer",
+          "rationale": "Public schema boundary candidate; verify current source and interfaces, not proof of fault."
+        },
+        {
+          "path": "pyclientgen/generator.py",
+          "role": "producer",
+          "rationale": "Public schema boundary candidate; verify current source and interfaces, not proof of fault."
+        },
+        {
+          "path": "pyclientgen/templates/endpoint_module.py.jinja",
+          "role": "renderer",
+          "rationale": "Public schema boundary candidate; verify current source and interfaces, not proof of fault."
+        },
+        {
+          "path": "pyclientgen/templates/models_init.py.jinja",
+          "role": "renderer",
+          "rationale": "Public schema boundary candidate; verify current source and interfaces, not proof of fault."
+        }
+      ],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+        "start_line": 81,
+        "end_line": 83
+      }
+    },
+    {
+      "id": "A.R18.02.prefix-roundtrip",
+      "check_id": "public.cli-config-environment",
+      "test_id": "T.R18.02",
+      "requirement_ids": [
+        "R18.02"
+      ],
+      "artifact_paths": [
+        "pyclientgen/naming.py",
+        "pyclientgen/schema/models.py"
+      ],
+      "causal_paths": [
+        {
+          "path": "pyclientgen/config.py",
+          "role": "producer",
+          "rationale": "Public schema boundary candidate; verify current source and interfaces, not proof of fault."
+        },
+        {
+          "path": "pyclientgen/naming.py",
+          "role": "producer",
+          "rationale": "Public schema boundary candidate; verify current source and interfaces, not proof of fault."
+        },
+        {
+          "path": "pyclientgen/schema/models.py",
+          "role": "producer",
+          "rationale": "Public schema boundary candidate; verify current source and interfaces, not proof of fault."
+        },
+        {
+          "path": "pyclientgen/schema/properties.py",
+          "role": "producer",
+          "rationale": "Public schema boundary candidate; verify current source and interfaces, not proof of fault."
+        },
+        {
+          "path": "pyclientgen/templates/model.py.jinja",
+          "role": "renderer",
+          "rationale": "Public schema boundary candidate; verify current source and interfaces, not proof of fault."
+        }
+      ],
+      "source_ref": {
+        "path": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+        "sha256": "983112ee5615c227830f968a820bcf3a4b1ef94a80f2efcc57c7d3d6979c5d22",
+        "start_line": 337,
+        "end_line": 338
+      }
+    }
+  ]
+}

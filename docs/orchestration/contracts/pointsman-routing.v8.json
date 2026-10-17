@@ -1,0 +1,366 @@
+{
+  "schema_version": "pointsman-routing/v8",
+  "input_policy": "v5",
+  "skill": "skills/pointsman-routing/SKILL.md",
+  "automatic_retries": 0,
+  "semantic_scope": "Fixed registered question wording, source integrity, wire identity, admission and response membership; no semantic proof of evidence sufficiency or repair correctness. D089 pins common worker dependency context, public docstring diagnostics and verified owner source context; no automatic ownership override or completion proof. D090 pins native app CLI and model-correct reference pricing; D089 task/repair policies unchanged. D091 adds lossless inline owner encoding and AST/verified artifact-family worker context. Version8 additionally validates guarded Jev Codex worker profile selection; version7 fixed workers.",
+  "stages": {
+    "split": {
+      "handler": "adaptive.split",
+      "contracts": [
+        "docs/orchestration/contracts/adaptive-layered-decomposition.v2.json",
+        "docs/orchestration/contracts/adaptive-dag.v1.json",
+        "docs/orchestration/contracts/jev-models.v1.json",
+        "docs/orchestration/contracts/jev-token-admission.v5.json"
+      ]
+    },
+    "relations": {
+      "handler": "adaptive.relations",
+      "contracts": [
+        "docs/orchestration/contracts/adaptive-dag.v1.json",
+        "docs/orchestration/contracts/jev-models.v1.json",
+        "docs/orchestration/contracts/jev-token-admission.v5.json"
+      ]
+    },
+    "profiles": {
+      "handler": "adaptive.profiles",
+      "contracts": [
+        "docs/orchestration/contracts/codex-worker-profiles.v1.json",
+        "docs/orchestration/contracts/codex-pricing.v2.json",
+        "docs/orchestration/contracts/jev-models.v1.json",
+        "docs/orchestration/contracts/jev-token-admission.v5.json"
+      ]
+    },
+    "repair_owners": {
+      "handler": "adaptive.repair_owners",
+      "contracts": [
+        "docs/orchestration/contracts/adaptive-inferred-repair.v3.json",
+        "docs/orchestration/contracts/adaptive-owner-criteria.v2.json",
+        "docs/orchestration/contracts/adaptive-repair-budget.v3.json",
+        "docs/orchestration/contracts/jev-models.v1.json",
+        "docs/orchestration/contracts/jev-token-admission.v5.json",
+        "docs/orchestration/contracts/adaptive-owner-payload.v1.json"
+      ]
+    },
+    "repair": {
+      "handler": "adaptive.repair",
+      "contracts": [
+        "docs/orchestration/contracts/adaptive-inferred-repair.v3.json",
+        "docs/orchestration/contracts/adaptive-inferred-scope.v1.json",
+        "docs/orchestration/contracts/jev-models.v1.json",
+        "docs/orchestration/contracts/jev-token-admission.v5.json"
+      ]
+    }
+  },
+  "source_pins": [
+    {
+      "path": "skills/pointsman-routing/SKILL.md",
+      "sha256": "2c5eaa1ece5637d7d6a7d133ac11a268c86ebabbabe7b8e5df573900c1032b98"
+    },
+    {
+      "path": "skills/pointsman-routing/references/routing-contract.md",
+      "sha256": "c9f55c49a41c3fe615aabeaa0de81e20ec7e6950c65f6ad6ce42f78d209a9069"
+    },
+    {
+      "path": "src/orchestration/pointsman-gateway.mjs",
+      "sha256": "f61b6a85bd6f29c668a398a5d909ff021e353b3e60c2b643874f3ba895dfcf44"
+    },
+    {
+      "path": "src/client.mjs",
+      "sha256": "b35c8f5757a208dffb2937fc8ea4b959eff9e59b235107b57827d77846b3bd47"
+    },
+    {
+      "path": "src/config.mjs",
+      "sha256": "a8b63d4d6bfcea1a9036a11156152ddc82ac3bc30ebb9e914bb3eb00a62ddb59"
+    },
+    {
+      "path": "scripts/validate-jev-input.mjs",
+      "sha256": "0c6eae6159305dfbb1a89719ecb02a4f808231e7025471238b1976acdbbdf8df"
+    },
+    {
+      "path": "src/orchestration/jev-token-admission-v4.mjs",
+      "sha256": "125b05957a7c8c6ef85c1f55551dbb701135fa8520222fdae6727b4abf00551d"
+    },
+    {
+      "path": "src/orchestration/jev-token-admission-v3.mjs",
+      "sha256": "18bdb98a59071d20fda71301323da2b5031d8f0964855f37fd8d4c4fda6a5a86"
+    },
+    {
+      "path": "src/orchestration/jev-token-admission.mjs",
+      "sha256": "0ffb02093b95f53000f6d2a5cb8b5ec68a380f1313a4ee5be472aaa7edde7538"
+    },
+    {
+      "path": "docs/orchestration/contracts/jev-token-admission.v4.json",
+      "sha256": "bb268037a56b183732c41d10098bb5b449d7c34e03fd95f7262c2f4198e428f9"
+    },
+    {
+      "path": "docs/orchestration/contracts/jev-token-admission.v3.json",
+      "sha256": "d3fda24d2c5a40b9c0169b310f6e3c90a3a6361f37aa70c70c909fa3af345679"
+    },
+    {
+      "path": "docs/orchestration/contracts/jev-token-admission.v1.json",
+      "sha256": "4378b09a7690276c1c08c6743c1309c89084da7b77772a516b2d9c41c91b8fdc"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-layered-decomposition.v2.json",
+      "sha256": "595deea341fe26ccd62cca511637c31130e33bad64ae27cfed811120dd6c9d6a"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-dag.v1.json",
+      "sha256": "f404bb421cd93f6160be5e99cc075b2ce0a04761086332afb6cc6f89cab3f16b"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-profile-selection.v2.json",
+      "sha256": "de8a1956737aad67bda7a530b8c8ac555652bdbce83bf36276ad279b1b668dbf"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-profiles.v1.json",
+      "sha256": "d39b21fd1e6e567f79c5c35649e14ff03ba1ea6c86cbc0ca28461a90c65a96a7"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-inferred-repair.v3.json",
+      "sha256": "8457472307298b1e11e3bfcef82928deac0653ca7ce8faaffca12685c2e49eda"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-owner-criteria.v2.json",
+      "sha256": "6051be503b9484b34e0a77720fec1929d600d955cc858d411337da79b4403ebe"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-repair-budget.v3.json",
+      "sha256": "ded35d2885352386e4a13dc948a40cb9b542c4f1d01422d630c2fa74d31171b3"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-inferred-scope.v1.json",
+      "sha256": "8ea862295bc2f6460b003e6b124a509ebf1e5a01a22747579c679511aa05870e"
+    },
+    {
+      "path": "src/orchestration/adaptive-layered-decomposition.mjs",
+      "sha256": "c0c51777bbd38f27aa83a0b8eb8fce3e8b06dcf3ccba89466cc9df9cfa20d5e4"
+    },
+    {
+      "path": "src/orchestration/adaptive-profile-selection.mjs",
+      "sha256": "a48afa737a352774a9d297be8b3683493e6532b59724d13cbc45cd3d279367ea"
+    },
+    {
+      "path": "src/orchestration/adaptive-inferred-repair.mjs",
+      "sha256": "d11fb0096822145b858037bfdbc7607e34dc59b31d107f86bd24c63eef243c5c"
+    },
+    {
+      "path": "src/orchestration/adaptive-inferred-repair-projection.mjs",
+      "sha256": "31faf56d6ca1b43b867c197efa30e7a811df3660fa7e5755f2c6163fbd6396af"
+    },
+    {
+      "path": "src/orchestration/adaptive-owner-criteria.mjs",
+      "sha256": "15294cb74cba78cb1ee4f81711132fe02cd499d6c3ba524c957b6a6286bf87fd"
+    },
+    {
+      "path": "src/benchmark/adaptive-dag-runner.mjs",
+      "sha256": "2f948e9582b6b690b777302b36d29e543abca4a49b9298838d3f582d77a7e364"
+    },
+    {
+      "path": "src/benchmark/adaptive-question-forms.mjs",
+      "sha256": "7fbc6e7897ed72d75aaacd0015a01c9340d183088fadfaef4d5c8f73494a6d9f"
+    },
+    {
+      "path": "src/benchmark/telemetry.mjs",
+      "sha256": "4c9714936752f99b5efaf5b98f9018b287de202d3f6358084d114dd5f31b8019"
+    },
+    {
+      "path": "src/orchestration/adaptive-dag-planner.mjs",
+      "sha256": "3381c9251b44a9b2262684cbbb1f4b346350debe6e5eed4b53de126db4d26dc9"
+    },
+    {
+      "path": "src/orchestration/adaptive-dag-execution.mjs",
+      "sha256": "d61bf92f54dc9fa91c6d997fec1323b0973e99c4ab5f191745dd335c00a7c631"
+    },
+    {
+      "path": "src/orchestration/adaptive-repair-budget.mjs",
+      "sha256": "32c8ed02eab99dad2601e7c6602a974c05d6db1253084e5325f95521156cd46f"
+    },
+    {
+      "path": "src/orchestration/adaptive-inferred-scope.mjs",
+      "sha256": "4e46fd633d6bdcbeb55d0d604ceb6e9b2e81f80b2a7e638f40370aacfe69c7c3"
+    },
+    {
+      "path": "src/orchestration/jev-token-admission-v2.mjs",
+      "sha256": "3a412347db08ce3abbff9a0ce3e40252df0c99f6f24cd8a830da52d2447e0af4"
+    },
+    {
+      "path": "docs/orchestration/contracts/jev-token-admission.v2.json",
+      "sha256": "7583fe0c167d87be2b1897ad901424db2fc6db653dfb4eb84afba9a96ac47b53"
+    },
+    {
+      "path": "bin/pointsman.mjs",
+      "sha256": "15240ba8ea3feead904fa996a0af6f3f5cb8eb37e86baca78424949caf4d3950"
+    },
+    {
+      "path": "src/benchmark/pointsman-smoke.mjs",
+      "sha256": "3175d4a868e87dc53d50dae5650b29bf58e5c79aca9faef873f522302a74478d"
+    },
+    {
+      "path": "skills/pointsman-routing/scripts/pointsman.mjs",
+      "sha256": "0c0733eca7eca545a54c8965f500aa5f46093113904474c5587b47cd0d58b0c8"
+    },
+    {
+      "path": "benchmarks/e2e-swe/manifests/d083-repair-fixes.json",
+      "sha256": "ac195c70ffe5df40a045c5a8dd88652951bf3915f2258a12aa11b945a206bafd"
+    },
+    {
+      "path": "src/orchestration/adaptive-partial-repair.mjs",
+      "sha256": "27773ebe174a3eb028034f23b23fbd80e728a26447d2df6013248e90c3979902"
+    },
+    {
+      "path": "src/orchestration/adaptive-public-owner-evidence.mjs",
+      "sha256": "38cc38aa65e07c80ebba72aa6c3887da0267992b784af24d10c6176792d85656"
+    },
+    {
+      "path": "src/benchmark/codex-environment.mjs",
+      "sha256": "f83702d83f4eb4be132e449685c64782efc0b4f75a9dd60b82a0c0114cc75cce"
+    },
+    {
+      "path": "src/benchmark/codex-provider.mjs",
+      "sha256": "678a0aa7b0cb2a43249a36e98fb4f00edf07febf160b081d975f9d1ff3b40a0e"
+    },
+    {
+      "path": "src/benchmark/codex-e2e-runner.mjs",
+      "sha256": "a516138b4e38cf19ef31a9b56d8ab194f58748ce9d9812d0e21b88991334224a"
+    },
+    {
+      "path": "src/benchmark/codex-e2e-decisions.mjs",
+      "sha256": "7b1cd0fc6d5f679665c08321fb8ace56d1e913346cf30159428150c34253b234"
+    },
+    {
+      "path": "src/benchmark/codex-artifact-worker.mjs",
+      "sha256": "3ffb977934477ae7caaeabd46e2af83d694e8e9879c6f78c7c8f754883faa626"
+    },
+    {
+      "path": "src/benchmark/codex-e2e-checks.mjs",
+      "sha256": "0013a1d32d0e7cfe1df89465a98040f1eca02f6012ee5df0586ffdb57230639c"
+    },
+    {
+      "path": "bin/codex-e2e.mjs",
+      "sha256": "c407864c0374bfb1a6318dd0f805d67f1110f7672db1c5d414875e71a21ca2ad"
+    },
+    {
+      "path": "src/benchmark/budget.mjs",
+      "sha256": "f584c7730b00d61d1ab68a53f644ae2763c63bc88d99890baba874018cbfa8e4"
+    },
+    {
+      "path": "src/benchmark/budget-acquire.mjs",
+      "sha256": "5e8d500b8d2381299df45d28afde65bf0d4b152d965cfd561fcc61f3c50e88bf"
+    },
+    {
+      "path": "docs/orchestration/contracts/jev-models.v1.json",
+      "sha256": "aa095a05333a0b42adc4524cd12a83741e48fcc1cdd97ef3abe397df4b9e2662"
+    },
+    {
+      "path": "docs/orchestration/contracts/jev-token-admission.v5.json",
+      "sha256": "409eee3582e210ae764b68adefdacadf6add35f12d67017e45d84328db308482"
+    },
+    {
+      "path": "src/jev-model-registry.mjs",
+      "sha256": "dbb6fde608a50189be34ee7a7578ba8460d24eb481ee0531fb9497f567b3ef3b"
+    },
+    {
+      "path": "src/orchestration/jev-token-admission-v5.mjs",
+      "sha256": "4662c7e42635075e56b7a9bb7525598639a9fe56622cf89e34564b639d74c100"
+    },
+    {
+      "path": "src/benchmark/codex-worker-input-projection.mjs",
+      "sha256": "9a70a65ff9087ca9bb9eff6a709444733238f6ca0ac29009b338f6c701bc81f9"
+    },
+    {
+      "path": "src/orchestration/adaptive-verified-repair-context.mjs",
+      "sha256": "302b0400732f6f605c2624692c691911ac2a34840f7b226c8d31d061023e00be"
+    },
+    {
+      "path": "src/orchestration/public-docstring-guidance.mjs",
+      "sha256": "03fdc4fbf212f144d32938c9613c680d9392f7de8f003f1c2bdf413ee950267d"
+    },
+    {
+      "path": "docs/orchestration/contracts/codex-worker-input-projection.v1.json",
+      "sha256": "b939768f13170cc017a5e0bb96c071a97a414175de5628d1021b2997a05dfd7e"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-verified-repair-context.v1.json",
+      "sha256": "5ed75e43b2f8a425221a97b45ef55e2ec2245c6de592a6e4d152422538f55dd2"
+    },
+    {
+      "path": "docs/orchestration/contracts/public-docstring-guidance.v1.json",
+      "sha256": "791f94fd29b1110a472cc14054ffe3c41d87df6b91f60710f4eb0af9145ecbde"
+    },
+    {
+      "path": "src/benchmark/codex-decision-benchmark.mjs",
+      "sha256": "fa994368217702bf7348f87af00ccf31f87f3ddcf4a492bc8aa9a8a8aa21eb38"
+    },
+    {
+      "path": "src/benchmark/codex-pricing.mjs",
+      "sha256": "5a0522441a6a3494a85dfbfe37ef5a84301befaff91763c8a77b8da5bab939cc"
+    },
+    {
+      "path": "docs/orchestration/contracts/codex-app-binary.v1.json",
+      "sha256": "3f7957d180ec8588019f8d27f10d9ba0d99673ec4b2732d407d444cc52cc16b4"
+    },
+    {
+      "path": "docs/orchestration/contracts/codex-pricing.v1.json",
+      "sha256": "44fd59f4e2ecdf2e8d027a9b46410f20fa1fc301b47aa1cf980e0f01ce2cac45"
+    },
+    {
+      "path": "docs/orchestration/contracts/codex-pricing.v2.json",
+      "sha256": "27ce66b15ba0018e290181a62059990091d3288f55e3705a03c46aae0301752d"
+    },
+    {
+      "path": "docs/orchestration/contracts/codex-worker-profiles.v1.json",
+      "sha256": "dc9f3b928650e8867afcc3fc05b92495715f7295560b9a9ed86826d6eed5a2da"
+    },
+    {
+      "path": "src/benchmark/codex-worker-profiles.mjs",
+      "sha256": "0b18338949c5ae3375b76ca73629cef06cb0192d9c0d4f1502f150dbffff27a2"
+    },
+    {
+      "path": "src/orchestration/adaptive-owner-payload-projection.mjs",
+      "sha256": "a1312df0b30e712d7c0a0cf5a2db919ee9617458d06050793d48d29baca26e84"
+    },
+    {
+      "path": "src/benchmark/codex-worker-input-projection-v2.mjs",
+      "sha256": "d67e7666dbae11bb43005e8938729560b6ea65201339f707256d10bbf07c408e"
+    },
+    {
+      "path": "src/benchmark/codex-worker-source-analysis.py",
+      "sha256": "76d2f44210a2619a5090d8e55179dd532cddd7b23c705040de0cbaa8a6992843"
+    },
+    {
+      "path": "docs/orchestration/contracts/adaptive-owner-payload.v1.json",
+      "sha256": "aed3b36d004640cd3cab9845f1e44a4a87f401dc10402f1822c3e732c3a33327"
+    },
+    {
+      "path": "docs/orchestration/contracts/codex-worker-input-projection.v2.json",
+      "sha256": "6decfa0525c26ed9acdbde6976dce14bbaaea922ad74348d91fb1569d34976a7"
+    }
+  ],
+  "revision_scope": "Reviewed partial readiness repair, public source owner evidence, and frozen Codex CLI comparison; legacy v1 remains historical.",
+  "workspace_reuse": {
+    "policy": "d087-same-file-v1",
+    "shared_ledger_path": "/Users/lee/workspace/plugins/jev-router/benchmark-runs/jev-usd1-budget.json",
+    "catalog_directory": "/Users/lee/workspace/plugins/jev-router/benchmark-runs/d066-catalog-01"
+  },
+  "model_registry": {
+    "contract": "docs/orchestration/contracts/jev-models.v1.json",
+    "sha256": "aa095a05333a0b42adc4524cd12a83741e48fcc1cdd97ef3abe397df4b9e2662"
+  },
+  "execution_policy": {
+    "dispatch_policy": "verified-context-v1",
+    "worker_input_projection": "artifact-family-closed-v2",
+    "public_guidance": "google-docstring-v1",
+    "owner_input_projection": "lossless-owner-v1"
+  },
+  "codex_execution": {
+    "environment": "app-bundled-v1",
+    "environment_contract": "docs/orchestration/contracts/codex-app-binary.v1.json",
+    "pricing_contract": "docs/orchestration/contracts/codex-pricing.v2.json",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "worker_profile_contract": "docs/orchestration/contracts/codex-worker-profiles.v1.json",
+    "worker_routing": "jev-model-size-v1"
+  }
+}

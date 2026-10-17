@@ -72,10 +72,11 @@ test('v10 requires its opt-in binding and preserves explicit legacy v9 loading',
   assert.equal(loadAdaptiveRunManifest(join(root,'benchmarks/e2e-swe/manifests/d073-inferred-v2.json'),root).schema_version,'adaptive-dag-comparison/v9');
 });
 
-test('v11 binds the newest frozen transmission policy, the v4 ledger and validated runtime speed options',t=>{
+test('v11 preserves its historical transmission policy, the v4 ledger and validated runtime speed options',t=>{
   const directory=temporary(t), path=join(directory,'manifest.json');
   const value=read(join(root,'benchmarks/e2e-swe/manifests/d076-preserved-repair.json'));
-  assert.deepEqual(value.transmission_preflight,binding());
+  assert.equal(value.transmission_preflight.contract,'docs/orchestration/contracts/jev-transmission-preflight.v10.json');
+  assert.equal(value.transmission_preflight.sha256,jevTransmissionPolicy(value.transmission_preflight.contract).source.sha256);
   writeFileSync(path,JSON.stringify(value));assert.equal(loadAdaptiveRunManifest(path,root).schema_version,'adaptive-dag-comparison/v11');
   const v1='docs/orchestration/contracts/jev-transmission-preflight.v1.json';
   for(const change of [v=>{v.transmission_preflight={mode:'required',contract:v1,sha256:jevTransmissionPolicy(v1).source.sha256};},

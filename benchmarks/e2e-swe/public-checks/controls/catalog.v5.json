@@ -1,0 +1,611 @@
+[
+  {
+    "suite": "runtime-model-core",
+    "defect": "missing_runtime_module",
+    "expected_failed_ids": [
+      "T.R04.04"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "missing_model_export",
+    "expected_failed_ids": [
+      "T.R04.05"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "truthy_unset",
+    "expected_failed_ids": [
+      "T.R06.01"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "wrong_file_tuple",
+    "expected_failed_ids": [
+      "T.R06.02"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "missing_response_parsed",
+    "expected_failed_ids": [
+      "T.R06.03"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "optional_default_none",
+    "expected_failed_ids": [
+      "T.R07.01"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "wrong_json_name",
+    "expected_failed_ids": [
+      "T.R07.02"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "required_key_wrong_error",
+    "expected_failed_ids": [
+      "T.R07.03"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "nonstring_annotations",
+    "expected_failed_ids": [
+      "T.R07.04"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "scalar_number_string",
+    "expected_failed_ids": [
+      "T.R08.01"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "date_decode_raw",
+    "expected_failed_ids": [
+      "T.R08.02"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "nested_decode_raw",
+    "expected_failed_ids": [
+      "T.R08.03"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "array_decode_raw",
+    "expected_failed_ids": [
+      "T.R08.04"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "drop_additional",
+    "expected_failed_ids": [
+      "T.R09.02"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "missing_doc_colon",
+    "expected_failed_ids": [
+      "T.R10.01"
+    ]
+  },
+  {
+    "suite": "enums-defaults",
+    "defect": "enum_accepts_invalid",
+    "expected_failed_ids": [
+      "T.R11.01"
+    ]
+  },
+  {
+    "suite": "enums-defaults",
+    "defect": "string_enum_wrong_name",
+    "expected_failed_ids": [
+      "T.R11.02"
+    ]
+  },
+  {
+    "suite": "enums-defaults",
+    "defect": "integer_enum_wrong_name",
+    "expected_failed_ids": [
+      "T.R11.03"
+    ]
+  },
+  {
+    "suite": "enums-defaults",
+    "defect": "varname_wrong_boundary",
+    "expected_failed_ids": [
+      "T.R11.04"
+    ]
+  },
+  {
+    "suite": "enums-defaults",
+    "defect": "const_unvalidated",
+    "expected_failed_ids": [
+      "T.R11.06"
+    ]
+  },
+  {
+    "suite": "enums-defaults",
+    "defect": "date_default_raw",
+    "expected_failed_ids": [
+      "T.R14.01"
+    ]
+  },
+  {
+    "suite": "enums-defaults",
+    "defect": "numeric_default_raw",
+    "expected_failed_ids": [
+      "T.R14.02"
+    ]
+  },
+  {
+    "suite": "enums-defaults",
+    "defect": "boolean_default_raw",
+    "expected_failed_ids": [
+      "T.R14.03",
+      "T.integration.defaults"
+    ]
+  },
+  {
+    "suite": "enums-defaults",
+    "defect": "enum_default_raw",
+    "expected_failed_ids": [
+      "T.R14.04"
+    ]
+  },
+  {
+    "suite": "cli-layout",
+    "defect": "wrong_default_meta",
+    "expected_failed_ids": [
+      "T.R03.02"
+    ]
+  },
+  {
+    "suite": "cli-layout",
+    "defect": "overwrite_ignored",
+    "expected_failed_ids": [
+      "T.R03.04"
+    ]
+  },
+  {
+    "suite": "cli-layout",
+    "defect": "wrong_package_name",
+    "expected_failed_ids": [
+      "T.R04.01"
+    ]
+  },
+  {
+    "suite": "cli-layout",
+    "defect": "none_nested_package",
+    "expected_failed_ids": [
+      "T.R04.02"
+    ]
+  },
+  {
+    "suite": "cli-layout",
+    "defect": "project_package_missing",
+    "expected_failed_ids": [
+      "T.R04.03"
+    ]
+  },
+  {
+    "suite": "cli-layout",
+    "defect": "none_adds_metadata",
+    "expected_failed_ids": [
+      "T.R18.03"
+    ]
+  },
+  {
+    "suite": "diagnostics",
+    "defect": "warning_flag_ignored",
+    "expected_failed_ids": [
+      "T.R03.05"
+    ]
+  },
+  {
+    "suite": "diagnostics",
+    "defect": "unsupported_schema_kept",
+    "expected_failed_ids": [
+      "T.R19.01"
+    ]
+  },
+  {
+    "suite": "diagnostics",
+    "defect": "circular_warning_missing",
+    "expected_failed_ids": [
+      "T.R19.02"
+    ]
+  },
+  {
+    "suite": "diagnostics",
+    "defect": "invalid_structure_accepted",
+    "expected_failed_ids": [
+      "T.R19.04"
+    ]
+  },
+  {
+    "suite": "diagnostics",
+    "defect": "swagger_accepted",
+    "expected_failed_ids": [
+      "T.R19.05"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_operation_missing_package",
+    "expected_failed_ids": [
+      "T.R04.06"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_named_class_export",
+    "expected_failed_ids": [
+      "T.R05.01"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_inline_class_export",
+    "expected_failed_ids": [
+      "T.R05.02"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_inline_body_export",
+    "expected_failed_ids": [
+      "T.R05.03"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_parameter_camelcase",
+    "expected_failed_ids": [
+      "T.R05.04"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_chain_raw",
+    "expected_failed_ids": [
+      "T.R08.05"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_allof_loses_base",
+    "expected_failed_ids": [
+      "T.R08.06"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_prefix_ignores_items",
+    "expected_failed_ids": [
+      "T.R08.07",
+      "T.integration.unions-arrays"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_typed_additional_raw",
+    "expected_failed_ids": [
+      "T.R09.01"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_closed_keeps_unknown",
+    "expected_failed_ids": [
+      "T.R09.01"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_doc_arg_missing_colon",
+    "expected_failed_ids": [
+      "T.R10.02"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_doc_return_raw",
+    "expected_failed_ids": [
+      "T.R10.03"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_nullable_rejects_none",
+    "expected_failed_ids": [
+      "T.R11.05"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_literal_accepts_invalid",
+    "expected_failed_ids": [
+      "T.R12.01"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_union_alias_annotation",
+    "expected_failed_ids": [
+      "T.R13.01"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_union_wrong_object",
+    "expected_failed_ids": [
+      "T.R13.02"
+    ]
+  },
+  {
+    "suite": "schema-models",
+    "defect": "models_union_raw_encoding",
+    "expected_failed_ids": [
+      "T.R13.03"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_identity_equality",
+    "expected_failed_ids": [
+      "T.R15.01"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_missing_auth_header",
+    "expected_failed_ids": [
+      "T.R15.02"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_helpers_mutate",
+    "expected_failed_ids": [
+      "T.R15.03"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_simple_returns_response",
+    "expected_failed_ids": [
+      "T.R16.01"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_unquoted_path",
+    "expected_failed_ids": [
+      "T.R16.02",
+      "T.integration.transports"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_flat_query_array",
+    "expected_failed_ids": [
+      "T.R16.03"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_wrong_json_body",
+    "expected_failed_ids": [
+      "T.R16.04"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_scalar_multipart_text",
+    "expected_failed_ids": [
+      "T.R16.05"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_wrong_binary_body",
+    "expected_failed_ids": [
+      "T.R16.06"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_wrong_content_type",
+    "expected_failed_ids": [
+      "T.R16.07"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_async_uses_sync",
+    "expected_failed_ids": [
+      "T.R16.08"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_raw_model_response",
+    "expected_failed_ids": [
+      "T.R16.09"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_ignore_unexpected_status",
+    "expected_failed_ids": [
+      "T.R16.10"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_hooks_skipped",
+    "expected_failed_ids": [
+      "T.R17.01"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_override_ignored",
+    "expected_failed_ids": [
+      "T.R17.02"
+    ]
+  },
+  {
+    "suite": "http-client",
+    "defect": "http_prefix_ignored",
+    "expected_failed_ids": [
+      "T.R17.03"
+    ]
+  },
+  {
+    "suite": "cli-config-environment",
+    "defect": "cli_operation_wrong_value",
+    "expected_failed_ids": [
+      "T.R01.01"
+    ]
+  },
+  {
+    "suite": "cli-config-environment",
+    "defect": "cli_entrypoint_missing",
+    "expected_failed_ids": [
+      "T.R01.02"
+    ]
+  },
+  {
+    "suite": "cli-config-environment",
+    "defect": "cli_yaml_ignored",
+    "expected_failed_ids": [
+      "T.R01.03",
+      "T.R03.06"
+    ]
+  },
+  {
+    "suite": "cli-config-environment",
+    "defect": "cli_requires_download",
+    "expected_failed_ids": [
+      "T.R02.01"
+    ]
+  },
+  {
+    "suite": "cli-config-environment",
+    "defect": "cli_json_parser_wrong",
+    "expected_failed_ids": [
+      "T.R02.02"
+    ]
+  },
+  {
+    "suite": "cli-config-environment",
+    "defect": "cli_dependency_undeclared",
+    "expected_failed_ids": [
+      "T.R02.03"
+    ]
+  },
+  {
+    "suite": "cli-config-environment",
+    "defect": "cli_selectors_accept_both",
+    "expected_failed_ids": [
+      "T.R03.01"
+    ]
+  },
+  {
+    "suite": "cli-config-environment",
+    "defect": "cli_metadata_version_wrong",
+    "expected_failed_ids": [
+      "T.R18.01"
+    ]
+  },
+  {
+    "suite": "cli-config-environment",
+    "defect": "cli_setup_metadata_missing",
+    "expected_failed_ids": [
+      "T.R18.02"
+    ]
+  },
+  {
+    "suite": "cli-config-environment",
+    "defect": "cli_diagnostic_message_wrong",
+    "expected_failed_ids": [
+      "T.R19.03",
+      "T.integration.diagnostics"
+    ]
+  },
+  {
+    "suite": "cli-config-environment",
+    "defect": "cli_setup_missing_flag",
+    "expected_failed_ids": [
+      "T.R20.01"
+    ]
+  },
+  {
+    "suite": "cli-config-environment",
+    "defect": "cli_suffix_ignored",
+    "expected_failed_ids": [
+      "T.R03.06"
+    ]
+  },
+  {
+    "suite": "cli-config-environment",
+    "defect": "http_override_ignored",
+    "expected_failed_ids": [
+      "T.R03.03",
+      "T.integration.config-layout"
+    ]
+  },
+  {
+    "suite": "description-provenance",
+    "defect": "schema-description",
+    "expected_failed_ids": [
+      "T.R10.02.body-description.distinct.sync",
+      "T.R10.02.body-description.distinct.sync_detailed",
+      "T.R10.02.body-description.distinct.asyncio",
+      "T.R10.02.body-description.distinct.asyncio_detailed",
+      "T.R10.02.body-description.request-only.sync",
+      "T.R10.02.body-description.request-only.sync_detailed",
+      "T.R10.02.body-description.request-only.asyncio",
+      "T.R10.02.body-description.request-only.asyncio_detailed"
+    ]
+  },
+  {
+    "suite": "description-provenance",
+    "defect": "runtime-rewrite",
+    "expected_failed_ids": [
+      "T.R10.02.body-description.distinct.asyncio_detailed",
+      "T.R10.02.body-description.request-only.asyncio_detailed"
+    ]
+  },
+  {
+    "suite": "runtime-model-core",
+    "defect": "boundary-imports",
+    "expected_failed_ids": [
+      "T.R04.05"
+    ]
+  },
+  {
+    "suite": "cli-config-environment",
+    "defect": "boundary-prefix",
+    "expected_failed_ids": [
+      "T.R18.02"
+    ]
+  }
+]

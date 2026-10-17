@@ -149,8 +149,10 @@ function checkedHistory(history, failure) {
 /** Only a current, mapped public assertion may nominate its versioned causal paths. */
 export async function buildAdaptiveCausalRepairScope(input) {
   const {plan, failure, artifactBindings, assertionContract, repairHistory, sourceFiles = []} = input;
-  need(assertionContract?.contract?.version === contract.assertion_contract_version, 'ADAPTIVE_CAUSAL_ASSERTION_VERSION');
-  const base = await buildAdaptiveRepairScope({...input, assertionVersion: contract.assertion_contract_version});
+  const assertionVersion = assertionContract?.source_path === 'benchmarks/e2e-swe/public-checks/assertions.v3.json'
+    && assertionContract?.contract?.version === '3' ? '3' : contract.assertion_contract_version;
+  need(assertionContract?.contract?.version === assertionVersion, 'ADAPTIVE_CAUSAL_ASSERTION_VERSION');
+  const base = await buildAdaptiveRepairScope({...input, assertionVersion});
   const owners = ownerMap(plan, artifactBindings), chains = [], unresolved = [], excluded = [];
   for (const observed of base.analysis.observed_failures.filter(item => item.evidence_level === 'assertion')) {
     const definition = assertionContract.contract.assertions.find(item => item.id === observed.assertion_id);

@@ -248,7 +248,7 @@ async function staticRegexWitness(sourceFiles) {
  * a repair target; it does not establish that all other failures share its cause. */
 export async function buildAdaptiveRepairScope({plan, failure, publicChecks, testRequirements, artifactBindings, sourceFiles = [],
   assertionContract, runtimeBinding, assertionVersion = '1'}) {
-  if (!['1', '2'].includes(assertionVersion)) fail('ADAPTIVE_REPAIR_SCOPE_ASSERTION_VERSION');
+  if (!['1', '2', '3'].includes(assertionVersion)) fail('ADAPTIVE_REPAIR_SCOPE_ASSERTION_VERSION');
   const leaves = plan.tasks.filter(t => t.kind === 'implementation'), leafIds = new Set(leaves.map(t => t.id));
   const checks = new Map(publicChecks.map(c => [c.id, c]));
   validateSources(sourceFiles, artifactBindings, plan, failure);

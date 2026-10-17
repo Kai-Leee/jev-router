@@ -1,8 +1,10 @@
 # Jev Router
 
+**D095 연구 보관 브랜치:** [`research-d095-final-20261017`](docs/research/D095_CLOSEOUT.md). 사용자 요청에 따라 여기까지의 구현·검증·결과를 보관하고 작업을 종료했습니다. 최신 Jev+Claude는 공개 93/93·독립 63/63으로 완료했지만 과거 Claude 단독 대비 시간·비용 절감은 미달했습니다. [최신 결과](docs/orchestration/D095_PUBLIC_BOUNDARIES_RESULTS.md) · [공개 수치 요약](docs/research/evidence/d095/summary.json) · [측정 경계와 보관 범위](docs/research/D095_CLOSEOUT.md).
+
 메인 에이전트의 모델 선택과 작업 중 판단을 지원하는 프로젝트입니다. 현재 구현은 서버 전용
 Jev AI 클라이언트, 기존 MCP 실행 연결, 오프라인 평가 CLI, 격리 벤치마크 실행기와 로컬 사용량 대시보드입니다.
-Opus/Jev의 실제 유료 비교·제품 완성도 검증은 아직 진행하지 않았습니다.
+Codex/Claude 작업자와 Jev 판단을 연결한 실제 비교 기록은 D087~D095 문서에 있습니다. 아래 초기 사용법과 미구현 설명은 당시 기록을 포함하므로 최신 실행 범위는 연구 마무리 문서를 먼저 확인합니다. 원시 실행·인증 자료는 로컬에 보존하며 이 연구 브랜치는 별도 계정·환경 준비 없는 제품 배포본이 아닙니다.
 
 - [기술 명세 0.1-draft](docs/TECHNICAL_SPEC.md): 역할, 질문·결과 계약, 후보 구성, 평가와 handoff 가설.
 - [평가 방법 조사와 구현 제안](docs/EVALUATION_RESEARCH.md): 기존 연구·공식 도구 비교, 지표·분모·실험 설계.

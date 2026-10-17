@@ -1,5 +1,5 @@
 import {readFileSync, writeFileSync, mkdirSync, mkdtempSync, readdirSync, lstatSync, existsSync,
-  openSync, closeSync, fsyncSync, rmSync} from 'node:fs';
+  openSync, closeSync, fsyncSync, rmSync, realpathSync} from 'node:fs';
 import {resolve, join, relative, basename, dirname} from 'node:path';
 import {tmpdir} from 'node:os';
 import {createHash, randomUUID} from 'node:crypto';
@@ -20,12 +20,14 @@ import {assessJevTokenAdmission} from '../orchestration/jev-token-admission.mjs'
 import {assessJevTokenAdmission as assessJevTokenAdmissionV2} from '../orchestration/jev-token-admission-v2.mjs';
 import {assessJevTokenAdmission as assessJevTokenAdmissionV3} from '../orchestration/jev-token-admission-v3.mjs';
 import {assessJevTokenAdmission as assessJevTokenAdmissionV4} from '../orchestration/jev-token-admission-v4.mjs';
+import {assessJevTokenAdmission as assessJevTokenAdmissionV5} from '../orchestration/jev-token-admission-v5.mjs';
 import {loadAdaptiveProfileContract, resolveAdaptiveProfile, selectAdaptiveProfiles,
   applyAdaptiveProfileSelections} from '../orchestration/adaptive-profile-selection.mjs';
 import {assessJevTransmission, validateJevTransmissionBinding, validateJevRecoveryProof,
   JEV_TRANSMISSION_SOURCE_PATHS} from '../orchestration/jev-transmission-preflight.mjs';
 import {isQuestionFormManifest, validateQuestionFormManifest, createQuestionFormHooks,
   QUESTION_FORM_SOURCES} from './adaptive-question-forms.mjs';
+import {createPointsmanGateway, validatePointsmanBinding, validatePointsmanManifest, POINTSMAN_D087_ROUTING_CONTRACT, POINTSMAN_D088_ROUTING_CONTRACT, POINTSMAN_D089_ROUTING_CONTRACT, POINTSMAN_D090_ROUTING_CONTRACT,POINTSMAN_D091_ROUTING_CONTRACT,POINTSMAN_D091_ADAPTIVE_ROUTING_CONTRACT,POINTSMAN_D092_ROUTING_CONTRACT,POINTSMAN_D093_CODEX_ROUTING_CONTRACT,POINTSMAN_D093_CLAUDE_ROUTING_CONTRACT,POINTSMAN_D093_CLAUDE_RECOVERY_ROUTING_CONTRACT,POINTSMAN_D093_CLAUDE_CLASSIFIER_ROUTING_CONTRACT,POINTSMAN_D095_RUNTIME_ROUTING_CONTRACT,POINTSMAN_D095_CLAUDE_ROUTING_CONTRACT,POINTSMAN_D094_CLAUDE_ROUTING_CONTRACT} from '../orchestration/pointsman-gateway.mjs';
 
 const ROOT = resolve(import.meta.dirname, '../..');
 const fail = (code, details = {}) => { throw Object.assign(new Error(code), {code, outcome_uncertain: false, ...details}); };
@@ -39,6 +41,8 @@ const codeOf = error => /^[A-Z0-9_]{1,100}$/.test(error?.code ?? error?.message 
 const relativePath = value => typeof value === 'string' && /^[A-Za-z0-9_.-]+(?:\/[A-Za-z0-9_.-]+)*$/.test(value) && !value.split('/').some(part => ['.', '..'].includes(part));
 const speedManifest = manifest => manifest.schema_version === 'adaptive-dag-comparison/v11';
 const transmissionManifest = manifest => speedManifest(manifest) || manifest.schema_version === 'adaptive-dag-comparison/v10';
+const canonicalModelManifest = manifest => [POINTSMAN_D088_ROUTING_CONTRACT,POINTSMAN_D089_ROUTING_CONTRACT,POINTSMAN_D090_ROUTING_CONTRACT,POINTSMAN_D091_ROUTING_CONTRACT,POINTSMAN_D091_ADAPTIVE_ROUTING_CONTRACT,POINTSMAN_D092_ROUTING_CONTRACT,POINTSMAN_D093_CODEX_ROUTING_CONTRACT,POINTSMAN_D093_CLAUDE_ROUTING_CONTRACT,POINTSMAN_D093_CLAUDE_RECOVERY_ROUTING_CONTRACT,POINTSMAN_D093_CLAUDE_CLASSIFIER_ROUTING_CONTRACT,POINTSMAN_D095_RUNTIME_ROUTING_CONTRACT,POINTSMAN_D095_CLAUDE_ROUTING_CONTRACT,POINTSMAN_D094_CLAUDE_ROUTING_CONTRACT].includes(manifest?.skill_gateway?.contract);
+const skillGatewayManifest = manifest => manifest?.schema_version === 'adaptive-dag-comparison/v13';
 const RUNTIME_SPEED_KEYS = ['budget_lock', 'model_lookup', 'public_check_concurrency', 'readiness_batch'];
 /** v11 runtime speed options; every other manifest keeps the historical serial/per-call behavior. */
 export const adaptiveRuntimeSpeed = manifest => speedManifest(manifest) || isQuestionFormManifest(manifest) ? {...manifest.runtime_speed}
@@ -100,7 +104,9 @@ const CAUSAL_REUSE_MUTABLE_SOURCES = Object.freeze([...ARTIFACT_REUSE_MUTABLE_SO
   'src/orchestration/artifact-transport.mjs', 'src/orchestration/adaptive-failure.mjs']);
 // v11 also changed telemetry.mjs (session model cache, async ledger operations); earlier manifests keep their lists.
 const SPEED_REUSE_MUTABLE_SOURCES = Object.freeze([...CAUSAL_REUSE_MUTABLE_SOURCES, 'src/benchmark/telemetry.mjs']);
-const reuseMutableSources = manifest => speedManifest(manifest) || isQuestionFormManifest(manifest) ? SPEED_REUSE_MUTABLE_SOURCES
+const reuseMutableSources = manifest => [POINTSMAN_D095_RUNTIME_ROUTING_CONTRACT,POINTSMAN_D095_CLAUDE_ROUTING_CONTRACT,POINTSMAN_D094_CLAUDE_ROUTING_CONTRACT].includes(manifest?.skill_gateway?.contract)
+  ? [...SPEED_REUSE_MUTABLE_SOURCES,'src/orchestration/dag-filesystem-runtime.mjs','src/orchestration/dag-scheduler.mjs']
+  : speedManifest(manifest) || isQuestionFormManifest(manifest) ? SPEED_REUSE_MUTABLE_SOURCES
   : causalManifest(manifest) ? CAUSAL_REUSE_MUTABLE_SOURCES : artifactRepairManifest(manifest) ? ARTIFACT_REUSE_MUTABLE_SOURCES
   : repairManifest(manifest) ? REPAIR_REUSE_MUTABLE_SOURCES : CATALOG_REUSE_MUTABLE_SOURCES;
 const REPAIR_SOURCE_PATHS = Object.freeze(['src/orchestration/adaptive-repair-projection.mjs',
@@ -118,7 +124,7 @@ export function loadAdaptiveRunManifest(path = join(ROOT, 'benchmarks/e2e-swe/ma
     max_relation_pairs: 435, max_decisions: 128, relation_batch_size: 32, max_request_bytes: v8 ? 256000 : 240000,
     max_concurrency: 2, maximum_workers: 30, minimum_workers: 2, wall_timeout_seconds: 14400};
   const v2 = parallelManifest(value), v3 = repairManifest(value), v4 = artifactRepairManifest(value), v5 = compactRepairManifest(value), v6 = balancedManifest(value), v7 = causalManifest(value), reuse = value.catalog_reuse;
-  if (!['adaptive-dag-comparison/v1', 'adaptive-dag-comparison/v2', 'adaptive-dag-comparison/v3', 'adaptive-dag-comparison/v4', 'adaptive-dag-comparison/v5', 'adaptive-dag-comparison/v6', 'adaptive-dag-comparison/v7', 'adaptive-dag-comparison/v8', 'adaptive-dag-comparison/v9', 'adaptive-dag-comparison/v10', 'adaptive-dag-comparison/v11', 'adaptive-dag-comparison/v12'].includes(value.schema_version)
+  if (!['adaptive-dag-comparison/v1', 'adaptive-dag-comparison/v2', 'adaptive-dag-comparison/v3', 'adaptive-dag-comparison/v4', 'adaptive-dag-comparison/v5', 'adaptive-dag-comparison/v6', 'adaptive-dag-comparison/v7', 'adaptive-dag-comparison/v8', 'adaptive-dag-comparison/v9', 'adaptive-dag-comparison/v10', 'adaptive-dag-comparison/v11', 'adaptive-dag-comparison/v12', 'adaptive-dag-comparison/v13'].includes(value.schema_version)
       || !equal(value.arms, v8 ? ['jev_profile'] : v7 ? ['claude_all', 'jev_all', 'jev_profile'] : v3 ? ['jev_all'] : Object.keys(ADAPTIVE_ARMS).filter(arm => arm !== 'jev_profile'))
       || value.worker_profile?.model !== 'claude-opus-5-5' || value.worker_profile?.effort !== 'medium'
       || Object.entries(fixed).some(([key, expected]) => limits?.[key] !== expected)
@@ -136,12 +142,12 @@ export function loadAdaptiveRunManifest(path = join(ROOT, 'benchmarks/e2e-swe/ma
         failure_contract: 'adaptive-terminal-cause/v1', scope_contract: 'assertion-artifact-v1',
         token_admission_contract: `docs/orchestration/contracts/jev-token-admission.${v5 ? 'v2' : 'v1'}.json`}))
       || (v7 && (!equal(value.repair_policy, {artifact_contract: 'docs/orchestration/contracts/adaptive-causal-repair.v1.json',
-        assertion_contract: 'benchmarks/e2e-swe/public-checks/assertions.v2.json', failure_contract: 'adaptive-terminal-cause/v1',
+        assertion_contract: [POINTSMAN_D095_CLAUDE_ROUTING_CONTRACT,POINTSMAN_D095_RUNTIME_ROUTING_CONTRACT].includes(value.skill_gateway?.contract)?'benchmarks/e2e-swe/public-checks/assertions.v3.json':'benchmarks/e2e-swe/public-checks/assertions.v2.json', failure_contract: 'adaptive-terminal-cause/v1',
         scope_contract: ownerV3Manifest(value) ? 'public-inferred-owner-v3' : v9 ? 'public-inferred-owner-v2' : v8 ? 'public-inferred-owner-v1' : 'public-causal-v1',
-        token_admission_contract: `docs/orchestration/contracts/jev-token-admission.${v8 ? 'v4' : 'v3'}.json`,
+        token_admission_contract: `docs/orchestration/contracts/jev-token-admission.${canonicalModelManifest(value) ? 'v5' : v8 ? 'v4' : 'v3'}.json`,
         ...(v8 ? {owner_inference_contract: ownerV3Manifest(value) ? OWNER_INFERENCE_V3 : `docs/orchestration/contracts/adaptive-inferred-repair.${v9 ? 'v2' : 'v1'}.json`} : {})})
-        || value.public_registry !== 'benchmarks/e2e-swe/public-checks/registry.v4.json'
-        || value.public_runner !== 'benchmarks/e2e-swe/public-checks/run_public_checks_v4.py'
+        || value.public_registry !== ([POINTSMAN_D095_CLAUDE_ROUTING_CONTRACT,POINTSMAN_D095_RUNTIME_ROUTING_CONTRACT].includes(value.skill_gateway?.contract)?'benchmarks/e2e-swe/public-checks/registry.v5.json':'benchmarks/e2e-swe/public-checks/registry.v4.json')
+        || value.public_runner !== ([POINTSMAN_D095_CLAUDE_ROUTING_CONTRACT,POINTSMAN_D095_RUNTIME_ROUTING_CONTRACT].includes(value.skill_gateway?.contract)?'benchmarks/e2e-swe/public-checks/run_public_checks_v5.py':'benchmarks/e2e-swe/public-checks/run_public_checks_v4.py')
         || !relativePath(value.public_controls_evidence)
         || value.profile_policy?.contract !== `docs/orchestration/contracts/adaptive-profile-selection.${v8 ? 'v2' : 'v1'}.json`
         || value.profile_policy?.candidate_contract !== 'docs/orchestration/contracts/adaptive-profiles.v1.json'
@@ -155,6 +161,8 @@ export function loadAdaptiveRunManifest(path = join(ROOT, 'benchmarks/e2e-swe/ma
       || !['max_file_bytes', 'max_total_bytes'].every(key => Number.isSafeInteger(limits[key]) && limits[key] > 0)) fail('ADAPTIVE_MANIFEST_INVALID');
   validateBudgetConfig(value.jev_budget, rootDir);
   if (v12) validateQuestionFormManifest(value, rootDir);
+  if (skillGatewayManifest(value)) validatePointsmanManifest(value, {rootDir});
+  else if (value.skill_gateway !== undefined) fail('POINTSMAN_GATEWAY_SCHEMA_REQUIRED');
   if (value.repair_budget !== undefined) {
     const budget = value.repair_budget;
     if (!(v11 || v12) || !object(budget) || !equal(Object.keys(budget).sort(), ['contract', 'policy', 'sha256'])
@@ -297,7 +305,11 @@ function combinedUsage(summaries) {
  * modelLookup 'per_session' reuses one model GET until a non-completed call or unaccepted model;
  * budgetLock 'ledger_op' (v4 ledger only) holds the ledger lock per mutation, not across provider I/O. */
 export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirectory, manifest, remaining,
-  record = async () => {}, abortSignal, adapters = {}, modelLookup = 'per_call', budgetLock = 'call', getRetry = null}) {
+  record, abortSignal, adapters = {}, modelLookup = 'per_call', budgetLock = 'call', getRetry = null, workerEnvironmentEvidence}) {
+  if (skillGatewayManifest(manifest) && typeof record !== 'function') fail('POINTSMAN_RECORDER_REQUIRED');
+  if (!skillGatewayManifest(manifest) && manifest.skill_gateway !== undefined) fail('POINTSMAN_GATEWAY_SCHEMA_REQUIRED');
+  const routingBinding = skillGatewayManifest(manifest) ? validatePointsmanManifest(manifest, {rootDir}) : null;
+  record ??= async () => {};
   const runCommand = adapters.runCommand ?? processResult, receipts = [];
   const config = adapters.jevConfig ?? loadConfig(), secret = config.apiKey ?? '';
   const save = (name, value) => writePrivateJson(join(runDirectory, name), JSON.parse(JSON.stringify(value).replaceAll(secret || '\u0000', secret ? '[REDACTED]' : '\u0000')));
@@ -306,6 +318,8 @@ export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirect
       || (budgetLock === 'ledger_op' && budgetConfig.schema_version !== 'jev-token-budget/v4')) fail('ADAPTIVE_SESSION_OPTION_INVALID');
   const modelLookupCache = modelLookup === 'per_session' ? {models_checked: false} : null, narrowLock = budgetLock === 'ledger_op';
   const transmission = transmissionManifest(manifest) ? validateJevTransmissionBinding(manifest.transmission_preflight) : null;
+  if (skillGatewayManifest(manifest)) mkdirSync(join(runDirectory, 'gateway'), {recursive: true, mode: 0o700});
+  const gateway = skillGatewayManifest(manifest) ? createPointsmanGateway({rootDir, binding: manifest.skill_gateway, record, save, workerEnvironmentEvidence}) : null;
   let sequence = 0, decisions = 0, stopped = false, observedJevModel = null, lastJevFailure = null;
   const checkpoint = async value => { receipts.push(value); save(`receipts/${value.id}.json`, value); await record({event: 'adaptive_provider_finished', ...value}); };
   const nextId = provider => `${provider}-${String(++sequence).padStart(4, '0')}`;
@@ -370,16 +384,30 @@ export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirect
       recoveryProof = validateJevRecoveryProof(context.recovery, {request, priorRequestSha256:lastJevFailure.request_sha256,
         priorStage:lastJevFailure.stage, stage:context.stage, priorOutcomeUncertain:lastJevFailure.outcome_uncertain});
     }
-    if (!['claude', 'jev'].includes(provider) || !['split', 'relations', 'repair', ...(causalManifest(manifest) ? ['profiles'] : []),
-      ...(inferredManifest(manifest) ? ['repair_owners'] : [])].includes(context.stage)) fail('ADAPTIVE_STAGE_INVALID');
-    remaining();
-    const prepared = prepareDecision(request);
-    if (transmission) {
+    let prepared;
+    try {
+      if (!['claude', 'jev'].includes(provider) || !['split', 'relations', 'repair', ...(causalManifest(manifest) ? ['profiles'] : []),
+        ...(inferredManifest(manifest) ? ['repair_owners'] : [])].includes(context.stage)) fail('ADAPTIVE_STAGE_INVALID');
+      // The guarded skill route has no alternate, unrecorded decision backend.
+      if (gateway && provider !== 'jev') fail('POINTSMAN_DECISION_PROVIDER_REQUIRED');
+      remaining();
+      prepared = prepareDecision(request);
+      if (Buffer.byteLength(prepared.serialized) > manifest.limits.max_request_bytes) fail('ADAPTIVE_REQUEST_LIMIT');
+      if (decisions >= manifest.limits.max_decisions) fail('ADAPTIVE_DECISION_LIMIT');
+    } catch (error) {
+      if (gateway) {
+        stopped = true;
+        const id = nextId('rejected'), rejection = {event: 'pointsman_input_rejected', id, code: codeOf(error),
+          stage: ['split', 'relations', 'repair', 'profiles', 'repair_owners'].includes(context.stage) ? context.stage : null,
+          provider_decide_called: false, reservation_created: false};
+        save(`gateway/${id}.rejected.json`, rejection); await record(rejection);
+      }
+      throw error;
+    }
+    if (transmission || gateway) {
       const freeze = value => {if (value && typeof value === 'object') {Object.values(value).forEach(freeze); Object.freeze(value);}};
       freeze(prepared.body);
     }
-    if (Buffer.byteLength(prepared.serialized) > manifest.limits.max_request_bytes) fail('ADAPTIVE_REQUEST_LIMIT');
-    if (decisions >= manifest.limits.max_decisions) fail('ADAPTIVE_DECISION_LIMIT');
     decisions++;
     context = {...context, question_count: Object.keys(prepared.body.questions).length};
     try {
@@ -400,6 +428,7 @@ export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirect
       save(`calls/${id}.request.json`, prepared.body);
       let held, admission = null, response = null, submitted = false, lockWait = {wait_ms: 0, lock_contentions: 0}, lookupSource = null, balanceSource = null;
       let reservationCreated = false, reservationCalled = false, providerDecideCalled = false, blockedPhase = null;
+      let ticket = null;
       const transmissionChecks = [], pendingTransmissionEvents = [];
       const transmissionSummary = () => transmission ? {required:true, request_sha256:sha(prepared.serialized),
         policy_sha256:transmission.sha256, blocked_phase:blockedPhase, reservation_called:reservationCalled,
@@ -428,12 +457,14 @@ export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirect
       const speedEvidence = () => ({...(modelLookupCache ? {model_lookup_source: lookupSource, balance_source: balanceSource} : {}),
         ...(narrowLock ? {budget_lock_mode: 'ledger_op', budget_lock_wait_ms: lockWait.wait_ms, budget_lock_contentions: lockWait.lock_contentions} : {})});
       try {
+        if (gateway) ticket = await gateway.begin(prepared.body, {stage: context.stage, decisionId: id, observedModel: observedJevModel});
         if (transmission) {checkTransmission('initial'); await drainTransmissionEvents();}
         if (artifactRepairManifest(manifest)) {
-          const assess = inferredManifest(manifest) ? assessJevTokenAdmissionV4 : causalManifest(manifest) ? assessJevTokenAdmissionV3 : compactRepairManifest(manifest) ? assessJevTokenAdmissionV2 : assessJevTokenAdmission;
+          const assess = canonicalModelManifest(manifest) ? assessJevTokenAdmissionV5 : inferredManifest(manifest) ? assessJevTokenAdmissionV4 : causalManifest(manifest) ? assessJevTokenAdmissionV3 : compactRepairManifest(manifest) ? assessJevTokenAdmissionV2 : assessJevTokenAdmission;
           admission = assess(prepared.body, {stage: context.stage, observedModel: observedJevModel,
             expectedRequestSha256: sha(prepared.serialized),
-            expectedPolicySha256: sha(readFileSync(join(rootDir, manifest.repair_policy.token_admission_contract)))});
+            expectedPolicySha256: sha(readFileSync(join(rootDir, manifest.repair_policy.token_admission_contract))),
+            ...(canonicalModelManifest(manifest) ? {expectedModelRegistrySha256: routingBinding.policy.model_registry.sha256} : {})});
           save(`calls/${id}.token-admission.json`, admission);
           await record({event: 'adaptive_token_admission_checked', id, ...context, admission});
           if (admission.request_sha256 !== sha(prepareDecision(prepared.body).serialized)) fail('ADAPTIVE_TOKEN_REQUEST_DRIFT');
@@ -456,15 +487,17 @@ export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirect
           fetchImpl: (url, options) => globalThis.fetch(url, {...options, signal: abortSignal ? AbortSignal.any([options.signal, abortSignal]) : options.signal})});
         // Keep the historic telemetry/client unchanged. Synchronous guards run
         // inside the reserve and decide boundaries, with no awaited gap before either action.
-        const measuredBudget = transmission ? {...held, reserve:(...args) => {
-          checkTransmission('before_reservation'); reservationCalled = true; reservationCreated = null;
+        const measuredBudget = transmission || gateway ? {...held, reserve:(...args) => {
+          ticket?.assertBefore('before_reservation');
+          if (transmission) checkTransmission('before_reservation'); reservationCalled = true; reservationCreated = null;
           const reservation = held.reserve(...args);
           if (typeof reservation?.then === 'function') return reservation.then(value => { reservationCreated = true; return value; });
           reservationCreated = true; return reservation;
         }} : held;
-        const measuredClient = transmission ? {listModels:(...args) => client.listModels(...args),
+        const measuredClient = transmission || gateway ? {listModels:(...args) => client.listModels(...args),
           listCredits:(...args) => client.listCredits(...args), decide:body => {
-            checkTransmission('before_post', body); providerDecideCalled = true; return client.decide(body);
+            ticket?.assertBefore('before_post', body);
+            if (transmission) checkTransmission('before_post', body); providerDecideCalled = true; return client.decide(body);
           }} : client;
         const measured = createMeasuredDecider({client:measuredClient, budget:measuredBudget, modelLookupCache, getRetry,
           ...(adapters.sleep ? {sleep: adapters.sleep} : {}), record: async event => {
@@ -475,29 +508,38 @@ export function createAdaptiveProviderSession({rootDir = ROOT, run_id, runDirect
         }, identifiers: {run_id, attempt_id: attempt, group_id: transmission ? 'd075-decisions' : inferredManifest(manifest) ? 'd073-decisions' : causalManifest(manifest) ? 'd071-decisions' : artifactRepairManifest(manifest) ? 'd069-decisions' : repairManifest(manifest) ? 'd068-decisions' : parallelManifest(manifest) ? 'd067-decisions' : 'd066-decisions', agent_role: 'implementation'}});
         if (admission && admission.request_sha256 !== sha(prepareDecision(prepared.body).serialized)) fail('ADAPTIVE_TOKEN_REQUEST_DRIFT');
         response = await measured(prepared.body, {decision_id: decisions});
+        if (ticket) response = await ticket.accept(response);
         lastJevFailure = null;
         observedJevModel = response.model ?? null;
         save(`calls/${id}.response.json`, response);
         await checkpoint({id, provider: 'jev', purpose: 'decision', ...context, attempt_id: attempt, status: 'completed',
-          wall_ms: performance.now() - began, inference_started: transmission ? providerDecideCalled : submitted, usage: response.usage, model: response.model,
+          wall_ms: performance.now() - began, inference_started: transmission || gateway ? providerDecideCalled : submitted, usage: response.usage, model: response.model,
+          ...(gateway ? {skill_gateway: {required: true, decision_id: id, contract_sha256: manifest.skill_gateway.sha256,
+            request_sha256: ticket.request_sha256, response_accepted: true, provider_decide_called: providerDecideCalled}} : {}),
           api_equivalent_usd: response.usage.input_tokens * manifest.valuation.usd_per_million_input_tokens / 1000000,
           actual_billed_usd: null, outcome_uncertain: false,
           ...(transmission ? {transmission_preflight:transmissionSummary()} : {}), ...speedEvidence(),
           ...(parallelManifest(manifest) ? {budget_lock_wait_ms: lockWait.wait_ms, budget_lock_contentions: lockWait.lock_contentions} : {})});
         return normalizeAdaptiveAnswers(prepared.body, response, {evidence: isQuestionFormManifest(manifest)});
       } catch (error) {
+        let persistenceError = null;
+        if (ticket) try { await ticket.failure(error); } catch (failure) { persistenceError = failure; }
         if (transmission) await drainTransmissionEvents();
         if (blockedPhase) error = Object.assign(new Error('ADAPTIVE_TRANSMISSION_PREFLIGHT_BLOCKED'),
           {code:'ADAPTIVE_TRANSMISSION_PREFLIGHT_BLOCKED', outcome_uncertain:false, outcomeUncertain:false});
-        const unknown = adaptiveOutcomeUncertain(error, {fallback: (transmission ? providerDecideCalled : submitted) && response === null});
+        const unknown = adaptiveOutcomeUncertain(error, {fallback: (transmission || gateway ? providerDecideCalled : submitted) && response === null});
         if (!recoveryProof || providerDecideCalled) lastJevFailure = {
           request_sha256:sha(prepared.serialized), stage:context.stage, outcome_uncertain:unknown};
         const terminal_cause = adaptiveTerminalCause(error, {stage: context.stage, outcome_uncertain: unknown});
         if (!receipts.some(row => row.id === id)) await checkpoint({id, provider: 'jev', purpose: 'decision', ...context,
           attempt_id: attempt, status: unknown ? 'uncertain' : 'failed', code: codeOf(error), wall_ms: performance.now() - began,
-          inference_started: transmission ? providerDecideCalled : submitted, usage: response?.usage ?? null, api_equivalent_usd: null, actual_billed_usd: null, outcome_uncertain: unknown, terminal_cause,
+          inference_started: transmission || gateway ? providerDecideCalled : submitted, usage: response?.usage ?? null, api_equivalent_usd: null, actual_billed_usd: null, outcome_uncertain: unknown, terminal_cause,
+          ...(gateway ? {skill_gateway: {required: true, decision_id: id, contract_sha256: manifest.skill_gateway.sha256,
+            request_sha256: sha(prepared.serialized), response_accepted: false, provider_decide_called: providerDecideCalled}} : {}),
           ...(transmission ? {transmission_preflight:transmissionSummary()} : {}), ...speedEvidence(),
           ...(parallelManifest(manifest) ? {budget_lock_wait_ms: held ? lockWait.wait_ms : null, budget_lock_contentions: held ? lockWait.lock_contentions : null} : {})});
+        if (persistenceError) throw Object.assign(persistenceError, {outcome_uncertain: unknown, terminal_cause,
+          provider_decide_called: providerDecideCalled, original_code: codeOf(error)});
         throw Object.assign(error, {outcome_uncertain: unknown, terminal_cause,
           ...(transmission ? {request_sha256:sha(prepared.serialized), transmission_preflight:transmissionSummary()} : {})});
       } finally { held?.close(); }
@@ -577,6 +619,8 @@ function createRunContext({rootDir, runDir, manifest, abortSignal}) {
         'docs/orchestration/contracts/adaptive-profile-selection.v1.json',
         'docs/orchestration/contracts/jev-token-admission.v3.json'] : []),
       ...(isQuestionFormManifest(manifest) ? QUESTION_FORM_SOURCES : []),
+      ...(skillGatewayManifest(manifest) ? [manifest.skill_gateway.contract,
+        ...validatePointsmanBinding(manifest.skill_gateway, {rootDir}).policy.source_pins.map(pin => pin.path)] : []),
       ...(transmissionManifest(manifest) ? [...JEV_TRANSMISSION_SOURCE_PATHS,
         manifest.transmission_preflight.contract, manifest.failure_recovery.contract,
         'src/orchestration/adaptive-failure-recovery.mjs'] : []),
@@ -761,9 +805,13 @@ export async function prepareAdaptiveSharedCatalog({rootDir = ROOT, manifest = l
 export function loadAdaptiveSharedPreparation({rootDir = ROOT, manifest, preparationDirectory, input}) {
   const directory = resolve(preparationDirectory), result = read(join(directory, 'result.json'));
   const catalogPath = join(directory, 'catalog.json'), bytes = readFileSync(catalogPath), catalog = JSON.parse(bytes);
+  const workspaceReuse = [POINTSMAN_D087_ROUTING_CONTRACT,POINTSMAN_D088_ROUTING_CONTRACT,POINTSMAN_D089_ROUTING_CONTRACT,POINTSMAN_D090_ROUTING_CONTRACT,POINTSMAN_D091_ROUTING_CONTRACT,POINTSMAN_D091_ADAPTIVE_ROUTING_CONTRACT,POINTSMAN_D092_ROUTING_CONTRACT,POINTSMAN_D093_CODEX_ROUTING_CONTRACT,POINTSMAN_D093_CLAUDE_ROUTING_CONTRACT,POINTSMAN_D093_CLAUDE_RECOVERY_ROUTING_CONTRACT,POINTSMAN_D093_CLAUDE_CLASSIFIER_ROUTING_CONTRACT,POINTSMAN_D095_RUNTIME_ROUTING_CONTRACT,POINTSMAN_D095_CLAUDE_ROUTING_CONTRACT,POINTSMAN_D094_CLAUDE_ROUTING_CONTRACT].includes(manifest.skill_gateway?.contract)
+    ? validatePointsmanManifest(manifest, {rootDir}).policy.workspace_reuse : null;
+  const sameCatalogFile = workspaceReuse ? realpathSync(directory) === realpathSync(workspaceReuse.catalog_directory)
+    && realpathSync(result.catalog_path) === realpathSync(catalogPath) : result.catalog_path === catalogPath;
   const reused = parallelManifest(manifest), reuse = manifest.catalog_reuse;
   if (result.schema_version !== 'adaptive-catalog-preparation/v1' || result.status !== 'prepared' || result.outcome_uncertain !== false
-      || (!reused && result.manifest_sha256 !== manifest.manifest_sha256) || result.catalog_path !== catalogPath || result.catalog_file_sha256 !== sha(bytes)
+      || (!reused && result.manifest_sha256 !== manifest.manifest_sha256) || !sameCatalogFile || result.catalog_file_sha256 !== sha(bytes)
       || result.catalog_sha256 !== sha(catalog) || result.receipts?.length !== 1 || result.receipts[0].provider !== 'claude'
       || result.receipts[0].purpose !== 'catalog' || result.receipts[0].status !== 'completed' || !result.receipts[0].model_identity_verified
       || catalog.source_sha256 !== input.source_ref.sha256) fail('ADAPTIVE_PREPARATION_INVALID');
@@ -945,10 +993,11 @@ export function createAdaptiveProfilePreparer({rootDir = ROOT, manifest, context
         allowed_profile_ids: manifest.profile_policy.allowed_profile_ids,
         profilePolicy: profileOptions(manifest).profilePolicy,
         admitBatch: (request, metadata) => {
-          const assess = inferredManifest(manifest) ? assessJevTokenAdmissionV4 : assessJevTokenAdmissionV3;
+          const assess = canonicalModelManifest(manifest) ? assessJevTokenAdmissionV5 : inferredManifest(manifest) ? assessJevTokenAdmissionV4 : assessJevTokenAdmissionV3;
           const admission = assess(request, {stage: 'profiles',
             expectedRequestSha256: sha(prepareDecision(request).serialized),
-            expectedPolicySha256: sha(readFileSync(join(rootDir, manifest.repair_policy.token_admission_contract)))});
+            expectedPolicySha256: sha(readFileSync(join(rootDir, manifest.repair_policy.token_admission_contract))),
+            ...(canonicalModelManifest(manifest) ? {expectedModelRegistrySha256: validatePointsmanManifest(manifest, {rootDir}).policy.model_registry.sha256} : {})});
           context.save(`profiles/${phase}-${round_index}-${metadata.batch_index ?? metadata.batch_id ?? sha(prepareDecision(request).serialized).slice(0, 12)}.admission.json`, admission);
           return admission;
         }, decide: decide ?? ((request, metadata) => session.decide('jev', request, metadata)), record: context.record,

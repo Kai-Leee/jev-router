@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-14",
+  "scope": "offline syntax, explicit Markdown links, source inventory; not semantic routing or host execution",
+  "command": "node docs/skills/routing-evidence-20261014/check.mjs",
+  "inventory_command": [
+    "python3",
+    "skills/jev-skill-maintenance/scripts/inventory_skills.py",
+    "--source-root",
+    "skills",
+    "--installed-root",
+    "/Users/lee/.codex/skills",
+    "--installed-root",
+    "/Users/lee/.agents/skills",
+    "--installed-root",
+    "/Users/lee/.claude/skills"
+  ],
+  "yaml_parser": "/Users/lee/workspace/plugins/rea-local/node_modules/yaml/dist/index.js",
+  "result": "passed",
+  "official_validator_attempts": [
+    {
+      "python": "python3",
+      "exit": 1,
+      "error": "ModuleNotFoundError: No module named 'yaml'"
+    },
+    {
+      "python": "/Users/lee/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "exit": 1,
+      "error": "ModuleNotFoundError: No module named 'yaml'"
+    }
+  ],
+  "fallback": "Existing Node YAML parser plus explicit structural assertions. Not an execution of the official quick_validate.py.",
+  "files": [
+    {
+      "path": "skills/pointsman-routing/SKILL.md",
+      "sha256": "16c735fdc345d198869cdb739dd223eb8ab881239a9b0e75925c3a51bfa0f3e3"
+    },
+    {
+      "path": "skills/pointsman-routing/references/routing-contract.md",
+      "sha256": "c60955088309a4c1eafa7a536dedbb26b2c63630f137de4fbe2209676b779fae"
+    },
+    {
+      "path": "docs/skills/POINTSMAN_ROUTING_DESIGN.md",
+      "sha256": "10df699fabf67099c2a13c0901ff87e070987171c5d7bae06d6c454a1c8802af"
+    }
+  ],
+  "relative_links": [
+    {
+      "file": "skills/pointsman-routing/SKILL.md",
+      "target": "references/routing-contract.md",
+      "exists": true
+    }
+  ],
+  "installed_copies": [
+    {
+      "path": "/Users/lee/.codex/skills/pointsman-routing",
+      "status": "absent"
+    },
+    {
+      "path": "/Users/lee/.agents/skills/pointsman-routing",
+      "status": "absent"
+    },
+    {
+      "path": "/Users/lee/.claude/skills/pointsman-routing",
+      "status": "absent"
+    }
+  ],
+  "host_discovery_verified": false,
+  "host_execution_verified": false,
+  "live_routing_measured": false
+}

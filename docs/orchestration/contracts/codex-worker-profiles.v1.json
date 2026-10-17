@@ -1,0 +1,19 @@
+{
+  "schema_version": "codex-worker-profiles/v1",
+  "policy": "jev-worker-capability-v1",
+  "effort": "high",
+  "profiles": [
+    {"id": "gpt-6.1-sol-high", "model": "gpt-6.1-sol", "effort": "high"},
+    {"id": "gpt-6-sol-high", "model": "gpt-6-sol", "effort": "high"},
+    {"id": "gpt-6-luna-high", "model": "gpt-6-luna", "effort": "high"},
+    {"id": "gpt-6-astra-high", "model": "gpt-6-astra", "effort": "high"}
+  ],
+  "eligibility": "Exact registered model available in this frozen application discovery, supports high effort in discovery and the official pricing/capability contract v2, and has complete Standard input/cached-input/cache-write/output reference rates. No aliases or fallback models.",
+  "question_id": "worker_profile",
+  "question": "Which one eligible worker capability profile should execute this exact implementation or repair task? Apply state.instructions to the task, original requirements, writable scope, failure signals and the inline candidate capabilities and reference prices. Choose unknown if no supported selection can be made.",
+  "instructions": "Select one registered Codex worker capability profile for the exact current task. Keep reasoning effort high. Use the official capability descriptions and Standard reference prices supplied inline, the task interfaces and write scope, observed failures, and whether this is a repair. Prefer the least expensive profile likely to preserve correctness and reduce total development time including retries; choose a stronger profile when cross-artifact reasoning or a previous unsuccessful repair warrants it. Do not infer parameter counts, measured latency, guaranteed quality or actual subscription billing from a model name or API price. Failure summaries are routing signals, not proof of fault or completion; truncated/omitted signals are explicitly marked and their controller hashes are not retrievable. Every existing validation and output-permission gate remains mandatory. Choose only a provided profile ID, or unknown if the evidence cannot support a choice. Do not write code, change task ownership or scope, or propose a replacement model.",
+  "unknown": "The supplied task, capabilities, availability or failure evidence does not support an eligible worker profile. Stop without a fallback.",
+  "max_failure_signals": 24,
+  "max_failure_message_characters": 2400,
+  "boundary": "Capability and cost profile selection only; no parameter-count claim, served identity claim, measured-performance claim, task decomposition, permission expansion or completion approval. Fixed-model comparison arms do not invoke this policy."
+}

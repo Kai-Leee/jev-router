@@ -182,7 +182,7 @@ export async function createDagFilesystemRuntime(options) {
         if (entry.sequence !== expected++ || entry.previous_hash !== prior || digest(entry) !== hash || entry.run_id !== run_id) throw Error('journal integrity');
         prior = hash;
         if (entry.operation_id && entry.phase === 'started') operations.set(entry.operation_id, entry);
-        if (entry.operation_id && ['completed', 'failed'].includes(entry.phase) && !entry.outcome_uncertain) operations.delete(entry.operation_id);
+        if (entry.operation_id && ['completed', 'failed', 'blocked'].includes(entry.phase) && !entry.outcome_uncertain) operations.delete(entry.operation_id);
         if (entry.operation_id && (entry.phase === 'uncertain' || entry.outcome_uncertain)) operations.set(entry.operation_id, entry);
       }
       return {status: operations.size ? 'uncertain' : 'recorded', replay_allowed: false, unresolved: [...operations.values()], entries: expected - 1};
@@ -324,6 +324,13 @@ export async function createDagFilesystemRuntime(options) {
       result = await executeTask(clone(task), {...clone(context), stageDirectory: attempt.stageDirectory,
         inputDirectory: attempt.inputDirectory, workspace: attempt.stageDirectory});
     } catch (error) {
+      if (error?.code === 'WORKER_PROFILE_BLOCKED' && error.status === 'blocked'
+          && error.dispatch_started === false && error.outcome_uncertain === false) {
+        attempt.status = 'blocked';
+        await append({event:'worker',task_id:task.id,attempt_id:context.attempt_id,operation_id,
+          phase:'blocked',outcome_uncertain:false,dispatch_started:false,code:error.code});
+        throw error;
+      }
       attempt.status = 'uncertain';
       await append({event: 'worker', task_id: task.id, attempt_id: context.attempt_id, operation_id, phase: 'uncertain', outcome_uncertain: true, code: error?.code ?? 'WORKER_CALLBACK_THROW'});
       fail('DAG_RUNTIME_WORKER_UNCERTAIN', {outcome_uncertain: true, cause: error});
@@ -445,9 +452,10 @@ export async function createDagFilesystemRuntime(options) {
     }
     if (event.event === 'dag_task_failed') {
       const attempt = attempts.get(event.attempt_id);
-      if (attempt) attempt.status = event.outcome_uncertain ? 'uncertain' : 'failed';
+      const blocked = event.status === 'blocked' && event.code === 'WORKER_PROFILE_BLOCKED' && !event.outcome_uncertain;
+      if (attempt) attempt.status = event.outcome_uncertain ? 'uncertain' : blocked ? 'blocked' : 'failed';
       await append({event: 'task_attempt', task_id: event.task_id, attempt_id: event.attempt_id, operation_id: event.attempt_id,
-        phase: event.outcome_uncertain ? 'uncertain' : 'failed', outcome_uncertain: !!event.outcome_uncertain});
+        phase: event.outcome_uncertain ? 'uncertain' : blocked ? 'blocked' : 'failed', outcome_uncertain: !!event.outcome_uncertain});
     }
     await append({event: 'workflow_event', payload: clone(event)});
     await forwardRecord(clone(event));

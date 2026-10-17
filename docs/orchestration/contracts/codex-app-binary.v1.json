@@ -1,0 +1,12 @@
+{
+  "schema_version": "codex-app-binary/v1",
+  "application": "ChatGPT.app",
+  "platform": "darwin",
+  "path": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex",
+  "format": "mach-o",
+  "version": "0.162.0-alpha.17.2",
+  "sha256": "0d5ac7aae20c4eda6242428d5e218c55ba96d8763fda2a271088ff37104b9d28",
+  "policy": "Invoke the pinned application Mach-O directly. Verify absolute path, executable format, SHA256 and exact CLI version before discovery and around every model invocation through environment verification. An application update blocks this condition; never silently substitute a PATH executable or shell launcher.",
+  "credentials": "Copy the existing auth.json to a temporary private HOME only; never log or modify the source credentials. Delete the temporary HOME on close or failed setup.",
+  "models_cache": "Do not inherit the old CLI model cache. Validate the requested model and reasoning effort through the isolated application CLI discovery."
+}

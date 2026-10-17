@@ -1,0 +1,15 @@
+{
+  "schema_version": "adaptive-verified-repair-context-policy/v1",
+  "policy": "verified-context-v1",
+  "state_field": "verified_repair_context",
+  "instructions": "Use this current-source evidence alongside the original requirements and public failure observations when choosing an existing repair owner. A matching identifier is only a search hint: compare producer, representation and consumer responsibilities, especially where parsing succeeds but encoding or rendering fails. An unchanged prior repair with the same observed failure is evidence to reconsider its scope, not proof that its owner is innocent. Worker statements are unverified. Check-level errors and unexecuted tests do not prove that those tests passed or failed. Do not expand the write scope or skip validation based on this context.",
+  "max_source_windows": 32,
+  "max_windows_per_source": 3,
+  "context_lines_before": 1,
+  "context_lines_after": 2,
+  "max_excerpt_characters": 1200,
+  "model_context_max_bytes": 2200,
+  "model_source_line_max_characters": 240,
+  "model_instructions": "Use these current-source identifier hints to compare producer and consumer owners; matches are not fault proof. Reconsider unchanged repairs using the existing repair_history and worker_diagnostics. Preserve public_gate and unexecuted-test distinctions. Original unit interfaces define responsibility. No owner override or validation bypass.",
+  "boundary": "Current public candidate source and observed repair progress only. No deterministic owner override, automatic scope expansion, cache reuse or completion claim. Existing verification gates and no-progress settings are unchanged."
+}

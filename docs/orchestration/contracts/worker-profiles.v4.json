@@ -1,0 +1,54 @@
+{
+  "schema_version": "worker-profiles/v4",
+  "policy": "joint-model-effort-cold-start-v4",
+  "eligibility": "Exact priced registered family model and adapter effort, intersected with the frozen provider-specific allowed profiles. Codex uses live app discovery; Claude uses pinned documented models/CLI efforts and current native availability probes. No cross-family substitution or silent fallback.",
+  "effort_authority": "Codex efforts come from frozen app discovery. Claude efforts come from the current pinned CLI help and official model documentation, with exact model account availability probed separately before execution. Requested effort is not proof of the internal effective effort.",
+  "question_id": "worker_profile",
+  "question": "Select the eligible model-and-effort profile that is expected to complete this task efficiently, using the supplied task requirements, capabilities, official reference prices and public observations. This is a prediction, not a claim of measured optimality. Missing observations do not prevent selection. Keep unmeasured success rates unknown, but make a provisional selection from the eligible candidates. Choose unknown only if essential task or capability information is missing and no defensible executable selection can be made. If state.recovery is present, reassess the previously blocked choice using its fixed clarification and the same supplied facts.",
+  "instructions": "Choose one listed model-and-effort profile for the exact current task. All listed efforts are legal; effort is not fixed at high. Optimize successful verified full completion and total development time, tokens and reference cost including unsuccessful/no-op repairs and later recalls, not merely the price of the first call. Compare original interfaces, writable scope, implementation versus repair, public failure signals, official capabilities and prices for the supplied worker family, and the empirical_evidence supplied inline. Use public success denominators, failed/unknown outcomes, no-op counts, subsequent repairs, measured time and cache-inclusive tokens. Distinguish exact-task/phase evidence from broader aggregates and account for task/environment and worker-protocol differences. Do not transfer observed outcomes between different model families. Scarce or absent performance observations remain statistically unknown; this does not make the model choice unknown. For a cold-start profile, use the supplied task, capabilities and reference prices to make a provisional prediction, without claiming a measured success rate, speed advantage or optimal profile; do not invent success rates, set arbitrary pass-rate thresholds, treat small samples as guarantees, or assume an unobserved profile is worse. Do not infer parameter counts, actual subscription bills, measured speed or served model identity from model names or API prices. Controller hashes and file paths are provenance, not retrievable content. Failure-signal projection omissions do not certify correctness. Choose only a supplied profile ID, or unknown. Never modify task ownership, scope, tests or completion gates. Do not write code, pick a model outside the candidates, retry, or silently substitute another profile after selection. A controller may issue the single explicit blocked clarification defined by this contract before any worker is dispatched.",
+  "unknown": "Essential task or capability facts are missing such that no defensible executable candidate can be selected. Do not choose this merely because empirical samples are zero, rates are null, or the optimum is not proven. This yields a known pre-dispatch blocked state, never an uncertain worker execution.",
+  "inline_resolution": "Each candidate.model resolves the exact model record in state.models. Official capabilities, discovery and prices occur there once per model. empirical_evidence.statistics contains complete inline statistic objects; each profile's global_ref, exact_scope_ref and requirement_overlap_ref names one of those inline rows. Resolve these local references before comparing denominators. These are lossless inline references, not controller files or retrieval tools.",
+  "history_boundary": "Public observations joined to worker receipts and artifact revisions only. Independent/hidden grading is excluded. Rates are observations with explicit denominators, not calibration or performance guarantees.",
+  "boundary": "Within-family comparison: native agent decisions versus Jev decisions, both selecting model and effort from the same candidates and frozen public-only history. No hidden feedback, parameter-count claim, fallback, learned calibration or completion approval.",
+  "families": {
+    "codex": {
+      "models": [
+        "gpt-6.1-sol",
+        "gpt-6-sol",
+        "gpt-6-luna",
+        "gpt-6-astra"
+      ],
+      "adapter_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max",
+        "ultra"
+      ]
+    },
+    "claude": {
+      "models": [
+        "claude-opus-5-5",
+        "claude-fable-5-1",
+        "claude-sonnet-5-5",
+        "claude-haiku-5-5"
+      ],
+      "adapter_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ]
+    }
+  },
+  "cold_start_policy": "Zero observations require a provisional model-and-effort prediction from eligible candidates, using supplied requirements, scope, capabilities and prices. Preserve sample counts and null measured rates. Provisional does not mean unavailable, guaranteed, empirically optimal, or permission to invent evidence.",
+  "recovery_notice": "The previous response was unknown and no worker was dispatched. All listed combinations remain controller-eligible. Zero empirical samples are allowed: preserve unknown rates while predicting a provisional profile from the supplied task, capabilities and prices. Reassess only this selection; do not change task scope, invent observations, call tools or substitute a profile outside the candidates. If essential facts still prevent selection, return unknown and remain blocked.",
+  "blocked_recovery": {
+    "max_clarifications": 1,
+    "transport_retries": 0,
+    "worker_dispatched_before_recovery": false,
+    "exhausted_status": "blocked"
+  }
+}

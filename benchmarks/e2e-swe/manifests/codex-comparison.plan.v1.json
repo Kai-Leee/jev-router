@@ -1,0 +1,36 @@
+{
+  "schema_version": "codex-e2e-comparison-plan/v1",
+  "status": "planned_not_executable",
+  "task": "openapi_python_client",
+  "public_input": "benchmarks/e2e-swe/manifests/d056-obligations.json",
+  "reference_policy": "benchmarks/e2e-swe/manifests/d083-repair-fixes.json",
+  "arms": [
+    {"id": "codex_decides_codex_works", "decision_provider": "codex", "worker_provider": "codex"},
+    {"id": "jev_decides_codex_works", "decision_provider": "jev", "worker_provider": "codex"}
+  ],
+  "worker_profile": {
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "basis": "local configured model and effort observed 2026-10-14; not an account capability probe",
+    "availability_verified": false,
+    "actual_billed_usd": null,
+    "official_api_equivalent_usd": null
+  },
+  "same_across_arms": ["public specification", "initial catalog hash", "worker model and effort", "worker tools and permissions", "Docker image digest", "public and independent grader hashes", "repair rules"],
+  "model_selection": "fixed_for_first_comparison",
+  "spec_review": "disabled_for_both_until_codex_adapter_exists",
+  "cohort_concurrency": 1,
+  "worker_concurrency": 2,
+  "maximum_workers": 30,
+  "max_repair_rounds": 2,
+  "repetitions_per_arm": 3,
+  "execution_order": ["codex_decides_codex_works", "jev_decides_codex_works", "jev_decides_codex_works", "codex_decides_codex_works", "codex_decides_codex_works", "jev_decides_codex_works"],
+  "automatic_retries": 0,
+  "wall_timeout_seconds": null,
+  "primary_outcomes": ["independently graded completion", "wall time through independent grade", "input tokens including cache", "output tokens", "official API-equivalent cost when available"],
+  "secondary_outcomes": ["decision latency", "worker calls", "repair calls", "unchanged worker re-calls", "critical path", "cache fraction", "failed and uncertain calls"],
+  "completion_gate": {"public": "93/93", "independent": "63/63", "same_candidate_hash": true},
+  "cost_rules": {"actual_subscription_billing": "unknown unless observed", "cache": "subset of input, never add twice", "missing_usage": null, "historical_catalog_cost": "shared preparation reference, not new spend"},
+  "execution_environment": "existing configured cloud; no ledger reset",
+  "blockers": ["Codex worker artifact transport and permission enforcement integration", "Codex-only environment preflight without Claude auth dependency", "Codex E2E receipt aggregation", "model/effort capability probe", "local ledger drift from previous task remains unresolved; use no inferred restoration"]
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": "claude-app-binary/v1",
+  "path": "/Users/lee/Library/Application Support/Claude/claude-code/2.1.299/4fa9694b7975/claude.app/Contents/MacOS/claude",
+  "sha256": "05f5000df42e8d85d468e345539d7bbadb8516c447b00cfb5e10dc61b7786ad2",
+  "version": "2.1.299 (Claude Code)",
+  "auth": "existing-cli-OAuth-only",
+  "environment": "safe-mode-restricted-skill-and-external-tool-free",
+  "actual_internal_effort_verified": null,
+  "bare_mode": false,
+  "bare_mode_reason": "Current CLI bare skips OAuth/keychain; safe-mode preserves authentication."
+}

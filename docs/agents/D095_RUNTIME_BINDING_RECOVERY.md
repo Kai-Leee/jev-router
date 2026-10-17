@@ -1,0 +1,3 @@
+# D095 runtime binding recovery
+
+Root only. User authorized diagnosis, public owner reinforcement and actual Jev+Claude rerun. v15's original-vs-round full-plan identity incorrectly blocks legal controller round decoration. Preserve v15 and all prior results. v16 validates the actual runtime plan hash and stable implementation ownership separately; rejects new owners and wider writes. Public v5/assertion v3, candidates20, frozenhistory, concurrency2,maxworkers30,repair2 unchanged. Source freeze before paid run, no edits while active, no uncertain replay. Record failed-harness phase overhead separately, do not hide it in a successful-only comparison. Monthlyinvoice unknown; cache once; nohiddenfixtures.

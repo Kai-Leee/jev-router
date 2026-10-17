@@ -9,6 +9,7 @@ import {selectInferredOwnerScope} from '../orchestration/adaptive-inferred-scope
 import {createDeferringDecider} from '../orchestration/jev-confidence-deferral.mjs';
 import {applyWorkloadEstimates, loadScheduleContract, SCHEDULE_CONTRACT} from '../orchestration/adaptive-critical-path-schedule.mjs';
 import {specReviewAfterPublicGate, SPEC_REVIEW_CONTRACT} from './adaptive-spec-review.mjs';
+import {projectOwnerPayload, OWNER_PAYLOAD_CONTRACT} from '../orchestration/adaptive-owner-payload-projection.mjs';
 
 // Manifest v12: question-form changes behind one dispatch hook; v1-v11 never reach this module.
 // D077 bound all five forms; D078 selects forms per manifest and adds the layered decomposition and owner labels v2.
@@ -33,11 +34,12 @@ export const QUESTION_FORM_SOURCES = Object.freeze(['src/benchmark/adaptive-ques
   'src/orchestration/adaptive-owner-criteria.mjs', 'src/orchestration/adaptive-profile-split.mjs',
   'src/orchestration/adaptive-inferred-scope.mjs', 'src/orchestration/jev-confidence-deferral.mjs',
   'src/orchestration/adaptive-critical-path-schedule.mjs', SCHEDULE_CONTRACT, 'src/benchmark/adaptive-spec-review.mjs', SPEC_REVIEW_CONTRACT,
+  'src/orchestration/adaptive-owner-payload-projection.mjs', OWNER_PAYLOAD_CONTRACT,
   ...Object.values(QUESTION_FORM_OPTIONS).flatMap(Object.keys)]);
 const fail = code => { throw Object.assign(new Error(code), {code, outcome_uncertain: false}); };
 const sha = value => createHash('sha256').update(value).digest('hex');
 
-export const isQuestionFormManifest = manifest => manifest?.schema_version === QUESTION_FORM_SCHEMA;
+export const isQuestionFormManifest = manifest => [QUESTION_FORM_SCHEMA, 'adaptive-dag-comparison/v13'].includes(manifest?.schema_version);
 
 /** v12-only fields: a decomposition form plus any subset of the others, exact contract bindings, and a ledger lock matching the ledger version. */
 export function validateQuestionFormManifest(value, rootDir) {
@@ -70,6 +72,20 @@ export function createQuestionFormHooks({session, record, manifest}) {
   const planner = decomposition === 'cohesion-v1' ? planCohesionDag
     : input => planLayeredDag({...input, contractPath: LAYERED_CONTRACTS[decomposition.slice('layered-'.length)]});
   const ownerContract = forms.owner_criteria ? loadOwnerCriteriaContract(forms.owner_criteria.contract) : null;
+  const ownerPayloadPolicy = manifest?.repair_efficiency?.owner_input_projection;
+  if (ownerPayloadPolicy !== undefined && ownerPayloadPolicy !== 'lossless-owner-v1') fail('ADAPTIVE_OWNER_PAYLOAD_POLICY_INVALID');
+  const decideRepairOwners = async (request, metadata) => {
+    const described = ownerContract ? describeOwnerCriteria(request, ownerContract) : request;
+    if (!ownerPayloadPolicy) return decide(described, metadata);
+    const projected = projectOwnerPayload(described, {policy: ownerPayloadPolicy});
+    // Recording is awaited before any provider submission; a journal failure blocks the call.
+    await record({event: 'adaptive_owner_payload_projected', stage: 'repair_owners',
+      decision_id: metadata?.decision_id ?? null, report: projected.report});
+    return decide(projected.request, {...metadata, owner_payload_projection: {
+      policy: ownerPayloadPolicy, input_request_sha256: projected.report.input_request_sha256,
+      output_request_sha256: projected.report.output_request_sha256,
+      report_sha256: projected.report.integrity_sha256}});
+  };
   const schedule = manifest?.schedule_policy ? loadScheduleContract(manifest.schedule_policy.contract) : null;
   // With a schedule policy the planner runs uncommitted; estimates are added, then the caller's commit binds the scheduled plan.
   const plan = async ({commit, ...input}) => {
@@ -90,7 +106,8 @@ export function createQuestionFormHooks({session, record, manifest}) {
       const response = await decide(splitProfileRequest(request), metadata);
       return {...combineProfileAnswers(request, response), profile_split_response: response};
     } : decide,
-    decideRepairOwners: ownerContract ? (request, metadata) => decide(describeOwnerCriteria(request, ownerContract), metadata) : decide,
+    decideRepairOwners: ownerPayloadPolicy ? decideRepairOwners
+      : ownerContract ? (request, metadata) => decide(describeOwnerCriteria(request, ownerContract), metadata) : decide,
     decideRepair: forms.inferred_scope ? request => selectInferredOwnerScope(request) : undefined,
     afterPublicGate: manifest?.spec_review ? ({rootDir, runDirectory, execution, input, catalog, runCommand, remaining}) =>
       specReviewAfterPublicGate({rootDir, manifest, runDirectory, execution, input, catalog, record, runCommand, remaining}) : undefined,

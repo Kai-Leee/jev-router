@@ -1,0 +1,13 @@
+{
+  "schema_version": "adaptive-owner-payload-contract/v1",
+  "policy": "lossless-owner-v1",
+  "input_schema": "adaptive-inferred-owner-input/v2",
+  "encoding_schema": "inline-json-rows/v1",
+  "marker": "$owner_row",
+  "fields": ["additional_observed_cases", "failed_check_contexts", "public_gate.results"],
+  "inline_instructions": "Read this state using the inline schemas below: an object whose only key is $owner_row contains an array [schema_index, value0, value1, ...]. The indexed schema lists the original object keys in exactly the same order; pair each key with its corresponding value, recursively. Every original value is inline; these are record layouts, not file paths or controller-only retrieval. All unmarked objects retain their ordinary meaning. For criterion_labels entries, a null choice description resolves to the matching complete artifact_contracts row in this state: paths_description means paths joined by comma-space plus colon-space plus description; description means that exact description alone. The artifact ID, legal existing owner, paths, full interfaces, question instructions and unknown option retain their original meaning. No failed observation, original requirement or candidate has been removed.",
+  "protected_fields": ["detailed_failed_cases", "original_requirements", "artifact_contracts", "unit_interfaces", "task_dependencies", "failure_state", "public_source_owner_evidence"],
+  "lossless": true,
+  "automatic_retries": 0,
+  "provider_token_savings": "unmeasured"
+}

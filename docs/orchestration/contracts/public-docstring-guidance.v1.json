@@ -1,0 +1,16 @@
+{
+  "schema_version": "public-docstring-guidance/v1",
+  "policy": "google-docstring-v1",
+  "requirement_ids": ["R10.01", "R10.02", "R10.03"],
+  "basis": "Public task requirements for Google-style model and endpoint docstrings; no hidden evaluation content.",
+  "instructions": [
+    "Preserve the original description and required parameter, attribute, and parsed return types. Separate Google-style section headers from preceding text by a blank line, and indent entries under the section.",
+    "Args and Attributes entries use name (type): description; a missing parameter or attribute description still retains name (type):. Do not list the endpoint client argument in Args.",
+    "For Returns, write the actual parsed type for ordinary endpoint functions and Response[parsed type] for detailed functions, followed on the same line by a colon and a meaningful return-value description. Keep documented unions intact. Do not add None merely because an execution annotation is optional if the public contract asks for the documented parsed success type.",
+    "Avoid a bare return-type label ending in a colon with no explanation: an alphabetic label can be interpreted as another section header. Adding blank lines before Returns does not resolve an ambiguous bare type entry inside Returns.",
+    "Source diagnostics are bounded observations of the supplied inline source, not proof of generated behavior or permission to change tests. Verify by rendering representative public inputs through the controller's existing checks; do not claim that a source-only observation executed a check."
+  ],
+  "source_diagnostic_limit": 12,
+  "source_line_limit": 400,
+  "automatic_source_rewrite": false
+}

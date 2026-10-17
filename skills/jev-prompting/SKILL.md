@@ -5,6 +5,8 @@ description: Draft or revise Jev Router typed decision questions and evidence pa
 
 # Jev prompting
 
+Current D083 integration: use `benchmarks/e2e-swe/manifests/pointsman-d083.json` for the required skill/gateway path and read `skills/pointsman-routing/SKILL.md`. D083 uses layered-v2 planning, profile v3, inferred owner v3 and repair-budget-v3; its question wording is loaded from those contracts. The new gateway checks registered wording/structure and records each request before sending. Historical D075/inferred-v2 commands below remain reproducibility guidance for that path, not a validator for all D083 questions. The old D083 manifest remains preserved; do not silently select it as a fallback when the opted-in gateway blocks.
+
 Resolve project paths from the Jev Router repository root, including when reading an installed copy. Read `AGENTS.md` and the current role contract. This skill prepares bounded decisions that code can execute; it does not turn a proposed prompt into measured routing quality.
 
 Use the current question contract instead of generating a new question on each loop. For projected owner inference, the fixed English text is in `docs/orchestration/contracts/adaptive-inferred-repair.v2.json`; its baseline builder is `src/orchestration/adaptive-inferred-repair-projection.mjs`. D075 uses `docs/orchestration/contracts/jev-prompt-policy.v2.json` and its separately pinned transmission/recovery policies. Read [official guidance](references/official-guidance.md) when authoring or changing a question or connection rule.

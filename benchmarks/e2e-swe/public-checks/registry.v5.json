@@ -1,0 +1,406 @@
+[
+  {
+    "id": "public.runtime-model-core",
+    "version": "5",
+    "phase": "integration",
+    "artifact_ids": [
+      "candidate-source"
+    ],
+    "requirement_ids": [
+      "R04.04",
+      "R04.05",
+      "R06.01",
+      "R06.02",
+      "R06.03",
+      "R07.01",
+      "R07.02",
+      "R07.03",
+      "R07.04",
+      "R08.01",
+      "R08.02",
+      "R08.03",
+      "R08.04",
+      "R09.02",
+      "R10.01"
+    ],
+    "test_ids": [
+      "T.R04.04",
+      "T.R04.05",
+      "T.R06.01",
+      "T.R06.02",
+      "T.R06.03",
+      "T.R07.01",
+      "T.R07.02",
+      "T.R07.03",
+      "T.R07.04",
+      "T.R08.01",
+      "T.R08.02",
+      "T.R08.03",
+      "T.R08.04",
+      "T.R09.02",
+      "T.R10.01"
+    ],
+    "runner_ref": "benchmarks/e2e-swe/public-checks/run_public_checks_v5.py",
+    "argv": [
+      "python3",
+      "run_public_checks_v5.py",
+      "--suite",
+      "runtime-model-core",
+      "--binding",
+      "bindings/normal.json"
+    ],
+    "cwd": "benchmarks/e2e-swe/public-checks",
+    "environment_ref": "e2e-swe-public-python/v2",
+    "source_ref": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+    "origin": "public_specification"
+  },
+  {
+    "id": "public.enums-defaults",
+    "version": "5",
+    "phase": "integration",
+    "artifact_ids": [
+      "candidate-source"
+    ],
+    "requirement_ids": [
+      "R06.01",
+      "R07.01",
+      "R07.02",
+      "R07.04",
+      "R11.01",
+      "R11.02",
+      "R11.03",
+      "R11.04",
+      "R11.06",
+      "R14.01",
+      "R14.02",
+      "R14.03",
+      "R14.04"
+    ],
+    "test_ids": [
+      "T.R11.01",
+      "T.R11.02",
+      "T.R11.03",
+      "T.R11.04",
+      "T.R11.06",
+      "T.R14.01",
+      "T.R14.02",
+      "T.R14.03",
+      "T.R14.04",
+      "T.integration.defaults"
+    ],
+    "runner_ref": "benchmarks/e2e-swe/public-checks/run_public_checks_v5.py",
+    "argv": [
+      "python3",
+      "run_public_checks_v5.py",
+      "--suite",
+      "enums-defaults",
+      "--binding",
+      "bindings/normal.json"
+    ],
+    "cwd": "benchmarks/e2e-swe/public-checks",
+    "environment_ref": "e2e-swe-public-python/v2",
+    "source_ref": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+    "origin": "public_specification"
+  },
+  {
+    "id": "public.cli-layout",
+    "version": "5",
+    "phase": "integration",
+    "artifact_ids": [
+      "candidate-source"
+    ],
+    "requirement_ids": [
+      "R03.02",
+      "R03.04",
+      "R04.01",
+      "R04.02",
+      "R04.03",
+      "R18.03"
+    ],
+    "test_ids": [
+      "T.R03.02",
+      "T.R03.04",
+      "T.R04.01",
+      "T.R04.02",
+      "T.R04.03",
+      "T.R18.03"
+    ],
+    "runner_ref": "benchmarks/e2e-swe/public-checks/run_public_checks_v5.py",
+    "argv": [
+      "python3",
+      "run_public_checks_v5.py",
+      "--suite",
+      "cli-layout",
+      "--binding",
+      "bindings/normal.json"
+    ],
+    "cwd": "benchmarks/e2e-swe/public-checks",
+    "environment_ref": "e2e-swe-public-python/v2",
+    "source_ref": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+    "origin": "public_specification"
+  },
+  {
+    "id": "public.diagnostics",
+    "version": "5",
+    "phase": "integration",
+    "artifact_ids": [
+      "candidate-source"
+    ],
+    "requirement_ids": [
+      "R03.05",
+      "R19.01",
+      "R19.02",
+      "R19.04",
+      "R19.05"
+    ],
+    "test_ids": [
+      "T.R03.05",
+      "T.R19.01",
+      "T.R19.02",
+      "T.R19.04",
+      "T.R19.05"
+    ],
+    "runner_ref": "benchmarks/e2e-swe/public-checks/run_public_checks_v5.py",
+    "argv": [
+      "python3",
+      "run_public_checks_v5.py",
+      "--suite",
+      "diagnostics",
+      "--binding",
+      "bindings/normal.json"
+    ],
+    "cwd": "benchmarks/e2e-swe/public-checks",
+    "environment_ref": "e2e-swe-public-python/v2",
+    "source_ref": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+    "origin": "public_specification"
+  },
+  {
+    "id": "public.schema-models",
+    "version": "5",
+    "phase": "integration",
+    "artifact_ids": [
+      "candidate-source"
+    ],
+    "requirement_ids": [
+      "R04.06",
+      "R05.01",
+      "R05.02",
+      "R05.03",
+      "R05.04",
+      "R07.04",
+      "R08.03",
+      "R08.04",
+      "R08.05",
+      "R08.06",
+      "R08.07",
+      "R09.01",
+      "R10.02",
+      "R10.03",
+      "R11.05",
+      "R12.01",
+      "R13.01",
+      "R13.02",
+      "R13.03"
+    ],
+    "test_ids": [
+      "T.R04.06",
+      "T.R05.01",
+      "T.R05.02",
+      "T.R05.03",
+      "T.R05.04",
+      "T.R08.05",
+      "T.R08.06",
+      "T.R08.07",
+      "T.R09.01",
+      "T.R10.02",
+      "T.R10.03",
+      "T.R11.05",
+      "T.R12.01",
+      "T.R13.01",
+      "T.R13.02",
+      "T.R13.03",
+      "T.integration.unions-arrays"
+    ],
+    "runner_ref": "benchmarks/e2e-swe/public-checks/run_public_checks_v5.py",
+    "argv": [
+      "python3",
+      "run_public_checks_v5.py",
+      "--suite",
+      "schema-models",
+      "--binding",
+      "bindings/normal.json"
+    ],
+    "cwd": "benchmarks/e2e-swe/public-checks",
+    "environment_ref": "e2e-swe-public-python/v2",
+    "source_ref": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+    "origin": "public_specification"
+  },
+  {
+    "id": "public.http-client",
+    "version": "5",
+    "phase": "integration",
+    "artifact_ids": [
+      "candidate-source"
+    ],
+    "requirement_ids": [
+      "R06.02",
+      "R06.03",
+      "R15.01",
+      "R15.02",
+      "R15.03",
+      "R16.01",
+      "R16.02",
+      "R16.03",
+      "R16.04",
+      "R16.05",
+      "R16.06",
+      "R16.07",
+      "R16.08",
+      "R16.09",
+      "R16.10",
+      "R17.01",
+      "R17.02",
+      "R17.03"
+    ],
+    "test_ids": [
+      "T.R15.01",
+      "T.R15.02",
+      "T.R15.03",
+      "T.R16.01",
+      "T.R16.02",
+      "T.R16.03",
+      "T.R16.04",
+      "T.R16.05",
+      "T.R16.06",
+      "T.R16.07",
+      "T.R16.08",
+      "T.R16.09",
+      "T.R16.10",
+      "T.R17.01",
+      "T.R17.02",
+      "T.R17.03",
+      "T.integration.transports"
+    ],
+    "runner_ref": "benchmarks/e2e-swe/public-checks/run_public_checks_v5.py",
+    "argv": [
+      "python3",
+      "run_public_checks_v5.py",
+      "--suite",
+      "http-client",
+      "--binding",
+      "bindings/normal.json"
+    ],
+    "cwd": "benchmarks/e2e-swe/public-checks",
+    "environment_ref": "e2e-swe-public-python/v2",
+    "source_ref": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+    "origin": "public_specification"
+  },
+  {
+    "id": "public.cli-config-environment",
+    "version": "5",
+    "phase": "integration",
+    "artifact_ids": [
+      "candidate-source"
+    ],
+    "requirement_ids": [
+      "R01.01",
+      "R01.02",
+      "R01.03",
+      "R02.01",
+      "R02.02",
+      "R02.03",
+      "R03.01",
+      "R03.02",
+      "R03.03",
+      "R03.04",
+      "R03.05",
+      "R03.06",
+      "R04.01",
+      "R04.02",
+      "R04.03",
+      "R04.04",
+      "R04.05",
+      "R04.06",
+      "R05.02",
+      "R05.03",
+      "R05.04",
+      "R12.01",
+      "R17.01",
+      "R17.02",
+      "R17.03",
+      "R18.01",
+      "R18.02",
+      "R18.03",
+      "R19.01",
+      "R19.02",
+      "R19.03",
+      "R19.04",
+      "R19.05",
+      "R20.01"
+    ],
+    "test_ids": [
+      "T.R01.01",
+      "T.R01.02",
+      "T.R01.03",
+      "T.R02.01",
+      "T.R02.02",
+      "T.R02.03",
+      "T.R03.01",
+      "T.R03.03",
+      "T.R03.06",
+      "T.R18.01",
+      "T.R18.02",
+      "T.R19.03",
+      "T.R20.01",
+      "T.integration.config-layout",
+      "T.integration.diagnostics"
+    ],
+    "runner_ref": "benchmarks/e2e-swe/public-checks/run_public_checks_v5.py",
+    "argv": [
+      "python3",
+      "run_public_checks_v5.py",
+      "--suite",
+      "cli-config-environment",
+      "--binding",
+      "bindings/normal.json"
+    ],
+    "cwd": "benchmarks/e2e-swe/public-checks",
+    "environment_ref": "e2e-swe-public-python/v2",
+    "source_ref": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+    "origin": "public_specification"
+  },
+  {
+    "id": "public.description-provenance",
+    "version": "5",
+    "phase": "integration",
+    "artifact_ids": [
+      "candidate-source"
+    ],
+    "requirement_ids": [
+      "R10.02"
+    ],
+    "test_ids": [
+      "T.R10.02.body-description.distinct.sync",
+      "T.R10.02.body-description.distinct.sync_detailed",
+      "T.R10.02.body-description.distinct.asyncio",
+      "T.R10.02.body-description.distinct.asyncio_detailed",
+      "T.R10.02.body-description.request-only.sync",
+      "T.R10.02.body-description.request-only.sync_detailed",
+      "T.R10.02.body-description.request-only.asyncio",
+      "T.R10.02.body-description.request-only.asyncio_detailed"
+    ],
+    "runner_ref": "benchmarks/e2e-swe/public-checks/run_public_checks_v5.py",
+    "argv": [
+      "python3",
+      "run_public_checks_v5.py",
+      "--suite",
+      "description-provenance",
+      "--binding",
+      "bindings/descriptions.normal.json"
+    ],
+    "cwd": "benchmarks/e2e-swe/public-checks",
+    "environment_ref": "e2e-swe-public-python/v2",
+    "source_ref": ".benchmarks/E2E-SWE/tasks/openapi_python_client/instruction.md",
+    "origin": "public_specification"
+  }
+]

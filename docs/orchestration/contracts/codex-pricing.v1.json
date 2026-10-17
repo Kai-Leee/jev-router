@@ -1,0 +1,100 @@
+{
+  "schema_version": "codex-reference-pricing/v1",
+  "policy_id": "d090-gpt61sol-standard-context-scenarios-v1",
+  "checked_on": "2026-10-16",
+  "currency": "USD",
+  "unit": "per_million_tokens",
+  "rate_selection": "Exact requested model label, used as a pricing proxy only; no served-model identity claim.",
+  "models": [
+    {
+      "model": "gpt-6.1-sol",
+      "scenarios": {
+        "short_standard": {
+          "service_tier": "standard",
+          "context": "short",
+          "context_input_tokens_max": 272000,
+          "usd_per_million": {
+            "input": 2,
+            "cached_input": 0.1,
+            "cache_write": 2.5,
+            "output": 10
+          }
+        },
+        "long_standard": {
+          "service_tier": "standard",
+          "context": "long",
+          "context_input_tokens_min_exclusive": 272000,
+          "usd_per_million": {
+            "input": 4,
+            "cached_input": 0.2,
+            "cache_write": 5,
+            "output": 15
+          }
+        }
+      }
+    }
+  ],
+  "usage_semantics": {
+    "cached_input": "Subset of input_tokens; never add again to token total.",
+    "cache_write": "Subset of input_tokens, priced instead of ordinary input; not an additive fee.",
+    "ordinary_input": "input_tokens minus cached_input_tokens minus cache_write_tokens.",
+    "reasoning_output": "Subset of output_tokens; never add again.",
+    "missing_cache_write": "Strict API equivalent remains null. Scenarios explicitly assume zero unreported cache writes, with separate all-noncached-write scenario endpoint.",
+    "multi_turn_context": "Aggregate CLI input can exceed272K across turns without any individual API request crossing threshold. Never infer context tier from aggregate turn totals."
+  },
+  "unknown_policy": {
+    "usage": "null, not zero",
+    "cache_read": "null scenario if missing or invalid",
+    "cache_write": "null strict equivalent; explicit scenario assumptions only",
+    "unregistered_model": "null scenario, no fallback model",
+    "actual_subscription_billing": null,
+    "strict_api_equivalent": null
+  },
+  "billing_basis": "Reference Standard API token scenarios only. Codex ChatGPT subscription allocation, effective service tier, region, per-request context and served identity are not established by CLI usage.",
+  "excluded_rates": [
+    "Batch",
+    "Flex",
+    "Fast",
+    "Ultrafast",
+    "regional premium",
+    "tool fees"
+  ],
+  "sources": [
+    {
+      "url": "https://developers.openai.com/api/docs/pricing",
+      "snapshot": "benchmark-runs/d090-codex-20261016-01/pricing/openai-pricing.html",
+      "sha256": "7fcdf3f533faf42baf15e8a930ba8cb4430fad60b1694371b0f0242f0fbe0aeb",
+      "fetched_at": "2026-10-16T09:44:21.191Z"
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/pricing.md",
+      "snapshot": "benchmark-runs/d090-codex-20261016-01/pricing/openai-pricing.md",
+      "sha256": "e0767b5009dcc929a2f9eeb9ce6096a57ff12e5d8c011de9d69ff145aef2fc28",
+      "fetched_at": "2026-10-16T09:44:21.189Z"
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/models/gpt-6.1-sol.md",
+      "snapshot": "benchmark-runs/d090-codex-20261016-01/pricing/openai-gpt61-sol.md",
+      "sha256": "acfe91d19882aaf7bb52877898684614035a947de02f2955c9de905a7efb1362",
+      "fetched_at": "2026-10-16T09:44:21.373Z"
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/guides/prompt-caching.md",
+      "snapshot": "benchmark-runs/d090-codex-20261016-01/pricing/openai-prompt-caching.md",
+      "sha256": "74dc45350d5de0e7eef80b0b09d67b733a73170275f1bacb0760e066a4254480",
+      "fetched_at": "2026-10-16T09:44:21.182Z"
+    }
+  ],
+  "source_notes": [
+    {
+      "url": "https://developers.openai.com/api/docs/pricing",
+      "snapshot": "benchmark-runs/d090-codex-20261016-01/pricing/openai-pricing.md",
+      "line_scope": "Standard table32-35; Batch84-89 and Flex136-141 are separate rates; context boundary212."
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/guides/prompt-caching",
+      "snapshot": "benchmark-runs/d090-codex-20261016-01/pricing/openai-prompt-caching.md",
+      "line_scope": "17: cache-write is a replacement input bucket;595-602: subtract cached and cache-write tokens before ordinary input."
+    }
+  ]
+}

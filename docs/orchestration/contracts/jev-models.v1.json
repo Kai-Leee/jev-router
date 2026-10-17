@@ -1,0 +1,23 @@
+{
+  "schema_version": "jev-model-registry/v1",
+  "registry_id": "d088-observed-jev-models-v1",
+  "checked_on": "2026-10-16",
+  "request_models": ["jev-latest", "jev-1.13.0", "jev-preview", "jev-1.14.0"],
+  "request_alias_semantics": "Documented request aliases/version labels are accepted exactly. A moving request alias never proves the actual response revision. D086/D087 observed jev-latest resolve to1.14 despite the captured docs describing1.13; retain the actual response label.",
+  "observed_models": [
+    {"label": "jev-1.13.0", "kind": "version_label", "version": "1.13.0", "preflight_allowed": true, "settlement_allowed": true, "billing_multiplier": "1", "billing_mode": "tokens", "provenance_source_ids": ["jev113-docs", "historical-observations"]},
+    {"label": "typesafe/jev-1.13-20260917", "kind": "dated_build", "version": "1.13.0", "preflight_allowed": true, "settlement_allowed": true, "billing_multiplier": "1", "billing_mode": "tokens", "provenance_source_ids": ["jev113-docs", "historical-observations"]},
+    {"label": "typesafe-ai/jev", "kind": "provider_alias", "version": null, "preflight_allowed": true, "settlement_allowed": true, "billing_multiplier": "1", "billing_mode": "tokens", "provenance_source_ids": ["provider-alias", "historical-observations"]},
+    {"label": "typesafe/jev-1.14-20261014", "kind": "dated_build", "version": "1.14.0", "preflight_allowed": true, "settlement_allowed": true, "billing_multiplier": "1", "billing_mode": "tokens", "provenance_source_ids": ["jev114-docs", "d086-d087-observations"]}
+  ],
+  "unknown_model_policy": "Reject unknown labels, future dates, prefixes and inferred alias equivalence. A new label requires explicit reviewed registry change and new source bindings; never infer acceptance from matching a family prefix.",
+  "provider_alias_semantics": "typesafe-ai/jev is a historically observed generic provider label. Acceptance for existing token-mode accounting does not identify a dated revision; version remains null.",
+  "settlement_semantics": "A registered label is necessary but not sufficient: native budget still verifies plain token mode, multiplier1, zero credits, paid input equal to usage, exact hosted destination, known HTTP success, no retries and reservation bounds.",
+  "sources": [
+    {"id": "jev113-docs", "url": "https://jev-ai.pro/model/jev-1.13", "checked_on": "2026-10-09", "scope": "Exact observed1.13 version and dated build."},
+    {"id": "provider-alias", "url": "https://jev-ai.pro/where-to-run-jev", "checked_on": "2026-10-09", "scope": "Generic provider label; not a revision proof."},
+    {"id": "jev114-docs", "url": "https://jev-ai.pro/docs#models", "checked_on": "2026-10-16", "scope": "Documented request aliases and Jev1.14 multiplier1; latest alias drift retained as observed provenance."},
+    {"id": "historical-observations", "path": "docs/orchestration/contracts/jev-token-admission.v1.json", "scope": "D06847successful responses with three exact labels."},
+    {"id": "d086-d087-observations", "path": "docs/agents/D088_MODEL_REGISTRY_COMPARISON.md", "scope": "Preserved D086HTTP200 dated1.14 response and D087 third-request rejection; actual replay receipts are separately hashed in D088 evidence."}
+  ]
+}

@@ -57,7 +57,8 @@ export async function runDag({plan: input, execute, record = async () => {},
     }
   };
   const failed = (taskId, attemptId, error, fallback) => ({
-    task_id: taskId, attempt_id: attemptId, status: 'failed',
+    task_id: taskId, attempt_id: attemptId, status: error?.code === 'WORKER_PROFILE_BLOCKED'
+      && error.status === 'blocked' && error.dispatch_started === false && error.outcome_uncertain === false ? 'blocked' : 'failed',
     code: errorCode(error, fallback), outcome_uncertain: uncertain(error),
   });
   const launch = task => {
@@ -82,7 +83,7 @@ export async function runDag({plan: input, execute, record = async () => {},
       try {
         await emit(outcome.status === 'completed'
           ? {event: 'dag_task_completed', ...identity, status: 'completed'}
-          : {event: 'dag_task_failed', ...identity, status: 'failed',
+          : {event: 'dag_task_failed', ...identity, status: outcome.status,
             code: outcome.code, outcome_uncertain: outcome.outcome_uncertain});
       } catch (error) {
         outcome = failed(task.id, attemptId, error, 'DAG_RECORD_FAILED');
@@ -94,7 +95,7 @@ export async function runDag({plan: input, execute, record = async () => {},
   };
 
   const blocked = task => {
-    if (failure) return {reason: 'run_failed', blocking_task_ids: failure.task_id ? [failure.task_id] : []};
+    if (failure) return {reason: failure.status==='blocked'?'run_blocked':'run_failed', blocking_task_ids: failure.task_id ? [failure.task_id] : []};
     if (unknownTasks.has(task.id)) {
       return {reason: 'unknown_relation', blocking_task_ids: [...new Set(plan.unknown_relationships
         .filter(relation => relation.task_ids.includes(task.id)).flatMap(relation => relation.task_ids))]
@@ -141,7 +142,7 @@ export async function runDag({plan: input, execute, record = async () => {},
   }
 
   return {
-    status: failure ? 'failed' : pending.size ? 'blocked' : 'completed',
+    status: failure ? failure.status === 'blocked' ? 'blocked' : 'failed' : pending.size ? 'blocked' : 'completed',
     results: Object.fromEntries(results),
     completed_ids: [...completed],
     undispatched_ids: plan.tasks.filter(task => pending.has(task.id)).map(task => task.id),

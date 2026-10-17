@@ -1,0 +1,46 @@
+{
+  "schema_version": "worker-profiles/v3",
+  "policy": "joint-model-effort-public-history-v3",
+  "eligibility": "Exact priced registered family model and adapter effort, intersected with the frozen provider-specific allowed profiles. Codex uses live app discovery; Claude uses pinned documented models/CLI efforts and current native availability probes. No cross-family substitution or silent fallback.",
+  "effort_authority": "Codex efforts come from frozen app discovery. Claude efforts come from the current pinned CLI help and official model documentation, with exact model account availability probed separately before execution. Requested effort is not proof of the internal effective effort.",
+  "question_id": "worker_profile",
+  "question": "Which one eligible model and reasoning-effort profile should execute this exact implementation or repair task within state.worker_family? Apply state.instructions to the current task, original requirements, write scope, public failure signals, canonical capabilities and prices, and empirical_evidence. Optimize verified full completion including repair calls, time and tokens rather than initial call cost. Choose unknown if no supported selection can be made.",
+  "instructions": "Choose one listed model-and-effort profile for the exact current task. All listed efforts are legal; effort is not fixed at high. Optimize successful verified full completion and total development time, tokens and reference cost including unsuccessful/no-op repairs and later recalls, not merely the price of the first call. Compare original interfaces, writable scope, implementation versus repair, public failure signals, official capabilities and prices for the supplied worker family, and the empirical_evidence supplied inline. Use public success denominators, failed/unknown outcomes, no-op counts, subsequent repairs, measured time and cache-inclusive tokens. Distinguish exact-task/phase evidence from broader aggregates and account for task/environment and worker-protocol differences. Do not transfer observed outcomes between different model families. Scarce or absent observations remain unknown; do not invent success rates, set arbitrary pass-rate thresholds, treat small samples as guarantees, or assume an unobserved profile is worse. Do not infer parameter counts, actual subscription bills, measured speed or served model identity from model names or API prices. Controller hashes and file paths are provenance, not retrievable content. Failure-signal projection omissions do not certify correctness. Choose only a supplied profile ID, or unknown. Never modify task ownership, scope, tests or completion gates. Do not write code, pick a model outside the candidates, retry, or substitute another profile after selection.",
+  "unknown": "No eligible model-and-effort selection is supported by the task, verified availability, canonical capability/price data and empirical evidence. Stop without a fallback.",
+  "inline_resolution": "Each candidate.model resolves the exact model record in state.models. Official capabilities, discovery and prices occur there once per model. empirical_evidence.statistics contains complete inline statistic objects; each profile's global_ref, exact_scope_ref and requirement_overlap_ref names one of those inline rows. Resolve these local references before comparing denominators. These are lossless inline references, not controller files or retrieval tools.",
+  "history_boundary": "Public observations joined to worker receipts and artifact revisions only. Independent/hidden grading is excluded. Rates are observations with explicit denominators, not calibration or performance guarantees.",
+  "boundary": "Within-family comparison: native agent decisions versus Jev decisions, both selecting model and effort from the same candidates and frozen public-only history. No hidden feedback, parameter-count claim, fallback, learned calibration or completion approval.",
+  "families": {
+    "codex": {
+      "models": [
+        "gpt-6.1-sol",
+        "gpt-6-sol",
+        "gpt-6-luna",
+        "gpt-6-astra"
+      ],
+      "adapter_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max",
+        "ultra"
+      ]
+    },
+    "claude": {
+      "models": [
+        "claude-opus-5-5",
+        "claude-fable-5-1",
+        "claude-sonnet-5-5",
+        "claude-haiku-5-5"
+      ],
+      "adapter_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ]
+    }
+  }
+}

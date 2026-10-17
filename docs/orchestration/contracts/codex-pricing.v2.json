@@ -1,0 +1,333 @@
+{
+  "schema_version": "codex-reference-pricing/v2",
+  "policy_id": "d091-gpt6-candidate-standard-scenarios-v2",
+  "checked_on": "2026-10-16",
+  "currency": "USD",
+  "unit": "per_million_tokens",
+  "rate_selection": "Exact requested model label, used as a pricing proxy only; no served-model identity claim.",
+  "models": [
+    {
+      "model": "gpt-6.1-sol",
+      "scenarios": {
+        "short_standard": {
+          "service_tier": "standard",
+          "context": "short",
+          "context_input_tokens_max": 272000,
+          "usd_per_million": {
+            "input": 2,
+            "cached_input": 0.1,
+            "cache_write": 2.5,
+            "output": 10
+          }
+        },
+        "long_standard": {
+          "service_tier": "standard",
+          "context": "long",
+          "context_input_tokens_min_exclusive": 272000,
+          "usd_per_million": {
+            "input": 4,
+            "cached_input": 0.2,
+            "cache_write": 5,
+            "output": 15
+          }
+        }
+      },
+      "capabilities": {
+        "description": "Complex coding, computer use and professional work with a balance of capability and cost.",
+        "summary": "Newer Sol model; compare with Astra on the actual task to assess quality and cost.",
+        "supported_reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "context_window_tokens": 1050000,
+        "max_input_tokens": 922000,
+        "max_output_tokens": 128000,
+        "parameter_count": null,
+        "capability_basis": "Official model card description and limits; not measured quality, latency or parameter size.",
+        "availability_basis": "Documentation candidate only. Runtime app-discovery model/high support must be independently verified before registration."
+      },
+      "source_refs": [
+        {
+          "url": "https://developers.openai.com/api/docs/pricing.md",
+          "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/pricing.md",
+          "sha256": "e0767b5009dcc929a2f9eeb9ce6096a57ff12e5d8c011de9d69ff145aef2fc28",
+          "fetched_at": "2026-10-16T12:06:10.953Z"
+        },
+        {
+          "url": "https://developers.openai.com/api/docs/models/gpt-6.1-sol.md",
+          "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/gpt-6.1-sol.md",
+          "sha256": "acfe91d19882aaf7bb52877898684614035a947de02f2955c9de905a7efb1362",
+          "fetched_at": "2026-10-16T12:06:11.150Z"
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-sol",
+      "scenarios": {
+        "short_standard": {
+          "service_tier": "standard",
+          "context": "short",
+          "context_input_tokens_max": 272000,
+          "usd_per_million": {
+            "input": 2,
+            "cached_input": 0.2,
+            "cache_write": 2.5,
+            "output": 10
+          }
+        },
+        "long_standard": {
+          "service_tier": "standard",
+          "context": "long",
+          "context_input_tokens_min_exclusive": 272000,
+          "usd_per_million": {
+            "input": 4,
+            "cached_input": 0.4,
+            "cache_write": 5,
+            "output": 15
+          }
+        }
+      },
+      "capabilities": {
+        "description": "Complex coding and agentic workflows.",
+        "summary": "Previous Sol generation; official documentation points to6.1Sol as the newer Sol model.",
+        "supported_reasoning_efforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "context_window_tokens": 1050000,
+        "max_input_tokens": 922000,
+        "max_output_tokens": 128000,
+        "parameter_count": null,
+        "capability_basis": "Official model card description and limits; not measured quality, latency or parameter size.",
+        "availability_basis": "Documentation candidate only. Runtime app-discovery model/high support must be independently verified before registration."
+      },
+      "source_refs": [
+        {
+          "url": "https://developers.openai.com/api/docs/pricing.md",
+          "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/pricing.md",
+          "sha256": "e0767b5009dcc929a2f9eeb9ce6096a57ff12e5d8c011de9d69ff145aef2fc28",
+          "fetched_at": "2026-10-16T12:06:10.953Z"
+        },
+        {
+          "url": "https://developers.openai.com/api/docs/models/gpt-6-sol.md",
+          "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/gpt-6-sol.md",
+          "sha256": "3dcb62c16386c40e52438e7fa7fb46b979d13cbfc324d0807246e24ce43345bb",
+          "fetched_at": "2026-10-16T12:06:11.154Z"
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "scenarios": {
+        "short_standard": {
+          "service_tier": "standard",
+          "context": "short",
+          "context_input_tokens_max": 272000,
+          "usd_per_million": {
+            "input": 0.1,
+            "cached_input": 0.01,
+            "cache_write": 0.125,
+            "output": 0.5
+          }
+        },
+        "long_standard": {
+          "service_tier": "standard",
+          "context": "long",
+          "context_input_tokens_min_exclusive": 272000,
+          "usd_per_million": {
+            "input": 0.2,
+            "cached_input": 0.02,
+            "cache_write": 0.25,
+            "output": 0.75
+          }
+        }
+      },
+      "capabilities": {
+        "description": "Focused, high-volume workloads with low token prices.",
+        "summary": "Official documentation describes Luna as the most efficient GPT6model; task quality and runtime are not benchmarked by this profile.",
+        "supported_reasoning_efforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "context_window_tokens": 1050000,
+        "max_input_tokens": 922000,
+        "max_output_tokens": 128000,
+        "parameter_count": null,
+        "capability_basis": "Official model card description and limits; not measured quality, latency or parameter size.",
+        "availability_basis": "Documentation candidate only. Runtime app-discovery model/high support must be independently verified before registration."
+      },
+      "source_refs": [
+        {
+          "url": "https://developers.openai.com/api/docs/pricing.md",
+          "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/pricing.md",
+          "sha256": "e0767b5009dcc929a2f9eeb9ce6096a57ff12e5d8c011de9d69ff145aef2fc28",
+          "fetched_at": "2026-10-16T12:06:10.953Z"
+        },
+        {
+          "url": "https://developers.openai.com/api/docs/models/gpt-6-luna.md",
+          "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/gpt-6-luna.md",
+          "sha256": "2e4861582095740f5ea84b14bb18fa476a49c426b397b779b964bc144397b451",
+          "fetched_at": "2026-10-16T12:06:11.278Z"
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-astra",
+      "scenarios": {
+        "short_standard": {
+          "service_tier": "standard",
+          "context": "short",
+          "context_input_tokens_max": 272000,
+          "usd_per_million": {
+            "input": 10,
+            "cached_input": 1,
+            "cache_write": 12.5,
+            "output": 50
+          }
+        },
+        "long_standard": {
+          "service_tier": "standard",
+          "context": "long",
+          "context_input_tokens_min_exclusive": 272000,
+          "usd_per_million": {
+            "input": 20,
+            "cached_input": 2,
+            "cache_write": 25,
+            "output": 75
+          }
+        }
+      },
+      "capabilities": {
+        "description": "Demanding reasoning, coding, computer use, research and document creation.",
+        "summary": "Official documentation positions Astra as the most capable GPT6model; no parameter count or task-specific speed claim is inferred.",
+        "supported_reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "context_window_tokens": 1050000,
+        "max_input_tokens": 922000,
+        "max_output_tokens": 128000,
+        "parameter_count": null,
+        "capability_basis": "Official model card description and limits; not measured quality, latency or parameter size.",
+        "availability_basis": "Documentation candidate only. Runtime app-discovery model/high support must be independently verified before registration."
+      },
+      "source_refs": [
+        {
+          "url": "https://developers.openai.com/api/docs/pricing.md",
+          "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/pricing.md",
+          "sha256": "e0767b5009dcc929a2f9eeb9ce6096a57ff12e5d8c011de9d69ff145aef2fc28",
+          "fetched_at": "2026-10-16T12:06:10.953Z"
+        },
+        {
+          "url": "https://developers.openai.com/api/docs/models/gpt-6-astra.md",
+          "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/gpt-6-astra.md",
+          "sha256": "b7c19b3bb89e87a392a0f3f8b732c5e7c9f0bf558cbe3022c491575a947fcef8",
+          "fetched_at": "2026-10-16T12:06:11.297Z"
+        }
+      ]
+    }
+  ],
+  "usage_semantics": {
+    "cached_input": "Subset of input_tokens; never add again to token total.",
+    "cache_write": "Subset of input_tokens, priced instead of ordinary input; not an additive fee.",
+    "ordinary_input": "input_tokens minus cached_input_tokens minus cache_write_tokens.",
+    "reasoning_output": "Subset of output_tokens; never add again.",
+    "missing_cache_write": "Strict API equivalent remains null. Scenarios explicitly assume zero unreported cache writes, with separate all-noncached-write scenario endpoint.",
+    "multi_turn_context": "Aggregate CLI input can exceed272K across turns without any individual API request crossing threshold. Never infer context tier from aggregate turn totals."
+  },
+  "unknown_policy": {
+    "usage": "null, not zero",
+    "cache_read": "null scenario if missing or invalid",
+    "cache_write": "null strict equivalent; explicit scenario assumptions only",
+    "unregistered_model": "null scenario, no fallback model",
+    "actual_subscription_billing": null,
+    "strict_api_equivalent": null
+  },
+  "billing_basis": "Reference Standard API token scenarios only. Codex ChatGPT subscription allocation, effective service tier, region, per-request context and served identity are not established by CLI usage.",
+  "excluded_rates": [
+    "Batch",
+    "Flex",
+    "Fast",
+    "Ultrafast",
+    "regional premium",
+    "tool fees"
+  ],
+  "sources": [
+    {
+      "url": "https://developers.openai.com/api/docs/pricing",
+      "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/pricing.html",
+      "sha256": "7fcdf3f533faf42baf15e8a930ba8cb4430fad60b1694371b0f0242f0fbe0aeb",
+      "fetched_at": "2026-10-16T12:06:10.964Z"
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/pricing.md",
+      "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/pricing.md",
+      "sha256": "e0767b5009dcc929a2f9eeb9ce6096a57ff12e5d8c011de9d69ff145aef2fc28",
+      "fetched_at": "2026-10-16T12:06:10.953Z"
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/models/gpt-6.1-sol.md",
+      "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/gpt-6.1-sol.md",
+      "sha256": "acfe91d19882aaf7bb52877898684614035a947de02f2955c9de905a7efb1362",
+      "fetched_at": "2026-10-16T12:06:11.150Z"
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/models/gpt-6-sol.md",
+      "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/gpt-6-sol.md",
+      "sha256": "3dcb62c16386c40e52438e7fa7fb46b979d13cbfc324d0807246e24ce43345bb",
+      "fetched_at": "2026-10-16T12:06:11.154Z"
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/models/gpt-6-luna.md",
+      "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/gpt-6-luna.md",
+      "sha256": "2e4861582095740f5ea84b14bb18fa476a49c426b397b779b964bc144397b451",
+      "fetched_at": "2026-10-16T12:06:11.278Z"
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/models/gpt-6-astra.md",
+      "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/gpt-6-astra.md",
+      "sha256": "b7c19b3bb89e87a392a0f3f8b732c5e7c9f0bf558cbe3022c491575a947fcef8",
+      "fetched_at": "2026-10-16T12:06:11.297Z"
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/guides/prompt-caching.md",
+      "snapshot": "benchmark-runs/d091-codex-20261016-01/pricing/prompt-caching.md",
+      "sha256": "74dc45350d5de0e7eef80b0b09d67b733a73170275f1bacb0760e066a4254480",
+      "fetched_at": "2026-10-16T12:06:10.960Z"
+    }
+  ],
+  "source_notes": [
+    {
+      "url": "https://developers.openai.com/api/docs/pricing",
+      "scope": "Standard pricing table, first model rows34-37; Batch/Flex and Fast/Ultrafast tables are excluded."
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+      "scope": "Exact model ID and high support, max input922K/context1.05M/output128K;6.1rates match preserved v1."
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/guides/prompt-caching",
+      "scope": "Read/write tokens are subsets of input; writes use replacement rate, never an additive fee."
+    }
+  ],
+  "inherits": {
+    "contract": "docs/orchestration/contracts/codex-pricing.v1.json",
+    "sha256": "44fd59f4e2ecdf2e8d027a9b46410f20fa1fc301b47aa1cf980e0f01ce2cac45",
+    "scope": "Historical v1 is immutable. Preserve6.1 Standard rates and subset/unknown accounting. Add three exact documented models only."
+  },
+  "routing_boundary": "A priced document candidate is not proof of account/app availability. Router must intersect exact models/high with frozen app discovery and reject all nonregistered choices without fallback."
+}

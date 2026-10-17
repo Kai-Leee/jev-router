@@ -1,4 +1,36 @@
-최신 [D075](decisions/D075.md)·[결과](orchestration/D075_RESULTS.md)는 v10 실제 전송 강제검사와 근거 기반 복구의 지원 경로를 구현하고 보존 후보를 두 번 실측했다. 최종 공개88/93·독립60/63으로 미완료다. 이전 동일출발 수리91/93·61/63 대비 알려진 토큰/공식환산 소계는 감소했지만 채점까지369093ms로355366ms보다 늘었다. 실제 새 근거9개를 수집한 뒤 owner HTTP400·CANONICAL_INPUT_ALREADY_APPLIED로 중단했다. 첫 profile 전달/후보보존 결함과 모니터 형식 실패를 보존하고 수정했다. 원본1380파일 변경0, source125핀 drift0, pending/잔여컨테이너0이다. 아래는 각 시점의 과거 결정이다.
+연구 마무리(2026-10-17): 사용자 요청으로 D095까지를 `research-d095-final-20261017`에 보관한다. [보관 범위·공개 요약·검증과 남긴 일](research/D095_CLOSEOUT.md). 기존 원격 research의 별도 D085 변경과 측정 소스 결속을 보존하기 위해 독립 연구 브랜치를 사용한다. 추가 개발·유료 실행·자동 재개는 시작하지 않는다. 아래 commit/push 미수행 문구는 각 실험 종료 당시 기록이다.
+
+D095 종료(2026-10-17): 공개 v5 검사와 실제 담당 연결·v16 회차 결속 수정 후 공개 93/93·독립 63/63 완료. 수리 2회차/작업자 7회, 34분 16.680초, 캐시 포함 2,101,095토큰, 참고 비용 추정 $14.8056879. 과거 Claude 단독 대비 시간·토큰·비용 절감은 미달했다. 첫 실행기 실패 643,247토큰/추정 $4.1821504도 보존했다. [상세 결과](orchestration/D095_PUBLIC_BOUNDARIES_RESULTS.md). 기존 결과 12,817파일 변경 0, 실제 청구 미확인, commit/push 없음.
+
+D092: [모델·노력도·실측 공개 성과](orchestration/D092_MODEL_EFFORT_HISTORY.md) · [구조화 기록](decisions/D092.md). 실제 제공 23조합, 공개 worker 85관측/710원문을 연결했다. 역사 관련 성공률은 task/phase/버전 차이를 보존하며 모델 인과 능력과 구분한다. [실패·해결 이력](orchestration/D092_FAILURE_HISTORY.md)을 함께 읽는다. 새 전체 개발 성능·재호출 감소는 미측정이다.
+
+D091 종료: [결과](orchestration/D091_CODEX_RESULTS.md) · [구조화 기록](decisions/D091.md). 수리입력실측Codex127B/Jev고정69331B감소, 모델선택8수리는0Bfallback. Jev모델13선택실제연결검증, 제품완료1/3으로새효율우위미입증. 복잡raw-v1의분할전인코딩/실측프로필보정/no-op경로는제안. 기존결과보존,추가유료자동실행/commit/push없음.
+
+D090 현재(2026-10-16): 앱 실제 CLI0.162.0-alpha.17.2·gpt-6.1-sol/high 기본 연결과 모델별 참고 정산으로 새 순차1쌍을 종료했다. [결과](orchestration/D090_CODEX_RESULTS.md) · [기록](decisions/D090.md). 두 조건 모두 공개93/93·독립63/63으로 제품 완료2/2. Codex24분42.255초·478030토큰·참고$1.749668, Jev22분37.343초·503013토큰·참고$1.5037936: 전체시간8.4272%↓·토큰5.2262%↑·참고액14.0526%↓(Codex분모). 단가 가정/실청구unknown 구분, 초기 판단34.888배는 전체 가속률 아님. Jev실제수리1회·투영감축0B·추가문맥첨부0B. 기본Codex경로D090 manifest/gatewayv6, 역사계약·결과55178파일보존, 소스427불변. 추가자동실행/commit/push없음. 아래는각당시기록이다.
+
+# D089 — 수리 효율 개선 구현·재측정 종료, 목표 미달
+
+[결과](orchestration/D089_CODEX_RESULTS.md) · [구조화 기록](decisions/D089.md). Codex60/93·55/63, Jev90/93·59/63으로 완료0/2. T.R10.03은 해결됐지만 실제 수리 입력 축소0B·Jev 수리7회/무변경1회가 남았다. D088 대비 Jev 시간18.02%·토큰29.89%·참고액13.63% 증가를 보존하며 완료 효율 성과로 승격하지 않는다. 아래는 역사 기록이다.
+
+# D087 — Codex 판단과 Jev 판단 최신 비교 종료
+
+[결과](orchestration/D087_CODEX_RESULTS.md) · [구조화기록](decisions/D087.md). 공개82/93·독립59/63인Codex와개발전내부모델검증에서멈춘Jev의실패시도시간을성공효율로비교하지않는다. 628,014/83,665토큰과가격가정·실청구unknown을구분해기록하고원본자동집계의전송전차단비용null오류는별도정정했다.
+
+R20261014-CODEX-MAC 결과: Mac 실제 비교1쌍 종료, 두 조건 모두 제품 미완료. [전체 결과](orchestration/CODEX_MAC_RESULTS.md). Codex23분1.64초/1,084,007토큰/독립57of63; Jev6분42.41초/300,500토큰/독립0of63. Jev는 부분실행 수리binding 오류로 조기종료했으므로 완료절감률 없음. 초기동일210질문 호출구간만243.81초 대9.26초. 스킬환경 변동 한계 포함. 기존결과 보존, 자동재실행 없음. 아래는 각 당시 기록이다.
+
+R20261014-CODEX-MAC: 사용자가 “이번 Codex 비교는 Mac에서 실행”으로 승인했다. 새 codex-e2e 실행기에만 `--execution-host mac` 예외를 적용한다. Codex 판단→Jev 판단 순차 각1회, 동일 Codex 작업자, 기존 결과 보존, 공유 장부 복원 금지. 실제 결과는 `benchmark-runs/codex-e2e-mac-20261014-01/`에 기록한다. 아래 내용은 각 시점의 기록이다.
+
+## R20261014-CODEX-E2E — 전체 개발 비교 범위 확정
+
+[프로토콜·구현](orchestration/CODEX_E2E.md) · [근거 기록](decisions/R20261014_CODEX_E2E.md). Codex 판단/Codex 작업자와 Jev 판단/같은 Codex 작업자를 비교한다. 양쪽 choice-only projection·동일 공개/독립 검사·기존 catalog로 고정한다. 기존 D083 runtime/manifest는 유지하고 별도 실행기를 추가했다. 실제 성능 비교는 실행 호스트 확인 뒤 진행하며 현재 실측으로 주장하지 않는다.
+
+## R20261014-SKILL-ROUTING — 설계 위임 결과, 런타임 미적용
+
+[설계안](skills/POINTSMAN_ROUTING_DESIGN.md) · [근거 기록](decisions/R20261014_SKILL_ROUTING.md). 스킬 발견과 실제 호출 강제를 분리하고, 등록 후보/모델/실행 범위/공개 검사 조건을 제안했다. 저장소 초안만 추가했으며 D083 기본값과 실행 상태는 유지한다.
+
+2026-10-14 조사 [R20261014-JEV-REFERENCES](decisions/R20261014_JEV_REFERENCES.md)·[Jev 활용/평가 참고 비교](research/JEV_REFERENCE_BENCHMARKS_2026-10-14.md): 사용자가 구현 참고·수치 평가 모두로 확정하고 최신 코드 확인을 추가 요청했다. research를2b3c9ac/D083, main참조를8b2da35/v0.3.2로 갱신한 뒤31/31 관련 오프라인 검사를 통과했다. 조사용 임시 D082는 원격 클라우드 D082와 충돌해 날짜 기반 ID로 옮기고 원문을 보존했다. 외부 참고 기능 도입이나 유료실험은 없다. 현재 실행 정본은 [STATE](agents/STATE.md)의 D083을 따르며, 기존범위선택/분할/프로필 경계에 JevBench·ReflexBench 및 구현참고를 연결하는 계획은 제안이다. 아래 최신 표기는 각각 당시의 역사 기록이다.
+
+당시 [D075](decisions/D075.md)·[결과](orchestration/D075_RESULTS.md)는 v10 실제 전송 강제검사와 근거 기반 복구의 지원 경로를 구현하고 보존 후보를 두 번 실측했다. 최종 공개88/93·독립60/63으로 미완료다. 이전 동일출발 수리91/93·61/63 대비 알려진 토큰/공식환산 소계는 감소했지만 채점까지369093ms로355366ms보다 늘었다. 실제 새 근거9개를 수집한 뒤 owner HTTP400·CANONICAL_INPUT_ALREADY_APPLIED로 중단했다. 첫 profile 전달/후보보존 결함과 모니터 형식 실패를 보존하고 수정했다. 원본1380파일 변경0, source125핀 drift0, pending/잔여컨테이너0이다. 아래는 각 시점의 과거 결정이다.
 
 당시 [D074](decisions/D074.md)·[사용법과 실패 루프](orchestration/D074_PROMPTING_AND_FAILURE_LOOP.md)는 저장소 프롬프팅 스킬과 고정 무과금 검사 구현, 실패 복구 설계를 완료했다. 관련 회귀63/63·독립 입력17/17이다. 질문 ID 오탐과 잘못된 입력5개 통과를 수정하면서 원본을 보존했다. 고정 검사 범위는 projected repair_owners/inferred-v2이며 자동 전송 gate·복구·실제 성능은 미검증이었다. 아래 D073이 그 시점 직전 유료 제품 실행 결과다.
 
@@ -403,3 +435,39 @@ Actual numeric trial terminated failed after20min37sec: Jev selected2/confidence
 [기록](decisions/D066.md), [결과](orchestration/D066_RESULTS.md), [사전 프로토콜](orchestration/D066_EXPERIMENT.md). 최신 사용자 요청으로 기존 OpenAPI client generator에서 공통 후보21단위·38파일을 새로 준비하고 Claude전체/Jev분해/Jev분해·관계/Jev전체판단의4조건을실행했다. Claude는6개잎·실제관계·공개수리1회뒤공개85/85·독립63/63을통과했다. 준비포함42분54.750초/API환산$22.148223이다.
 
 Jev세조건은각각33POST·650,271입력뒤예정예약65,536이조건당700,000을초과해분해중단됐다. 이조건당상한은실험배분이며사용자누적10M장부의고갈이아니다. 잔여415,445/pending0을보존한다. 짧은실패시간이나낮은실패지출을개발완료효율개선으로보고하지않는다. Jev관계·수리·성공완료비교는미측정으로남고,호출성공과제품성공을구분한다. 질문묶음·소속집중·단계별예산은후속수정제안이다. 전역스킬설치·원본PersonalOS변경·커밋·푸시는없다.
+
+## R20261014 D083 스킬 실행 연결
+
+[구현·검증·미해결](orchestration/POINTSMAN_D083_GATEWAY.md). 새 브랜치 feat/d083-skill-gateway. 분해·모델·담당 판단 gateway, source/body/response/기록 강제. Codex 실제 호스트 통과; Claude429; 장부 보존1건 미해결. 기존 결과를 성공으로 다시 쓰지 않았다.
+
+## R20261014 Codex 성능 벤치마크 준비
+
+[실행 어댑터·동일 질문 비교·E2E 계획](orchestration/CODEX_BENCHMARK.md). 기존 branch 유지, source 신규 분리, mock9/9, 과거 실제 trace 오프라인 파싱. 새 유료 호출/전체 개발 비교 없음. 공유 장부는 별도 서비스 정산이 계속 기록되는 운영 상태로 확인하여 복원하지 않음.
+
+
+## R20261015 부분 수리·담당 근거·CLI 고정과 새 비교
+
+[결과·한계·부수 효과](orchestration/CODEX_REPAIR_RESULTS.md), [구조화 기록](decisions/R20261015_CODEX_REPAIR.md). 새 Codex 제품 미완료, Jev 최종 검사 Docker 장애로 uncertain. 초기 동일210질문 구간37.847배는 전체 개발 완료 가속도가 아니다. 기존43920파일·119소스핀 불변. 추가 추론 없는 후보 재채점도 Docker 부재로 막혀 보존 후보로 이어갈 수 있다. 메인 PR14/v0.3.3에는 역사적 D067 완료실험의 긍정적 수치와 DAG 라우팅 소개만 반영했다. 연구 구현은 미커밋 상태다.
+
+
+## 2026-10-15 — 사용자 직접 Docker 종료·재채점 보류
+
+사용자가 Docker 직접 종료와 재채점 보류를 확인했다. Docker 재시작/추가 모델 호출/자동 재채점 없이 후보와 원본 결과를 보존한다. [보류 기록](orchestration/CODEX_REPAIR_HOLD_20261015.md).
+
+
+## 2026-10-15 — 기능 경계·스킬 분해·시간/토큰 공개
+
+[구조화 감사](decisions/R20261015_CAPABILITY_PUBLICATION.md). main/research/로컬 기능·스킬을 구분하고 D067완료3조건의 시간·토큰과 별도Codex초기판단구간을 재검증해 PR15/main02ace1d/v0.3.4에 게시했다. 메인394검사·269링크·CI4통과. 토픽jev/jev-router/dag반영. 스킬분리 자체 절감은 미측정. 새모델호출/Docker재시작/보류채점없음. 연구코드·기존결과보존.
+
+
+## 2026-10-16 — D067 이후 결과 연혁 누락 보완
+
+[기록](decisions/R20261016_POST_D067_RESULTS.md). D069·D070보존수리·D076·D079·D082·D083·D085 성공을 포함한 D068–D085 연혁을 PR16/mainbaab3d1/v0.3.5로 게시했다. 기존메인요약 누락을 정정. 새실험·유료호출·Docker재기동·보류채점 없음.
+
+## D088 — 모델 정본 통합과 새 Codex 비교
+
+2026-10-16 사용자 요청으로 새 branch/worktree에서 admission v5와정산의exact-label정본을통합했다. [결정·측정](decisions/D088.md), [결과](orchestration/D088_CODEX_RESULTS.md). 동일Codex5.6-sol/high 각1회, 공개81/93→92/93·독립57/63→59/63이나완료0/2. 실패시도시간16.46%↓,참고환산4.36%↓,전체토큰27.22%↑. 과거49,220결과파일변경0. 새유료호출을자동반복하지않는다.
+
+- [D093 실제 전체 개발 비교 종료](decisions/D093.md): 모델·노력도 선택/공개 성과 연결, Codex·Claude native완료2/4, Jev두조건미완료·unknown차단. 실패 준비·캐시·비용·소스phase와감사오류보존.
+
+- [D094 잠정 모델 선택과 blocked 복구](decisions/D094.md): 구현/79검사/새실제실행종료,공개93/93·독립59/63미완료,원본보존.

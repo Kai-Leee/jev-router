@@ -1,0 +1,31 @@
+{
+  "schema_version": "jev-token-admission-contract/v5",
+  "policy_id": "d088-shared-jev-model-registry-v5",
+  "checked_on": "2026-10-16",
+  "inherits": {
+    "contract_path": "docs/orchestration/contracts/jev-token-admission.v4.json",
+    "contract_sha256": "bb268037a56b183732c41d10098bb5b449d7c34e03fd95f7262c2f4198e428f9",
+    "module_path": "src/orchestration/jev-token-admission-v4.mjs",
+    "module_sha256": "125b05957a7c8c6ef85c1f55551dbb701135fa8520222fdae6727b4abf00551d",
+    "scope": "Preserve v4 exact request/schema/body/stage validation, null local caps and nonblocking observations. Only the historical model gate is replaced by the shared registry."
+  },
+  "model_registry": {
+    "contract": "docs/orchestration/contracts/jev-models.v1.json",
+    "sha256": "aa095a05333a0b42adc4524cd12a83741e48fcc1cdd97ef3abe397df4b9e2662",
+    "module": "src/jev-model-registry.mjs",
+    "module_sha256": "dbb6fde608a50189be34ee7a7578ba8460d24eb481ee0531fb9497f567b3ef3b"
+  },
+  "stages": [
+    "split",
+    "relations",
+    "repair",
+    "profiles",
+    "repair_owners"
+  ],
+  "model_policy": "registry-replaces-inherited-model-gate",
+  "source_validation": "Registry and loader source bytes are rechecked each assessment; supplied expected registry and policy hashes must match.",
+  "request_binding": "Exact prepareDecision serialized SHA256 is unchanged. No request rewrite, truncation, sizing cap or implicit retry.",
+  "automatic_retries": 0,
+  "provider_acceptance_guaranteed": false,
+  "proven_token_upper_bound": false
+}

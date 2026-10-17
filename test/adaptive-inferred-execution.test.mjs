@@ -261,6 +261,40 @@ test('D076 repair budget stops an irreducible owner request before any owner cal
 });
 
 
+test('D089 verified routing context binds current source and no-change evidence without skipping checks or owners', async t => {
+  const state = await fixture(t, {repeat: true});
+  state.options.repairDispatchPolicy = 'verified-context-v1';
+  state.options.repairFeedback = {read_scope: 'candidate-v1', worker_diagnostics: 'report-v1'};
+  const execute = state.options.executeTask, owner = state.options.decideRepairOwners, requests = [];
+  state.options.executeTask = async (task, context) => {
+    if (context.operation === 'repair') {
+      if (context.round_index === 1) return {status: 'completed', outcome_uncertain: false,
+        worker_report: {denied_read_paths: [], final_response: 'No change; inspect generator.py as another hypothesis.'}};
+      await writeFile(join(context.stageDirectory, 'producer.py'), 'description = "REQUEST"\n');
+      return {status: 'completed', outcome_uncertain: false};
+    }
+    const result = await execute(task, context);
+    if (context.operation === 'implementation' && task.id === 'build-core') await writeFile(join(context.stageDirectory, 'producer.py'),
+      'request_description = "SCHEMA"\ndescription = request_description\n');
+    return result;
+  };
+  state.options.decideRepairOwners = async request => { requests.push(request); return owner(request); };
+  const result = await runAdaptiveDagExecution(state.options);
+  assert.equal(result.status, 'completed', JSON.stringify(result.terminal_cause));
+  assert.equal(requests.length, 2); assert.equal(result.operations.repair, 2);
+  const [first, second] = state.events.filter(row => row.event === 'adaptive_verified_repair_context_committed').map(row => row.context);
+  assert(requests[0].state.verified_repair_context.sources.some(source => source[0] === 'producer.py'));
+  assert.equal(requests[1].state.verified_repair_context.context_sha256, second.sha256);
+  assert.equal(first.previous_repair, null);
+  assert.deepEqual(second.previous_repair.selected_but_unchanged_artifact_ids, ['artifact-core']);
+  assert(second.worker_statements[0].mentioned_source_paths.some(row => row.path === 'generator.py'));
+  assert.equal(second.skipped_workers, 0);
+  assert.equal(state.checks.filter(row => row.id === 'public-description').length, 3);
+  assert.equal(state.events.filter(row => row.event === 'adaptive_verified_repair_context_committed').length, 2);
+  for (const value of ['unknown', true]) await assert.rejects(runAdaptiveDagExecution({...state.options,
+    runDirectory: join(state.root, `bad-policy-${value}`), repairDispatchPolicy: value}), {code: 'ADAPTIVE_EXECUTION_INVALID_CONFIG'});
+});
+
 test('D076 repair feedback: the failed candidate is readable but not writable and worker reports reach the next owner request', async t => {
   const state = await fixture(t, {repeat: true});
   state.options.repairScopePolicy = 'public-inferred-owner-v2'; state.options.artifactRepairPolicy = 'inferred-v2';

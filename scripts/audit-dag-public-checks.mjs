@@ -6,6 +6,7 @@ import {dirname, resolve, join, relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {publicCheckMapping} from '../src/orchestration/dag-contracts.mjs';
+import {normalizePublicV5} from '../src/orchestration/public-audit-v5.mjs';
 import {extendPublicAuditV4} from '../src/orchestration/public-audit-v4.mjs';
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -21,22 +22,22 @@ const fail = (code, message = code) => { throw Object.assign(new Error(message),
   ...(['PUBLIC_CONTROL_DOCKER_CLEANUP_UNCONFIRMED', 'PUBLIC_CONTROL_OUTCOME_UNCERTAIN'].includes(code) ? {outcome_uncertain: true} : {})}); };
 
 export function publicAuditConfiguration({registryPath = BASE + '/registry.json', runnerPath, inventoryPath} = {}) {
-  const version = registryPath === BASE + '/registry.json' ? '3' : registryPath === BASE + '/registry.v4.json' ? '4' : null;
+  const version = registryPath === BASE + '/registry.json' ? '3' : registryPath === BASE + '/registry.v4.json' ? '4' : registryPath === BASE + '/registry.v5.json' ? '5' : null;
   if (!version) fail('PUBLIC_AUDIT_CONFIGURATION_INVALID');
-  const v4 = version === '4';
-  const expectedRunner = BASE + (v4 ? '/run_public_checks_v4.py' : '/run_public_checks.py');
-  const expectedInventory = BASE + (v4 ? '/inventory.v4.json' : '/inventory.json');
+  const v4 = version !== '3', v5=version==='5';
+  const expectedRunner = BASE + (v5 ? '/run_public_checks_v5.py' : v4 ? '/run_public_checks_v4.py' : '/run_public_checks.py');
+  const expectedInventory = BASE + (v5 ? '/inventory.v5.json' : v4 ? '/inventory.v4.json' : '/inventory.json');
   if ((runnerPath !== undefined && runnerPath !== expectedRunner)
       || (inventoryPath !== undefined && inventoryPath !== expectedInventory)) fail('PUBLIC_AUDIT_CONFIGURATION_INVALID');
   return {publicGateVersion: version, registryPath, runnerPath: expectedRunner, inventoryPath: expectedInventory,
-    controlRunnerPath: BASE + (v4 ? '/run_control_batch_v4.py' : '/run_control_batch.py'),
-    controlCatalogPath: BASE + (v4 ? '/controls/catalog.v4.json' : '/controls/catalog.json'),
-    assertionContractPath: BASE + (v4 ? '/assertions.v2.json' : '/assertions.json')};
+    controlRunnerPath: BASE + (v5 ? '/run_control_batch_v5.py' : v4 ? '/run_control_batch_v4.py' : '/run_control_batch.py'),
+    controlCatalogPath: BASE + (v5 ? '/controls/catalog.v5.json' : v4 ? '/controls/catalog.v4.json' : '/controls/catalog.json'),
+    assertionContractPath: BASE + (v5 ? '/assertions.v3.json' : v4 ? '/assertions.v2.json' : '/assertions.json')};
 }
 
 export function inspectPublicMapping({manifest, inventory, registry, runnerInventory, extension}) {
   const originalTestCount = manifest?.tests?.length;
-  if (extension) manifest = extendPublicAuditV4({manifest, inventory, registry, ...extension});
+  if (extension) manifest = extendPublicAuditV4(normalizePublicV5({manifest, inventory, registry, ...extension}));
   if (inventory?.schema_version !== 'dag-public-check-inventory/v1' || inventory.execution_target !== 'authored_local_control' || !Array.isArray(inventory.rows)
       || !Array.isArray(manifest.tests) || !Array.isArray(registry)) fail('INVALID_PUBLIC_INVENTORY');
   const tests = new Map(manifest.tests.map(test => [test.id, test]));
@@ -80,7 +81,7 @@ export function inspectPublicMapping({manifest, inventory, registry, runnerInven
     schema_version: 'dag-public-check-audit/v1', status: mapping.status,
     mapping_only: true, product_execution_ready: false,
     source_test_count: tests.size, original_test_count: 85, additional_test_count: tests.size - 85,
-    public_gate_version: extension ? '4' : '3', implemented_test_count: tests.size - missingIds.length,
+    public_gate_version: registry[0]?.version ?? (extension ? '4' : '3'), implemented_test_count: tests.size - missingIds.length,
     missing_test_count: missingIds.length, missing_test_ids: mapping.missing_test_ids,
     missing_requirement_ids: mapping.missing_requirement_ids,
     missing: inventory.rows.filter(row => row.mapping_status === 'blocked').map(row => ({test_id: row.test_id, reason: row.missing_reason})),
@@ -121,12 +122,12 @@ export function loadPublicAuditInputs(root = ROOT, options = {}) {
   }
   const {result, report: runnerInventory} = runJson('python3', ['-B', resolve(root, configuration.runnerPath), '--list'], {cwd: root, timeout: 10_000});
   if (result.status !== 0) fail('PUBLIC_RUNNER_INVENTORY_FAILED');
-  const extension = configuration.publicGateVersion === '4' ? {
+  const extension = configuration.publicGateVersion !== '3' ? {
     protocol: json(resolve(root, BASE, 'description-provenance.v1.json')),
     legacyRegistry: json(resolve(root, BASE, 'registry.json')), legacyInventory: json(resolve(root, BASE, 'inventory.json')),
     assertions: json(resolve(root, configuration.assertionContractPath)), legacyAssertions: json(resolve(root, BASE, 'assertions.json')),
   } : undefined;
-  if (extension) extendPublicAuditV4({manifest, inventory, registry, ...extension});
+  if (extension) extendPublicAuditV4(normalizePublicV5({manifest, inventory, registry, ...extension}));
   return {manifest, inventory, registry, runnerInventory, configuration, ...(extension ? {extension} : {})};
 }
 
@@ -154,15 +155,15 @@ export function publicSourceHashes(root = ROOT) {
     }
   }
   walk(BASE);
-  paths.push('scripts/audit-dag-public-checks.mjs', 'src/orchestration/public-audit-v4.mjs', 'src/orchestration/dag-contracts.mjs',
+  paths.push('scripts/audit-dag-public-checks.mjs', 'src/orchestration/public-audit-v4.mjs', 'src/orchestration/public-audit-v5.mjs', 'src/orchestration/dag-contracts.mjs',
     MANIFEST, json(resolve(root, MANIFEST)).source.path);
   return sorted(paths).map(path => ({path, sha256: hash(readFileSync(resolve(root, path)))}));
 }
 
 export function validateControlBatch(batch, registry, {root = ROOT, requireComplete = true, ...options} = {}) {
-  const configuration = publicAuditConfiguration({registryPath: registry[0]?.version === '4' ? BASE + '/registry.v4.json' : BASE + '/registry.json', ...options});
+  const configuration = publicAuditConfiguration({registryPath: registry[0]?.version === '5' ? BASE + '/registry.v5.json' : registry[0]?.version === '4' ? BASE + '/registry.v4.json' : BASE + '/registry.json', ...options});
   if (batch?.schema_version !== 'dag-public-control-batch/v1' || !Array.isArray(batch.results)) fail('PUBLIC_CONTROL_BATCH_INVALID');
-  if (configuration.publicGateVersion === '4' && batch.public_gate_version !== '4') fail('PUBLIC_CONTROL_GATE_VERSION_MISMATCH');
+  if (configuration.publicGateVersion !== '3' && batch.public_gate_version !== configuration.publicGateVersion) fail('PUBLIC_CONTROL_GATE_VERSION_MISMATCH');
   const catalog = json(resolve(root, configuration.controlCatalogPath));
   const assertionHash = hash(readFileSync(resolve(root, configuration.assertionContractPath)));
   const normal = [], negative = [];
@@ -199,7 +200,7 @@ export function validateControlBatch(batch, registry, {root = ROOT, requireCompl
 }
 
 export function runLocalControls(registry, {root = ROOT, defects = null, normalOnly = false, ...options} = {}) {
-  const configuration = publicAuditConfiguration({registryPath: registry[0]?.version === '4' ? BASE + '/registry.v4.json' : BASE + '/registry.json', ...options});
+  const configuration = publicAuditConfiguration({registryPath: registry[0]?.version === '5' ? BASE + '/registry.v5.json' : registry[0]?.version === '4' ? BASE + '/registry.v4.json' : BASE + '/registry.json', ...options});
   const environment = json(resolve(root, BASE, 'environment.json'));
   const before = publicSourceHashes(root);
   const name = 'd065-public-controls-' + randomUUID();
@@ -237,7 +238,7 @@ export function verifyFrozenControlEvidence({root = ROOT, path = BASE + '/result
   const configuration = publicAuditConfiguration(options);
   const receipt = json(resolve(root, path));
   if (receipt.schema_version !== 'dag-public-control-receipt/v2' || !same(receipt.source_hashes, publicSourceHashes(root))) fail('PUBLIC_CONTROL_FROZEN_SOURCE_DRIFT');
-  if (configuration.publicGateVersion === '4' && (receipt.public_gate_version !== '4' || !same(receipt.audit_inputs, configuration))) {
+  if (configuration.publicGateVersion !== '3' && (receipt.public_gate_version !== configuration.publicGateVersion || !same(receipt.audit_inputs, configuration))) {
     fail('PUBLIC_CONTROL_FROZEN_GATE_MISMATCH');
   }
   const environment = json(resolve(root, BASE, 'environment.json'));
@@ -265,7 +266,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     const options = {};
     for (let index = 0; index < args.length; index++) {
       const arg = args[index];
-      if (arg === '--v4') options.registryPath = BASE + '/registry.v4.json';
+      if (arg === '--v5') options.registryPath = BASE + '/registry.v5.json';
+      else if (arg === '--v4') options.registryPath = BASE + '/registry.v4.json';
       else if (arg === '--frozen-evidence' && args[index + 1] && !args[index + 1].startsWith('--')) options.path = args[++index];
       else if (!['--controls', '--normal-controls', '--verify-frozen'].includes(arg)) fail('INVALID_AUDIT_ARGUMENT',
         'Usage: node scripts/audit-dag-public-checks.mjs [--v4] [--controls|--normal-controls] [--verify-frozen --frozen-evidence <path>]');

@@ -1,0 +1,172 @@
+{
+  "schema_version": "adaptive-dag-comparison/v13",
+  "input": "benchmarks/e2e-swe/manifests/d056-obligations.json",
+  "public_registry": "benchmarks/e2e-swe/public-checks/registry.v4.json",
+  "public_checker_root": "benchmarks/e2e-swe/public-checks",
+  "public_environment_ref": "e2e-swe-public-python/v2",
+  "image_lock": "benchmark-runs/d040-openapi-image-lock.json",
+  "worker_profile": {
+    "id": "opus55-medium",
+    "model": "claude-opus-5-5",
+    "effort": "medium"
+  },
+  "arms": [
+    "jev_profile"
+  ],
+  "cohort_concurrency": 1,
+  "limits": {
+    "max_units": 30,
+    "max_artifacts": 60,
+    "max_files": 60,
+    "max_leaves": 30,
+    "max_depth": 3,
+    "max_nodes": 59,
+    "max_relation_pairs": 435,
+    "max_decisions": 128,
+    "relation_batch_size": 32,
+    "max_request_bytes": 256000,
+    "max_concurrency": 2,
+    "maximum_workers": 30,
+    "minimum_workers": 2,
+    "wall_timeout_seconds": 14400,
+    "planning_input_tokens": null,
+    "max_file_bytes": 262144,
+    "max_total_bytes": 4194304
+  },
+  "max_repair_rounds": 2,
+  "automatic_retries": 0,
+  "jev_budget": {
+    "schema_version": "jev-token-budget/v4",
+    "ledger_path": "benchmark-runs/jev-usd1-budget.json",
+    "max_input_tokens": null,
+    "reserve_input_tokens": 65536
+  },
+  "valuation": {
+    "usd_per_million_input_tokens": 0.6,
+    "basis": "informational_token_pack_equivalent_not_monthly_invoice",
+    "actual_billed_usd": null
+  },
+  "catalog_reuse": {
+    "schema_version": "adaptive-catalog-reuse/v4",
+    "preparation_directory": "benchmark-runs/d066-catalog-01",
+    "original_manifest": "benchmarks/e2e-swe/manifests/d066-adaptive.json",
+    "original_manifest_sha256": "93d0d1484e96c12d56e193551964692f88eed2171dce76f466908ece7b51579b",
+    "result_sha256": "af1eb42476f5d9a0cdbc9fca647743f59c1a708ba8446032609fec0bc42a03b2",
+    "catalog_file_sha256": "03a7a03737719e8d6e66b478af847626bcb44254e4a7c6eea5a03b5fd1d47200",
+    "source_pins_sha256": "d2b28ed81bc0b6e1693ba439a22d4e4a0b8d14b08b96ff09944587b9d22906f5",
+    "prepared_request_sha256": "06448a561dee27f7d160292d15e398cb7a04500a6a271b832b68be416adef2f3",
+    "provider_request_sha256": "346ca7f3ffa4a8bbd315b100bcadd21f4e2787602d9bbceeca56af80a596ed9e",
+    "allowed_changed_source_paths": [
+      "src/benchmark/adaptive-dag-runner.mjs",
+      "scripts/adaptive-dag-comparison.mjs",
+      "src/benchmark/budget.mjs",
+      "src/benchmark/budget-acquire.mjs",
+      "src/benchmark/dag-runner.mjs",
+      "src/orchestration/adaptive-dag-planner.mjs",
+      "src/orchestration/adaptive-dag-execution.mjs",
+      "scripts/audit-dag-public-checks.mjs",
+      "benchmarks/e2e-swe/public-checks/run_public_checks.py",
+      "benchmarks/e2e-swe/public-checks/extensions/cli_config.py",
+      "src/orchestration/artifact-transport.mjs",
+      "src/orchestration/adaptive-failure.mjs",
+      "src/benchmark/telemetry.mjs"
+    ]
+  },
+  "preparation_accounting": "Reuse the exact completed D066 source-only catalog with pinned result, source snapshots and identical generation prompt/schema. There are no new catalog calls or preparation charges in this cohort. Current-run arm wall time and usage are primary; historical full-preparation inclusive references are recorded separately and never added to current-cohort physical spend.",
+  "deadline_basis": "Retain the existing 14400-second total deadline and no separate worker cap. Cumulative and per-arm token spending caps are null. v4 input estimates are observational; official 256000-byte body, structural and uncertainty checks can block.",
+  "session_semantics": "2026-10-15 Codex full comparison: partial local readiness repair and public import owner evidence; frozen CLI environment; same provider gates and D083 base manifest.",
+  "claude_auth_methods": [
+    "claude.ai",
+    "oauth_token"
+  ],
+  "independent_grade": "Root-owned after candidate freeze; hidden tests and hidden failure details never enter planning, implementation or public repair. Successful completion time remains null until independently successful.",
+  "repair_policy": {
+    "artifact_contract": "docs/orchestration/contracts/adaptive-causal-repair.v1.json",
+    "assertion_contract": "benchmarks/e2e-swe/public-checks/assertions.v2.json",
+    "failure_contract": "adaptive-terminal-cause/v1",
+    "scope_contract": "public-inferred-owner-v3",
+    "token_admission_contract": "docs/orchestration/contracts/jev-token-admission.v4.json",
+    "owner_inference_contract": "docs/orchestration/contracts/adaptive-inferred-repair.v3.json"
+  },
+  "decomposition_policy": {
+    "id": "layered-v2",
+    "contract": "docs/orchestration/contracts/adaptive-layered-decomposition.v2.json"
+  },
+  "public_runner": "benchmarks/e2e-swe/public-checks/run_public_checks_v4.py",
+  "public_controls_evidence": "benchmark-runs/d071-preflight/public-controls-v4.json",
+  "profile_policy": {
+    "contract": "docs/orchestration/contracts/adaptive-profile-selection.v2.json",
+    "candidate_contract": "docs/orchestration/contracts/adaptive-profiles.v1.json",
+    "phase_policy": "initial_and_selected_repairs",
+    "cli_version": "2.1.293",
+    "account_probe": "benchmark-runs/d071-model-probes-01/result.json",
+    "account_probe_sha256": "4201fa4fe2df4b9caea6db759e5609e892605ba99c7bd4afc45b4c59e85b691a",
+    "allowed_profile_ids": [
+      "claude_opus55_low",
+      "claude_opus55_medium",
+      "claude_opus55_high",
+      "claude_opus55_xhigh",
+      "claude_opus55_max",
+      "claude_sonnet55_low",
+      "claude_sonnet55_medium",
+      "claude_sonnet55_high",
+      "claude_sonnet55_xhigh",
+      "claude_sonnet55_max",
+      "claude_haiku55_low",
+      "claude_haiku55_medium",
+      "claude_haiku55_high",
+      "claude_haiku55_xhigh",
+      "claude_haiku55_max",
+      "claude_fable51_low",
+      "claude_fable51_medium",
+      "claude_fable51_high",
+      "claude_fable51_xhigh",
+      "claude_fable51_max"
+    ]
+  },
+  "runtime_speed": {
+    "model_lookup": "per_session",
+    "budget_lock": "ledger_op",
+    "public_check_concurrency": 2,
+    "readiness_batch": true
+  },
+  "question_forms": {
+    "decomposition": {
+      "contract": "docs/orchestration/contracts/adaptive-layered-decomposition.v2.json",
+      "sha256": "595deea341fe26ccd62cca511637c31130e33bad64ae27cfed811120dd6c9d6a"
+    },
+    "owner_criteria": {
+      "contract": "docs/orchestration/contracts/adaptive-owner-criteria.v2.json",
+      "sha256": "6051be503b9484b34e0a77720fec1929d600d955cc858d411337da79b4403ebe"
+    },
+    "inferred_scope": {
+      "contract": "docs/orchestration/contracts/adaptive-inferred-scope.v1.json",
+      "sha256": "8ea862295bc2f6460b003e6b124a509ebf1e5a01a22747579c679511aa05870e"
+    }
+  },
+  "repair_budget": {
+    "policy": "repair-budget-v3",
+    "contract": "docs/orchestration/contracts/adaptive-repair-budget.v3.json",
+    "sha256": "ded35d2885352386e4a13dc948a40cb9b542c4f1d01422d630c2fa74d31171b3"
+  },
+  "repair_feedback": {
+    "read_scope": "candidate-v1",
+    "worker_diagnostics": "report-v1",
+    "scope_expansion": "worker-mentioned-v1"
+  },
+  "schedule_policy": {
+    "policy": "critical-path-v1",
+    "contract": "docs/orchestration/contracts/adaptive-critical-path-schedule.v1.json",
+    "sha256": "66205dc51d05b4a714677c4c8d23de1b104f35371ee493515e47ed20cdb97af0"
+  },
+  "spec_review": {
+    "policy": "spec-review-v1",
+    "contract": "docs/orchestration/contracts/adaptive-spec-review.v1.json",
+    "sha256": "fcb81c6fd247d5fc14177de9fccf9cd5d6a24424f44e9f5a0d22e66f14a2f769"
+  },
+  "skill_gateway": {
+    "mode": "required",
+    "contract": "docs/orchestration/contracts/pointsman-routing.v2.json",
+    "sha256": "4cd207054bef718ae0950d77c21a854962deed818b143aee4dc34e28295d69aa"
+  }
+}

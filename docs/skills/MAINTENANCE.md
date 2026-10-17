@@ -1,3 +1,11 @@
+D092 유지보수: [모델·노력도·공개 성과](../orchestration/D092_MODEL_EFFORT_HISTORY.md)와 [실패 이력](../orchestration/D092_FAILURE_HISTORY.md)을 진입점으로 추가했다. 새 스킬을 만들거나 전역 사본을 설치하지 않았다. 고정 질문은 codex-worker-profiles.v2.json, 성과 정본은 snapshot.final.v2.json과 binding v1이다. 성공률은 공유 공개 검사 연관 관측이며 새 노력도의 표본 없음과 기존 실패를 구분한다. 근거 있는 선택과 실제 재호출 감소를 같은 완료 상태로 표시하지 않는다.
+
+D091 유지보수 확인: [결과](../orchestration/D091_CODEX_RESULTS.md) · [스킬 감사](../agents/D091_SKILL_RUNTIME_STATUS.md). 실제 격리 CLI의 활성 스킬은 0개이며 규칙은 인라인 계약으로 전달했다. Jev 모델 선택의 질문 정본은 `docs/orchestration/contracts/codex-worker-profiles.v1.json`, 실행 모듈은 `src/benchmark/codex-worker-profiles.mjs`다. 기본 작업자는 6.1-sol/high로 유지하며 v8/adaptive 실험에서만 모델을 선택한다. 전역 설치·동기화는 하지 않았다. 분할 전 lossless 인코딩, 미도달 검사와 소스 불확실성의 구분, 실측 모델 프로필, no-op 이후 새 근거 확보는 후속 제안이다. 아래는 각 당시 기록이다.
+
+D090 현재(2026-10-16): 앱 실제 CLI0.162.0-alpha.17.2·gpt-6.1-sol/high 기본 연결과 모델별 참고 정산으로 새 순차1쌍을 종료했다. [결과](../orchestration/D090_CODEX_RESULTS.md) · [기록](../decisions/D090.md). 두 조건 모두 공개93/93·독립63/63으로 제품 완료2/2. Codex24분42.255초·478030토큰·참고$1.749668, Jev22분37.343초·503013토큰·참고$1.5037936: 전체시간8.4272%↓·토큰5.2262%↑·참고액14.0526%↓(Codex분모). 단가 가정/실청구unknown 구분, 초기 판단34.888배는 전체 가속률 아님. Jev실제수리1회·투영감축0B·추가문맥첨부0B. 기본Codex경로D090 manifest/gatewayv6, 역사계약·결과55178파일보존, 소스427불변. 추가자동실행/commit/push없음. 아래는각당시기록이다.
+
+D089(2026-10-16) 근거 갱신: [실제 결과](../orchestration/D089_CODEX_RESULTS.md), [담당 역할](../agents/D089_REPAIR_EFFICIENCY.md), [기록](../decisions/D089.md). 고정 지침/소스 근거/전송 투영을 gateway v5에서 공통 연결했으나, 이번 실제 수리7/7은 전체 문맥 유지라 축소0B·중복 차단0회였다. 스킬 설명을 자동 비용 절감 보장으로 바꾸지 않는다. 다음 스킬 설계에는 기대/실제 enum class·원래ref·TypeRef 전달과 상위 오류 선행 수리, 동적 template 의존 범위를 검증 가능한 형태로 넣는 것이 제안이다. 기존 스킬의 동결 본문과 핀은 재측정 뒤 수정하지 않았다.
+
 # Jev 스킬 목록과 유지보수 대기 목록
 
 확인일: 2026-10-12. 범위: 이 저장소의 `skills/` 원본과 이름이 같은 명시적 설치 사본.
@@ -357,3 +365,13 @@ root 통보 시점 진행 중인 `d073-focused-old-01`·`d073-focused-new-01`은
 같은79/93 출발점에서 이번88/93·60/63은 이전91/93·61/63보다 낮다. 시작→독립 채점 종료369,093ms, 알려진709,276토큰·공식 환산 소계USD0.6804039만 보고한다. 알려진 소계 감소는 전체 추론량·월 구독 청구·완료 효율의 절감이 아니다. 각1회·공유 호스트의 보존 수리 비교다. 첫 숫자 모니터의 root JSON 계약 누락 실패와 두 번째 `attention`, packet 밖의 후속 환불·검사 시간 보완을 각각 기록했다. [측정 보완](../../benchmark-runs/d075-analysis-02/terminal-measurement.json)과 [보존 감사](../../benchmark-runs/d075-analysis-02/preservation-audit-03.json)는 다른 담당의 관측이며 이 역할이 재실행하지 않았다.
 
 기존 스킬 규칙으로 기록할 수 있어 소유 [D075_SKILLS](../agents/D075_SKILLS.md)와 이 문서만 후속 갱신했다. source SKILL/reference·정책·기존 evidence·설치는 유지한다. 사전 종료 영수증도 그때의 해시로 보존한다. 다음 스킬 개선 후보는 실제 구현 후 질문별 관련 근거 재구성·controller/모델 입력 경계·profile 준비 실패 복구의 지원 범위를 기존 prompting 안내에 연결하는 것이다. 이번 관리 역할은 종료하며 아직 구현되지 않은 복구나 성능을 완료로 표시하지 않는다.
+
+## 2026-10-14 — Pointsman 분류·라우팅 초안
+
+담당 root가 기존 단일 관리 역할의 기록을 이어 작성했다. 새 에이전트는 생성하지 않았다. 사용자 요청은 스킬 분류·라우팅과 사용 전제 설계다. 기존 prompting/records/maintenance와 다른 실행 입구이므로 [pointsman-routing](../../skills/pointsman-routing/SKILL.md) 초안을 추가했다. [설계](POINTSMAN_ROUTING_DESIGN.md)와 [검사 결과](routing-evidence-20261014/verification.json)를 따른다.
+
+공식 quick_validate는 Python 두 환경에서 yaml 의존성 부재로 실패했다. 별도 Node YAML 형식검사와 상대 링크 검사는 성공했으며 공식 검사기 통과로 표현하지 않는다. 세 개인 설치 루트의 동명 스킬은 absent, 호스트 발견/호출은 미검증이다. 전역 설치·기존 사본 수정 없음. 다음은 registry/gateway 구현과 자기완결 배포본 검증이며, jev-prompting의 역사적 D075 안내는 해당 경로 작업 때 개정한다.
+
+## R20261014 D083 스킬 실행 연결
+
+[구현과 호스트 검증](../orchestration/POINTSMAN_D083_GATEWAY.md)

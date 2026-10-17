@@ -1,0 +1,575 @@
+{
+  "schema_version": "claude-reference-pricing/v1",
+  "verified_at": "2026-10-16T16:32:03.127Z",
+  "currency": "USD",
+  "unit": "per_million_tokens",
+  "billing_scope": "Conditional first-party Standard global API reference only. CLI subscription invoice, served billing identity, tool fees and actual subscription allocation are unknown.",
+  "native_usage_semantics": {
+    "input_tokens": "Uncached ordinary input; disjoint from cache read and creation.",
+    "cache_read_input_tokens": "Disjoint input cache hits.",
+    "cache_creation_input_tokens": "Disjoint cache writes; 5m and 1h details are subsets.",
+    "output_tokens": "Includes reasoning/thinking tokens; do not add thinking again.",
+    "normalized_input_tokens": "native input_tokens + cache_read_input_tokens + cache_creation_input_tokens",
+    "haiku_tier": "Apply independently to each request prompt, including all three input buckets; aggregate CLI usage does not establish per-request tiers."
+  },
+  "models": [
+    {
+      "model": "claude-opus-5-5",
+      "availability": "documented_api_model; actual_account_availability_unverified",
+      "capabilities": {
+        "description": "Long-running agentic coding and knowledge work.",
+        "summary": "Long-running agentic coding and knowledge work.",
+        "supported_reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "default_effort": "medium",
+        "context_window_tokens": 1000000,
+        "max_output_tokens": 128000,
+        "parameter_count": null,
+        "thinking": "adaptive_always_on",
+        "effort_constraints": null
+      },
+      "prompt_tier_threshold_tokens": null,
+      "scenarios": {
+        "short_standard": {
+          "service_tier": "standard",
+          "inference_geo": "global",
+          "speed": "standard",
+          "prompt_regime": "full_context_same_rate",
+          "cache_write_ttl_minutes": 5,
+          "usd_per_million": {
+            "input": 4,
+            "cached_input": 0.2,
+            "cache_write": 5,
+            "cache_write_1h": 8,
+            "output": 20
+          }
+        },
+        "long_standard": {
+          "service_tier": "standard",
+          "inference_geo": "global",
+          "speed": "standard",
+          "prompt_regime": "full_context_same_rate",
+          "cache_write_ttl_minutes": 5,
+          "usd_per_million": {
+            "input": 4,
+            "cached_input": 0.2,
+            "cache_write": 5,
+            "cache_write_1h": 8,
+            "output": 20
+          }
+        }
+      },
+      "source_refs": [
+        {
+          "id": "claude-pricing",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/about-claude/pricing.md",
+          "destination": "https://platform.claude.com/docs/en/about-claude/pricing.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-pricing.md",
+          "bytes": 50428,
+          "sha256": "d0dc6009ff1bae0023eec432d7c21d4a3b71a71e542ac350dbfd13dc85a8b862",
+          "fetched_at": "2026-10-16T16:30:40.545Z"
+        },
+        {
+          "id": "claude-models",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/models/overview.md",
+          "destination": "https://platform.claude.com/docs/en/models/overview.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-models.md",
+          "bytes": 19747,
+          "sha256": "02faed97309963e7c90d18a80ff0f6ba7cf6099d46a7cc1b2ac600ceaebac578",
+          "fetched_at": "2026-10-16T16:30:41.255Z"
+        },
+        {
+          "id": "claude-effort",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/effort.md",
+          "destination": "https://platform.claude.com/docs/en/build-with-claude/effort.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-effort.md",
+          "bytes": 43095,
+          "sha256": "27ab718e399fa9ece31ce6dd6fb779fa8c291e49c52b4bf92d3c2aaead050ce0",
+          "fetched_at": "2026-10-16T16:30:42.250Z"
+        },
+        {
+          "id": "claude-prompt-cache",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md",
+          "destination": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-prompt-cache.md",
+          "bytes": 160503,
+          "sha256": "12219c9d9fe4d5c1ce497c0bc1332cb65461597da30c420f782ef4064d57566e",
+          "fetched_at": "2026-10-16T16:30:43.528Z"
+        },
+        {
+          "id": "claude-cli-model-config",
+          "snapshot_format": "md",
+          "url": "https://code.claude.com/docs/en/model-config.md",
+          "destination": "https://code.claude.com/docs/en/model-config.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-cli-model-config.md",
+          "bytes": 119115,
+          "sha256": "cf781dd9bd0954efc98d52e09a5967a743e89b3bcfa762571501e0e1e5c712eb",
+          "fetched_at": "2026-10-16T16:30:44.239Z"
+        }
+      ]
+    },
+    {
+      "model": "claude-fable-5-1",
+      "availability": "documented_api_model; actual_account_availability_unverified",
+      "capabilities": {
+        "description": "Demanding reasoning and long-horizon agentic work.",
+        "summary": "Demanding reasoning and long-horizon agentic work.",
+        "supported_reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "default_effort": "high",
+        "context_window_tokens": 1000000,
+        "max_output_tokens": 128000,
+        "parameter_count": null,
+        "thinking": "adaptive_always_on",
+        "effort_constraints": null
+      },
+      "prompt_tier_threshold_tokens": null,
+      "scenarios": {
+        "short_standard": {
+          "service_tier": "standard",
+          "inference_geo": "global",
+          "speed": "standard",
+          "prompt_regime": "full_context_same_rate",
+          "cache_write_ttl_minutes": 5,
+          "usd_per_million": {
+            "input": 10,
+            "cached_input": 0.25,
+            "cache_write": 12.5,
+            "cache_write_1h": 20,
+            "output": 50
+          }
+        },
+        "long_standard": {
+          "service_tier": "standard",
+          "inference_geo": "global",
+          "speed": "standard",
+          "prompt_regime": "full_context_same_rate",
+          "cache_write_ttl_minutes": 5,
+          "usd_per_million": {
+            "input": 10,
+            "cached_input": 0.25,
+            "cache_write": 12.5,
+            "cache_write_1h": 20,
+            "output": 50
+          }
+        }
+      },
+      "source_refs": [
+        {
+          "id": "claude-pricing",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/about-claude/pricing.md",
+          "destination": "https://platform.claude.com/docs/en/about-claude/pricing.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-pricing.md",
+          "bytes": 50428,
+          "sha256": "d0dc6009ff1bae0023eec432d7c21d4a3b71a71e542ac350dbfd13dc85a8b862",
+          "fetched_at": "2026-10-16T16:30:40.545Z"
+        },
+        {
+          "id": "claude-models",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/models/overview.md",
+          "destination": "https://platform.claude.com/docs/en/models/overview.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-models.md",
+          "bytes": 19747,
+          "sha256": "02faed97309963e7c90d18a80ff0f6ba7cf6099d46a7cc1b2ac600ceaebac578",
+          "fetched_at": "2026-10-16T16:30:41.255Z"
+        },
+        {
+          "id": "claude-effort",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/effort.md",
+          "destination": "https://platform.claude.com/docs/en/build-with-claude/effort.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-effort.md",
+          "bytes": 43095,
+          "sha256": "27ab718e399fa9ece31ce6dd6fb779fa8c291e49c52b4bf92d3c2aaead050ce0",
+          "fetched_at": "2026-10-16T16:30:42.250Z"
+        },
+        {
+          "id": "claude-prompt-cache",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md",
+          "destination": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-prompt-cache.md",
+          "bytes": 160503,
+          "sha256": "12219c9d9fe4d5c1ce497c0bc1332cb65461597da30c420f782ef4064d57566e",
+          "fetched_at": "2026-10-16T16:30:43.528Z"
+        },
+        {
+          "id": "claude-cli-model-config",
+          "snapshot_format": "md",
+          "url": "https://code.claude.com/docs/en/model-config.md",
+          "destination": "https://code.claude.com/docs/en/model-config.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-cli-model-config.md",
+          "bytes": 119115,
+          "sha256": "cf781dd9bd0954efc98d52e09a5967a743e89b3bcfa762571501e0e1e5c712eb",
+          "fetched_at": "2026-10-16T16:30:44.239Z"
+        }
+      ]
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "availability": "documented_api_model; actual_account_availability_unverified",
+      "capabilities": {
+        "description": "A balance of speed and intelligence.",
+        "summary": "A balance of speed and intelligence.",
+        "supported_reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "default_effort": "high",
+        "context_window_tokens": 1000000,
+        "max_output_tokens": 128000,
+        "parameter_count": null,
+        "thinking": "adaptive",
+        "effort_constraints": "between_tools supports low/medium/high; xhigh/max require adaptive thinking."
+      },
+      "prompt_tier_threshold_tokens": null,
+      "scenarios": {
+        "short_standard": {
+          "service_tier": "standard",
+          "inference_geo": "global",
+          "speed": "standard",
+          "prompt_regime": "full_context_same_rate",
+          "cache_write_ttl_minutes": 5,
+          "usd_per_million": {
+            "input": 2,
+            "cached_input": 0.1,
+            "cache_write": 2.5,
+            "cache_write_1h": 4,
+            "output": 10
+          }
+        },
+        "long_standard": {
+          "service_tier": "standard",
+          "inference_geo": "global",
+          "speed": "standard",
+          "prompt_regime": "full_context_same_rate",
+          "cache_write_ttl_minutes": 5,
+          "usd_per_million": {
+            "input": 2,
+            "cached_input": 0.1,
+            "cache_write": 2.5,
+            "cache_write_1h": 4,
+            "output": 10
+          }
+        }
+      },
+      "source_refs": [
+        {
+          "id": "claude-pricing",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/about-claude/pricing.md",
+          "destination": "https://platform.claude.com/docs/en/about-claude/pricing.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-pricing.md",
+          "bytes": 50428,
+          "sha256": "d0dc6009ff1bae0023eec432d7c21d4a3b71a71e542ac350dbfd13dc85a8b862",
+          "fetched_at": "2026-10-16T16:30:40.545Z"
+        },
+        {
+          "id": "claude-models",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/models/overview.md",
+          "destination": "https://platform.claude.com/docs/en/models/overview.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-models.md",
+          "bytes": 19747,
+          "sha256": "02faed97309963e7c90d18a80ff0f6ba7cf6099d46a7cc1b2ac600ceaebac578",
+          "fetched_at": "2026-10-16T16:30:41.255Z"
+        },
+        {
+          "id": "claude-effort",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/effort.md",
+          "destination": "https://platform.claude.com/docs/en/build-with-claude/effort.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-effort.md",
+          "bytes": 43095,
+          "sha256": "27ab718e399fa9ece31ce6dd6fb779fa8c291e49c52b4bf92d3c2aaead050ce0",
+          "fetched_at": "2026-10-16T16:30:42.250Z"
+        },
+        {
+          "id": "claude-prompt-cache",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md",
+          "destination": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-prompt-cache.md",
+          "bytes": 160503,
+          "sha256": "12219c9d9fe4d5c1ce497c0bc1332cb65461597da30c420f782ef4064d57566e",
+          "fetched_at": "2026-10-16T16:30:43.528Z"
+        },
+        {
+          "id": "claude-cli-model-config",
+          "snapshot_format": "md",
+          "url": "https://code.claude.com/docs/en/model-config.md",
+          "destination": "https://code.claude.com/docs/en/model-config.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-cli-model-config.md",
+          "bytes": 119115,
+          "sha256": "cf781dd9bd0954efc98d52e09a5967a743e89b3bcfa762571501e0e1e5c712eb",
+          "fetched_at": "2026-10-16T16:30:44.239Z"
+        }
+      ]
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "availability": "documented_api_model; actual_account_availability_unverified",
+      "capabilities": {
+        "description": "High-volume, latency-sensitive classification, extraction and routing.",
+        "summary": "High-volume, latency-sensitive classification, extraction and routing.",
+        "supported_reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "default_effort": "medium",
+        "context_window_tokens": 1000000,
+        "max_output_tokens": 128000,
+        "parameter_count": null,
+        "thinking": "adaptive",
+        "effort_constraints": "xhigh/max require adaptive thinking; disabled thinking supports low/medium/high."
+      },
+      "prompt_tier_threshold_tokens": 100000,
+      "scenarios": {
+        "short_standard": {
+          "service_tier": "standard",
+          "inference_geo": "global",
+          "speed": "standard",
+          "prompt_regime": "per_request_prompt_at_most_100000",
+          "cache_write_ttl_minutes": 5,
+          "usd_per_million": {
+            "input": 0.1,
+            "cached_input": 0.01,
+            "cache_write": 0.125,
+            "cache_write_1h": 0.2,
+            "output": 0.5
+          }
+        },
+        "long_standard": {
+          "service_tier": "standard",
+          "inference_geo": "global",
+          "speed": "standard",
+          "prompt_regime": "per_request_prompt_over_100000",
+          "cache_write_ttl_minutes": 5,
+          "usd_per_million": {
+            "input": 0.5,
+            "cached_input": 0.05,
+            "cache_write": 0.625,
+            "cache_write_1h": 1,
+            "output": 2.5
+          }
+        }
+      },
+      "source_refs": [
+        {
+          "id": "claude-pricing",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/about-claude/pricing.md",
+          "destination": "https://platform.claude.com/docs/en/about-claude/pricing.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-pricing.md",
+          "bytes": 50428,
+          "sha256": "d0dc6009ff1bae0023eec432d7c21d4a3b71a71e542ac350dbfd13dc85a8b862",
+          "fetched_at": "2026-10-16T16:30:40.545Z"
+        },
+        {
+          "id": "claude-models",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/models/overview.md",
+          "destination": "https://platform.claude.com/docs/en/models/overview.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-models.md",
+          "bytes": 19747,
+          "sha256": "02faed97309963e7c90d18a80ff0f6ba7cf6099d46a7cc1b2ac600ceaebac578",
+          "fetched_at": "2026-10-16T16:30:41.255Z"
+        },
+        {
+          "id": "claude-effort",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/effort.md",
+          "destination": "https://platform.claude.com/docs/en/build-with-claude/effort.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-effort.md",
+          "bytes": 43095,
+          "sha256": "27ab718e399fa9ece31ce6dd6fb779fa8c291e49c52b4bf92d3c2aaead050ce0",
+          "fetched_at": "2026-10-16T16:30:42.250Z"
+        },
+        {
+          "id": "claude-prompt-cache",
+          "snapshot_format": "md",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md",
+          "destination": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-prompt-cache.md",
+          "bytes": 160503,
+          "sha256": "12219c9d9fe4d5c1ce497c0bc1332cb65461597da30c420f782ef4064d57566e",
+          "fetched_at": "2026-10-16T16:30:43.528Z"
+        },
+        {
+          "id": "claude-cli-model-config",
+          "snapshot_format": "md",
+          "url": "https://code.claude.com/docs/en/model-config.md",
+          "destination": "https://code.claude.com/docs/en/model-config.md",
+          "status": 200,
+          "path": "benchmark-runs/d093-full-provider-20261017-01/claude-cli-model-config.md",
+          "bytes": 119115,
+          "sha256": "cf781dd9bd0954efc98d52e09a5967a743e89b3bcfa762571501e0e1e5c712eb",
+          "fetched_at": "2026-10-16T16:30:44.239Z"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "claude-pricing",
+      "snapshot_format": "html",
+      "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "destination": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "status": 200,
+      "path": "benchmark-runs/d093-full-provider-20261017-01/claude-pricing.html",
+      "bytes": 1202816,
+      "sha256": "55dcbf21f78853edaa89844346b89a1038df8f19ac1e6c715023da0ff3097fc4",
+      "fetched_at": "2026-10-16T16:30:40.126Z"
+    },
+    {
+      "id": "claude-pricing",
+      "snapshot_format": "md",
+      "url": "https://platform.claude.com/docs/en/about-claude/pricing.md",
+      "destination": "https://platform.claude.com/docs/en/about-claude/pricing.md",
+      "status": 200,
+      "path": "benchmark-runs/d093-full-provider-20261017-01/claude-pricing.md",
+      "bytes": 50428,
+      "sha256": "d0dc6009ff1bae0023eec432d7c21d4a3b71a71e542ac350dbfd13dc85a8b862",
+      "fetched_at": "2026-10-16T16:30:40.545Z"
+    },
+    {
+      "id": "claude-models",
+      "snapshot_format": "html",
+      "url": "https://platform.claude.com/docs/en/models/overview",
+      "destination": "https://platform.claude.com/docs/en/models/overview",
+      "status": 200,
+      "path": "benchmark-runs/d093-full-provider-20261017-01/claude-models.html",
+      "bytes": 393195,
+      "sha256": "cd4c09484b59b56d1d49b95cd3ae5673707cbbf9017b6cc483db5fd4cc233170",
+      "fetched_at": "2026-10-16T16:30:40.943Z"
+    },
+    {
+      "id": "claude-models",
+      "snapshot_format": "md",
+      "url": "https://platform.claude.com/docs/en/models/overview.md",
+      "destination": "https://platform.claude.com/docs/en/models/overview.md",
+      "status": 200,
+      "path": "benchmark-runs/d093-full-provider-20261017-01/claude-models.md",
+      "bytes": 19747,
+      "sha256": "02faed97309963e7c90d18a80ff0f6ba7cf6099d46a7cc1b2ac600ceaebac578",
+      "fetched_at": "2026-10-16T16:30:41.255Z"
+    },
+    {
+      "id": "claude-effort",
+      "snapshot_format": "html",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/effort",
+      "destination": "https://platform.claude.com/docs/en/build-with-claude/effort",
+      "status": 200,
+      "path": "benchmark-runs/d093-full-provider-20261017-01/claude-effort.html",
+      "bytes": 929277,
+      "sha256": "dbe5f5ce5eb681b0efb755361c083c92ca7a75c492809e992bde4909b0f2416c",
+      "fetched_at": "2026-10-16T16:30:41.778Z"
+    },
+    {
+      "id": "claude-effort",
+      "snapshot_format": "md",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/effort.md",
+      "destination": "https://platform.claude.com/docs/en/build-with-claude/effort.md",
+      "status": 200,
+      "path": "benchmark-runs/d093-full-provider-20261017-01/claude-effort.md",
+      "bytes": 43095,
+      "sha256": "27ab718e399fa9ece31ce6dd6fb779fa8c291e49c52b4bf92d3c2aaead050ce0",
+      "fetched_at": "2026-10-16T16:30:42.250Z"
+    },
+    {
+      "id": "claude-prompt-cache",
+      "snapshot_format": "html",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+      "destination": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+      "status": 200,
+      "path": "benchmark-runs/d093-full-provider-20261017-01/claude-prompt-cache.html",
+      "bytes": 3128084,
+      "sha256": "94e5eb86923d9a3db9973db33fce5ac874f42a86dd2c99eabb4a7108283f5975",
+      "fetched_at": "2026-10-16T16:30:43.085Z"
+    },
+    {
+      "id": "claude-prompt-cache",
+      "snapshot_format": "md",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md",
+      "destination": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md",
+      "status": 200,
+      "path": "benchmark-runs/d093-full-provider-20261017-01/claude-prompt-cache.md",
+      "bytes": 160503,
+      "sha256": "12219c9d9fe4d5c1ce497c0bc1332cb65461597da30c420f782ef4064d57566e",
+      "fetched_at": "2026-10-16T16:30:43.528Z"
+    },
+    {
+      "id": "claude-cli-model-config",
+      "snapshot_format": "html",
+      "url": "https://code.claude.com/docs/en/model-config",
+      "destination": "https://code.claude.com/docs/en/model-config",
+      "status": 200,
+      "path": "benchmark-runs/d093-full-provider-20261017-01/claude-cli-model-config.html",
+      "bytes": 1010579,
+      "sha256": "79d4f8ff219ab98dbbdda39d74cc20a10744b4273cc4c37ede24edc659fa9c80",
+      "fetched_at": "2026-10-16T16:30:43.791Z"
+    },
+    {
+      "id": "claude-cli-model-config",
+      "snapshot_format": "md",
+      "url": "https://code.claude.com/docs/en/model-config.md",
+      "destination": "https://code.claude.com/docs/en/model-config.md",
+      "status": 200,
+      "path": "benchmark-runs/d093-full-provider-20261017-01/claude-cli-model-config.md",
+      "bytes": 119115,
+      "sha256": "cf781dd9bd0954efc98d52e09a5967a743e89b3bcfa762571501e0e1e5c712eb",
+      "fetched_at": "2026-10-16T16:30:44.239Z"
+    }
+  ],
+  "historical_preservation_baseline": [
+    {
+      "path": "docs/orchestration/contracts/adaptive-profiles.v1.json",
+      "sha256": "d39b21fd1e6e567f79c5c35649e14ff03ba1ea6c86cbc0ca28461a90c65a96a7"
+    },
+    {
+      "path": "docs/orchestration/contracts/models.v2.json",
+      "sha256": "19fe2db02918374010d35fadcd72c52395a3c8de83d227ab106321abdc938b95"
+    }
+  ]
+}

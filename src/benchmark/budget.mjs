@@ -1,6 +1,7 @@
 import { constants, openSync, closeSync, readFileSync, writeFileSync, fsyncSync, fstatSync, lstatSync, realpathSync, renameSync, linkSync, unlinkSync } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
+import {JEV_OBSERVED_MODEL_LABELS, isJevSettlementModel, assertJevModelRegistrySource} from '../jev-model-registry.mjs';
 
 export const BUDGET_ERROR_CODES = Object.freeze([
   'INVALID_BUDGET_CONFIG', 'JEV_BUDGET_REQUIRED', 'BUDGET_REQUIRED', 'BUDGET_LOCKED', 'BUDGET_LOCK_LOST',
@@ -13,13 +14,8 @@ export const BUDGET_ERROR_CODES = Object.freeze([
 ]);
 const TOKEN_LIMIT = 1_666_666; // floor(1 USD / (3 / 5,000,000 USD per token)); comparisons stay integer.
 const RESERVATION = 65_536;
-// Exact equivalence documented at https://jev-ai.pro/model/jev-1.13, "Dated snapshot"
-// (verified 2026-10-09). No moving alias, prefix match, or future dated build is allowed.
-// Jev AI may return the Vercel provider ID even for jev-latest. Verified
-// 2026-10-09: https://jev-ai.pro/where-to-run-jev and Vercel's official 32K
-// catalog https://vercel.com/ai-gateway/models/labs/typesafe-ai . This provider
-// alias is not a dated revision; preserve it verbatim in provenance.
-const SETTLEMENT_MODELS = Object.freeze(['jev-1.13.0', 'typesafe/jev-1.13-20260917', 'typesafe-ai/jev']);
+// D088: admission v5 and native settlement share the same reviewed exact-label registry.
+const SETTLEMENT_MODELS = JEV_OBSERVED_MODEL_LABELS;
 export const JEV_SETTLEMENT_MODELS = SETTLEMENT_MODELS;
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const integer = value => Number.isSafeInteger(value) && value >= 0;
@@ -162,7 +158,8 @@ function syncDirectory(directory) {
 // tokens / credits / credits-fallback / tokens-fallback. Accept ONLY plain tokens.
 // Resolved model and multiplier: https://jev-ai.pro/docs#billing and #models.
 function settlement(response) {
-  if (!object(response) || !SETTLEMENT_MODELS.includes(response.model)) fail('BUDGET_MODEL_UNSUPPORTED');
+  assertJevModelRegistrySource();
+  if (!object(response) || !isJevSettlementModel(response.model)) fail('BUDGET_MODEL_UNSUPPORTED');
   const billing = response.billing;
   const usage = response.usage;
   const receipt = response.receipt;
